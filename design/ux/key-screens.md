@@ -301,7 +301,7 @@ Framing: the view from the kei truck roof. One painted terraced strip of Hidamar
 |            post: [Goofball|Bruiser]       post: [ empty ]                |
 |            Tribute 14 (+crate 15%)        Tribute 9                      |
 |                                              ^                           |
-|                                              | <== [Thorn] RAID tonight  |
+|                                              | <== [Goma] RAID tonight   |
 |   [Low Wall Corner - Home Ground]   [Gatepost]                           |
 |    (bell) ~~~~ 91                    (bell) ~~~ 66                       |
 |    Tribute 12                        Tribute 11                          |
