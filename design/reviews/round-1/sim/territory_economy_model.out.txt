@@ -1,0 +1,77 @@
+== 1. Tribute anchors (canon: L2 60, L4 300, L7 1,200) ==
+  L4 draft (7 Sentries)            281
+  L4 Clout cap (8)                 284
+  L7 draft (9 Sentries)           1094
+  L7 Clout cap (12)               1118
+  L7 optimiser, Big Whisker       1638
+  Great Boss optimiser            1693
+
+== 2. Player types ==
+  -- Reference (draft section 5.3)
+     L1: income      93  spend      60  stash     33  spoiled so far      0
+     L2: income     721  spend     650  stash    104  spoiled so far      0
+     L3: income    1880  spend    1850  stash    134  spoiled so far      0
+     L4: income    3440  spend    3400  stash    174  spoiled so far      0
+     L5: income    5920  spend    5810  stash    284  spoiled so far      0
+     L6: income    9136  spend    8700  stash    720  spoiled so far      0
+     L7: income   13950  spend   10150  stash   4520  spoiled so far      0
+     L8: income    6180  spend    9100  stash   1600  spoiled so far      0
+     L9: income    2520  spend    2000  stash   2120  spoiled so far      0
+  -- Optimiser, no Crew meals
+     L1: income      93  spend      60  stash     33  spoiled so far      0
+     L2: income     741  spend     650  stash    124  spoiled so far      0
+     L3: income    2048  spend    1850  stash    322  spoiled so far      0
+     L4: income    3800  spend    3400  stash    722  spoiled so far      0
+     L5: income    6976  spend    6391  stash   1307  spoiled so far      0
+     L6: income   10936  spend   10875  stash   1368  spoiled so far      0
+     L7: income   16731  spend    7105  stash   6000  spoiled so far   4994
+     L8: income    6180  spend    9100  stash   3080  spoiled so far   4994
+     L9: income    2520  spend    2000  stash   3600  spoiled so far   4994
+  -- Optimiser feeding half the Crew (Crew F8 meal)
+     L1: income      93  spend      60  stash     33  spoiled so far      0
+     L2: income     741  spend     650  stash    124  spoiled so far      0
+     L3: income    2048  spend    1850  stash    322  spoiled so far      0
+     L4: income    3800  spend    3400  stash    722  spoiled so far      0
+     L5: income    6976  spend    9975  stash      0  spoiled so far      0
+     L6: income   10936  spend   16635  stash      0  spoiled so far      0
+     L7: income   16731  spend   14233  stash   2498  spoiled so far      0
+     L8: income    6180  spend   14284  stash      0  spoiled so far      0
+     L9: income    2520  spend    2000  stash    520  spoiled so far      0
+  -- Casual (no Lot upgrades, cap 400)
+     L1: income      93  spend      60  stash     33  spoiled so far      0
+     L2: income     721  spend     390  stash    364  spoiled so far      0
+     L3: income    1544  spend    1110  stash    400  spoiled so far    398
+     L4: income    2720  spend    2040  stash    400  spoiled so far   1078
+     L5: income    4512  spend    3486  stash    400  spoiled so far   2104
+     L6: income    6736  spend    5220  stash    400  spoiled so far   3620
+     L7: income   10242  spend    5582  stash    400  spoiled so far   8280
+     L8: income    4620  spend    2730  stash    400  spoiled so far  10170
+     L9: income    1680  spend     600  stash    400  spoiled so far  11250
+
+== 3. Morsels per real minute, end of Life 7 ==
+  A full day                         net   1444  min  30  per-min   48.1
+  B home by Dusk                     net   1194  min  18  per-min   66.3
+  C patrol only                      net    964  min  12  per-min   80.3
+  D sleep-skip (rounds 0)            net   -276  min   2  per-min -138.0
+  E' loyal Wardens (floor .7)        day 1: tribute   1200 net    924 per-min  84.0
+  E' loyal Wardens (floor .7)        day 3: tribute   1086 net    810 per-min  73.6
+  E' loyal Wardens (floor .7)        day 5: tribute    858 net    582 per-min  52.9
+  E' loyal Wardens (floor .7)        day 7: tribute    858 net    582 per-min  52.9
+  E' no Warden floor (.4)            day 1: tribute   1200 net    924 per-min  84.0
+  E' no Warden floor (.4)            day 3: tribute   1029 net    753 per-min  68.5
+  E' no Warden floor (.4)            day 5: tribute    687 net    411 per-min  37.4
+  E' no Warden floor (.4)            day 7: tribute    516 net    240 per-min  21.8
+  W wipe-skip (steady state)         net    582  min   3  per-min  194.0
+
+== 4. Raid odds (attackers: two Toughs PR 400, grudge x1.15) ==
+  Example A (Bruiser, Warden, Settled)     R 1.36  Rep 0.52 Scuff 0.20 Lost 0.28
+  Example B (Unwatched, no Warden)         R 0.50  Rep 0.01 Scuff 0.10 Lost 0.89
+  Unwatched under Warden, Scent 70         R 0.56  Rep 0.02 Scuff 0.13 Lost 0.85
+  Watched, plain Sentry, Scent 80          R 1.06  Rep 0.30 Scuff 0.25 Lost 0.45
+  Vigil: Watched, Short Rations, Sc 40     R 0.75  Rep 0.09 Scuff 0.21 Lost 0.70
+
+  Vigil scent after 4 nights (x3 decay, no rival neighbours):
+     Watched + Warden                   32
+     Unwatched + Warden                  0
+     Hidamari Watched (Home Turf)       92
+     Hidamari Unwatched (Home Turf)     52
