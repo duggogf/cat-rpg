@@ -1,33 +1,43 @@
 # Creative Brief — Shared Canon: "Cat RPG" (working title)
 
-*Created: 2026-11-23 · Owner: creative-director · Status: Draft v1.0 (pre-approved design pass; decisions marked OPEN await the user)*
+*Created: 2026-11-23 · Owner: creative-director · Status: **v1.2** (folds in `design/reviews/round-1/director-rulings.md`; decisions marked OPEN await the user)*
 
-**Read this in full before writing your GDD.** You will not see the other specialists' documents. Anything named or numbered here is canon: use the exact terms, do not rename, do not redefine. If your system needs something this brief does not cover, decide it inside your own boundary (§6) and list it under "Assumptions for creative-director review" at the end of your doc. Companion docs: `design/gdd/game-concept.md`, `design/gdd/game-pillars.md`.
+**Read this in full before writing or revising a GDD.** Anything named or numbered here is canon: use the exact terms; do not rename or redefine them. If your system needs something this brief does not cover, decide it inside your own boundary (§6) and list it under "Assumptions for creative-director review". Companion docs: `design/gdd/game-pillars.md`, `design/gdd/game-concept.md`. Where this brief and the pillars disagree, this brief wins (see changelog).
+
+**Current target: a GDD set good enough to start prototyping the vertical slice (§10).** Each doc specifies what the slice needs and ends with a `## Backlog (post-slice)` section listing everything else, one line each. The full game appears only as framing.
 
 ---
 
 ## 1. The game in one breath
 
-A 3D bird's-eye action RPG. You are **Mikan**, a house cat in the seaside town of **Yunagi**. By day and night you spray, brawl, recruit and tax your way from one garden wall to **Great Boss** of the whole town, leading a four-cat **Posse** in stylised real-time fights against **Rivals** who remember everything you did to them. Every morning and evening you go home, where your human, **Haru**, is living a whole life that you witness but cannot understand in words: school, leaving, love, a wedding, a baby, and then a door that stops opening.
+A 3D third-person action RPG. You are **Mikan**, a house cat in the seaside town of **Yunagi**. By day and by night you spray, brawl, recruit and tax your way from one garden wall to **Great Boss** of the whole town. You lead a four-cat **Posse** in stylised real-time fights against **Rivals** who remember everything you did to them, and you post cats with real personalities to guard the turf that feeds you. Every morning and evening you go home, where your human, **Haru**, is living a whole life that you witness but cannot understand in words: school, leaving, love, a wedding, a baby, and then a door that stops opening.
 
 **Core fantasy:** *Boss outside, pet at home.* A ruthless little alley tyrant who still comes running when one particular human calls.
 
-**Title:** working title stays **"Cat RPG"**. Recommended release title: **"Nine Lives of a Boss Cat"**. Alternates: *"Mikan: Boss of Yunagi"*, *"Come Home, Boss"*. (OPEN — user decides.)
+**Title:** working title "Cat RPG"; recommended release title "Nine Lives of a Boss Cat" (OPEN).
 
 ---
 
-## 2. Pillars (summary — full text in game-pillars.md)
+## 2. Pillars (full text in game-pillars.md)
 
 | # | Pillar | One-line test |
 |---|---|---|
-| 1 | **Cat's-Eye Truth** | If a cat could not perceive, want, or do it, it is not in the game. No intelligible human language, ever. |
+| 1 | **Cat's-Eye Truth** | If a cat could not perceive, want or do it, it is not in the game. No intelligible human language, ever. |
 | 2 | **Two Lives, One Clock** | Every in-game day advances both Mikan's turf and Haru's life; home is mechanically and emotionally unavoidable. |
 | 3 | **Conduct the Brawl** | Fights are short, loud, readable cartoon brawls where you command four cats; feel beats simulation. |
 | 4 | **Rivals Remember** | Every named cat carries visible history with you; no fight with a Rival is ever anonymous or consequence-free. |
 
-Conflict priority is the table order. Priority is not investment: **combat and nemesis receive the deepest design and production budget.**
+Conflict priority follows the table order. Priority is not investment: **combat, nemesis and the dual story make the game stand out; territory and economy carry half the play time and get equal design weight.**
 
-Anti-pillars: not a cat-life simulator (no hunger/thirst/litter meters); not a creature-collecting completionist game (Crew are few and known, not a 150-entry dex); not a dialogue-driven story; not grimdark (nobody dies on the streets); no time-pressure fail states; no multiplayer, no live-service.
+Anti-pillars:
+- Not a cat-life simulator: no hunger, thirst or litter meters.
+- Not a collect-them-all game: the Crew are few and known.
+- Not dialogue-driven.
+- Not grimdark: nobody dies on the streets.
+- No time-pressure fail states.
+- Not a checklist: at most 3 once-a-day actions in the whole game.
+- No multiplayer or live-service.
+- **Not an FF7 Remake–depth combat game**: the structure is borrowed; the detail is kept light.
 
 ---
 
@@ -37,108 +47,145 @@ Anti-pillars: not a cat-life simulator (no hunger/thirst/litter meters); not a c
 
 | Term | Canon |
 |---|---|
-| **Mikan** | Protagonist. Default name (player may rename). Ginger-and-white Japanese bobtail: white body, ginger cap over both ears, a ginger patch over the left eye, pom-pom stub tail, amber eyes, **red collar with one small brass bell**. Gender unspecified; text uses the name or "they". Ages from kitten (Life 1) to elder (Life 9); silhouette and animation change at Lives 1, 2, 8 and 9. |
-| **The Call** | Haru's name for Mikan is not a word. It is a **three-note sung motif** (rise a third, fall a fifth). It is Mikan's name, Haru's leitmotif, and the main theme. Whoever sings it, the cat comes. |
-| **Haru** | The owner. Dev-facing name only; never shown as readable text in game. Default canon: a girl of 16 in Life 1, a woman of 31 at the accident. Short dark bob, yellow raincoat in Life 1; **yellow** stays her signature colour in every life-stage. |
-| **Sora** | Haru's partner, later spouse. First appears as a second pair of shoes in the entryway. Signature colour **teal**. Starts as Mikan's rival for the lap; ends as the one who needs Mikan most. |
-| **Koharu** | Haru and Sora's child, born in Life 6. Signature colour **coral**. In Life 9 Koharu sings the Call. |
-| **Gran** | Haru's grandmother, who shares the house in Lives 1–4 and feeds Mikan while Haru is away (Life 3). Signature colour **plum**. Her absence from Life 5 on is the game's first, quiet rehearsal of loss. |
+| **Mikan** | Protagonist (renameable). Ginger-and-white Japanese bobtail: white body, ginger cap over both ears, a ginger patch over the left eye, pom-pom stub tail, amber eyes, **red collar with one small brass bell**. Referred to by name or "they". Ages from kitten (Life 1) to elder (Life 9). |
+| **The Call** | Haru's name for Mikan is a **three-note sung motif** (rise a third, fall a fifth). It is Mikan's name, Haru's leitmotif and the main theme. In brass it is Mikan's street theme, **the Brass Call**. |
+| **Haru** | The owner. Dev-facing name only; never shown as readable text. 16 in Life 1, 31 at the accident. Short dark bob, yellow raincoat; **yellow** is her colour; her instrument is the **upright piano** (a real prop in the Main Room). She is **always late**. |
+| **Sora** | Haru's partner, later spouse. Teal; cello. First appears as a second pair of shoes. He whistles and hums the Call, never sings it. |
+| **Koharu** | Haru and Sora's child, born in Life 6. Coral; toy piano. In Life 9 Koharu sings the Call. |
+| **Gran** | Haru's grandmother; plum; reed organ. Lives 1–4. Taps the Call on the bowl (three taps). |
 | **Rival** | Any named, persistent, non-Crew cat tracked by the nemesis system. |
-| **Nemesis** | A Rival whose **Grudge** against Mikan has crossed the nemesis threshold. A status, not a separate type. |
-| **Stray** | A generic unaffiliated cat; not tracked until promoted to Rival (e.g. by Routing Mikan). |
-| **Critter** | Non-cat opponents for variety: crows, rats, a weasel, a tanuki, one chained dog as a set-piece. Max 20% of encounters. Critters are never Rivals or Crew. |
-| **Clowder** | A cat gang. One per district at the start. The player's own is the **Bell Clowder** (renameable). |
-| **Tough → Captain → Boss → Great Boss** | Rival ranks. Tough = rank-and-file Rival. Captain = lieutenant (2 per district). **Boss** = ruler of one district. **Great Boss** = ruler of all Yunagi (Botan at start; Mikan at the end). |
-| **Crew** | All cats recruited by the player (roster). |
-| **Posse** | The active combat party: Mikan + 3 Crew. Swappable any time outside combat. |
-| **Sentry** | A Crew cat posted to guard a Patch. **Warden** = the Crew cat appointed to run a district you own. |
-| **"Collar"** | The street insult for a pet cat. Rivals call Mikan this until Clout says otherwise. |
+| **Nemesis** | A Rival holding one of the scarce **Nemesis slots** (one per district + the arc lead), chosen among cats with Grudge ≥ 75. Others with high Grudge are **Bitter**. |
+| **Stray** | An unaffiliated cat; not tracked until promoted. Strays have no signature perk. |
+| **Critter** | A non-cat opponent (crows, rats, a weasel, a chained dog set-piece). Never Rival or Crew. The slice has crows only. |
+| **Clowder** | A cat gang, one per district. The player's own is the **Bell Clowder**. |
+| **Tough → Captain → Boss → Great Boss** | Rival ranks. Each district has 1 Boss, 2 Captains and 5 Toughs (ordered 1–5 on the wall). **Botan** is Great Boss. |
+| **Keeper** | The Rival holding a Patch (`keeper_id`). |
+| **Crew / Posse** | Crew = every recruited cat. Posse = Mikan + 3 Crew in combat. Swappable at the Lot, or away from it by **Tail-Up** (Lounging cats only). |
+| **Sentry / Warden** | A Crew cat posted to guard a Patch. The **Warden** is the Den's first Sentry slot (True+ Loyalty). |
+| **Personality** | Each cat's one of six fixed personalities, shared by Crew and Rivals (§3.5). **The reason to want this cat over that one.** |
+| **"Collar"** | The street insult for a pet cat. |
+| **The old wall cat** | Life 1's first story recruit ("Use your whiskers, Collar."). Narrative names them; Crew owns their stats. |
 
 ### 3.2 World
 
 | Term | Canon |
 |---|---|
-| **Yunagi** | The town. A Showa-nostalgic Japanese seaside hill town; year and country never stated. Six districts stacked from harbour to hilltop. |
-| **District** | One of 6 regions. Each has 5 **Patches**. |
-| **Patch** | The unit of territory (30 total). Each has one **Scent Post** (a lamp post, a mailbox, a stone lantern...). One Patch per district is the **Den**, the Boss's seat. |
-| **Haru's House** | Home. Old wooden house with a veranda, small garden and a low wall, in Hidamari Lane. Safe zone: no combat ever happens inside the wall. |
-| **the Doorstep** | Where Tribute appears each morning and where the **Morning Sniff** (daily report) is read. |
-| **the Stash** | Mikan's Morsel bank, under the veranda. |
-| **the Lot** | Vacant lot behind the house (rusting kei truck, stacked crates). Crew headquarters: roster, Posse selection, Lessons. Crew never enter Haru's House. |
-| **Sunspot** | Nap points around town (warm roof tile, a shop cushion). Nap = checkpoint save + full Posse heal; advances the clock by half a phase. |
-| **High Road** | The upper traversal layer: walls, fences, roofs, awnings. Ground and High Road are the only two layers. |
-| **the Fence Line** | The nemesis hierarchy screen: a long wall with every known Rival sitting on it in rank order, by district. Unknown Rivals are silhouettes. |
+| **Yunagi** | A Showa-nostalgic Japanese seaside hill town; year and country never stated. **Three districts and the Lighthouse Summit** (§4). |
+| **Patch** | The unit of territory (**20** in total). Each has one **Scent Post**: tall, landmark-shaped, visible from distance. One Patch per district is the **Den**. |
+| **Haru's House** | Old wooden house with veranda, garden and a low wall, in Hidamari Lane. Safe zone: no combat inside the wall; the clock pauses inside the wall, garden included. |
+| **The Doorstep** | Where Tribute appears and the **Morning Sniff** is read. The only licensed HUD space inside the wall. |
+| **The Stash** | Mikan's Morsel bank under the veranda. Bribes are paid from it. |
+| **The Lot** | Vacant lot behind the house. Crew HQ: Posse, **Turf Board**, Lessons, Share a Morsel. Crew never enter the house. |
+| **Sunspot** | A nap point: checkpoint, full Posse heal, half a phase passes. |
+| **High Road** | Walls, fences, roofs and awnings: the upper traversal layer, played as third-person platforming. |
+| **The Fence Line** | The nemesis hierarchy screen: one continuous wall, height = rank, one disposition pose per cat, no rank labels. Read-only on the street, at the Doorstep and at the Lot; never shown in the house. |
+| **Turf Board** | The Lot's territory screen: drag a portrait onto a Patch. The only map-like view, and the only place numbers appear. |
+| **Phase dial** | The always-visible day indicator while roaming (sun over a roofline; no digits). |
 
 ### 3.3 Verbs and systems
 
 | Term | Canon |
 |---|---|
-| **Spray** | Marking a Scent Post. Presentation: tail-quiver pose + a puff of coloured sparkle "scent cloud" and a pop sound. Never a visible liquid. Played for comedy. |
-| **Scent** | Per-Patch control strength, 0–100, belonging to one Clowder. Decays; refreshed by Spraying and Sentries. |
-| **Whisker Sense** | Hold-button sense mode. World desaturates; scent trails and marks glow in each Clowder's colour (Bell Clowder = **bell-gold**); Rival footprints, hidden food and High Road routes are revealed. The only "minimap overlay" the game has. |
-| **Standoff** | The pre-fight beat: arched backs, a 2–4 s name-card for any Rival (name, title, a one-line taunt). Skippable after first sight. |
-| **Ambush** | Opening a fight by dropping from the High Road or from behind unseen. Target starts **Ruffled**. Rivals can Ambush Mikan too. |
-| **Pounce Gauge / Paws** | The combat resource (ATB-equivalent). Measured in **Paws** (paw-pad segments). Fills slowly on its own, faster from landing hits and good dodges. Moves cost Paws. |
-| **Slow Blink** | The tactical mode: time drops to 5% while you choose Moves/targets for any Posse cat. Named for the cat slow-blink. |
-| **Move** | An active skill costing Paws. 4 equipped per cat. |
-| **Knack** | A passive skill. 2 equipped per cat. |
-| **Zoomies** | The limit-break. One per cat (set by Style, some Rivals have unique ones). Gauge fills from taking damage and from Frazzling enemies; persists between fights within a day. |
-| **Ruffled** | "Pressured": enemy's Frazzle gauge fills at double rate. Caused by Ambush, hitting a Fear, interrupting certain Moves. |
-| **Frazzle / Frazzled** | Stagger. A gauge (0–100) on every enemy; when full the cat is **Frazzled**: fur puffed, helpless, takes bonus damage. |
-| **Pile-On** | Posse finisher available on a Frazzled enemy: all four cats vanish into a cartoon dust cloud with stars and paws flying out. The signature image of the game. |
-| **Nerve** | Hit points. At 0 a cat is **Routed**: it bolts in a dust puff. Nobody is killed, ever. |
-| **Verdict** | The choice after Routing a Rival: **Chase Off**, **Humble**, **Recruit**, or **Nose-Touch** (respect). Defined in §7. |
-| **Grudge** | 0–100, how personally a Rival hates Mikan. **Memory** = the Rival's log of encounters with Mikan. |
-| **Fear / Strength / Scar / Title** | Rival trait categories. Fears are cat-true (Water, Loud Noise, Dogs, Cucumbers, Vacuum, Being Outnumbered...). Scars are cartoon-cosmetic (notched ear, sticking plaster, bent whisker). Titles are earned ("Notch-Ear", "the Soggy", "Collar-Biter"). |
-| **Morsels** | The soft currency: food. Earned from Tribute, fights and scavenging. |
-| **Shinies** | The rare currency: bottle caps, marbles, a lost earring. From Bosses, Nemeses and exploration. Spent on top-tier Lessons and Lot upgrades. |
-| **Tribute** | The daily Morsel income paid by cats living in Patches you hold. Arrives on the Doorstep. |
-| **Clout** | Mikan's town-wide reputation, 7 ranks: House Pet → Lane Cat → Known Face → Boss → Two-Street Boss → Big Whisker → Great Boss. Gates Crew cap, Sentry slots and how Rivals address you. |
-| **Bond** | Mikan's closeness with the household, shown as hearts (0–10). Raised by coming home, lap time, gifts; never falls below its Life minimum. |
-| **Loyalty** | 0–100, per Crew cat. |
-| **Lesson** | Teaching a Move or Knack from one cat to another at the Lot. |
-| **Night Shuffle** | The overnight simulation tick while Mikan sleeps: raids, Rival promotions, betrayals, Tribute. |
-| **Caterwaul** | A distress yowl heard across town when one of your Patches is raided while you are out. Optional live defence. |
-| **Life** | A story chapter. There are **nine**. Not a retry counter: the game has no lives-as-retries. |
-| **Murmur** | How human speech sounds: warm, wordless, pitched mumbling with clear emotion and no words. |
-| **Scribble** | The illegible glyph set used for all human writing in the world. |
+| **Spray** | Marking a Scent Post: tail-quiver pose, sparkle scent cloud, pop. Never liquid. Your own Spray is offered only when a post is below Strong. |
+| **Scent** | Per-Patch control, 0–100, shown in the world as 1–4 wisps in the Clowder's colour. Strong = 60+. |
+| **Whisker Sense** | Hold mode. The world desaturates; scent trails glow; a **scent compass ring** around Mikan points to rival marks, Rivals and hidden finds. Not usable in combat. |
+| **Head Home** | A bell-gold High Road scent thread to Haru's wall. It appears at the Dusk Call or on request, and is ≤ 60 s long in the slice. |
+| **Standoff** | The pre-fight beat (2–4 s name-card and one taunt). A memory-citing line cannot be skipped for 1 s. |
+| **Ambush** | Opening a fight unseen or from the High Road; the target starts Ruffled. A Rival Ambush gives a 2.0 s directional yowl-sting; Skitter or Brace in its last 0.75 s gives a neutral start. |
+| **Attack / string** | The Attack button runs a 3-hit string; the 3rd hit is the Style finisher. Airborne or from the High Road it becomes a **Pounce**. |
+| **Hop · Skitter · Brace** | Jump (High Road), dodge, guard (hold). |
+| **Hiss** | 8 s cooldown. Interrupts a yellow telegraph and Ruffles the attacker; a Tough at ≤ 15% Nerve **Backs Down** (Routed by intimidation). |
+| **Pounce Gauge / Paws** | The command resource. 2 Paws per cat (Mikan 3 from Life 4). Fills over time and from hits. |
+| **Slow Blink** | Tactical mode: time at 5%; choose Moves and targets for any Posse cat; commands chain. |
+| **Move** | An active skill costing 1–2 Paws, either a **Set-up** or a **Pay-off**. 4 slots per cat. |
+| **Knack** | Passive skill. **Backlog** (not in the slice). |
+| **Tag-In / Relay** | Switching control right after a string finisher, Pounce or Hiss interrupt: the incoming cat leaps in with a free Style strike. Chaining Tag-Ins within 3 s is a Relay (each cat once). The heart of conducting. |
+| **Zoomies** | The limit-break, one per Style. Charges from damage taken and from Frazzling enemies; persists within a day. |
+| **Ruffled** | For 4 s, Frazzle builds ×2. A leader cannot be re-Ruffled for 6 s after it ends. |
+| **Frazzle / Frazzled** | The stagger gauge. When full: 6 s helpless, damage taken ×1.5. |
+| **Statuses** | Only three: **Soggy** (slower), **Cowed** (deals less), **Fired Up** (deals more). |
+| **Pile-On** | Posse finisher on a Frazzled enemy: four cats vanish into a cartoon dust cloud. Needs ≥ 2 standing Posse cats. Always Routs below Captain. On trash it is offered only with 2+ enemies Frazzled within 3 m, or on the last enemy standing. The signature street image. |
+| **Old Score** | A Crew cat fighting a Rival it has Routed, or been Routed by, deals extra Frazzle, and both bark. |
+| **Nerve / Routed** | HP. At 0 the cat bolts in a dust puff. Nobody is killed, ever. |
+| **Verdict** | After Routing a Rival (one full Verdict per fight; other tracked cats slip away): **Chase Off**, **Humble**, **Recruit**, **Nose-Touch** (§7). |
+| **Grudge / Regard / Memory** | Grudge 0–100 and Regard 0–100 are never shown as numbers. Memory is a Rival's log of you (10 entries, ≤ 6 pinned). |
+| **Fear / Strength / Scar / Title** | Rival traits. Slice Fears: Water, Loud Noise, Cucumbers. Every player-sourced Scar is a **silhouette Scar** until the cat has two. |
+| **Lick In** | A Rival that Routs Mikan in a fight the Posse still wins earns a Glory Title (no promotion). |
+| **Gloat** | The victor's ≤ 3 s beat after a Posse wipe. |
+| **Wall event** | The director's overnight hierarchy change, one per district every 2–3 nights, always visible on the wall. |
+| **Morsels / Shinies** | Soft currency (food) / rare currency (≈ 50 in the full game). |
+| **Tribute** | Daily Morsels from held Patches, placed on the Doorstep. |
+| **Bribe** | The recruit payment: none / fair / feast, from the Stash. |
+| **Share a Morsel** | Feeding the whole Crew at the Lot, once per day; costs the sum of Crew levels; +2 Loyalty to all. |
+| **Clout** | Reputation, 7 ranks: House Pet → Lane Cat → Known Face → Boss → Two-Street Boss → Big Whisker → Great Boss. Milestones only. |
+| **Bond** | Closeness with the household, 0–10 hearts. |
+| **Loyalty** | 0–100 per Crew cat. Tiers in §8. |
+| **Lesson** | Teaching a Move at the Lot. Slice routes: Instinct and Lessons. |
+| **Night Shuffle** | The overnight simulation (§5.3). |
+| **Caterwaul** | A distress yowl when a held Patch is raided while you are out; optional live defence. Current district only. |
+| **Life** | A story chapter; there are nine. Not a retry counter. |
+| **Keystone / Texture / Closing / Plateau** | A required home beat / an optional home vignette / the last Keystone of a Life / the "season" the house lives in after a Life's Keystones run out. |
+| **Murmur / Scribble** | Wordless human speech / illegible human writing. |
+| **Offering · Carry · Fresh Catch** | Life 8 only (§5.5). |
 
-### 3.4 Styles (cat classes) and damage types
+### 3.4 Styles and damage types
 
-Every cat has one **Style**. Five exist:
+| Style | Role | Basic type | Resists ×0.8 | Weak to ×1.2 |
+|---|---|---|---|---|
+| **Bruiser** | Tank; Frazzle builder | Thump | Thump | Fang |
+| **Scrapper** | Fast melee (Mikan's base) | Claw | Claw | Thump |
+| **Prowler** | Burst; Ambush | Fang | Fang | Yowl |
+| **Yowler** | Support and debuff by voice | Yowl | Yowl | Claw |
+| **Trickster** | Ranged; props | mixed | — | — |
 
-| Style | Role | Signature |
-|---|---|---|
-| **Bruiser** | Tank, Frazzle builder | Body slams, sits on things |
-| **Scrapper** | Fast melee damage | Bunny-kicks, claw flurries |
-| **Prowler** | Burst, Ambush, crits on Ruffled/Frazzled | Vanishes, strikes from the High Road |
-| **Yowler** | Support and debuff by voice | Hisses weaken, yowls taunt, purrs heal |
-| **Trickster** | Ranged and area control | Knocks things off ledges, kicks dirt, baits |
+*A Style resists its own damage type.* Mikan may slot at most 2 cross-Style Moves. Five stats: **Nerve, Bite, Hide, Voice, Zip**. Style sets stats; personality does not.
 
-Mikan is a **Scrapper** base who may equip Moves from any Style (the only cat who can).
+### 3.5 Personality (one model for Crew and Rivals)
 
-Four **damage types**: **Claw**, **Fang**, **Thump**, **Yowl**. There is no global type chart. Resist/weak comes per cat, from Style defaults and Rival Strengths/Fears.
+Assigned at generation by Nemesis; never changes. Each owning doc sets the numbers for its own column; the shape is canon.
 
-Five **stats**: **Nerve** (HP), **Bite** (attack power for Claw/Fang/Thump), **Hide** (defence), **Voice** (Yowl power, heal and buff potency), **Zip** (move speed, dodge window, Pounce fill rate).
+| Personality | Fights like (AI) | Combat perk | On guard | Loyalty: likes / dislikes | Bonds / clashes | As a Rival |
+|---|---|---|---|---|---|---|
+| **Braggart** | Charges the biggest enemy | First hit on a leader adds Frazzle | Raid defence +; Patch +10% Tribute | Posse time / being benched | Goofball / Braggart | Loud; returns fast for revenge |
+| **Brooder** | Hangs back, avenges allies | Old Score doubled | Never leaves; slower decay | Long service (half-speed both ways) / being dismissed | Stalwart / Schemer | Grudge decays at half rate |
+| **Schemer** | Flanks; hunts Ruffled/Frazzled | Bonus on Frazzled | The district forecast names the motive | Lessons / soft choices | Fraidy / Brooder | Ambushes; as Crew, Wavers below 35 |
+| **Fraidy** | Keeps distance, supports | Perfect Skitter gives Pounce | Weak defence; raises the Caterwaul early | Never being Routed / being Routed | Stalwart / Braggart | Flees early; returns slowly |
+| **Stalwart** | Guards the controlled cat, Braces | Allies within 3 m take less damage | Best raid defence | Fair play / Mikan Humbling cats | Brooder / Schemer | Honourable; accepts Nose-Touch readily |
+| **Goofball** | Plays; goes for props | Props it triggers hit harder | Humbled residents never simmer | Share a Morsel counts double / being left at the Lot | everyone but Brooder / Brooder | Clowns about; easy to Recruit |
+
+**Social pairs.** A bonded pair in the Posse gets a stronger Tag-In; bonded cats posted in the same district gain +1 Loyalty per night. A clashing pair loses 1 Loyalty each per day when together.
+
+**Shown, not listed.** Each personality has its own idle, walk, posture, bark intents and Pile-On flourish. A recruited Rival also keeps its Memory, Scars and Title, and its Nemesis **Strength becomes an always-on signature perk** (its Fear stays).
 
 ---
 
-## 4. Yunagi: districts and Bosses
+## 4. Yunagi: districts and Bosses (full-game framing)
 
-Levels are the recommended player level band. Each district's Clowder has a scent colour for Whisker Sense and UI.
+| # | District | Character | Patches | Lv | Clowder (colour) | Boss | Lives |
+|---|---|---|---|---|---|---|---|
+| 1 | **Hidamari Lane** | Sunny lanes, garden walls, laundry poles, Haru's House | Den + 4 outer = 5 | 1–8 | Wall Sitters (light sage `#A8C878`) | **Daifuku**: enormous white-and-grey tom who never leaves his wall. Bruiser. | L1 · L2 |
+| 2 | **Akane Arcade** | Covered shopping street (fishmonger, croquette stall, awnings); at its top end, shrine steps, torii and stone lanterns that come alive at night | Den + 6 outer = 7 | 8–18 | Awning Gang (vermilion) | **Madam Sabi**: rust tortoiseshell matriarch. Yowler. **Oboro** (silent black Prowler) is her authored night Captain. | L3 · L4 |
+| 3 | **Shiosai** | Fishing harbour below (nets, tetrapods, the net shed); hot-spring inns and stone stairs above | Den + 6 outer = 7 | 18–28 | Salt Paws (sea blue) | **Ikari**: one-eyed, salt-crusted brown tabby. Scrapper. | L5 · L6 |
+| ★ | **The Lighthouse Summit** | Botan's seat above Shiosai; opens when Shiosai is claimed | 1 | 28–30 | Steam Court (white-violet) | **Botan**: Great Boss, a pampered long-haired white inn cat in a silk ribbon collar. A pet, like Mikan. Trickster. | L7 |
 
-| # | District | Character | Lv | Clowder (colour) | Boss (authored) |
-|---|---|---|---|---|---|
-| 1 | **Hidamari Lane** | Sunny residential lanes, garden walls, laundry poles, Haru's House. Safe, sleepy, small. | 1–8 | Wall Sitters (moss green) | **Daifuku** — enormous white-and-grey tom who has not moved off his wall in years. Bruiser. |
-| 2 | **Akane Arcade** | Covered shopping street: fishmonger, croquette stall, awnings, crates. Humans everywhere by day. | 8–16 | Awning Gang (vermilion) | **Madam Sabi** — rust tortoiseshell matriarch fed by every shopkeeper. Yowler. |
-| 3 | **Tsukimi Hill** | Shrine steps, torii, bamboo, stone lanterns, old graves. Comes alive at night. | 16–24 | Lantern Eyes (indigo) | **Oboro** — silent black cat seen only after dusk. Prowler. |
-| 4 | **Shiosai Harbour** | Fishing port: nets, boats, tetrapods, gulls, ice crates. The richest Tribute in town. | 24–32 | Salt Paws (sea blue) | **Ikari** — one-eyed, salt-crusted brown tabby. Scrapper. |
-| 5 | **Kurogane Yard** | Station and freight yard: rails, warehouses, vending machines, sodium lamps. | 32–40 | Rust Runners (orange-brown) | **Kiha & Moha** — grey sibling pair who fight as one. Trickster duo boss. |
-| 6 | **Kasumi Heights** | Misty hilltop: hot-spring inns, stone stairs, steam vents, the lighthouse. | 40–48 | Steam Court (white-violet) | **Botan** — Great Boss of Yunagi. A pampered long-haired white inn cat in a silk ribbon collar. A pet, like Mikan: the "Collar" insult was always hypocrisy. |
+Bosses are authored personalities who use the nemesis trait and memory system; everything below Boss is procedural. **Claiming:** the Lane's Den opens when 3 of its 4 outer Patches are held; the Arcade's and Shiosai's when 4 of 6 are held. The district is claimed by Routing the Boss at the Den. Botan offers only Humble or Nose-Touch: at her Verdict the inn's hand-bell rings and she is called home.
 
-Bosses are hand-authored personalities who still use the nemesis trait/memory system. Everything below Boss rank is procedural. A district is **claimed** by holding 3 of its 5 Patches (which opens the Den) and then Routing the Boss at the Den.
+### 4.1 Camera and space (canon for art, UX, combat, level; spec in `design/gdd/camera-system.md`)
 
-**Camera and space (canon for art, UX, combat, level):** high-angle follow camera, pitch about 55°, **authored yaw per area, no free rotation**. Environments are 3D toon-shaded geometry with hand-painted textures and painted distant backdrops. Roofs and walls (the High Road) are walkable and always visible. Fights happen in place, with no scene transition, inside a soft ring about 12 m across; the camera pulls in for Slow Blink, Zoomies and Pile-On.
+**A third-person camera behind and above the cat, like FF7 Remake.**
+- **Explore:** ≈ 3 m back and ≈ 1 m up, gently pitched down; right-stick orbit; auto-follow; wall collision. Low height makes the town huge.
+- **Combat:** pulls back (≈ 6–8 m) and up to frame the controlled cat and its lock target; soft lock-on; edge arrows for off-screen Posse cats and attackers; fight ring ≈ 10 m; no scene transition.
+- **Slow Blink:** a lifted tactical three-quarter view.
+- **Cinematics:** Standoff, Pile-On and Zoomies use authored cuts and cut-ins.
+- **Home:** the same camera, at cat height (0.3–0.6 m); vignettes use authored shots; humans are knees and hands unless they bend down.
+- **Options:** FOV, camera speed, auto-centre, motion comfort.
+
+**Environments:** 3D toon-shaded geometry with stylised hand-painted textures and trim sheets; **painted skydome and backdrop cards (sky, hills, sea are in frame)**. The method is proven by a one-alley look-dev test. All visible human writing is Scribble.
+
+**Readability:**
+- Posse cats carry a bell-gold keyline plus an overhead tick; enemies an outline in their Clowder colour. Both have a 1 px Paper Cream rim.
+- Telegraphs: white = dodge; yellow = Hiss it (Paper Cream dashed with a triangle glyph); red = get out (Frazzle Magenta with a zigzag edge).
+- One screen-wide effect at a time.
 
 ---
 
@@ -146,213 +193,324 @@ Bosses are hand-authored personalities who still use the nemesis trait/memory sy
 
 ### 5.1 Core loops
 
-- **30 seconds:** prowl a lane, flick on Whisker Sense, spot a rival mark, hop to the High Road, Ambush. Light combo, dodge, a Paw fills, Slow Blink, pick a Move, Frazzle, Pile-On. Dust cloud. Spray the post.
-- **5 minutes:** take or defend one Patch: clear its holders, face a Rival in a Standoff, give a Verdict, Spray, decide whether to post a Sentry. Or: scavenge, find a Sunspot, follow a scent trail to a hidden Stray.
-- **One day (a session, about 30 min):** wake at home → morning vignette → Doorstep (Tribute + Morning Sniff) → the Lot (Posse, Lessons, Sentries) → out into town for Day, Dusk, Night → choose when to go home → evening or late-night vignette → sleep → Night Shuffle.
-- **Long term:** claim six districts across nine Lives; grow a Crew of known individuals; turn Nemeses into Captains or legends; watch Haru's life go by; in the end, bring your food home.
+- **30 seconds:** prowl, flick on Whisker Sense, spot a rival mark, take the High Road, Ambush. String, dodge, a Paw fills, Slow Blink, a Move; Tag-In to the next cat; Frazzle; Pile-On; dust cloud; Spray.
+- **5 minutes:** take or defend a Patch: clear it, Standoff, Verdict, Spray, decide who guards it (and which personality suits the post).
+- **One day (≈ 20–25 min in the slice):** wake → morning slot → Doorstep (Tribute, Sniff with tonight's raid forecast) → the Lot (Posse, Turf Board, Lessons, Share a Morsel) → Morning, Day, Dusk, Night → home → evening → sleep → Night Shuffle.
+- **Long term:** claim three districts and the Summit across nine Lives; grow a Crew of personalities; turn Rivals into Nemeses, Crew or friends; watch Haru's life; in the end, bring your food home.
 
-### 5.2 The day clock
+### 5.2 The day clock (implementation detail owned by `design/gdd/day-loop.md`)
 
-- A day has four **phases**: **Morning, Day, Dusk, Night**. Each is **5 real minutes** of exploration time: **20 minutes per day**.
-- The clock **runs only while roaming**. It pauses in combat, Slow Blink, menus, the Lot, and inside Haru's House.
-- A Sunspot nap advances half a phase. Sleeping at home ends the day at any time.
-- **No fail state for time.** At the end of Night, Mikan gets drowsy (a yawn, soft vignette on screen edges) and after a 2-minute grace period walks home automatically.
-- **Phase flavour:** Morning and Day have humans on the streets (hazards that scatter fights, and marks for begging); Dusk is golden hour and when the evening bowl is served; **Night belongs to cats**: no humans, more and tougher Rivals, raids, Oboro's district wakes up. Night is rendered bright moon-blue: cats see in the dark.
-- **Curfew tension (Pillar 2):** being home by Dusk gives the **evening vignette**, Bond, and the **Well-Fed** buff for the next day (max-Nerve bonus scaled by Bond). Staying out through Night gives the best Clout, Rivals and Shinies, and a different, smaller **waiting-up vignette**. Neither is punished; the player feels the trade every day.
-- **Night access is earned:** Mikan is shut in at night until Haru installs a cat flap midway through Life 2.
+- **Four phases × 4 real minutes = 16 minutes of roaming clock.** The clock pauses in combat, Standoffs, Verdicts, menus, the Lot, and inside Haru's wall.
+- Sunspot nap = half a phase. Sleeping at home ends the day.
+- **No fail state for time.** At the end of Night (and at the end of Dusk before the cat flap), Mikan grows drowsy; after a 1-minute grace the Head Home thread walks Mikan home.
+- **Phase flavour:**
+  - Morning and Day: humans on the streets (hazards, begging).
+  - Dusk: golden hour; the **Yunagi chime**, answered within one bar by the Call; the evening bowl.
+  - **Night belongs to cats:** tougher Rivals, raids, the Arcade's shrine end wakes. Rendered in bright moon-blue.
+- **Curfew trade:**
+  - Home by Dusk: evening vignette, Bond, and **Well-Fed** (§8).
+  - Out all Night: Night-only Rivals, Shinies, Clout — never Morsels.
+  - Neither is punished.
+- **Night access is earned:** the cat flap arrives on Life 2 day 2.
+- **Losing ends the outing, not the day:** Mikan slinks home; if before Dusk the clock jumps to Dusk; the evening plays (Haru puts on a plaster); 20% of the day's field haul is lost (none in Life 1); the Stash is safe.
+- **Daily-reset budget: at most 3** — Share a Morsel, the home "What changed today?" find, Tribute pick-up.
+- **Day budget** (75th percentile; hard cap 30 min in the slice, 35 later): wake → door ≤ 0.25 min (≤ 1.5 with a Keystone) · Doorstep ≤ 0.5 · Lot ≤ 1 · clock 12–16 · encounters 5–7 (4–6 fights) · way home ≤ 1 · evening ≤ 2.
+- **Design weight per day:** ≈ 50% roaming and territory · 35% combat · 15% home.
+- Suspend-on-quit anywhere; autosave each phase.
 
-### 5.3 The Night Shuffle (resolution order — canon)
+### 5.3 The Night Shuffle (canon order)
 
-1. **Territory:** Scent decay, Sentry upkeep, raid resolution on player Patches.
-2. **Nemesis:** Rival-vs-Rival duels, promotions/demotions, Chased-Off cats' comebacks, betrayals.
-3. **Economy:** Tribute computed from Patches held after steps 1–2; placed on the Doorstep.
-4. **Narrative:** next morning vignette selected; Life transition fires if conditions are met.
+Every draw comes from a counter-based seeded substream `(save_seed, day_index, step, subsystem, cat_id, ordinal)`. Daytime outcome rolls are seeded per encounter, so reloads reproduce them.
 
-The **Morning Sniff** at the Doorstep reports steps 1–3 as scent icons and cat portraits (who raided, who rose, who turned on you, how much food arrived).
+1. **Crew:** Loyalty deltas; Sentry XP.
+2. **Territory:** Scent decay; flat upkeep; resolve the raids requested last night (forecast in today's Sniff); uprisings.
+3. **Nemesis:** betrayals; comebacks; wall events; refills and promotions; Grudge decay and Nemesis slots; tomorrow's raid requests (≤ 1 per district).
+4. **Economy:** Tribute to the Doorstep (none in Life 8).
+5. **Narrative:** next morning slot; Life-end check.
+
+The **Morning Sniff** shows the Tribute line, tonight's raid forecast (always, when one is coming) and ≤ 3 nemesis items. Items are admitted only for cats with history with the player, or that touch the player's Patches or Crew.
 
 ### 5.4 The nine Lives
 
-A Life ends when its **turf goal** is met and Mikan next sleeps at home. Between Lives a wordless **time-skip montage** jumps months or years. Within a Life, each morning and evening draws from that Life's **vignette pool** (10–20 s, in-engine, playable-adjacent: you can walk around, rub a leg, sit in a lap, knock something off a table). Target: 5–8 days per Life.
+**Home beats are gated by day count only. Conquest moves the years, not the days.**
+- Every Keystone, including each Closing, has a day gate within its Life.
+- A Life ends at the first sleep at home after **(a)** its turf goal is met, **(b)** `day_in_life ≥ life_min_days`, and **(c)** its Closing has played. Then a wordless time-skip montage.
+- If Keystones run out first, the house lives in its **Plateau**.
+- Closings never play in their Late (Forensic) form; they wait for the next morning.
+- `life_min_days` = 2, 4, 3, 3, 3, 3, 4, (Life 8 ≈ 7–8), 2.
+- Each wipe against the same Boss leaves it plastered with −10% max Nerve for the rematch (stacks to −30%).
 
-| Life | Name | Haru (age) | What Mikan sees at home | Turf goal | Mikan |
+| Life | Name | Haru | What Mikan sees at home | Turf goal | Mikan |
 |---|---|---|---|---|---|
-| 1 | **The Box in the Rain** | 16 | Found in a wet box on the shrine steps; yellow raincoat; the bell collar; Gran's disapproval melting | Tutorial: the garden, then 1 Patch | Kitten |
-| 2 | **Uniform** | 17–18 | School bag, late-night study lamp, exam nerves, the cat flap | Claim Hidamari Lane | Young adult |
-| 3 | **The Empty Room** | 18–22 | Suitcase; Haru's room goes still; Gran feeds you; Haru's visits home are festival days | Claim Akane Arcade | Adult |
-| 4 | **Two Pairs of Shoes** | 23–25 | Haru is back, in work clothes; a stranger's shoes (Sora); the war for the lap; Gran slower | Claim Tsukimi Hill | Adult |
-| 5 | **White Day** | 26 | Boxes, a white dress hung on the door, a house full of Murmur and laughter; Gran's cushion now holds a framed photo | Claim Shiosai Harbour | Prime |
-| 6 | **The Small Loud One** | 28 | Haru's lap disappears behind a belly, then a crying bundle: Koharu. Mikan is displaced, then stands guard at the crib | Claim Kurogane Yard | Prime |
-| 7 | **The Long Summer** | 31 | The happiest house in town: three humans, fireworks, watermelon, Koharu pulling your tail | Claim Kasumi Heights; Rout Botan; become Great Boss | Greying |
-| 8 | **The Door** | — | A phone rings at night. Sora runs out. Rain. People in black, incense, Haru's photo beside Gran's. Haru does not come home. Mikan does not understand, and waits | See below | Old |
-| 9 | **Nine** | Koharu 8 | A lighter house. Koharu's small hands fill the bowl. Koharu sings the Call | Name an heir; one last walk | Elder |
+| 1 | **The Box in the Rain** | 16 | Found in a wet box on the shrine steps; yellow raincoat; the bell collar; Gran's disapproval melting; the first Call | Hold 1 Patch | Kitten |
+| 2 | **Uniform** | 17–18 | School bag, late study lamp, exam nerves, the cat flap, the envelope | Claim Hidamari Lane | Young adult |
+| 3 | **The Empty Room** | 18–22 | Suitcase; Haru's room goes still; Gran feeds you | Hold 4 Arcade outer Patches | Adult |
+| 4 | **Two Pairs of Shoes** | 23–25 | Work clothes; Sora's shoes; the lap war; Gran slower | Claim Akane Arcade | Adult |
+| 5 | **White Day** | 26 | Black shoes in the entryway (Gran's death is played); boxes; a white dress | Hold 4 Shiosai outer Patches | Prime |
+| 6 | **The Small Loud One** | 28 | A belly, then Koharu; Mikan displaced, then on guard | Claim Shiosai | Prime |
+| 7 | **The Long Summer** | 31 | The happiest house in town | Rout Botan at the Summit; become Great Boss | Greying |
+| 8 | **The Door** | — | Haru does not come home. Mikan waits | Three Food Carries | Old |
+| 9 | **Nine** | Koharu 8 | Koharu fills the bowl and sings the Call | Name an heir; one last walk | Elder |
 
-**Life 8 is the design centre of the USP.** While Mikan waits at the entryway, the empire rots: Scent decays at triple rate, Nemeses rise, Wardens are tested. The household forgets the bowl. Returning to the streets, Mikan retakes what matters, and the Tribute that has piled up pointlessly all game finally has a use: **Mikan carries food home and leaves it at Sora and Koharu's feet.** The food tax becomes an act of love. This inversion is canon; territory, economy and narrative must all build toward it.
+### 5.5 Life 8 (framing; owner: narrative-director, `dual-story-progression.md` §9; other docs supply numbers and cite it)
 
-**Life 9** is short and gentle: Mikan is slow, the Crew does the fighting, the player chooses a Crew cat as **heir** to the Bell Clowder, walks the six districts once more, and comes home when called.
+- **Stage A** (2 ordinary days): A1 is Mikan's first day as Great Boss, and **its ordinary Dusk Call is the last** (unmarked). A2 brings the last Goodbye and a Dusk where the Call does not come.
+- **The wait** (2 days, played live): street quiet; no Ambushes; Sleep only from Dusk; Knock disabled.
+- **The Season Turn** is held outside on the Doorstep beside the Tribute pile; crows take it, frost comes, and Mikan becomes Old.
+- **The Carries:** 3 on 3 different days, counted, never valued.
+  - Carry 1: a fish from the Stash.
+  - Carry 2: **Fresh Catch** from a held Patch in the Lane or the Arcade.
+  - Carry 3: Fresh Catch from Shiosai's harbour.
+  - While carrying, Mikan cannot attack; the other three fight with AI fill at 100%.
+- **Territory:** no Doorstep deliveries all Life.
+- **Combat:** never harder than Life 7. The Usurper is optional.
+- **Tone:** the Sniff is indifferent, with gratitude first. Koharu's pathos beats are capped at four.
+- **Music:** from the phone call until Carry 3, Haru's voice and her Melody are absent everywhere; her Home Scent note is the only trace.
+- **The close:** Sora whistles two notes, Koharu sings the third.
+- **The inversion is canon:** the food tax becomes an act of love. **No food enters the house before Life 8**; earlier Gifts are curios (a cicada shell, a beetle).
 
-The accident is never shown, never explained, never specified. One ending. Bond and playstyle alter epilogue details only (who sits on the wall with you, what is on the Doorstep). (Multiple endings: OPEN, recommended against.)
+**Life 9** is short and gentle: the Crew fights (AI fill 70%), an heir is chosen, one walk through the town with one farewell gesture per district, and home when called. The accident is never shown or explained. One ending (OPEN: whether Mikan's passing is implied; default no).
 
-### 5.5 The language rule (hard rule, all departments)
+### 5.6 The language rule (hard rule, all departments)
 
-1. **No human utterance is ever intelligible.** No subtitles, no translated text, no readable signage, letters, screens or calendars. Speech is Murmur; writing is Scribble. This includes trailers and store screenshots of gameplay.
-2. Human story is told by **staging, costume colour, objects, light, weather, music and Murmur tone**. Each human owns a signature colour and an instrument.
-3. Mikan's understanding may be shown with **Sense Icons**: tiny pictogram bubbles over Mikan (fish, heart, question mark, rain cloud). Icons show what a cat would grasp, never the human meaning.
-4. **Cats understand cats.** Cat speech is readable text in bubbly speech balloons over meow/chirp vocalisations (no voiced words). Lines are short: 60 characters or fewer for barks and taunts. System UI (menus, tutorials, stat screens) is normal localised text.
-5. Cats never explain the human story to each other. No cat says "your human died".
+1. **No human utterance is ever intelligible.** No subtitles, readable signage, letters, screens or calendars, trailers and store screenshots included. Speech is Murmur; writing is Scribble.
+2. Human story is told by staging, costume colour, objects, light, weather, music and Murmur tone.
+3. Mikan's understanding shows as **Sense Icons** (fish, heart, rain cloud, ear, tone icons).
+4. **Cats understand cats** (user decision, settled): cat speech is readable text in bubbly balloons over meows (no voiced words); barks ≤ 60 characters. System UI is normal localised text.
+5. Cats never explain the human story. Rivals never mention the household in Life 8. In Lives 1–7 they may cite the collar, bell, bowl and the Call, never a human.
+6. **Combat onomatopoeia is readable** (user decision, settled):
+   - T4 and T5 hits show **one hand-lettered manga sound-effect word** (≈ 16 per language), at most one on screen; smaller hits use shape glyphs.
+   - **Localised:** each language gets its own hand-lettered set; Japanese uses native onomatopoeia.
+   - It is the sound of the cat brawl, not human language. It never appears at home and is never a human word.
 
 ---
 
 ## 6. System boundaries and ownership
 
-**One Cat Schema (canon):** Mikan, Crew, Rivals and Bosses are the *same data type*, because any Rival can become Crew and any Crew cat can turn Rival. Fields: `id, name, title, coat_seed, style, level, xp, stats{nerve,bite,hide,voice,zip}, moves[4], knacks[2], zoomies, traits{strengths[],fears[],scars[]}, loyalty, grudge, memory[], rank, clowder, assignment`. Field ownership below.
+**One Cat Schema:** `id, name, title, coat_seed, style, personality, level, xp, stats{nerve,bite,hide,voice,zip}, moves[4], knacks[2] (Backlog), zoomies, signature_strength, traits{strengths[],fears[],scars[]}, loyalty, grudge, regard, memory[], rank, former_rank, clowder, assignment`. `personality` and `former_rank` are Nemesis-owned.
 
-| Doc (specialist) | Owns | Does NOT own |
+| Doc (owner) | Owns | Does NOT own |
 |---|---|---|
-| **Combat** (combat designer) | Real-time rules; controls; basic attacks, dodge, guard; Pounce Gauge, Slow Blink, Frazzle/Ruffled, Zoomies, Pile-On; **all Move, Knack and Zoomies definitions and numbers**; damage/heal formulas; damage types; status effects; Posse AI and enemy combat AI; encounter composition rules; Critters; game-feel spec (hit-stop, shake, action lines); difficulty modes | Who can learn a Move or how; stat growth curves; Rival traits' selection; rewards in Morsels |
-| **Nemesis** (nemesis/AI designer) | Rival generation (names, coat seeds, personality); rank ladder and the Fence Line data; Memory, Grudge, Titles, Scars, Strengths, Fears (the catalogue and how they are gained); Verdict rules and consequences; Rival world behaviour and off-screen simulation (Night Shuffle step 2); comebacks, ambush injection, **betrayal events**; bark/taunt **trigger taxonomy** and template slots; Boss trait kits | Combat numbers for a Strength/Fear's effect (propose effect, Combat owns values); raid math; Loyalty formula; the taunt writing voice |
-| **Territory & Economy** (territory+economy designer) | Patches, Scent rules, Spraying, claiming flow, Sentry/Warden assignment rules and slots, raid resolution math (Night Shuffle step 1), Caterwaul events; Tribute and all Morsel/Shiny sources, sinks and prices; Clout thresholds and what each rank gates; the Stash; Lot upgrades; Life 8 decay and "bring food home" mechanics | Which Rival raids and why (Nemesis requests a raid; Territory resolves it); stat curves; Move data |
-| **Crew & Progression** (companion/progression designer) | Stat growth curves per Style and level; XP and levelling; **Power Rating** formula; recruitment flow after a Recruit Verdict or Stray encounter; Crew cap usage; **learnsets, Lessons, slot rules, Mikan's cross-Style learning**; Loyalty formula and its inputs; Sentry XP; Mikan's ageing modifiers; the heir | Move effects/numbers; betrayal event logic (Nemesis reads Loyalty); prices (propose, Economy confirms) |
-| **Narrative** (narrative director) | The nine Lives' beat sheets; vignette pools; time-skip montages; household characters; Bond's fiction and the home interaction verbs; Boss personalities and district lore; the **writing voice** for all cat text including nemesis bark templates; Sense Icon vocabulary; epilogue variations | Bond's numeric effects (Economy/Combat consume Bond 0–10; narrative sets when it rises); bark triggers |
-| **Art** (art director + tech artist) | Art bible; toon shader and outline spec; character design rules and the coat-seed generator's visual parameters; district palettes; painted-background pipeline; VFX language for combat feel; Scribble glyphs; Scar/Title visual kits; Whisker Sense look; human signature colours in practice | Gameplay timings (Combat owns durations; Art owns how they look) |
-| **Audio** (audio director) | Music direction and the Call motif system; per-human instruments and Murmur design; cat vocalisation sets per Style/personality; combat mix and impact audio; adaptive music across phases and Lives; scent/Whisker Sense sonification | Story beats themselves |
-| **UX** (UX designer) | HUD, Slow Blink command menu, Fence Line screen, Morning Sniff, Lot management screens, Verdict prompt, controls map, onboarding flow, accessibility | System rules behind the screens |
+| **Combat** (combat designer) | Real-time rules; controls' actions; strings, Hop, Skitter, Brace, Hiss; Pounce Gauge, Slow Blink, Ruffled/Frazzle, Tag-In/Relay, Zoomies, Pile-On; **all Move and Zoomies definitions and numbers**; the Style matchup chart; damage and heal formulas; the 3 statuses; Posse AI per personality (combat column); enemy AI; encounters; Critters; **the game-feel/VFX tier table**; difficulty modes; which events show lettered onomatopoeia | Learnsets; stat curves; Rival trait selection; Morsel rewards |
+| **Nemesis** (nemesis/AI) | Rival generation, including **personality** and `former_rank`; the rank ladder and Fence Line data; Memory, Grudge, Regard, Titles, Scars, Strengths, Fears; **recruit availability**; Verdict rules; Night Shuffle step 3, wall events, comebacks, Ambush injection, betrayal events; bark trigger taxonomy and grammar; Boss trait kits | Combat values of traits; raid maths; the Loyalty formula; the writing voice |
+| **Territory & Economy** | Patches, Scent, Spraying, claiming, Sentry/Warden rules and the guard column of personality, raid resolution (step 2), Caterwauls; Tribute and every Morsel/Shiny source, sink and **price** (one price sheet); the Clout table, Crew cap and Sentry slots; the Stash; the Turf Board rules; Life 8 territory numbers | Which Rival raids; stat curves; Move data |
+| **Crew & Progression** | Stat and XP curves; Power Rating; the **Bribe** and **starting Loyalty**; the **Loyalty formula** and the personality loyalty/social columns; learnsets, Lessons, slot rules, Mikan's cross-Style rule; Tail-Up; full-Crew "make room"; Mikan's ageing; the heir | Move numbers; betrayal logic; prices |
+| **Narrative** (narrative director) | The nine Lives' beats and gates; vignettes; montages; household characters; Bond's fiction and home verbs; the daily home find; Boss personalities; the cat writing voice and bark lines; Sense Icons; **Life 8 end to end (§9 of the DSP doc)**; epilogue | Bond's numeric effects; bark triggers |
+| **Art** | Art bible; toon shader and outlines; character design and coat generator; **six personality animation sets**; district palettes; environment method (after look-dev); VFX drawings for the tier table; **lettering sets and the localisation brief**; Scribble; Scar/Title kits; Whisker Sense look; deaf/HoH visual carriers | Gameplay timings |
+| **Audio** | Music and the Call system; instruments and Murmur; cat vocals and the **8 bark intents** per voice body; combat mix per the tier table; adaptive music; scent sonification | Story beats |
+| **UX** | HUD, Slow Blink menu, Fence Line, Morning Sniff, Lot and Turf Board screens, Verdict prompt, the **control map**, onboarding beat sheet, accessibility | System rules |
+| **Day loop** (game-designer, `design/gdd/day-loop.md`) | Clock implementation, day budget and playtest test, Head Home and fast travel, Caterwaul reach, daily-reset audit, encounter density, save/suspend | Phase lengths and Life rules (this brief) |
+| **Camera** (technical-artist, `design/gdd/camera-system.md`) | Camera states, collision, lock-on framing, options | Combat timing |
+| **Accessibility** (UX, `design/accessibility-requirements.md`) | Flash and motion safety mirror, remapping, assists, Hearing support | — |
 
-**Day clock and Life progression** are defined by this brief (§5); no specialist redefines them.
-
-### 6.1 Interfaces (event contracts — use these names)
+### 6.1 Interfaces (event contracts; use these names)
 
 | Event | Emitted by | Payload (minimum) | Consumed by |
 |---|---|---|---|
 | `EncounterStarted` | Combat | participants, patch_id, opener (standoff / ambush_by_player / ambush_by_rival / raid_defence), phase | Nemesis, Audio, UX |
-| `CatRouted` | Combat | victim_id, finisher_id, finisher_move, damage_type, was_frazzled, by_pile_on | Nemesis (Memory, Scars, Titles), Crew (XP, Loyalty) |
-| `FearTriggered` | Combat | cat_id, fear_id, source | Nemesis (Memory), Audio, VFX |
-| `EncounterEnded` | Combat | outcome (win / loss / player_fled / rival_fled), duration, routed_ids[], survivors[] | Nemesis, Territory, Crew, Economy (loot) |
-| `VerdictApplied` | Nemesis | rival_id, verdict | Territory (Patch holder changes), Crew (recruit flow), Economy (Clout) |
-| `RivalRankChanged` | Nemesis | rival_id, old_rank, new_rank, cause | UX (Fence Line), Territory, Narrative (barks) |
-| `RaidRequested` | Nemesis | attacker_ids[], patch_id, motive | Territory |
-| `RaidResolved` | Territory | patch_id, outcome, sentries_routed[] | Nemesis (Memory with Crew), UX (Morning Sniff) |
-| `BetrayalTriggered` | Nemesis | crew_id, new_clowder | Crew (remove), Territory (vacate post), UX |
-| `PatchChanged` | Territory | patch_id, old_clowder, new_clowder, scent | Nemesis, Economy, Art (world dressing), Audio |
-| `DistrictClaimed` | Territory | district_id | Narrative (Life goal), Nemesis, Economy |
-| `TributeDelivered` | Economy | amount, by_district | UX, Narrative (Doorstep pile size, Haru's reactions) |
-| `PhaseChanged` / `DayEnded` / `LifeAdvanced` | Clock (this brief) | phase, day_index, life_index | Everyone |
+| `CatRouted` | Combat | victim_id, finisher_id, finisher_move, damage_type, was_frazzled, by_pile_on, by_back_down | Nemesis, Crew |
+| `MoveUsed` | Combat | user_id, move_id, targets_hit[] | Crew, Audio |
+| `TagIn` | Combat | from_id, to_id, relay_count | Audio, VFX, Crew (bonded pairs) |
+| `FearTriggered` | Combat | cat_id, fear_id, source | Nemesis, Audio, VFX |
+| `EncounterEnded` | Combat | outcome (win / loss / player_fled / rival_fled), duration, routed_ids[], survivors[] | Nemesis, Territory, Crew, Economy |
+| `VerdictApplied` | Nemesis | rival_id, verdict, slipped_away_ids[] | Territory, Crew, Economy, UX |
+| `RivalRankChanged` / `WallEvent` | Nemesis | rival_id(s), old/new rank or kind, cause | UX, Territory, Narrative |
+| `RaidRequested` | Nemesis | attacker_ids[], patch_id, motive, night (= tomorrow) | Territory, UX (forecast) |
+| `RaidResolved` | Territory | patch_id, outcome, sentries_routed[] | Nemesis, UX |
+| `BetrayalTriggered` | Nemesis | crew_id, new_clowder | Crew, Territory, UX |
+| `PatchChanged` | Territory | patch_id, old_clowder, new_clowder, scent | Nemesis, Economy, Art, Audio |
+| `DistrictClaimed` | Territory | district_id | Narrative, Nemesis, Economy |
+| `TributeDelivered` | Economy | amount, by_district | UX, Narrative |
+| `HomeArrived` | Day loop | kind (on_time / late / routed) | Narrative, Audio |
+| `KeystonePlayed` | Narrative | keystone_id, life, slot | Audio, UX, Nemesis (routine tags) |
+| `FoodPickedUp` / `CarryDelivered` | Territory / Narrative | source_kind, patch_id / carry_index | Narrative, Combat (escort), Audio (Life 8, Backlog) |
+| `PhaseChanged` / `DayEnded` / `LifeAdvanced` | Clock | phase, day_index, life_index | Everyone |
 | `BondChanged` | Narrative | bond (0–10) | Combat (Well-Fed), UX |
 
-**Read-only queries:** Combat asks Nemesis for a `RivalCombatProfile` (level, style, moves, knacks, strengths, fears, title, scars) at encounter start. Territory and Nemesis ask Crew for `PowerRating(cat_id)`. Nemesis asks Crew for `Loyalty(cat_id)`.
+**Queries:** Combat asks Nemesis for a `RivalCombatProfile` (level, style, personality, moves, strengths, fears, title, scars). Territory and Nemesis ask Crew for `PowerRating(cat_id)` and `Loyalty(cat_id)`.
 
-**Rules of thumb for grey areas**
-- A Strength/Fear is *chosen and narrated* by Nemesis and *valued* by Combat (e.g. Fear of Water: Nemesis says when it is gained; Combat says "Ruffled for 6 s when splashed").
-- Losing is a nemesis event, not a game over: on a Posse wipe Mikan slinks home, the day ends, 20% of *carried* (un-Stashed) Morsels are lost, and the victor is promoted and gains a Title at your expense.
-- Crew cats in the Posse can be Routed in a fight; they recover at the next Sunspot or at home. No permadeath. A Crew cat lost is lost by **betrayal or Chase Off**, never by death.
-- Recruited Rivals keep their Memory, Scars, Title, Fears and Strengths.
-
----
-
-## 7. Nemesis and combat: creative direction for the two headline systems
-
-**Combat (Pillar 3).** FF7 Remake's rhythm with Pokémon's roster. Direct control of one cat with instant switching between all four (Mikan is always in the Posse; if Mikan is Routed the fight continues while any Posse cat stands). AI-controlled cats fight competently but fill Paws at half rate, so the player is the conductor. Target encounter length 45–90 s; nothing may stall. Readability rules: four Posse cats carry a bell-gold outline tick; enemies are outlined in their Clowder colour; one screen-wide effect at a time. Feel budget: hit-stop on every heavy hit, directional screen shake, manga action lines and impact frames on Moves, smear frames, onomatopoeia rendered as **paw-print and claw-slash glyph bursts, not readable words**. Arena objects matter because cats are cats: things to knock off ledges, water buckets, a sprinkler, a parked scooter's horn — the environment is how you hit Fears.
-
-**Nemesis (Pillar 4).** The Mordor structure, re-reasoned for cats:
-- **Nobody dies, so everyone comes back.** The system's fuel is *humiliation and respect*, not death. The four Verdicts are the engine:
-  - **Chase Off** — exiled from the district. Removes them now; they return later, tougher, with Grudge up and a new Strength.
-  - **Humble** — they stay in the Patch as a tribute-payer under your mark. Safe income, simmering Grudge, possible uprising.
-  - **Recruit** — joins the Crew with full Memory. Loyalty starts low if Grudge was high.
-  - **Nose-Touch** — a gesture of respect to a worthy opponent. Clears Grudge, forgoes reward; may create an honourable ally who later warns you, or duels you clean.
-- **Cats hold a town in common.** Rivals also feud with *each other*; the Fence Line changes overnight without you.
-- **Memory must be visible and audible** without voiced dialogue: Scars on the model, Titles on the name-card, a taunt line that cites the last encounter, and a personal 2-bar **yowl-sting** per Rival.
-- **The Crew is inside the system.** Sentries build their own grudges with raiders. A neglected ex-Rival Captain can betray you and take a Patch with them. Life 8 is when every debt comes due.
-- Population frame: **8 tracked Rivals per district** (1 Boss, 2 Captains, 5 Toughs) = 48 slots town-wide; only unlocked districts simulate.
+**Grey areas:**
+- A Strength or Fear is chosen by Nemesis and valued by Combat.
+- Posse cats Routed in a fight recover at the next Sunspot or at home. No permadeath.
+- A Crew cat is lost only by betrayal or release.
+- Recruited Rivals keep their Memory, Scars, Title, Fears and personality.
 
 ---
 
-## 8. Shared numeric frame
+## 7. Nemesis and combat: creative direction
 
-All meters are **0–100** unless stated. All values are data-driven tuning starts, not final balance.
+**Combat (Pillar 3).** FF7 Remake's **structure**, Pokémon's roster, a cat's verbs, kept deliberately light:
+- **The rules:** one 3-hit string per Style, twelve inputs, three statuses, stagger and Slow Blink commands. You control one cat and switch instantly between all four. A timed switch is a **Tag-In**, and Relays are the skill expression.
+- **The Posse:** AI cats fight by their personality and fill Paws at half rate, so the player conducts.
+- **Fight lengths:** Tough 6–10 s · encounter 30–60 s · Captain 30–45 s · Boss 2–3 min · Botan 4–5 min. Fed Up at 75 s.
+- **Bosses stagger:** phase breaks keep the Frazzle gauge and wait for the Pile-On.
+- **The environment is the weapon:** knock things (and Daifuku) off ledges; buckets, horns and cucumbers hit Fears. Knock-offs always Splat.
+- **Feel budget:** hit-stop, stepped screen shake, manga action lines, impact frames, smear frames, glyph bursts, and **readable hand-lettered onomatopoeia on big hits**, all inside the safety limits (§8).
+- **Spec level:** the GDD gives intent and ranges in milliseconds; frame data lives in tuning data and the prototype.
+
+**Nemesis (Pillar 4).** Mordor's structure, re-reasoned for cats. **Nobody dies, so everyone comes back.**
+
+| Verdict | The cat | The post |
+|---|---|---|
+| **Chase Off** | Exiled; returns changed (escorts → promoted → the Grand Standoff), adapted to how you beat it | Yours |
+| **Humble** | Stays on the Undermark crate and pays (+15% Tribute); simmers unless the Patch is guarded | Yours |
+| **Recruit** | Joins with full Memory, its personality and its signature perk, for a Bribe | Yours |
+| **Nose-Touch** | Respects you | It **keeps its post** (5-day truce; afterwards a respectful Rival yields it without a fight) |
+
+- **Memory is visible and audible early:** the First Thorn returns inside Life 1; silhouette Scars read in play; memory lines play at the Standoff, or at the Rout after an Ambush; Lick In; Mikan's plaster after a loss; a personal 2-bar yowl-sting per Rival.
+- **Cats hold a town in common:** wall events change the Fence Line overnight.
+- **The Crew is inside the system:** posted cats build grudges with raiders, neglect breeds Wavering, and a Turncoat takes the Patch it guarded.
+- **Personality ties the halves together:** the Braggart who taunted you on the wall is the Braggart who charges first in your Posse and makes his Patch pay.
+
+---
+
+## 8. Shared numeric frame (tuning starts, not final balance)
 
 | Quantity | Canon value |
 |---|---|
-| Level range | 1–**50**. Expected level at each Life's end: L1 3 · L2 8 · L3 16 · L4 24 · L5 32 · L6 40 · L7 48 · L8–9 up to 50 |
-| Nerve (HP), Style-neutral | **100** at Lv 1 → **2,500** at Lv 50 (about +49/level). Style multiplier 0.8 (Prowler) to 1.3 (Bruiser) |
-| Other stats | **10** at Lv 1 → about **160** at Lv 50 (about +3/level before Style weighting) |
-| Basic attack hit, same-level target | about **8–12** at Lv 1 → about **170–230** at Lv 50 (roughly 8–10% of a neutral cat's Nerve per hit at any level) |
-| 1-Paw Move | about 3–4× a basic hit. 2-Paw Move about 8× or a strong utility effect |
-| Displayed damage cap | 9,999 (never reached in normal play) |
-| Enemy Nerve multipliers vs. a same-level Crew cat | Stray/Tough ×1 · Captain ×4 · Boss ×12 · Botan ×20 · Critter ×0.5–×3 |
-| Time-to-Rout targets | Tough 8–12 s · Captain 45–75 s · Boss 3–5 min · Botan 6–8 min |
-| Posse | Mikan + **3**. Enemy groups 1–6. Hard cap **10** combatants on screen |
-| Pounce Gauge | Mikan **2 Paws** (3 from Life 4); Crew **2 Paws**. Passive fill 1 Paw per **14 s** at baseline Zip; about 1 per 6–7 s under sustained offence. AI-controlled cats fill at **50%** |
-| Slow Blink | Time scale **5%** |
-| Frazzle | Gauge 0–100. Frazzled lasts **8 s**, damage taken ×**1.5** rising to ×2.0 cap. Ruffled = Frazzle gain ×2 |
-| Zoomies | Full charge takes about 2–3 normal encounters; kept between fights, reset on sleep |
-| Slots per cat | **4 Moves**, **2 Knacks**, **1 Zoomies** |
-| Content targets (full vision) | about **60 Moves** (12 per Style), **20 Knacks**, 5 Style Zoomies + Boss uniques |
-| Crew cap | **6** at House Pet → **24** at Great Boss |
-| Patches | **30** (6 districts × 5). Sentry slots: 1 per Patch, 2 at a Den. One Warden per claimed district |
-| Rivals | 8 tracked per district, 48 total |
-| Day length | **20 real min** (4 phases × 5 min), roaming time only |
-| Session | One day ≈ 30 min with fights and home scenes |
-| Playtime | Main story **22–28 h** (about 55–65 in-game days). Thorough play about 40 h |
-| Economy anchors | Tribute per day: end of Life 2 ≈ **60** · end of Life 4 ≈ **300** · end of Life 7 ≈ **1,200** Morsels. By late game Tribute ≈ 70% of income, fights and scavenging ≈ 30%. Prices: first Lesson **40**, top Lesson **1,500** + Shinies; Recruit offering **20–800**. Shinies total in game ≈ 120 |
-| Bond | 0–10 hearts. Well-Fed = +2% max Nerve per heart for the next day |
-| Loss penalty | Day ends; lose 20% of carried Morsels; Stash is always safe |
-| Difficulty modes | **Kitten** (story), **Alley** (default), **Feral** (hard). Modes scale enemy Nerve/damage and AI aggression only; nemesis and story are identical |
+| Level range | 1–**30**. Life-end levels: L1 3 · L2 8 · L3 13 · L4 18 · L5 22 · L6 26 · L7 30 · L8–9 30 |
+| Nerve (Style-neutral) | 100 at Lv 1 → 1,500 at Lv 30. Style multiplier 0.8 (Prowler) to 1.3 (Bruiser) |
+| Other stats | 10 at Lv 1 → ≈ 100 at Lv 30 |
+| Basic hit, same level | ≈ **4–5%** of a neutral cat's Nerve at every level (flat across levels by formula) |
+| Moves | 1 Paw ≈ 3.5 basic hits + a Frazzle chunk · 2 Paws ≈ 8 basic hits or strong utility · no self-refunds |
+| Rank multipliers | Nerve: Tough ×1 · Captain ×8 · Boss ×20 · Botan ×30 · Critter ×0.5–×3. Damage: 1 / 1.3 / 1.6 / 1.8 |
+| Fight lengths | §7. Fed Up 75 s |
+| Posse | Mikan + 3. Enemy groups 1–6. Hard cap 10 combatants |
+| Pounce Gauge | 2 Paws (Mikan 3 from Life 4). AI fill **50%** in Lives 1–7, 60% from the Life 8 Season Turn, 70% in Life 9, 100% while carrying |
+| Slow Blink | Time ×5% |
+| Ruffled / Frazzled | Ruffled: 4 s, Frazzle ×2, leader re-Ruffle cooldown 6 s. Frazzled: 6 s, damage taken ×1.5 |
+| Healing / guard | ≤ 60% of max Nerve healed per cat per fight; ≥ 30% of damage always gets through |
+| Slots | 4 Moves · 1 Zoomies · (2 Knacks, Backlog) |
+| Content | **Slice:** 3 Styles, 12 Moves, 3 Zoomies. **Full:** ≈ 50 Moves (45 Style + 4 Home), 5 Zoomies, Knacks TBD |
+| Crew cap / Sentry slots by Clout rank | 6/7/8/9/10/11/12 · 1/2/3/4/5/6/8 |
+| Patches | 20 (Lane 5, Arcade 7, Shiosai 7, Summit 1) |
+| Rivals | 8 seats per district + Botan's court of 3 = 27; ≤ 12 off-wall. Slice ≤ 12 tracked. One Nemesis slot per district + the arc lead. Memory 10 entries, ≤ 6 pinned |
+| Grudge | Decays −2 per quiet night (Brooder −1). Per-encounter cap 35, then 20. Humble +10; Restless at 80 |
+| Loyalty tiers | **Shifty 0–29 · Aloof 30–44 · Steady 45–59 · True 60–79 · Sworn 80–100**. Teach at Steady+; Warden at True+. **Betrayal: < 30 → Wavering (2 warning mornings) → Turncoat.** Release at ≥ 60 = clean parting |
+| Starting Loyalty | `clamp(5, 80, 50 − 0.4·Grudge_before_halving + 0.3·Regard + personality_mod + 5·bribe_step − 20·returned)` |
+| Day | 4 phases × 4 min = **16 min** roaming. Session ≈ 20–25 min (slice), ≤ 35 (late game) |
+| Playtime | Main story **12–15 h** (≈ 26–32 in-game days); thorough ≈ 20 h. **Slice ≈ 2–2.5 h** |
+| Economy | Tribute/day ≈ 60 at end of Life 2 (later anchors Backlog). Lessons: Rank I 40 · II 120 · III 300 · IV 600, ×1.5 cross-Style. Bribe fair = 8 × level × (Stray 0.75 / Tough 1 / Captain 2 / Boss 4); feast 2×; from the Stash. Share a Morsel = Σ Crew levels. Shinies ≈ 50 |
+| Bond / Well-Fed | 0–10 hearts. **Well-Fed:** next day, Zoomies starts at 5% per heart (max 50%) and every Posse cat starts each fight with ¼ Paw |
+| Loss | The outing ends; 20% of the day's field haul is lost (none in Life 1); the Stash is safe |
+| Difficulty | Kitten / Alley (default) / Feral. Scales enemy Nerve, damage and aggression only |
+| **Flash and motion safety** (overrides all feel values) | ≤ 3 flashes per second (WCAG 2.3.1, area > 20% of the screen); ≤ 1 full-screen impact frame per second; local impact ≤ 15% of the screen; no saturated red changing over > 5% of the screen; full-field lines Ink/Cream; every look event ≥ 2 rendered frames; stepped shake; global hit-stop ≤ 20% of any second. The default configuration must pass a Harding-style test before public footage |
 
 ---
 
 ## 9. Tone, audience, platform, engine
 
-**Tone guardrails**
-- It is cats. Scratches, hisses, puffed tails, bunny-kicks, dust clouds, stars, sticking plasters. **No blood, no wounds, no gore, no death on the streets.** Defeated cats are Routed, Humbled, Chased Off or won over.
-- The streets are a comedy of status; the house is a quiet drama. **All real grief belongs to the home story.** Never undercut a home scene with a gag in the same beat; never make a street scene tragic.
-- Spraying is slapstick, never gross. No bodily fluids on screen.
-- Humans are never enemies and never harmed by the player. A broom-wielding shopkeeper is weather, not a boss.
-- No animal cruelty by humans on screen. The opening box-in-the-rain is as dark as abandonment gets.
-- Rivals are villains you enjoy. Their insults are petty and funny ("Collar!"), never cruel.
-- The ending is sad and then warm. The player should cry at Life 8 and smile at Life 9.
+**Tone guardrails:**
+- It is cats: scratches, hisses, puffed tails, bunny-kicks, dust clouds, stars, sticking plasters. **No blood, wounds, gore or street death.**
+- The streets are a comedy of status; the house is a quiet drama. **All real grief belongs to the home story.** Never undercut a home scene with a gag.
+- Spraying is slapstick. Humans are never enemies or harmed. No cruelty to animals.
+- Rivals are villains you enjoy; insults are petty, never cruel.
+- Murmur is never exaggerated for comedy.
+- The ending is sad and then warm.
 
-**Originality rule:** the Shin-chan/Shiro game is a *style* reference only (cel shading, flat colour, clean line, painted nostalgic backgrounds, bubbly UI). No characters, names, places, layouts, compositions or character-design shapes from that or any other IP. Our humans are drawn with naturalistic anime proportions, not that series' caricature style. Human faces are usually framed from a cat's height: knees, hands, laps, and faces only when they bend down.
+**Originality rule:** the Shin-chan/Shiro game is a *style* reference only (cel shading, flat colour, clean line, painted nostalgic backgrounds, warm bubbly UI). We take its warmth, not its components (no brown name tags, no cloud-balloon layout, no composition lifts). Home key art never uses the inside-looking-out veranda-to-garden frame with a pet in the yard.
 
-**Audience:** 16–40; players of action RPGs who also buy emotional indies; cat people. Target rating about PEGI 7–12 / ESRB E10+. Solo, premium, offline.
+**Sanctioned exceptions** (recorded, not precedent):
+- Readable combat onomatopoeia.
+- The ring and the white dress (Tier B meaning only).
+- The question-mark Sense Icon and the always-on **Call glyph** (singer's colour; shape codes the voice).
+- The Doorstep as the licensed HUD space.
+- Haru's Home Scent note in Life 8.
+- The Call Ripple in Haru Yellow.
+- The undetermined cause of death.
+- The four street/home sound crossings: Dusk bleed, Brass Call, carry pick-up, Life 9 walk.
 
-**Platforms (recommended):** PC (Steam) lead, controller-first with full keyboard/mouse support; a Switch-class handheld console as second target; other consoles later. 60 fps on PC, stable 30 fps handheld. Design every screen for handheld legibility.
+**Audience:** 16–40; action-RPG players who also buy emotional indies; cat people. PEGI 7–12 / ESRB E10+. Solo, premium, offline.
 
-**Engine (OPEN — user decides; recommendation only):** **Unity (URP)**. This game's risk is in toon rendering, VFX-heavy combat feel, authored cameras and console shipping, and Unity has mature, well-trodden tooling for each (custom toon/outline shaders in URP, VFX Graph, Cinemachine, Timeline for wordless vignettes) plus the most established path to handheld consoles for a small team. **Godot 4** is the alternative if licence cost and openness outweigh console-port convenience; it can deliver this look, but more of the VFX and porting pipeline would be ours to build. Unreal is more engine than a flat-shaded, fixed-camera game needs. Until the engine is chosen, GDDs must stay engine-agnostic.
+**Platforms:** PC (Steam) lead, controller-first, full keyboard/mouse; a handheld console second (the slice is PC; handheld floor OPEN). 60 fps PC, stable 30 fps handheld.
+
+**Engine (OPEN):** Unity (URP) recommended; Godot 4 the alternative. GDDs stay engine-agnostic.
 
 ---
 
-## 10. Scope reality check
+## 10. Scope
 
-This is four deep systems plus a 15-year wordless story. It is a **large** project. Protect in this order (pillar proximity): combat feel → nemesis memory → home vignettes → territory depth → content breadth.
+**The vertical slice (current build target):**
+- **Lives 1–2, ≈ 2–2.5 h.**
+- **World:** Hidamari Lane (5 Patches); Haru's House (garden, entryway, Main Room with piano, Haru's room); the Lot; 4 Sunspots.
+- **Rivals:** the Wall Sitters (8 seats incl. Daifuku and the First Thorn) + 2 Roamers, ≤ 12 tracked.
+- **Crew:** Mikan + 6 recruitable (the old wall cat by ≈ minute 10, a second story recruit before Life 1 ends, 1 Friend Stray, 3 Rivals), **one per personality**. Crew cap 6.
+- **Combat:** 3 Styles, 12 Moves, 3 Zoomies, 3 Fears; Tag-In, Pile-On, Daifuku in 3 phases.
+- **Nemesis:** all four Verdicts, the Gloat, Lick In, wall events, the Fence Line.
+- **Territory:** 2 Sentry slots, 1 forecast raid + 1 Caterwaul, Tribute, Lessons I–II, Bribes, Share a Morsel.
+- **Home:** 11 vignettes (7 Keystones, 3 Textures, 1 montage), the Routine layer, the daily find, the piano.
+- **Audio and lines:** ≤ 25 min music; ≤ 240 bark lines.
+- Final art and audio for this content.
 
-| Tier | Contains |
-|---|---|
-| **Prototype (MVP)** | Grey-box arena. Mikan + 3 vs. groups: basic combo, dodge, Pounce Gauge, Slow Blink, 8 Moves, Frazzle, Pile-On, character switching. One question: *is conducting four cats fun for 20 minutes?* |
-| **Vertical slice** | Lives 1–2 complete: Haru's House, the Lot, Hidamari Lane (5 Patches), full day clock, 8 Rivals with Memory/Scars/Titles/all four Verdicts, Daifuku, 6 recruitable cats, 3 Styles, 16 Moves, Sentries + one raid, Tribute on the Doorstep, about 10 home vignettes and one time-skip, final-quality art and audio for this content. Second question: *do players care about a Rival and about Haru within two hours?* |
-| **Alpha** | All 6 districts playable with placeholder art, all systems, all nine Lives' beats blocked in. |
-| **Full vision** | Everything in this brief at final quality. |
-| **Fallback cut (if capacity shrinks)** | 4 districts (merge Arcade+Hill, Yard+Heights); Lives stay nine; 40 Moves; Critters reduced to crows and rats; Nose-Touch simplified. The dual story, the nemesis memory loop and the Pile-On are never cut. |
+**Slice questions:** Is conducting four cats fun? Do players care about a Rival and about Haru within two hours? Is territory management fun at this scale? Does a day fit ≈ 25 minutes?
 
-**Top risks**
-1. **Scope:** four headline systems; any one could be a game. Mitigation: vertical slice gates everything; fallback cut pre-agreed.
-2. **Wordless story legibility:** players may miss beats. Mitigation: signature colours and instruments, Sense Icons, repeated staging, early playtests with no briefing.
-3. **Nemesis without voiced lines:** Mordor's orcs sell the system with performance. Ours must do it with silhouette, Scars, Titles, yowl-stings and one sharp line of text.
-4. **Combat readability:** up to 10 small, similar-shaped animals seen from above with heavy VFX. Outline colours, strict VFX budget, camera pull-ins.
-5. **Passive income trivialising play:** Tribute must fund choices (Lessons, recruits), not replace fighting.
-6. **Tonal whiplash:** slapstick turf war next to bereavement. Handled by the street/home separation rule and by Life 8 slowing the whole game down.
-7. **Style proximity to the reference IP.** Art bible must define our own shape language before any character art.
-8. **Procedural cat variety on a budget:** coat-seed generator must produce distinct, appealing individuals from few meshes.
+**Slice tests:**
+- Two cats and a Pile-On by minute 15.
+- A memory-citing Rival line before minute 60.
+- ≥ 80% can name a Rival and something specific Haru does.
+- Tier A facts reach 90% of testers with audio muted.
+- Flash test passes.
+
+**Before the slice:** the combat prototype (grey box; Mikan + 3; 3 Styles; 8 Moves; Tag-In; Pile-On; a Captain and a 3-phase Boss; personality AI for 3 personalities) and three small sims (combat, Night Shuffle, Lives 1–2 economy).
+
+**The full game (framing only):** nine Lives, 3 districts + the Summit, 20 Patches, ≈ 50 Moves, ≈ 58 story vignettes (33 Keystones, 18 Textures, 7 montages), ≤ 700 bark lines, ≤ 75 min music, 12–15 h, sized for a small team.
+
+**Never cut:** the dual story, the nemesis memory loop, Tag-In, the Pile-On, personality.
+
+**Cut from v1.0:**
+- Districts 6 → 3 (Kurogane Yard and Kiha & Moha gone).
+- Elders, Keepsakes, Zoomies tiers, Swagger, Bap, Whack.
+- Spats, Clean Duels, Old-Timers, Lure, Sightings.
+- `rounds`, Rations, Specialisations, Skim, Clout points.
+- Waiting-up and Echo vignettes (now prop states).
+
+**Backlog:** Knacks, Tactics, Watching, Kits, Wall Watch, Home Moves, Life 3–9 content.
+
+**Top risks:**
+1. Scope; mitigated by slice-first, Backlog discipline and the three-district plan.
+2. Wordless legibility; mitigated by vocabulary-before-use, colours, instruments, no-briefing tests.
+3. Nemesis without voice; mitigated by personality animation, Scars, the yowl-sting and one sharp line.
+4. Combat readability with four cats in a third-person camera; mitigated by keylines, edge arrows, telegraph decals and the effect budget.
+5. Third-person environment cost (sky and every angle visible); mitigated by the look-dev test and one district first.
+6. Tonal whiplash; mitigated by the street/home separation.
+7. Style proximity to the reference.
+8. Procedural cat variety; mitigated by personality sets and the coat generator.
+9. The nemesis patent; needs a legal review before public showing.
 
 ---
 
 ## 11. Open questions for the user
 
-1. **Engine:** Unity (recommended) or Godot 4? Blocks architecture and tech-art detail.
-2. **Team size, budget, timeline:** unknown; scope tiers above cannot be dated without them.
-3. **Title:** adopt "Nine Lives of a Boss Cat", an alternate, or keep searching?
-4. **Haru's presentation:** canon default is a girl/woman with partner Sora (a man). Keep, change, or make selectable (roughly doubles household character art)?
-5. **Mikan customisation:** fixed iconic design (recommended, helps marketing and the ageing arc) or a choice of coats at the start?
-6. **Cat speech as readable text:** recommended (the nemesis system needs taunts). Or should cats also be wordless, with icon-only barks?
-7. **Ending:** single ending with epilogue variations (recommended) or branching? And does Life 9 end with Mikan simply coming home, or imply Mikan's own passing?
-8. **Platforms:** confirm PC + Switch-class handheld as the targets.
-9. **Night lock in Life 1–2:** is gating night behind the cat flap acceptable, or should night be open from the start?
-10. **Spraying presentation:** is the sparkle-cloud euphemism right, or do you want it more literal for comedy (affects age rating)?
+1. **Engine:** Unity (recommended) or Godot 4?
+2. **Team size, budget, timeline.**
+3. **Title.**
+4. **Haru's presentation:** canon default, or selectable?
+5. **Mikan customisation:** fixed iconic design (recommended)?
+6. **Ending:** does Life 9 imply Mikan's passing? (Default: no; Mikan is alive in the morning.)
+7. **Handheld floor:** Switch 1-class (default) or Switch 2-class.
+8. **Night lock in Lives 1–2** until the cat flap: acceptable? (Default: yes.)
+9. **Spraying presentation:** sparkle-cloud euphemism? (Default: yes.)
+10. **Reference closeness:** "reference-close" or "print-stylised"? Decided on mock frames from the look-dev test.
+11. **IP review** of the nemesis system and a **cultural consultant** for the home rituals (defaults: commission both before public showing / before slice home content is final).
+
+*Settled by the user on 2026-11-23:* slice-first target; simplified FF7R-structure combat; personality as the Crew hook; third-person camera; the tight three-district game; readable cat speech; readable, localised combat onomatopoeia.
+
+---
+
+## Changelog
+
+- **v1.2 (2026-11-23)** — Folds in `design/reviews/round-1/director-rulings.md`:
+  - **Target:** the vertical slice (§10), with a Backlog discipline in every doc.
+  - **Camera** is third-person (§4.1), replacing the fixed 55° bird's-eye view; painted sky and backdrops return; one camera grammar at home.
+  - **World:** 3 districts + the Lighthouse Summit, 20 Patches, level cap 30, 12–15 h; Lives re-mapped (§4, §5.4).
+  - **Combat simplified** (one string per Style, 12 inputs, 3 statuses; Tag-In/Relay; Pile-On rules; Swagger, Bap and Whack cut; new fight lengths and rank multipliers).
+  - **Personality** model shared by Crew and Rivals (§3.5); it replaces both `temperament` fields.
+  - **Recruitment** deterministic, with a Bribe from the Stash; one Loyalty table; betrayal below 30.
+  - **Nemesis:** decay and Nemesis slots; silhouette Scars; Lick In; Nose-Touch keeps the post; wall events replace duels.
+  - **Territory:** `rounds` deleted; raids take only Patches below Strong; forecasts always on; Turf Board; minimal management.
+  - **The day:** 16-min clock; day budget; Head Home; 3 daily resets; losing ends the outing; Well-Fed felt in the fight.
+  - **Home beats** day-gated; Life-end rule; Life 8 framing unified under Narrative.
+  - **Language:** readable localised onomatopoeia on big hits; cats speak readable text.
+  - **Safety and accessibility:** flash and motion safety; deaf/HoH carriers; renames (Keeper, Seated, Bribe, Share a Morsel, Brass Call, Turf Board, phase dial); new events (`MoveUsed`, `TagIn`, `WallEvent`, `HomeArrived`, `KeystonePlayed`).
+  - **New docs commissioned:** `design/gdd/day-loop.md`, `design/gdd/camera-system.md`, `design/accessibility-requirements.md`.
+- **v1.0 (2026-11-23)** — First canon for the parallel first drafts.

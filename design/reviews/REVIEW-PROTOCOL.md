@@ -66,3 +66,22 @@ Keep the doc's 8 required GDD sections intact.
 A doc is done when its reviewer(s) return `APPROVED` or `APPROVED WITH MINOR
 FIXES`. Maximum three rounds; anything still disputed after round 3 is listed in
 `design/reviews/unresolved.md` for the user rather than papered over.
+
+## Amendment after round 1 (user direction)
+
+- **Target:** a GDD good enough to start prototyping a **vertical slice** — not
+  the full game, not perfection. The slice is defined in
+  `design/reviews/round-1/director-rulings.md` (DR-01) and the creative brief.
+- **Backlog:** content and full-game material, and every critic issue that does
+  not block a slice prototype, go to a `## Backlog (post-slice)` section of the
+  owning doc. Presentable passes.
+- **First drafts are archived** at `design/backlog/first-drafts/` as reference
+  and content backlog. Round-2 docs are fresh, slice-focused rewrites at the
+  original paths, not in-place edits.
+- **Iteration cap:** three iterations in total (draft, revision, one further
+  fix pass). Anything that would need a fourth is recorded in
+  `design/reviews/unresolved.md` with a score out of ten, what needs to improve,
+  and the base idea for improving it.
+- **Round-2 review bar:** `PASS` if a small team could start prototyping the
+  slice from the doc without contradicting another doc; otherwise `FIX` with
+  only the slice-blocking issues listed. Everything else is appended to backlog.
