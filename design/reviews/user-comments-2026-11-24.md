@@ -68,3 +68,18 @@ References: `design/reviews/refs/mikan-turnaround-ref-v2.webp` (turnaround, shap
 `cat-anatomy-wireframe.png` (real cat anatomy: front legs descend from the shoulder at the front of the chest, under
 the neck base; hind legs under the hip, narrow from behind). Process note from the owner: every cat shape pass gets
 an art-director review on anatomy and appeal, not a literal match to the reference.
+
+## C8 — Mikan's face shape and tail (chat, after the anatomy round 2)
+
+> The new facial shape looks weird now. While the front profile of the first image, I think it nails right. Round
+> face fat cat, the 2nd one which is your latest iterations make the face shaped like a ball sack.
+>
+> And for the side profile, what you have right now is super weird. What is that on the nose that you have in the
+> 3rd image? It doesn't look right. The nose is too long like a dog. Please have a look at the 4th image of the cat
+> side profile that I can and re-evaluate what you need to do more. And let's try a long tail this time.
+
+References: `design/reviews/refs/mikan-front-round-face-good.png` (KEEP: the earlier round, fat face, front-on),
+`mikan-front-pear-face-bad.png` (latest: pear/sack-shaped head — reject), `mikan-side-dog-snout-bad.png` (latest:
+protruding dog-like snout — reject), `cat-side-profile-ref.png` (target side profile: round skull, flat face, short
+muzzle, small nose barely ahead of the cheek, eye near the front of the face, long tail). **Canon change: Mikan gets a
+long tail** (replaces the bobtail pom) — recorded in the brief and art bible.

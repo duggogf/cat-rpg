@@ -114,7 +114,7 @@ export class WorldFX {
     if (o.glyph && nGlyph >= 20) return null;
     let mesh = this.pool.pop();
     if (!mesh) { mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), billboardMat(list[0])); mesh.frustumCulled = false; }
-    mesh.material.uniforms.map.value = list[0]; mesh.material.uniforms.dissolve.value = 0; mesh.material.uniforms.flat.value.set(0, 0, 0, 0);
+    mesh.material.uniforms.map.value = list[0]; mesh.material.uniforms.dissolve.value = 0; mesh.material.uniforms.flatCol.value.set(0, 0, 0, 0);
     mesh.position.copy(pos); mesh.scale.setScalar(o.size || 0.5); mesh.renderOrder = o.order || (dust ? 1 : 3);
     this.scene.add(mesh);
     const it = { mesh, list, name, t: -(o.delay || 0), drawings: o.drawings || 4, size: o.size || 0.5, rot: o.rot || 0, spin: o.spin || 0, vel: o.vel ? o.vel.clone() : null, grow: o.grow || 0,
@@ -226,7 +226,7 @@ export class WorldFX {
       else if (it.vel) { m.position.copy(it.base || (it.base = m.position.clone())).addScaledVector(it.vel, tq); }
       m.scale.setScalar(it.size * (1 + it.grow * Math.min(1, tq * 3)));
       m.material.uniforms.rot.value = it.rot + it.spin * tq;
-      if (it.flat) m.material.uniforms.flat.value.copy(it.flat);
+      if (it.flat) m.material.uniforms.flatCol.value.copy(it.flat);
     }
     for (const it of this.items) if (it.dead) {
       if (it.ground) { this.decals.remove(it.mesh); it.mesh.geometry.dispose(); it.mesh.material.dispose(); }

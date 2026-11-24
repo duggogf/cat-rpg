@@ -127,14 +127,14 @@ export function buildCast(o) {
     }
   }
   if (o.ruff) for (const s of [1, -1]) for (const [dy, tilt] of [[-0.018, -0.15], [-0.042, -0.75]]) { // spiky cheek ruff (Togemaru)
-    const b = [hc[0] + s * 0.098 * hs, hc[1] + dy * hs, hc[2] + 0.012 * hs];
+    const b = [hc[0] + s * 0.118 * hs, hc[1] + dy * hs, hc[2] + 0.004 * hs]; // at the cheek's outer edge
     const F = frame(b, v3.norm([s, tilt, -0.15]), [0, 0, 1]);
-    H({ t: 'ear', F, A: [-0.016 * hs, -0.012], B: [0.016 * hs, -0.012], C: [0, 0.03 * hs], hw: 0.016 * hs, th: 0.018, rr: 0.003, cup: 0, bone: 'head', k: 0.008 });
+    H({ t: 'ear', F, A: [-0.02 * hs, -0.012], B: [0.02 * hs, -0.012], C: [0, 0.042 * hs], hw: 0.02 * hs, th: 0.016, rr: 0.003, cup: 0, bone: 'head', k: 0.006 });
   }
   if (o.notch) { // silhouette Scar: a deep V bite out of the ear's outer edge (cut last)
     const e = ears[o.notch === 'L' ? 0 : 1], out = e.side > 0 ? 1 : -1;
     const Pm = [out * e.hw * 0.62, e.C[1] * 0.5];
-    H({ t: 'vcut', F: e.F, A: [Pm[0] + out * 0.02, Pm[1] + 0.016], B: [Pm[0] + out * 0.02, Pm[1] - 0.016], C: [Pm[0] - out * 0.017, Pm[1]], th: 0.05, bone: e.bone, cut: true });
+    H({ t: 'vcut', F: e.F, A: [out * e.hw * 1.3, e.C[1] * 0.78], B: [out * e.hw * 1.3, e.C[1] * 0.3], C: [-out * e.hw * 0.08, e.C[1] * 0.6], th: 0.05, bone: e.bone, cut: true }); // a bold V to just past the midline: reads at 3 m (RV.notched)
   }
 
   // ---- tail shell
@@ -203,7 +203,7 @@ export const CASTS = {
   // Wall Sitter tough (M0): Round build (Bruiser-weighted), thick ringed tail, small round ears.
   wallSitter: { build: 'round', tail: 'ringed', ears: 'round' },
   // The old wall cat (art bible §5.2: lean grey elder on the Long mesh, the one notched ear; GDD: heavy jowls)
-  hige: { build: 'long', tail: 'whip', ears: 'tall', notch: 'R', jowls: 1.22 },
+  hige: { build: 'long', tail: 'whip', ears: 'tall', notch: 'R', jowls: 1.12 },
   // Small round calico, one ear always half-folded
   pon: { build: 'round', tail: 'plume', ears: 'round', fold: 'L' },
   // Pale fawn, huge ears, thin

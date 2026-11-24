@@ -154,7 +154,7 @@ export function createCatInternal(opts = {}) {
 
   // ---- outline width: L-3 as revised at M0 review: 2.5 px at 1080p OUTPUT. The hull is expanded in
   // render-target pixels, so it is scaled by rtHeight / outputHeight and gets a small top-up when the
-  // render target is smaller than the output (the upscale filter eats ≈ 0.3 px per 10% of scale).
+  // render target is smaller than the output (the upscale filter eats part of the line; tuned to the M0 harness).
   // L-4: below 4% of screen height the line drops to 1 px and the face decals switch off.
   // One face decal at every angle (owner, M0 sign-off): the lifted muzzle mesh carries the profile.
   let outlineK = 1;
@@ -172,7 +172,7 @@ export function createCatInternal(opts = {}) {
     group.getWorldPosition(p0); p1.copy(p0); p1.y += (meta.headC[1] + 0.08 * hs) * group.scale.y;
     p0.project(camera); p1.project(camera);
     const far = Math.abs(p1.y - p0.y) * 0.5 < 0.04;
-    const outPx = (far ? 1 : 2.5) * outlineK * outH / 1080 + (1 - k) * 2.2;
+    const outPx = (far ? 1 : 2.5) * outlineK * outH / 1080 + (1 - k) * 1.0; // ≈ 2.3–2.4 px at 85% on the harness
     HU.uLinePx.value = outPx * k;
     U.uFaceOn.value = silhouette || far ? 0 : 1;
     // eyes: the camera's yaw around the head, in rest (bind) space. The eye on the camera's side turns

@@ -97,16 +97,16 @@ export async function bakeSprites(size = 256) {
  */
 export function billboardMat(map) {
   return new THREE.ShaderMaterial({
-    uniforms: { map: { value: map }, rot: { value: 0 }, dissolve: { value: 0 }, flat: { value: new THREE.Vector4(0, 0, 0, 0) } },
+    uniforms: { map: { value: map }, rot: { value: 0 }, dissolve: { value: 0 }, flatCol: { value: new THREE.Vector4(0, 0, 0, 0) } },
     vertexShader: /* glsl */`uniform float rot; varying vec2 vUv;
       void main(){ vUv = uv; vec4 mv = modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0);
         vec2 sc = vec2(length(modelMatrix[0].xyz), length(modelMatrix[1].xyz));
         float c = cos(rot), s = sin(rot); vec2 p = position.xy * sc; mv.xy += vec2(c * p.x - s * p.y, s * p.x + c * p.y);
         gl_Position = projectionMatrix * mv; }`,
-    fragmentShader: /* glsl */`uniform sampler2D map; uniform float dissolve; uniform vec4 flat; varying vec2 vUv;
+    fragmentShader: /* glsl */`uniform sampler2D map; uniform float dissolve; uniform vec4 flatCol; varying vec2 vUv;
       void main(){ vec4 c = texture2D(map, vUv); if (c.a < 0.5) discard;
         if (dissolve > 0.0) { vec2 g = fract(gl_FragCoord.xy / 7.0) - 0.5; if (length(g) < dissolve * 0.75) discard; }
-        vec3 col = mix(c.rgb, flat.rgb, flat.a);
+        vec3 col = mix(c.rgb, flatCol.rgb, flatCol.a);
         gl_FragColor = vec4(col, 1.0); }`,
     depthTest: false, depthWrite: false, transparent: false,
   });

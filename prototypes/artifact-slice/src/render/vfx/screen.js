@@ -62,7 +62,9 @@ export class ScreenFX {
     this.fx = this.fx.filter((f) => f.t < f.dur);
     if (this.word) { this.word.t += dt; if (this.word.t > this.word.ms / 1000 + 0.1) this.word = null; }
     const di = Math.floor(ctx.tw / TWO);
-    if (di === this.lastDrawing && !ctx.force) return;   // drawings change on twos
+    if (ctx.skip) { this.stale = true; return; }
+    if (di === this.lastDrawing && !ctx.force && !this.stale) return;
+    this.stale = false;   // drawings change on twos
     this.lastDrawing = di;
     this.g.innerHTML = this.draw(ctx, di);
   }

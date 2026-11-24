@@ -835,3 +835,4 @@ Fresh rewrite under DR-01 and DR-48. The first draft is archived; kept from it: 
   leg and haunch, a seated chest; the face stays the M0 face (`design/reviews/refs/mikan-face-keep.png`). No
   side-profile face swap. E-5 rewritten for inked figures (ink line vs ground ≥ 35 L*), as above.
 
+- **Owner change (2026-11-24, C8):** Mikan now has a **long tail** (replaces the bobtail with round pom). Face: round, fat-cheeked front view; flat cat profile with a short muzzle (no snout). See `design/reviews/user-comments-2026-11-24.md` C8 and `design/reviews/refs/`.

@@ -601,3 +601,5 @@ The **Morning Sniff** shows the Tribute line, tonight's raid forecast (always, w
   - **Safety and accessibility:** flash and motion safety; deaf/HoH carriers; renames (Keeper, Seated, Bribe, Share a Morsel, Brass Call, Turf Board, phase dial); new events (`MoveUsed`, `TagIn`, `WallEvent`, `HomeArrived`, `KeystonePlayed`).
   - **New docs commissioned:** `design/gdd/day-loop.md`, `design/gdd/camera-system.md`, `design/accessibility-requirements.md`.
 - **v1.0 (2026-11-23)** — First canon for the parallel first drafts.
+
+- **Owner change (2026-11-24, C8):** Mikan now has a **long tail** (replaces the bobtail with round pom). Face: round, fat-cheeked front view; flat cat profile with a short muzzle (no snout). See `design/reviews/user-comments-2026-11-24.md` C8 and `design/reviews/refs/`.

@@ -125,7 +125,8 @@ const GENERIC = EAR_INNER + /* glsl */`
         return c_base;
       }
       float front = smoothstep(0.01 * hs, 0.075 * hs, h.z);
-      bool muzzle = h.z > 0.035 * hs && h.y < -0.014 * hs && abs(h.x) < 0.052 * hs;
+      vec3 mq = (h - vec3(0.0, -0.04, 0.07) * hs) / (vec3(0.058, 0.034, 0.07) * hs);
+      bool muzzle = dot(mq, mq) < 1.0 && h.z > 0.0;   // a soft oval, not a box
       bool blaze = h.z > 0.05 * hs && h.y < 0.045 * hs && abs(h.x) < 0.007 * hs + max(0.0, 0.035 * hs - h.y) * 0.3;
       if (P == 1) return (muzzle || blaze) ? c_white : c_base;
       if (P == 5) return muzzle ? c_white : c_base;
