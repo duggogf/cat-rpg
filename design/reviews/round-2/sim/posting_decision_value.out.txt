@@ -1,0 +1,6 @@
+| Posting policy (engaged player otherwise) | Tribute days 1-7 | Scuffed nights | Lost nights | Day-6 Tribute (anchor) |
+|---|---|---|---|---|
+| Stalwart on forecast + Braggart richest (doc's answer) | 234 | 0.85 | 0.00 | 61.6 |
+| Swapped: Braggart on forecast, Stalwart richest | 224 | 1.38 | 0.00 | 58.9 |
+| Random 2 of Hige/Togemaru/Kinako | 209 | 2.04 | 0.34 | 54.3 |
+| No posts | 167 | 3.97 | 0.00 | 46.2 |
