@@ -27,11 +27,13 @@ export function buildCast(o) {
   const bx = B.bx, by = B.by, lg = B.leg, hs = B.head, ln = B.len;
   const pos = {};
   // ---- skeleton (rest = standing, legs straight down, tail straight back)
-  const legTop = 0.112 * lg + 0.018;       // shoulder / hip pivot height
+  const legTop = 0.124 * lg + 0.018;       // shoulder / hip pivot height
   const knee = 0.052 * lg + 0.006;
   const spineY = legTop + 0.03 * by;
   const zF = 0.062 * ln, zH = -0.072 * ln;   // front / hind leg z
-  const xF = 0.036 * bx, xH = 0.046 * bx;
+  const xF = 0.038 * bx, xH = 0.046 * bx;
+  // front legs drop from the shoulder at the upper front of the chest, under the neck base (C7)
+  const zFL = zF + 0.044 * ln;
   pos.root = [0, 0, 0];
   pos.hips = [0, spineY, -0.04 * ln];
   pos.chest = [0, spineY + 0.008, 0.035 * ln];
@@ -42,8 +44,8 @@ export function buildCast(o) {
   const tailLen = { pom: 0.06, stub: 0.1, whip: 0.34, ringed: 0.31, plume: 0.33 }[o.tail || 'whip'];
   const seg = tailLen / 6;
   for (let i = 0; i < 6; i++) pos['tail' + (i + 1)] = [0, rump[1], rump[2] + 0.02 - i * seg];
-  pos.fUL = [xF, legTop + 0.005, zF]; pos.fLL = [xF, knee, zF];
-  pos.fUR = [-xF, legTop + 0.005, zF]; pos.fLR = [-xF, knee, zF];
+  pos.fUL = [xF, legTop + 0.012, zFL]; pos.fLL = [xF, knee, zFL];
+  pos.fUR = [-xF, legTop + 0.012, zFL]; pos.fLR = [-xF, knee, zFL];
   pos.hUL = [xH, legTop + 0.01, zH + 0.008]; pos.hLL = [xH, 0.062 * lg, zH - 0.05]; // hLL = the hock (a heel point behind the thigh)
   pos.hUR = [-xH, legTop + 0.01, zH + 0.008]; pos.hLR = [-xH, 0.062 * lg, zH - 0.05];
 
@@ -68,9 +70,9 @@ export function buildCast(o) {
   const body = [];
   const P = (x) => body.push(x);
   const tr = 0.072 * by;
-  P({ t: 'ell', c: [0, spineY + 0.006, rump[2] + 0.06], r: [0.072 * bx, 0.075 * by, 0.07], bone: 'hips', k: 0 });
+  P({ t: 'ell', c: [0, spineY - 0.012, rump[2] + 0.058], r: [0.1 * bx, 0.082 * by, 0.072], bone: 'hips', k: 0 }); // the pear from behind: haunches live inside it
   P({ t: 'cap', a: [0, spineY + 0.004, rump[2] + 0.06], b: [0, spineY + 0.01, zF - 0.01], ra: tr, rb: tr * 1.02, bone: 'hips', k: 0.03 });
-  P({ t: 'ell', c: [0, spineY + 0.0, zF + 0.026], r: [0.072 * bx, 0.092 * by, 0.072], bone: 'chest', k: 0.035 }); // full chest, pushed forward
+  P({ t: 'ell', c: [0, spineY + 0.0, zF + 0.026], r: [0.077 * bx, 0.092 * by, 0.072], bone: 'chest', k: 0.035 }); // full chest, pushed forward
   const nA = [0, spineY + 0.03, zF + 0.008], nB = [0, headC[1] - 0.042 * hs, headC[2] - 0.03 * hs];
   P({ t: 'cap', a: nA, b: nB, ra: 0.056 * bx, rb: 0.05 * bx, bone: 'neck', k: 0.03 });
 
@@ -87,7 +89,7 @@ export function buildCast(o) {
       legsP.push({ t: 'ell', c: [kn[0] * 1.03, 0.02, pawZ + 0.008], r: [r1 * 1.18, 0.02, r1 * 1.36], bone: L, k: 0.012 });
     } else {   // round thigh -> shin angled back to a visible hock -> upright foot -> big paw
       const x = s * xH, kb = Math.sqrt(bx);
-      legsP.push({ t: 'ell', c: [s * (xH + 0.013), legTop + 0.0, zH + 0.022], r: [0.049 * bx, 0.064 * by, 0.064 * by], bone: U, k: 0 });
+      legsP.push({ t: 'ell', c: [s * (xH + 0.01), legTop + 0.0, zH + 0.022], r: [0.036 * bx, 0.064 * by, 0.064 * by], bone: U, k: 0 }); // inside the pear from behind (C7)
       legsP.push({ t: 'cap', a: [x * 1.06, legTop - 0.012, zH + 0.022], b: kn, ra: 0.034 * kb, rb: 0.018 * kb, bone: U, k: 0.03 });
       legsP.push({ t: 'cap', a: kn, b: [x, 0.026, zH - 0.022], ra: 0.019 * kb, rb: 0.023 * kb, bone: L, k: 0.006 });
       legsP.push({ t: 'ell', c: [x * 1.03, 0.02, zH - 0.01], r: [0.033 * kb, 0.02, 0.04 * kb], bone: L, k: 0.012 });

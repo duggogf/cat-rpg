@@ -243,6 +243,7 @@ export class Encounter {
     const mag = inp.move ? Math.min(1, len(inp.move[0], inp.move[1])) : 0;
     c.moveIntent = [moveIn[0] * mag, moveIn[1] * mag];
     const free = this._canAct(c);
+    if (inp.aim && free && (inp.aim[0] || inp.aim[1])) { const [ax, az] = norm(inp.aim[0], inp.aim[1]); c.fx = ax; c.fz = az; }
     c.bracing = !!inp.brace && free && !c.act;
     if (inp.attack) c.attackBuf = k.string_buffer_s;
     if (c.attackBuf > 0) c.attackBuf -= this.DT;
@@ -386,10 +387,10 @@ export class Encounter {
     this._removeTele(tl.id, 'interrupted');
     if (a.boss && a.act?.moveId === 'climb_back') {
       a.boss.groundT += k.climbback_hiss_extra_s; a.act = null;
-      this._emitFeel({ type: 'HissInterrupt', cat: e.id, target: a.id, move: 'climb_back' }, { tier: BASE_TIER.hiss_interrupt, authored, victim: 'enemy', kind: 'hiss_interrupt' }, e, a);
+      this._emitFeel({ type: 'HissInterrupt', tele: tl.id, aimed_at: tl.aimedAt, authored, cat: e.id, target: a.id, move: 'climb_back' }, { tier: BASE_TIER.hiss_interrupt, authored, victim: 'enemy', kind: 'hiss_interrupt' }, e, a);
     } else if (a.act?.moveId === 'rival_bolt') {
       a.act = null;
-      this._emitFeel({ type: 'HissInterrupt', cat: e.id, target: a.id, move: 'rival_bolt' }, { tier: BASE_TIER.hiss_interrupt, authored, victim: 'enemy', kind: 'hiss_interrupt' }, e, a);
+      this._emitFeel({ type: 'HissInterrupt', tele: tl.id, aimed_at: tl.aimedAt, authored, cat: e.id, target: a.id, move: 'rival_bolt' }, { tier: BASE_TIER.hiss_interrupt, authored, victim: 'enemy', kind: 'hiss_interrupt' }, e, a);
     } else {
       const mv = this.D.moves[a.act?.moveId];
       if (mv && mv.cost > 0) a.enemyPaws = Math.max(0, a.enemyPaws - mv.cost * k.paw_points); // the interrupted enemy spends the Paw
@@ -397,7 +398,7 @@ export class Encounter {
       a.act = null; this._releaseToken(a);
       this._ruffle(a, e);
       this._flinch(a, 'hiss');
-      this._emitFeel({ type: 'HissInterrupt', cat: e.id, target: a.id, move: tl.moveId }, { tier: BASE_TIER.hiss_interrupt, authored, victim: 'enemy', kind: 'hiss_interrupt' }, e, a);
+      this._emitFeel({ type: 'HissInterrupt', tele: tl.id, aimed_at: tl.aimedAt, authored, cat: e.id, target: a.id, move: tl.moveId }, { tier: BASE_TIER.hiss_interrupt, authored, victim: 'enemy', kind: 'hiss_interrupt' }, e, a);
     }
     if (e.id === this.controlledId) this._openTagWindow(e, a, false);
   }
@@ -566,7 +567,7 @@ export class Encounter {
     if (e.side !== 'enemy') e.paws -= cost; else e.enemyPaws = Math.max(0, e.enemyPaws - cost);
     a.committed = true;
     const hits = this._applyMove(e, mv, t, a.authored, null);
-    this._emit({ type: 'MoveUsed', user: e.id, move: mv.Name, targets_hit: hits, authored: a.authored });
+    this._emit({ type: 'MoveUsed', user: e.id, move: mv.Name, targets_hit: hits, authored: a.authored, paws_after: e.side === 'enemy' ? null : e.paws });
   }
 
   /** Resolve a Move's effect. `shape` (enemy telegraphs) restricts targets to the drawn shape. */
@@ -1277,7 +1278,8 @@ export class Encounter {
   }
 
   _whiffOrProp(e, a) {
-    const p = this.props.find(p => len(p.x - e.x, p.z - e.z) <= this.k.string_reach_m + p.radius && e.y < 0.5);
+    // A prop is hit only by a swing aimed at it: no target at the swing's start and the prop in front (Combat §3.9).
+    const p = a.targetId == null && e.y < 0.5 ? this.props.find(p => inCone(e, [e.fx, e.fz], this.k.string_reach_m + p.radius, 90, p)) : null;
     if (p) this._triggerProp(p, e, null);
     else this._emitFeel({ type: 'Whiff', attacker: e.id, target: null }, { tier: 0, authored: a.authored || 'ai', victim: 'enemy', kind: 'whiff' }, null, null);
   }
