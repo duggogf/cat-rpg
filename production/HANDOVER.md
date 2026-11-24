@@ -36,7 +36,8 @@ gameplay and the art direction.
 | Showcase M0 look-dev | **Done on the studio side** — GO WITH FIXES after 3 iterations; published at https://claude.ai/artifact/MBsJLyudNiAdVyUu9BhpD6 ; **owner: GO** (2026-11-24) |
 | Showcase M1 combat grey box | **Done** — 3 review rounds, final GO WITH FIXES (overall 5 → 7/10); published on the same showcase link (chapter menu → Combat). Carry-overs: `production/qa/evidence/artifact-slice/M1/review-final.md` |
 | Showcase M1.1 combat rework (owner C10) | **Done, awaiting the owner's play test** — Mikan-only control, one-slot buffer, move-out gradient, L/H strings (L-L-L-H finisher), cat-like AI with attack tokens, stagger cinematic, F Special + auto crew chain + team finisher, R skill bar, Tab lock-on cycle. Spec: `design/reviews/owner-feedback/combat-m1.1-spec.md`; published as version 6 of the showcase |
-| Showcase M2–M7 | Not started. Next: M2 lane and territory, carrying the M1 list and follow-ups F13–F16 |
+| Showcase M1.2 combat feel (owner C11) | **Done, awaiting the owner's play test** — NieR-style evade cancel with cooldown (Space), move-out at 60%, instant light / wind-up heavy, slow steering while attacking, Lane-fast-walk speed, damage numbers, longer hit flash, yellow allies / red enemies, 1:1 mouse look + interpolated follow (ghosting fix), dither fade, Tab lock + flick switch, F Special anytime with sequential chain, cornered-cat AI, FinalKO cinematic, Daifuku as a ground boss (belly-flop shockwave) on a universal Boss pattern. Spec: `design/reviews/owner-feedback/combat-m1.2-spec.md`; showcase version 7 |
+| Showcase M2–M7 | Not started. Next: M2 lane and territory, carrying the M1 list and follow-ups F15–F16 |
 
 Nothing has been played or built. Every balance number is a paper value checked
 by small Python simulations, not by a prototype.
