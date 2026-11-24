@@ -101,9 +101,10 @@ if (want('chain')) {
   await ev(p, `__cat.until('SpecialChainStart')`);
   const info = await ev(p, `JSON.stringify(__cat.events('SpecialChainStart'))`);
   for (let k = 0; k < 4; k++) {
-    const ok = await ev(p, `__cat.until('SpecialCutIn', 600, ${k})`); if (!ok.ok) break;
+    const ok = await ev(p, `__cat.until('SpecialStart', 900, ${k})`); if (!ok.ok) break;
     await ev(p, '__cat.frames(2)'); ch.push(await shot(p, `special-cutin-${k + 1}a.png`, `Special cut-in ${k + 1}: halftone wipe / band sliding in`));
-    await ev(p, '__cat.frames(16)'); ch.push(await shot(p, `special-cutin-${k + 1}b.png`, `Special cut-in ${k + 1}: held (time stopped; only this cat over the impact-frame panel, its colour value-matched to the frame)`));
+    await ev(p, '__cat.frames(16)'); ch.push(await shot(p, `special-cutin-${k + 1}b.png`, `Special ${k + 1}: cut-in held (only this cat over the impact-frame panel, colour value-matched)`));
+    await ev(p, `__cat.until('SpecialEnd', 900, ${k})`); await ev(p, '__cat.frames(0)');
   }
   const tf = await ev(p, `__cat.until('TeamFinisher', 600)`);
   if (tf.ok) { await ev(p, '__cat.frames(14)'); ch.push(await shot(p, 'team-finisher-1.png', 'Team finisher (all four landed): the Pile-On cloud, each cat one beat with its face and word'));
@@ -222,9 +223,9 @@ if (want('shock')) {
   const t1 = await ev(p, `__cat.untilWhere((s) => s.telegraphs.some((t) => /belly|flop|slam|shock/.test(t.move || '')), 6000)`);
   await ev(p, '__cat.frames(20)');
   await shot(p, 'daifuku-bellyflop-telegraph.png', `Daifuku on the ground: the belly-flop telegraph (red, growing over the windup) ${t1.ok ? '' : '(NOT reached)'}`);
-  const t2 = await ev(p, `__cat.untilWhere((s, log) => log.some((e) => e.type === 'Shockwave' || (e.type === 'TelegraphEnd' && e.reason === 'resolved')) && !s.telegraphs.some((t) => /belly|flop|slam|shock/.test(t.move || '')), 900)`);
-  await ev(p, '__cat.frames(8)');
-  await shot(p, 'daifuku-shockwave.png', 'the slam: the expanding Cream-and-Ink shockwave ring, dust and ground crack');
+  await ev(p, `__cat.until('ShockwaveStart', 900)`);
+  await ev(p, '__cat.frames(24)');
+  await shot(p, 'daifuku-shockwave.png', 'the slam + 0.4 s: the shockwave ring expanding at the sim\'s front speed (evade it or be knocked down), THOOM!, dust and crack');
   await ev(p, `__cat.untilWhere((s) => s.mode === 'ended', 9000)`); await ev(p, '__cat.frames(100)');
   await shot(p, 'daifuku-phase1-end.png', 'phase 1 ends cleanly: KO cinematic, then the bout end card');
   await p.ctx.close();

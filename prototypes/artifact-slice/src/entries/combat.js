@@ -345,7 +345,7 @@ function onEvent(ev) {
     case 'TelegraphStart': teleById.set(ev.id, ev); break;
     case 'TelegraphEnd': {   // a belly-flop / slam resolving sends its shockwave ring (unless the sim sends its own)
       const tl = teleById.get(ev.id); teleById.delete(ev.id);
-      if (tl && ev.reason === 'resolved' && !sawShockwaveEvent && /belly|flop|slam|shock/.test(tl.move || '') && tl.shape && tl.shape.type === 'circle') {
+      if (tl && ev.reason === 'resolved' && !sawShockwaveEvent && !('hazards' in snap) && /belly|flop|slam|shock/.test(tl.move || '') && tl.shape && tl.shape.type === 'circle') {
         const c = v3([tl.shape.center[0], 0, tl.shape.center[1]]); fx.shockwave(c, tl.shape.radius * 1.15, 0.45); fx.dust('ring plus crack decal', c); }
       break; }
     case 'ShockwaveStart': {
