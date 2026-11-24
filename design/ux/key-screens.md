@@ -177,60 +177,111 @@ Every discovered cat stands in **one disposition pose** (Nemesis owns the mappin
 
 **Roaming Boss** (window open, OR-09): the perch is **empty** (cushion still dented, crown notch), Daifuku is drawn **halfway down the steps, walking out of the scene** with a short line of crown paw-marks, and his card says where he is now. The empty perch is the picture of the owner's "the boss will now start to roam the streets". A Boss who is Recruited, Chased Off or Nose-Touched leaves the perch empty with his knot, legend card or sprig; no gang cat ever takes it (G6).
 
-### 2.6 Layout and wireframe (1080p, Hidamari Lane scene, Life 2 day 3, Dusk)
+### 2.6 Layout and wireframes (1080p, Hidamari Lane scene, Life 2 day 3, Dusk)
 
-Five regions, the same Z reading order as every screen (§1.5): **header → scene → card → buttons**, with the fact column as the scene's caption.
+**A quiet painting at rest, one cat's story on focus** (owner declutter, 2026-11-24, `design/ux/rivals-board-cleanup.md`). At rest the player sees the place, the pecking order (by depth) and who is who (names); everything else answers a question the player asks by pointing at a cat. Territory lives on the Turf Board (§5). Four regions, the same Z reading order as every screen (§1.5): **header → scene → card (on focus) → buttons**.
 
-| Region | Where | Content |
+| Layer | Shown | Never shown here |
 |---|---|---|
-| **Header bar** (one line) | Top, full width | Place name · the district's **influence bar** (Bell Gold vs. the gang's colour, crown at the full end; **no %**, which stays in the Turf Board header, OR-08) · the **scene strip** (L1 · Lane · Arcade · Shiosai · Summit · Outsiders · Bell · R1, each with its dot row) |
-| **Fact column** | Left ≈ 18%, under the header | Up to four facts, each a small label + one chip, **no numbers** (§2.6.1) |
-| **Scene** | Centre, full bleed behind everything | The staged gang (§2.3), ≤ 10 discovered cats plus silhouettes, every focusable cat ≥ 64 px tall |
-| **Card** | Bottom-left ≈ 36% × 22% | The focused cat's name-card (§2.8); slides up on focus; on open with nothing focused it shows the Boss |
-| **Buttons** | Bottom-right | (N) Last night · (S) Card · (W) Go to tie · (E) Back, as pom buttons with binding glyphs |
+| **Rest** (nothing focused; the default on open) | Header (place name, compact scene strip); the scene; **one name ribbon per discovered cat** (Boss: name only, the crown is on the perch); silhouettes in the shade (no "?"); faint arrows; **≤ 1 drawn mark per cat** (§2.5); steam puffs over the perch; ≤ 2 contextual buttons | Role tags, relationship tags, the card, facts, the influence bar, inactive tab names |
+| **Focus** (hover with the mouse after 120 ms; at once with the pad or keys) | The focused cat lifts 4 px with a Bell-Gold rim; its arrow brightens. **≤ 3 relationship tags** on related cats, one each; unrelated cats dim (§2.7). **The card** slides up bottom-left (§2.8). A cross-scene tie shows as **one chip** under its tab (§2.2). Buttons switch to Card · Go to (if any) · Back | The same facts in two places |
+| **Secondary** (South: the full Rival card, §3) | Full Ties list (a Boss's whole gang), history strip, Strengths, Fears, Old Score, both anger lines, the Objective, Tonight, Challenger pips | — |
+| **Moved to the Turf Board** (§5) | Influence bar, Your posts, Tonight (raid or challenge) panel, Sentries, Posse | — |
+
+**Label budget:** at rest each cat has **one** label (its name ribbon). On focus the focused cat keeps its one ribbon (its details are on the card), and each related cat gets **one** tag clipped to its ribbon. No cat ever shows more than two text items. **≤ 16 text items on screen at rest.**
+
+**Layout grid and safe zones** (1920×1080; scales with UI Scale):
 
 ```
-+------------------------------------------------------------------------------------------+
-| HIDAMARI LANE  [BELL ██████████████░░░|·|▓▓ sage ▓]( crown )  L1 [LANE] Arcade Shiosai Summit Outsiders Bell R1 |
-|                                                  ●●●●○○○○○   ○○○    ○○○     ○      ◌      ●●●●●● |
-+--------------+---------------------------------------------------------------------------+
-| TONIGHT      |            ( ) ( )   <- 2 steam puffs: Seething                            |
-| [moon] Raid  |          .-----------------.                                               |
-| [Togemaru]   |          |  DAIFUKU  (zz)  |  porch perch over the corner stone            |
-| on Persimmon |          | [Boss of Hidamari Lane]                                         |
-| Alley        |          '--------^--------'                                               |
-|              |         /    ^ dashed  ^    \        (shade, left wall: silhouette (?))    |
-| YOUR POSTS   |  [KAGI]        |        [CAPT2]  <- stone steps: Captains                   |
-| [#][#][#][ ] | [Captain·Sneak]|       [Captain·Shield]                                    |
-| 3 gold stamps|      ^ . . . . + . . . . ^                                                 |
-|              |  [GOMA]              [TOGEMARU] ~~storm~~> (at the camera)                  |
-| DAIFUKU      | [Enforcer]           [Brawler] "Sworn Enemy"                               |
-| Seething     |        ^                    ^                     (shade, right wall: (?)) |
-|              |   [SASA] *new           [ (?) ]  <- unmet: in the shade, not on a spot     |
-| OBJECTIVE    |   [Lookout]                                                                 |
-| Fill the bar:| [faded legend card]  ..paw prints..>  (path toward the camera)              |
-| he comes down|                                                                             |
-+--------------+                                                                             |
-| [DAIFUKU] Boss of Hidamari Lane  Brooder (anchor tail)   ( )( ) Seething   |  (N) Last night |
-| Ties: Gang: Kagi, Goma, Togemaru, Sasa +1     "Come back when the Lane     |  (S) Card       |
-|       smells of you, Collar."  (his own line)                              |  (W) Go to  (E) Back |
-+------------------------------------------------------------------------------------------+
- ● met  ○ silhouette  ◌ empty (no outsider yet)   arrows: each member -> its Boss only
+ x:0        360          700                      1220        1560      1920
+ y:0   +-------------------------------------------------------------+
+       | HEADER bean (24 px margin, 72 px tall)                       |
+  96   +-------------------------------------------------------------+
+       |  WALL    |           PERCH ZONE  (x 760-1160, y 120-420)     |  WALL   |
+       |  shade:  |           Boss + puffs + crown                    |  shade: |
+       | silhou-  |  STEPS ZONE (x 560-1360, y 420-640): Captains     | silhou- |
+       |  ettes,  |  PATH ZONE  (x 480-1440, y 640-900): Toughs       |  ettes, |
+       | scenery  |                                                   | Roamers |
+  780  |  ........+..........+                                       |  on wall|
+       | CARD ZONE           |                       +-----------------------+
+       | x 24-700, y 800-1056|                       | BUTTON BAR x 1360-1896 |
+ 1080  +---------------------+-----------------------+-----------------------+
 ```
 
-#### 2.6.1 The fact column (the scene's caption)
+| Region | Rule |
+|---|---|
+| **Header** | One bean, 72 px tall: **place name** (44 px, left) and the **scene strip** (right, §2.2). Nothing else: no influence bar, no crown, no % (all on the Turf Board, OR-08) |
+| **Scene** | Full bleed behind everything. **Discovered cats stand only in the perch, steps and path zones** (the centre wedge, x 480–1440). The side walls (x < 360, x > 1560) are kept for scenery, shade silhouettes and wall-top Roamers: that is the negative space. ≤ 10 discovered cats plus silhouettes, every focusable cat ≥ 64 px tall |
+| **Card zone** | Bottom-left 676 × 256 px. **Empty at rest** (painted foreground: stones, a plant); the card slides up only on focus (§2.8). The scene is authored so no cat's spot, feet or ribbon falls inside it |
+| **Button bar** | Bottom-right, one row of ≤ 3 pom buttons with binding glyphs, right-aligned (§2.9). No cat feet or ribbons below y 960 in x > 1360 |
+| **Ribbon placement** | Each ribbon sits centred **under its own cat's feet**, ≤ 16 px below the paws, never on another cat's body; ≥ 48 px clear between any two ribbons. If two spots would collide, the spot moves (art staging), not the ribbon |
 
-Facts are territory, calendar and objective. They never say a cat changed because of another cat, and they never show a number (R3: territory numbers live on the Turf Board).
+**Rest state** (opened from the street; nothing focused; Lane scene, Life 2 day 3, Dusk)
 
-| Fact | Shows | When |
-|---|---|---|
-| **Tonight** | Moon (raid) or stake flag (challenge) + the raiders' chips (silhouette if unmet) + the target Patch name | When a raid or challenge is forecast in this district |
-| **Your posts** | The district's outer posts as four small Patch stamps: Bell Gold = yours and Strong, gold with a cracked wisp = yours and fading, gang colour = theirs, blank = open | Gang scenes of districts Mikan has posts in |
-| **The Boss** | Anger stage word with puffs; or "Roaming: Tofu Shop's back wall" with a crown paw-mark; or "Gone" / "In your Crew" / "In truce" | Gang scenes |
-| **Objective** | One line from the turf goal: "Fill the bar: he comes down off the walls." → "He roams: find him." → "Spray the Den corner stone." → "The Lane is yours." | Gang scenes |
-| Outsiders scene | **Staking**: each challenger's target post; **Repelled**: two pips per challenger ("leaves after two") | Outsiders |
-| Bell scene | **Posse**: three chips · **On guard**: Sentry chips with their posts · **Wavering**: chip with the two-pip mark | Bell |
-| Silhouette scenes | "Further up the hill." | Arcade, Shiosai, Summit |
+```
++--------------------------------------------------------------------------------------------+
+|  HIDAMARI LANE                              L1 [(stone) Lane] (lan) (anc) (lht) (bus) (bel) R1 |
+|                                                ●●●●●●○○    ○○○   ○○○   ○○    ·     ●●●●●     |
++--------------------------------------------------------------------------------------------+
+|  ░░ wall ░░                         ( ) ( )   <- 2 steam puffs                   ░░ wall ░░ |
+|  ░░       ░░                    .--------------.                                 ░░       ░░ |
+|  ░ [sil] ░░                     |  (Daifuku)   |  porch perch, crown                ░░ [sil] ░ |
+|  ░░ shade ░░                    '--------------'                                 ░░ shade ░░ |
+|  ░░       ░░                        [DAIFUKU]                                   ░░       ░░ |
+|  ░░       ░░                      :          :    <- faint trunks (35%)          ░░       ░░ |
+|  ░░       ░░             (Kagi)   :          :   (Ohagi)                         ░░       ░░ |
+|  ░░       ░░             [KAGI]   :          :   [OHAGI]                         ░░       ░░ |
+|  ░░       ░░        (Goma)        :          :        (Togemaru)~~storm~~>       ░░       ░░ |
+|  ░░       ░░        [GOMA]        :          :        [TOGEMARU]                 ░░       ░░ |
+|                                                                                              |
+|                         (Sasa)                         (Kuri)                                |
+|   (stones, plant:       [SASA*]                        [KURI]                                |
+|    empty card zone)                                                                          |
+|                                                                 (N) Last night   (E) Back    |
++--------------------------------------------------------------------------------------------+
+  Text at rest: 1 place name + 1 tab name + 7 names + 2 buttons = 11. * = tape star sticker.
+  ● met  ○ silhouette  · empty (no outsider yet)   arrows: each member -> its Boss only
+```
+
+**Focus state** (Togemaru focused with the pad; his tie: Rival → Goma)
+
+```
++--------------------------------------------------------------------------------------------+
+|  HIDAMARI LANE                              L1 [(stone) Lane] (lan) (anc) (lht) (bus) (bel) R1 |
+|                                                ●●●●●●○○    ○○○   ○○○   ○○    ·     ●●●●●     |
++--------------------------------------------------------------------------------------------+
+|  ░░ wall ░░                         ( ) ( )                                      ░░ wall ░░ |
+|  ░ (sil) ░░  dim                .--------------.   full colour (his Boss)        ░░ (sil) ░ |
+|  ░░       ░░                    |  (Daifuku)   |                                 ░░  dim  ░░ |
+|  ░░       ░░                    '------^-------'                                 ░░       ░░ |
+|  ░░       ░░                        [DAIFUKU]   \  <- bright 4 px arrow          ░░       ░░ |
+|  ░░       ░░             (kagi)  dim             \   (ohagi) dim                 ░░       ░░ |
+|  ░░       ░░             [kagi]                   \  [ohagi]                     ░░       ░░ |
+|  ░░       ░░        (Goma) full                    \                             ░░       ░░ |
+|  ░░       ░░        [GOMA][x Rival]            ==(TOGEMARU)== lifted, gold rim ~~storm~~>   |
+|                                                   [TOGEMARU]                                 |
+|  +--------------------------------------------+                                              |
+|  | (portrait) [TOGEMARU · the First Thorn]    |   (sasa) dim          (kuri) dim             |
+|  | Brawler (claw)   Braggart (icon)           |   [sasa*]             [kuri]                 |
+|  | hackles: storm  ears: back  ~ SWORN ENEMY  |                                              |
+|  | D3 "My post smells of bell."               |                                              |
+|  | (moon) Tonight: raids Persimmon Alley.     |          (S) Card              (E) Back      |
+|  +--------------------------------------------+                                              |
++--------------------------------------------------------------------------------------------+
+  Text on focus: 11 at rest - Last night + 1 tag + 6 card lines + Card = 18. One tag in the scene.
+```
+
+**Where the facts went** (the left fact column is removed; owner declutter 2026-11-24, D1). No fact on this screen ever shows a number or says a cat changed because of another cat (R3, §1.1 rule 6).
+
+| Old fact | Now |
+|---|---|
+| **Tonight** (raid or challenge) | The Turf Board's Tonight panel (§5); the raider's card context line ("Tonight: raids Persimmon Alley.", §2.8) and its full Rival card (§3.2) |
+| **Your posts** | The Turf Board (§5) |
+| **The Boss** (anger stage, roaming, Gone / in your Crew / in truce) | The steam puffs over the perch (or his empty perch and mark, §2.5) + the Boss's card (§2.8) |
+| **Objective** | The Boss's full Rival card (§3.2) |
+| Outsiders scene (Staking, Repelled pips) | Each Outsider's card context line (§2.8) and its full Rival card (§3.2) |
+| Bell scene (Posse, On guard, Wavering) | Those cats' cards (§6.2); Posse and Sentries also on the Turf Board (§5); Wavering also as the turned-away pose (§2.5) |
+| Silhouette scenes | One centred caption, "Further up the hill." |
 
 ### 2.7 Relationship tags (hover or focus)
 

@@ -272,7 +272,7 @@ export function ringGeometry(r, a0, a1, y0, y1, seg = 64) {
 // hard terminator, plus an Aubergine Ink inverted hull whose width is set in render-target pixels.
 export const CEL = {
   keyDir: { value: new THREE.Vector3(0, 1, 0) }, celTint: { value: new THREE.Vector3(1, 1, 1) }, celShade: { value: new THREE.Vector3(0.85, 0.82, 0.92) },
-  rtHeight: { value: 1080 }, lineScale: { value: 1 },
+  rtHeight: { value: 1080 }, rtWidth: { value: 1920 }, lineScale: { value: 1 },
 };
 export function celMat() {
   return new THREE.ShaderMaterial({
@@ -290,15 +290,16 @@ export function celMat() {
 export function hullMat(widthPx = 2.0) {
   return new THREE.ShaderMaterial({
     uniforms: { ...CEL, width: { value: widthPx } },
-    vertexShader: /* glsl */`uniform float width, rtHeight, lineScale; attribute vec3 smoothN;
+    vertexShader: /* glsl */`uniform float width, rtHeight, rtWidth, lineScale; attribute vec3 smoothN;
       void main(){
         vec4 wp = modelMatrix * vec4(position, 1.0);
         vec4 cp = projectionMatrix * viewMatrix * wp;
         vec3 nv = normalize(mat3(viewMatrix) * normalize(mat3(modelMatrix) * smoothN));
-        vec2 dir = normalize((projectionMatrix * vec4(nv.xy, 0.0, 0.0)).xy + 1e-6);
+        vec2 res = vec2(rtWidth, rtHeight);
+        vec2 dir = normalize(vec2(projectionMatrix[0][0] * nv.x, projectionMatrix[1][1] * nv.y) * res + 1e-6);
         // L-3: silhouette 2.0 px at 1080p, computed against the current render-target height
         float px = width * lineScale * (rtHeight / 1080.0);
-        cp.xy += dir * px * 2.0 / rtHeight * cp.w;
+        cp.xy += dir * px * 2.0 / res * cp.w;
         cp.z += 0.0004 * cp.w;
         gl_Position = cp;
       }`,
