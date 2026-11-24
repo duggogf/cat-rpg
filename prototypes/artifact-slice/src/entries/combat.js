@@ -67,7 +67,7 @@ let world, shadow, post, enc, snap, prevSnap, fighters = new Map(), fx, scr, cca
 let realT = 0, acc = 0, paused = false, script = null, cmdQueue = [], injectQ = [], pile = null, impact = null, dip = null, midTone = new THREE.Color('#8C88B8');
 const DT = 1 / 60, evLog = [], counts = {};
 let lastTagWindow = null, routedTrail = new Map(), crackedUntil = new Map(), standoffFocus = null, fightStartT = null, endShown = false, lastStats = {};
-let seedCounter = 1, skipDraw = false;
+let seedCounter = 1, skipDraw = false; const pendingMenu = [];
 
 function setPhase(name) {
   const p = applyPhase(name), sd = sunDir(p);
@@ -351,10 +351,11 @@ function present(dt, alpha, menu = []) {
     const c = pile.phase === 'out' ? pile.screen : project(pile.centerW.clone().add(new THREE.Vector3(0, 0.35, 0)));
     pileCtx = { ...pile, center: { x: Math.min(w * 0.7, Math.max(w * 0.3, c.x)), y: Math.min(h * 0.62, Math.max(h * 0.4, c.y)) } };
   }
-  scr.update(dt, { skip: skipDraw, w, h, project, controlledBox: cb, hudRects: opt.hud ? hud.rects() : [], pile: pileCtx, tw, overheads, arrows });
+  scr.update(dt, { skip: skipDraw, w, h, project, controlledBox: cb, hudRects: opt.hud && !skipDraw ? hud.rects() : [], pile: pileCtx, tw, overheads, arrows });
   // HUD
-  if (opt.hud && !skipDraw) {
-    hud.update({ s, t: realT, project, fighters, menuEvents: menu, send: (c) => cmdQueue.push(c) });
+  if (skipDraw) pendingMenu.push(...menu);
+  else if (opt.hud) {
+    hud.update({ s, t: realT, project, fighters, menuEvents: pendingMenu.splice(0).concat(menu), send: (c) => cmdQueue.push(c) });
     hud.tickCard(realT);
   }
   renderer.domElement.style.filter = s.slow_blink ? 'saturate(0.7) brightness(0.9)' : '';
