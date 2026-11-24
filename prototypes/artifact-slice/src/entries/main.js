@@ -28,11 +28,12 @@ const opt = {
   phase: PHASES[Q.get('phase')] ? Q.get('phase') : 'day', view: Q.get('view'), orbit: Q.has('orbit') ? (+Q.get('orbit') | 0) % 8 : null,
   vantage: Q.has('vantage') ? (+Q.get('vantage') | 0) : null,
   test: Q.get('test') === '1', mask: Q.get('mask'), post: Q.get('post') !== '0' && !['shade', 'albedo'].includes(Q.get('mask')), res: +(Q.get('res') || 1),
-  sense: Q.get('sense') === '1', fps: Q.get('fps') === '1',
+  sense: Q.get('sense') === '1', fps: Q.get('fps') === '1', start: Q.get('start') === 'l1d1' ? 'l1d1' : 'showcase_l2d2', seed: +(Q.get('seed') || 42),
 };
 opt.m0 = opt.view === '01' || opt.orbit != null;            // the approved M0 evidence framings
 opt.hud = Q.has('hud') ? Q.get('hud') === '1' : !(opt.test && (opt.m0 || opt.mask));
 extendLayout(L);
+if (!opt.m0) delete L.passerBy;   // the 01 frame's passer-by is a one-sided M0 stand-in card; the M4 leg rig replaces it in play
 const HR = highRoad(L);
 const gAt = (x, z) => groundY(L, z);
 const app = document.getElementById('app');
@@ -76,7 +77,7 @@ async function loadTextures() {
 /* ---------------------------------------------------------------- scene state */
 const envScene = new THREE.Scene(), lateScene = new THREE.Scene();
 const cam = new THREE.PerspectiveCamera(EXPLORE.fov, 1, 0.1, 1500);
-let world, shadow, post, rig, mikan, sitter, daifuku, keyLight, fillLight, terr, scent, hud, sb;
+let world, shadow, post, rig, mikan, sitter, daifuku, challenger, keyLight, fillLight, terr, scent, hud, sb;
 let simTime = 0, lastStats = {};
 const mikanPos = new THREE.Vector3(), drive = { x: 0, z: 0 }, bot = { on: false, f: 0, r: 0, look: [0, 0], space: false, e: false, tab: false };
 // phase clock: a key (day | dusk) or a running blend
@@ -92,7 +93,7 @@ function setPhaseKey(p) {
   CEL.keyDir.value.copy(sd).normalize();
   CEL.celTint.value.set(...hexRGB(p.cel));
   const light = { keyDir: new THREE.Vector3(...p.catDir).normalize(), keyColor: new THREE.Color(p.catKey), shadeColor: new THREE.Color(p.catShade), rimColor: new THREE.Color(p.catRim) };
-  for (const c of [mikan, sitter, daifuku]) if (c) c.setLighting(light);
+  for (const c of [mikan, sitter, daifuku, challenger]) if (c) c.setLighting(light);
   if (keyLight) { keyLight.position.copy(sd).multiplyScalar(10); keyLight.color.set(p.catKey); fillLight.color.set(p.shadow); }
 }
 function setPhase(name) { ph.name = name; ph.from = ph.to = null; ph.k = name === 'dusk' ? 1 : 0; setPhaseKey(PHASES[name]); if (name === 'dusk') { ph.lampT = 99; U.lampWave.value = 99; } else { ph.lampT = -1; U.lampWave.value = -1; ph.called = false; } }
@@ -156,8 +157,13 @@ function hop() {
     if (best) startHop(new THREE.Vector3(best.p.x, HR[best.i].y, best.p.z), { mode: 'top', seg: best.i, s: best.p.s });
   } else if (mv.mode === 'top') {
     const sg = HR[mv.seg], side = Math.sign(-sg.ax) || 1, nx = Math.abs(sg.bx - sg.ax) > Math.abs(sg.bz - sg.az);
-    const t = mikanPos.clone(); if (nx) t.z += Math.sign(-sg.az || 1) * 0.55; else t.x += side * 0.55;
-    t.y = gAt(t.x, t.z); startHop(t, { mode: 'ground' });
+    // land on clear ground: try the lane side, then the far side; never inside a prop or wall (collision first)
+    const inside = (q) => world.colliders.some((b) => !b.soft && q.x > b.min.x - 0.15 && q.x < b.max.x + 0.15 && q.z > b.min.z - 0.15 && q.z < b.max.z + 0.15 && b.max.y > gAt(q.x, q.z) + 0.3);
+    for (const sgn of [1, -1]) {
+      const t = mikanPos.clone(); if (nx) t.z += sgn * Math.sign(-sg.az || 1) * 0.55; else t.x += sgn * side * 0.55;
+      collideCircle(t, 0.2, world.colliders); t.y = gAt(t.x, t.z);
+      if (!inside(t)) { startHop(t, { mode: 'ground' }); return; }
+    }
   }
 }
 function startHop(to, after) { mv.hop = { from: mikanPos.clone(), to, t: 0, dur: 0.38, after }; mikan.setGait('walk', 1.6); }
@@ -169,7 +175,7 @@ function step(dt) {
   if (ph.to) {
     ph.k = Math.min(1, ph.k + dt / ph.dur); setPhaseKeyThrottled(mixPhase(ph.from, ph.to, ss(ph.k)), dt);
     if (ph.k > 0.55 && ph.lampT < 0) ph.lampT = 0;
-    if (ph.k >= 1) { ph.name = ph.to; ph.from = ph.to = null; setPhaseKey(PHASES[ph.name]); }
+    if (ph.k >= 1) { ph.name = ph.to; ph.from = ph.to = null; setPhaseKey(PHASES[ph.name]); terr.setPhase(ph.name === 'dusk' ? 'dusk' : 'morning'); }
   }
   if (ph.lampT >= 0 && ph.lampT < 99) { ph.lampT += dt; U.lampWave.value = ph.lampT; if (ph.lampT > L.lamps.length * 0.32 + 0.6 && !ph.called) { ph.called = true; ph.threadUntil = simTime + 4; if (hud) { hud.hint('Time to head home.', 4); } } }
   if (mv.napping) mv.napping = Math.max(0, mv.napping - dt);
@@ -207,12 +213,12 @@ function step(dt) {
   if (moving || mv.hop) { const want = Math.atan2(mv.dir.x, mv.dir.z), o = mikan.object3D; let dy = want - o.rotation.y; dy = Math.atan2(Math.sin(dy), Math.cos(dy)); o.rotation.y += dy * Math.min(1, dt * 10); }
   if (!mv.hop) mikan.setGait(moving ? 'walk' : 'idle', moving ? speed : 0);
   mikan.object3D.position.copy(mikanPos);
-  mikan.update(dt); sitter.update(dt); if (daifuku) daifuku.update(dt);
+  mikan.update(dt); sitter.update(dt); if (daifuku) daifuku.update(dt); if (challenger) challenger.update(dt);
   // ---- garden wall blend (hud.md §3.5): inside Haru's garden the camera lowers and tightens and the HUD fades
   const hz = L.home.zone, home = mikanPos.x > hz[0] && mikanPos.x < hz[1] && mikanPos.z > hz[2] && mikanPos.z < hz[3];
   if (home !== mv.home) { mv.home = home; if (hud) hud.setHome(home); }
   // ---- Patch entry: the tag shows 3 s
-  const inP = L.patches.find((p) => mikanPos.z > p.zone[0] && mikanPos.z < p.zone[1] && !home);
+  const inP = L.patches.find((p) => p.zone && mikanPos.z > p.zone[0] && mikanPos.z < p.zone[1] && !home);
   if ((inP && inP.id) !== mv.inPatch) { mv.inPatch = inP ? inP.id : null; if (inP && hud) hud.tag(terr.patch(inP.id), 3); }
   // ---- interactions (E): Spray hold 1.2 s, Rub 0.4 s, Nap, pick up
   interact(dt, eHeld);
@@ -223,7 +229,7 @@ function step(dt) {
   // ---- the Boss window: Daifuku's yowl, his climb down to the yard stop (authored clip; control kept)
   if (climb) stepClimb(dt);
   // ---- camera
-  if (!opt.m0) { rig.setState(home ? 'home' : mv.mode === 'top' ? 'highroad' : 'explore'); rig.update(dt, mikanPos, false, { moveDir: moving ? mv.dir : null, airborne: !!mv.hop }); }
+  if (!opt.m0) { rig.setState(home ? 'home' : mv.mode === 'top' ? 'highroad' : 'explore'); rig.update(dt, mikanPos, false, { moveDir: moving ? mv.dir : null, airborne: !!mv.hop, rise: mv.hop ? mv.hop.to.y - mv.hop.from.y : 0 }); }
   else if (opt.view !== '01') rig.update(dt, mikanPos);
   // ---- camera-soft: dither to 30%, never hidden (owner M1.2 rule)
   { const c = cam.position, pv = rig.pivot, seg = new THREE.Line3(c.clone(), pv.clone()), cp = new THREE.Vector3();
@@ -253,9 +259,9 @@ const ss = (x) => x * x * (3 - 2 * x);
 function candidates() {
   const out = [], m = mikanPos;
   for (const p of L.patches) {
-    const offer = terr.offer(p.id), d = Math.hypot(m.x - p.post[0], m.z - p.post[2]);
-    if (offer && d < 1.35 && mv.mode === 'ground') out.push({ id: 'post-' + p.id, kind: 'spray', patch: p.id, offer, at: new THREE.Vector3(p.post[0], p.post[1] + 0.35, p.post[2]), d, dur: 1.2 });
-    p.rub.forEach(([x, , z], k) => { const ro = terr.rubOffer(p.id, k), dd = Math.hypot(m.x - x, m.z - z); if (ro && dd < 0.9 && mv.mode === 'ground') out.push({ id: `rub-${p.id}-${k}`, kind: 'rub', patch: p.id, k, offer: ro, at: new THREE.Vector3(x, gAt(x, z) + 0.55, z), d: dd, dur: 0.4 }); });
+    const offer = terr.offer(p.id), d = Math.hypot(m.x - p.at[0], m.z - p.at[2]);
+    if (offer && d < 1.35 && mv.mode === 'ground') out.push({ id: 'post-' + p.id, kind: 'spray', patch: p.id, offer, at: new THREE.Vector3(p.at[0], p.at[1] + 0.35, p.at[2]), d, dur: 1.2 });
+    for (const [k, [x, , z]] of Object.entries(p.rub)) { const ro = terr.rubOffer(p.id, k), dd = Math.hypot(m.x - x, m.z - z); if (ro && dd < 0.9 && mv.mode === 'ground') out.push({ id: `rub-${k}`, kind: 'rub', patch: p.id, k, offer: ro, at: new THREE.Vector3(x, gAt(x, z) + 0.55, z), d: dd, dur: 0.4 }); }
   }
   if (ph.name === 'day' && !ph.to) { const [x, z] = L.sunspot.at, d = Math.hypot(m.x - x, m.z - z); if (d < 0.9) out.push({ id: 'nap', kind: 'nap', at: new THREE.Vector3(x, 0.5, z), d, dur: 0.5 }); }
   if (!found) { const [x, z] = L.find, d = Math.hypot(m.x - x, m.z - z); if (d < 0.8) out.push({ id: 'find', kind: 'find', at: new THREE.Vector3(x, 0.45, z), d, dur: 0.2 }); }
@@ -272,62 +278,80 @@ function interact(dt, eHeld) {
 }
 function complete(c) {
   if (c.kind === 'spray' || c.kind === 'rub') {
-    const ev = c.kind === 'spray' ? terr.spray(c.patch) : terr.rub(c.patch, c.k);
+    // a rival cat within 8 m sees a Rub (Territory §3.3); the caller decides, the sim applies it
+    const seen = [sitter, challenger, daifuku].some((q) => q && q.object3D.visible && q.object3D.position.distanceTo(mikanPos) < 8);
+    const ev = c.kind === 'spray' ? terr.spray(c.patch) : terr.rub(c.patch, c.k, { seen });
     if (!ev) return;
     scent.pop(c.at.clone().add(new THREE.Vector3(0, 0.25, 0)), c.kind === 'spray');
     hud.tag(terr.patch(c.patch), 2);
-    log.push({ t: +simTime.toFixed(2), ...ev, influence: terr.influence() });
-  } else if (c.kind === 'nap') { mv.napping = 1.2; mikan.setGait('idle', 0); startDusk(opt.test ? 2 : 20); hud.hint('A nap in the sun…', 3); }
+  } else if (c.kind === 'nap') { mv.napping = 1.2; mikan.setGait('idle', 0); startDusk(opt.test ? 2 : 20); hud.hint('A nap in the sun\u2026', 3); }
   else if (c.kind === 'find') { found = true; hud.pickup('Shiny'); scent.pop(c.at, false); }
 }
 const log = [];
 function onTerritory(e) {
+  log.push({ t: +simTime.toFixed(2), ...e });
+  if (e.type === 'BossWindowChanged') windowOpen = !!e.open;
+  if (e.type === 'BossMoved') moveBoss(e.at);
+  if (e.type === 'CatDiscovered' && daifuku && hud) { const scr = project(daifuku.object3D.position.clone().add(new THREE.Vector3(0, 0.6, 0))); if (scr) hud.tapeStar(scr); scent.pop(daifuku.object3D.position.clone().add(new THREE.Vector3(0, 0.6, 0)), false); }
   if (!hud) return;
-  if (e.type === 'AngerRaised') hud.angerPuff(e.stageUp);
-  if (e.type === 'KeeperCleared') hud.hint('Fight to clear, spray to claim.', 4);
-  if (e.type === 'MarkApplied' && e.kind === 'rescue_spray') hud.hint('Spray it Strong. The bar fills.', 3);
-  if (e.type === 'BossWindowChanged' && e.open) { windowOpen = true; startClimb(); }
+  if (e.type === 'AngerRaised') hud.angerPuff(false);
+  if (e.type === 'AngerChanged') hud.angerPuff(true);
+  if (e.type === 'KeeperCalled') hud.hint('Fight to clear, spray to claim.', 4);
+  if (e.type === 'MarkApplied' && e.kind === 'rescue_spray' && !terr.window) hud.hint('Spray it Strong. The bar fills.', 3);
+  if (e.type === 'CatDiscovered') hud.hint('That\u2019s Daifuku up there.', 3);
 }
 
 /* ---------------------------------------------------------------- Whisker Sense: compass ticks and the sniff */
+const TICK_GLYPH = { roaming_boss: 'crown', challenger: 'stake', fading_post: 'cracked', rival_mark: 'brick' };
 function compassTicks() {
-  const t = [];
-  if (windowOpen) { const [x, z] = L.yardStop; t.push({ kind: 'crown', x, z }); }
-  for (const p of L.patches) { const st = terr.patch(p.id); if (st.owner === 'bell' && st.scent < 60) t.push({ kind: 'cracked', x: p.post[0], z: p.post[2] }); }
-  for (const p of L.patches) { const st = terr.patch(p.id); if (st.owner && st.owner !== 'bell') { t.push({ kind: 'brick', x: p.post[0], z: p.post[2] }); p.rub.forEach(([x, , z], k) => { if (terr.rubOffer(p.id, k)) t.push({ kind: 'brick', x, z }); }); } }
-  if (!found) t.push({ kind: 'sparkle', x: L.find[0], z: L.find[1] });
-  return t;
+  // the sim decides which ticks exist and their priority (hud.md §3.2, <= 6); the layout says where they point
+  const out = [], byPost = (id) => L.patches.find((p) => p.post === id || p.id === id);
+  for (const k of terr.ticks()) {
+    let at = null;
+    if (k.kind === 'roaming_boss') { const s = L.stops[k.target]; if (s) at = [s[0], s[2]]; }
+    else { const p = byPost(k.target) || byPost(k.patch); if (p) { const r = p.rub[k.target]; at = r ? [r[0], r[2]] : [p.at[0], p.at[2]]; } }
+    if (at) out.push({ kind: TICK_GLYPH[k.kind] || 'brick', x: at[0], z: at[1] });
+  }
+  if (!found && out.length < 6) out.push({ kind: 'sparkle', x: L.find[0], z: L.find[1] });
+  return out;
 }
 function sniff(dt) {
-  if (!daifuku || sense.discovered.daifuku || climb) { if (hud) hud.sniffRing(null); return; }
-  const dp = daifuku.object3D.position, d = dp.distanceTo(mikanPos), scr = project(dp.clone().add(new THREE.Vector3(0, 0.5, 0)));
-  const onScreen = scr && scr.x > 0 && scr.x < innerWidth && scr.y > 0 && scr.y < innerHeight;
-  if (sense.k > 0.6 && d < 10 && onScreen) {
-    sense.sniffT += dt; if (hud) hud.sniffRing(scr, Math.min(1, sense.sniffT / 1.0));
-    if (sense.sniffT >= 1.0) { sense.discovered.daifuku = true; sense.sniffT = 0; if (hud) { hud.sniffRing(null); hud.tapeStar(scr); hud.hint('That’s Daifuku up there.', 3); } scent.pop(dp.clone().add(new THREE.Vector3(0, 0.6, 0)), false); log.push({ t: +simTime.toFixed(2), type: 'CatDiscovered', cat: 'daifuku', distance: +d.toFixed(2) }); }
-  } else { sense.sniffT = 0; if (hud) hud.sniffRing(null); }
+  // the 1 s sniff is the sim's rule (whisker(): on screen, <= 10 m, 1.0 s); the street draws its fill ring
+  const held = sense.k > 0.6;
+  if (!held && !sense.wasHeld) { if (hud) hud.sniffRing(null); return; }
+  sense.wasHeld = held;
+  const cats = []; let scr = null;
+  if (daifuku) { const dp = daifuku.object3D.position; scr = project(dp.clone().add(new THREE.Vector3(0, 0.5, 0))); cats.push({ id: 'daifuku', pos: [dp.x, dp.z], onScreen: !!(scr && scr.x > 0 && scr.x < innerWidth && scr.y > 0 && scr.y < innerHeight) }); }
+  const w = terr.whisker(dt, { held, inCombat: false, pos: [mikanPos.x, mikanPos.z], cats });
+  const ring = w.rings && w.rings.find((r) => r.cat === 'daifuku');
+  if (hud) hud.sniffRing(ring && scr ? scr : null, ring ? ring.t / ring.of : 0);
+  sense.discovered.daifuku = terr.sim.isDiscovered('daifuku');
 }
 function project(p) { const v = p.clone().project(cam); if (v.z > 1) return null; return { x: (v.x * 0.5 + 0.5) * innerWidth, y: (-v.y * 0.5 + 0.5) * innerHeight }; }
 
 /* ---------------------------------------------------------------- the Boss window: yowl, climb down, yard stop */
-function startClimb() {
-  if (!daifuku) return;
-  const [sx, sy, sz] = L.den.seat, [yx, yz] = L.yardStop;
-  // an authored clip (plan §2.4): along the Den wall top, down its lane-side face, across the garden, over the lane wall
-  climb = { t: 0, pts: [[sx, sy, sz], [-9.6, 3.25, -4.0], [-9.2, 0, -3.6], [-3.0, 0, -7.0], [-1.9, 0, -8.2], [-1.7, 1.58, -8.6], [-1.2, 0, -9.4], [yx, 0, yz]], speed: 1.1 };
-  hud.hint('The big wall stirs…', 3); hud.edgeCall(project(new THREE.Vector3(sx, sy, sz)) || { x: innerWidth * 0.2, y: innerHeight * 0.3 }, 3);
-  log.push({ t: +simTime.toFixed(2), type: 'BossWindowChanged', open: true, influence: terr.influence() });
+let bossAt = 'den_wall';
+function moveBoss(at) {
+  if (!daifuku || !L.stops[at] || at === bossAt) return;
+  const from = bossAt; bossAt = at; const [tx, ty, tz] = L.stops[at], p0 = daifuku.object3D.position.clone();
+  // authored clips (plan §2.4: the climb-down is staged, control kept): via the Den wall face, the garden and over the lane wall
+  const viaWall = [[-9.6, 3.25, 3.4], [-9.2, 0, 3.0], [-3.2, 0, 1.4], [-2.0, 0, 0.9], [-1.7, 1.58, 0.6], [-1.1, 0, 0.0]];
+  const pts = [[p0.x, p0.y, p0.z]];
+  if (from === 'den_wall') pts.push(...viaWall); else if (at === 'S_N' || at === 'den_wall') pts.push([-1.1, 0, 0.0], [-1.7, 1.58, 0.6], [-2.0, 0, 0.9], [-3.2, 0, 1.4]);
+  pts.push([tx, ty, tz]);
+  climb = { t: 0, pts, speed: opt.test ? 4 : 1.1 };
+  if (from === 'den_wall' && hud) { hud.hint('The big wall stirs\u2026', 3); hud.edgeCall(project(p0) || { x: innerWidth * 0.2, y: innerHeight * 0.3 }, 3); }
 }
 function stepClimb(dt) {
   const c = climb, P = c.pts; c.t += dt * c.speed; let acc = 0;
   for (let i = 0; i < P.length - 1; i++) {
     const a = new THREE.Vector3(...P[i]), b = new THREE.Vector3(...P[i + 1]), l = a.distanceTo(b);
-    if (c.t <= acc + l) { const k = (c.t - acc) / l, p = a.clone().lerp(b, k); if (b.y !== a.y) p.y += Math.sin(Math.PI * k) * 0.4; else p.y = a.y === 0 ? gAt(p.x, p.z) : a.y;
+    if (c.t <= acc + l) { const k = (c.t - acc) / l, p = a.clone().lerp(b, k); if (b.y !== a.y) p.y += Math.sin(Math.PI * k) * 0.4; else p.y = a.y === 0 ? gAt(p.x, p.z) : a.y; if (a.y === 0 && b.y === 0) p.y = gAt(p.x, p.z);
       daifuku.object3D.position.copy(p); daifuku.object3D.rotation.y = Math.atan2(b.x - a.x, b.z - a.z); daifuku.setGait('walk', 1.1); return; }
     acc += l;
   }
-  const [yx, yz] = L.yardStop; daifuku.object3D.position.set(yx, gAt(yx, yz), yz); daifuku.object3D.rotation.y = 0; daifuku.setGait('idle', 0); climb = null;
-  log.push({ t: +simTime.toFixed(2), type: 'BossAtStop', stop: 'yard' });
+  const [yx, yy, yz] = L.stops[bossAt]; daifuku.object3D.position.set(yx, yy || gAt(yx, yz), yz); daifuku.object3D.rotation.y = 0; daifuku.setGait('idle', 0); climb = null;
+  log.push({ t: +simTime.toFixed(2), type: 'BossAtStop', stop: bossAt });
 }
 
 /* ---------------------------------------------------------------- the Head Home thread (lane centre line to the garden gate) */
@@ -393,12 +417,12 @@ function texMB() {
 /* ---------------------------------------------------------------- M2 evidence: vantage shots and the bot walk */
 // six vantages (plan §5 M2): Mikan's spot, camera yaw/pitch, High Road state, Whisker Sense
 const VANTAGE = [
-  { at: [0.3, 0, 45.8], yaw: 200, pitch: 12, note: 'Low Wall Corner: red-mailbox post, Sunspot, Haru’s garden wall' },
-  { at: [0.0, 0, 6.5], yaw: 0, pitch: 9, note: 'Laundry Pole Yard from up-lane: lantern post, wisps, High Perch' },
-  { top: [-1.7, -4.6], yaw: 248, pitch: 14, note: 'The High Perch on the wall: the Den wall and Daifuku within 10 m' },
+  { at: [0.3, 0, 45.8], yaw: 200, pitch: 12, note: 'Low Wall Corner: red-mailbox post, Sunspot, Haru\u2019s garden wall' },
+  { at: [0.0, 0, 4.5], yaw: 0, pitch: 9, note: 'Laundry Pole Yard from up-lane: lantern post, wisps, High Perch' },
+  { top: [-1.7, 3.2], yaw: 75, pitch: 6, note: 'The High Perch on the wall: the Den wall and Daifuku within 10 m' },
   { at: [0.0, 0, -20.0], yaw: 0, pitch: 8, note: 'Down the slope into the lower town, toward the sea' },
   { at: [0.0, 0, -34.0], yaw: 180, pitch: 14, note: 'Looking back uphill at the stepped walls and the crest' },
-  { at: [-1.0, 0, 52.2], yaw: 140, pitch: 8, note: 'Haru’s garden gate: the wall blend between street and home' },
+  { at: [-1.0, 0, 52.2], yaw: 140, pitch: 8, note: 'Haru\u2019s garden gate: the wall blend between street and home' },
 ];
 function placeAt(v) {
   if (v.top) { const [x, z] = v.top, i = HR.findIndex((s) => s.kind === 'wall' && Math.abs(s.ax - x) < 0.3 && z >= Math.min(s.az, s.bz) && z <= Math.max(s.az, s.bz)); const s = HR[i], p = segPoint(s, x, z); Object.assign(mv, { mode: 'top', seg: i, s: p.s }); mikanPos.set(p.x, s.y, p.z); }
@@ -412,7 +436,7 @@ function botWalk(seconds = 300, seedN = 7) {
   const route = [[0, 58], [0, 30], [-1.0, 12], [0.8, -2], [-0.5, -12], [0, -30], [0.5, -58], [0, -30], [0.6, -6], [0, 20], [-0.9, 50], [0, 62]];
   const dt = 1 / 30, N = Math.round(seconds / dt), solid = world.colliders.filter((b) => !b.soft), ray = new THREE.Ray(), hit = new THREE.Vector3();
   mikanPos.set(0, 0, 58); mv.mode = 'ground'; mv.hop = null; rig.yaw = 0; rig.update(0, mikanPos, true);
-  bot.on = true; let wp = 0, camIn = 0, out = 0, hidden = 0, hops = 0, ribbonT = 0, lookT = 0, frames = [];
+  bot.on = true; let wp = 0, camIn = 0, out = 0, hidden = 0, hops = 0, ribbonT = 0, lookT = 0, frames = []; const fails = [];
   const fr = new THREE.Frustum(), M = new THREE.Matrix4();
   for (let i = 0; i < N; i++) {
     const tgt = route[wp % route.length], dx = tgt[0] - mikanPos.x, dz = tgt[1] - mikanPos.z;
@@ -430,16 +454,16 @@ function botWalk(seconds = 300, seedN = 7) {
     // metrics
     const c = cam.position; let inside = c.y < gAt(c.x, c.z) + 0.05;
     for (const b of solid) if (b.containsPoint(c)) { inside = true; break; }
-    if (inside) camIn++;
+    if (inside) { camIn++; if (fails.filter((f) => f.kind === 'camIn').length < 8) fails.push({ i, kind: 'camIn', cam: c.toArray().map((v) => +v.toFixed(2)), mikan: mikanPos.toArray().map((v) => +v.toFixed(2)), mode: mv.mode, hop: !!mv.hop, dist: +rig.dist.toFixed(2), pitch: +(rig.solvedPitch || 0).toFixed(1) }); }
     M.multiplyMatrices(cam.projectionMatrix, cam.matrixWorldInverse); fr.setFromProjectionMatrix(M);
     const head = mikanPos.clone().add(new THREE.Vector3(0, 0.3, 0));
-    const inFr = fr.containsPoint(head); if (!inFr) out++;
-    else { ray.origin.copy(c); ray.direction.copy(head).sub(c); const L2 = ray.direction.length(); ray.direction.normalize(); for (const b of solid) { if (ray.intersectBox(b, hit) && hit.distanceTo(c) < L2 - 0.25) { hidden++; break; } } }
+    const inFr = fr.containsPoint(head); if (!inFr) { out++; if (fails.filter((f) => f.kind === 'out').length < 8) fails.push({ i, kind: 'out', cam: c.toArray().map((v) => +v.toFixed(2)), mikan: mikanPos.toArray().map((v) => +v.toFixed(2)), mode: mv.mode, hop: !!mv.hop }); }
+    else { ray.origin.copy(c); ray.direction.copy(head).sub(c); const L2 = ray.direction.length(); ray.direction.normalize(); for (const b of solid) { if (ray.intersectBox(b, hit) && hit.distanceTo(c) < L2 - 0.25) { hidden++; if (fails.filter((f) => f.kind === 'hidden').length < 8) fails.push({ i, kind: 'hidden', cam: c.toArray().map((v) => +v.toFixed(2)), mikan: mikanPos.toArray().map((v) => +v.toFixed(2)), mode: mv.mode, hop: !!mv.hop, box: [b.min.toArray(), b.max.toArray()].map((a) => a.map((v) => +v.toFixed(2))) }); break; } } }
     if (i % 300 === 0) frames.push({ t: +(i * dt).toFixed(1), mikan: mikanPos.toArray().map((v) => +v.toFixed(2)), cam: c.toArray().map((v) => +v.toFixed(2)), mode: mv.mode });
   }
   bot.on = false; bot.look = [0, 0];
   const visible = N - out - hidden;
-  return { seconds, frames: N, camInsideGeometry: camIn, catOutOfFrustum: out, catBehindSolid: hidden, catInFramePct: +(100 * visible / N).toFixed(2), hops, waypointsReached: wp, samples: frames };
+  return { seconds, frames: N, camInsideGeometry: camIn, catOutOfFrustum: out, catBehindSolid: hidden, catInFramePct: +(100 * visible / N).toFixed(2), hops, waypointsReached: wp, samples: frames, fails };
 }
 
 /* ---------------------------------------------------------------- boot */
@@ -452,7 +476,7 @@ async function boot() {
   shadow = new SunShadow(2048, 21);
   post = new PaintPost(tex.grain);
   U.grainMap.value = tex.grain;
-  terr = createTerritory(L.patches); terr.on(onTerritory);
+  terr = createTerritory(L, { seed: opt.seed, start: opt.start }); terr.on(onTerritory);
   try { await loadCatAssets(''); } catch (e) { console.warn('cat assets failed to load; casts that need them are skipped', e); }
   const stub = () => ({ object3D: new THREE.Group(), update() {}, setGait() {}, setLighting() {}, setOutlineScale() {}, dispose() {} });
   const cat = (cast) => { try { return createCat({ cast, scale: 1.25 }); } catch (e) { console.warn(`cat "${cast}" could not be built; skipped`, e); missing.push('cat:' + cast); return stub(); } };
@@ -462,6 +486,10 @@ async function boot() {
   const [sx, sy, sz, sr] = L.spawn.wallSitter; sitter.object3D.position.set(sx, sy, sz); sitter.object3D.rotation.y = sr;
   lateScene.add(mikan.object3D, sitter.object3D);
   if (daifuku) { const [x, y, z, r] = L.den.seat; daifuku.object3D.position.set(x, y, z); daifuku.object3D.rotation.y = r; lateScene.add(daifuku.object3D); }
+  // the challenger glowers from the fence top beside the post it stakes (plan §2.2 10:55; the sim says who and where)
+  const ch = terr.snapshot().challenger;
+  if (ch && !ch.beaten && !opt.m0) { challenger = cat('tough'); const p = L.patches.find((q) => q.id === ch.patch); if (p && challenger) { challenger.object3D.position.set(1.64, 1.3, p.at[2] + 0.9); challenger.object3D.rotation.y = -Math.PI / 2; lateScene.add(challenger.object3D); catRoots.add(challenger.object3D); } }
+  terr.setPhase(opt.phase === 'dusk' ? 'dusk' : 'morning');
   keyLight = new THREE.DirectionalLight('#ffffff', 2.5); fillLight = new THREE.AmbientLight('#6E6AA8', 0.8); lateScene.add(keyLight, fillLight);
   scent = new ScentLayer(lateScene, L, terr, sTex, (z) => gAt(0, z));
   hud = opt.hud ? new StreetHUD() : null;
@@ -475,7 +503,7 @@ async function boot() {
   step(0); if (opt.view !== '01') rig.update(0, mikanPos, true);
   window.__cat = {
     state: () => ({ phase: ph.name, blend: ph.to ? +ph.k.toFixed(2) : null, camera: cam.position.toArray().map((v) => +v.toFixed(3)), yaw: rig.yaw, pitch: rig.pitch, dist: +rig.dist.toFixed(3),
-      mikan: mikanPos.toArray().map((v) => +v.toFixed(3)), mode: mv.mode, home: mv.home, influence: terr.influence(), window: terr.window, patches: terr.patches(), discovered: { ...sense.discovered },
+      mikan: mikanPos.toArray().map((v) => +v.toFixed(3)), mode: mv.mode, home: mv.home, influence: terr.influence(), window: terr.window, boss: bossAt, patches: terr.patches(), discovered: { ...sense.discovered }, hash: terr.hash(),
       stats: { ...lastStats, texMB: texMB() }, missing: [...missing], log: log.slice(-20) }),
     step: (n = 1, dt = 1 / 60) => { for (let i = 0; i < n; i++) step(dt); render(); },
     setPhase: (p) => { setPhase(p); render(); },
@@ -484,6 +512,8 @@ async function boot() {
     input: (o = {}) => { bot.on = true; Object.assign(bot, { f: 0, r: 0, look: [0, 0], e: false, tab: false, home: false }, o); if (o.space) hop(); for (let i = 0; i < (o.frames || 1); i++) step(o.dt || 1 / 30); bot.on = false; render(); return window.__cat.state(); },
     teleport: (x, z, yaw) => { mikanPos.set(x, gAt(x, z), z); mv.mode = 'ground'; if (yaw != null) rig.yaw = yaw; rig.update(0, mikanPos, true); step(0); render(); },
     botWalk: (s, seed) => botWalk(s, seed),
+    verdict: (patch, v = 'chase') => { terr.verdict(patch, v); render(); return window.__cat.state(); },   // M3 owns the Verdict; test scripts only
+    hold: (secs = 1.3, o = {}) => window.__cat.input({ e: true, frames: Math.ceil(secs * 30), ...o }),
     lensCheck: () => {
       const c = cam.position, t = Math.tan(cam.fov * Math.PI / 360); let worst = { frac: 0 };
       cam.updateMatrixWorld(); const fr = new THREE.Frustum().setFromProjectionMatrix(new THREE.Matrix4().multiplyMatrices(cam.projectionMatrix, cam.matrixWorldInverse));
@@ -537,7 +567,7 @@ function loading(on) {
   let el = document.getElementById('scene-loading');
   if (!on) { if (el) el.remove(); return; }
   el = document.createElement('div'); el.id = 'scene-loading'; el.setAttribute('role', 'status');
-  el.textContent = 'Loading the lane…';
+  el.textContent = 'Loading the lane\u2026';
   el.style.cssText = 'position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);padding:12px 24px;border-radius:999px;background:#FFF6E3;color:#33273B;border:3px solid #6B4A35;font:700 18px/1.2 "M PLUS Rounded 1c",ui-rounded,system-ui,sans-serif;z-index:40';
   document.body.appendChild(el);
 }
@@ -546,7 +576,7 @@ function failCard(e) {
   const reason = String((e && e.message) || e || 'unknown error').split('\n')[0].slice(0, 160);
   const el = document.createElement('div'); el.id = 'scene-error'; el.setAttribute('role', 'alert');
   el.style.cssText = 'position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;background:#FFF6E3;z-index:60;font-family:"M PLUS Rounded 1c",ui-rounded,system-ui,sans-serif';
-  el.innerHTML = '<div style="box-sizing:border-box;width:min(100%,460px);background:#FFF6E3;color:#33273B;border:4px solid #6B4A35;border-radius:28px;padding:22px;text-align:center;box-shadow:0 6px 0 #6B4A35"><h2 style="margin:0 0 8px;font-size:26px">Couldn’t load the scene</h2><p style="margin:0 0 16px;font-size:17px;line-height:1.4"></p><button type="button" style="font:inherit;font-weight:700;font-size:17px;background:#6B4A35;color:#FFF6E3;border:0;border-radius:999px;padding:11px 24px;min-height:44px;cursor:pointer">Try again</button></div>';
+  el.innerHTML = '<div style="box-sizing:border-box;width:min(100%,460px);background:#FFF6E3;color:#33273B;border:4px solid #6B4A35;border-radius:28px;padding:22px;text-align:center;box-shadow:0 6px 0 #6B4A35"><h2 style="margin:0 0 8px;font-size:26px">Couldn\u2019t load the scene</h2><p style="margin:0 0 16px;font-size:17px;line-height:1.4"></p><button type="button" style="font:inherit;font-weight:700;font-size:17px;background:#6B4A35;color:#FFF6E3;border:0;border-radius:999px;padding:11px 24px;min-height:44px;cursor:pointer">Try again</button></div>';
   el.querySelector('p').textContent = reason;
   el.querySelector('button').addEventListener('click', () => location.reload());
   document.body.appendChild(el);

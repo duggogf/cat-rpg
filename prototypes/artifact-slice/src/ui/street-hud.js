@@ -30,8 +30,8 @@ const CSS = `
 .sh-prompt { transform-origin:50% 100%; }
 .sh-key { display:inline-flex; align-items:center; justify-content:center; min-width:46px; height:46px; padding:0 8px; border-radius:14px; background:var(--cocoa); color:var(--cream); font:800 26px/1 var(--font); }
 .sh-ring { position:absolute; left:-6px; top:-6px; }
-.sh-hint { position:absolute; left:50%; bottom:150px; transform:translateX(-50%); transition:opacity .4s; }
-.sh-home { position:absolute; left:50%; bottom:236px; transform:translateX(-50%); transition:opacity .4s; }
+.sh-hint { position:absolute; left:50%; bottom:150px; transform:translateX(-50%); transition:opacity .4s; white-space:nowrap; }
+.sh-home { position:absolute; left:50%; bottom:236px; transform:translateX(-50%); transition:opacity .4s; white-space:nowrap; }
 .sh-off { opacity:0; }
 .sh-edge { position:absolute; transform:translate(-50%,-50%); transition:opacity .4s; }
 .sh-edge .arrow { position:absolute; left:50%; top:50%; width:0; height:0; }
@@ -70,7 +70,7 @@ export class StreetHUD {
   /** Patch tag: shown 3 s on entering a Patch and 2 s after any mark (the wisps change in place). */
   tag(p, secs) {
     const col = p.clowder ? p.clowder.color : C.cream, emb = p.owner === 'bell' ? GLYPH.bell() : p.owner === 'wallSitters' ? GLYPH.brick() : '';
-    const fading = p.owner === 'bell' && p.scent < 60;
+    const fading = p.fading != null ? p.fading : (p.owner === 'bell' && p.scent < 60);
     const key = `${p.id}:${p.owner}:${p.wisps}:${fading}`;
     if (key !== this.tagKey) {
       this.tagKey = key;
@@ -121,7 +121,7 @@ export class StreetHUD {
     const edges = this.q('.sh-edges');
     if (this.t < this.edgeUntil && this.edge) {
       if (!edges.innerHTML) edges.innerHTML = `<div class="sh-edge k-prompt" style="padding:6px">${svgOf(GLYPH.crown(), 56)}${svgOf(`<path d="M-18 -6q6 -10 12 0t12 0t12 0" fill="none" stroke="${C.ink}" stroke-width="5" stroke-linecap="round"/><path d="M-18 -6q6 -10 12 0t12 0t12 0" fill="none" stroke="${C.yowl}" stroke-width="2.6" stroke-linecap="round"/>`, 44)}</div>`;
-      const e = edges.firstChild, m = 70; e.style.left = Math.min(innerWidth - m, Math.max(m, this.edge.x)) + 'px'; e.style.top = Math.min(innerHeight - m, Math.max(m, this.edge.y)) + 'px'; e.style.opacity = 1;
+      const e = edges.firstChild, m = 70, top = 230 * this.scaleK; e.style.left = Math.min(innerWidth - m, Math.max(m, this.edge.x)) + 'px'; e.style.top = Math.min(innerHeight - m, Math.max(top, this.edge.y)) + 'px'; e.style.opacity = 1;   // the edge ring, clear of the TL/TR corner zones
     } else if (edges.firstChild) edges.firstChild.style.opacity = 0;
   }
 }

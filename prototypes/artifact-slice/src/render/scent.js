@@ -31,7 +31,7 @@ export const GLYPH = {
 
 export async function bakeScent() {
   const T = { wisps: {}, pops: [], puffs: [], glyph: {} };
-  const keys = { wallSitters: C.sage, bell: C.gold, outsider: CLOWDER.outsider.color };
+  const keys = { wallSitters: C.sage, bell: C.gold, outsider: CLOWDER.outsider.color, strays: C.ink };
   await Promise.all(Object.entries(keys).map(async ([k, col]) => {
     T.wisps[k] = [];
     for (let n = 1; n <= 4; n++) {
@@ -109,9 +109,9 @@ export class ScentLayer {
     this.posts = []; this.pops = []; this.ribbons = [];
     for (const p of L.patches) {
       const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), cardMat(T.wisps.wallSitters[1][0]));
-      m.position.set(p.post[0], p.post[1] + 0.62, p.post[2]); m.scale.set(0.95, 0.95, 1); m.frustumCulled = false; m.renderOrder = 4; m.name = 'wisps-' + p.id;
+      m.position.set(p.at[0], p.at[1] + 0.62, p.at[2]); m.scale.set(0.95, 0.95, 1); m.frustumCulled = false; m.renderOrder = 4; m.name = 'wisps-' + p.id;
       scene.add(m); this.posts.push({ id: p.id, mesh: m, base: m.position.clone() });
-      for (const [k, [x, y, z, face]] of p.rub.entries()) {   // Rub Marks: emblem glyphs flat on the wall base, Whisker Sense only
+      for (const [k, [x, y, z, face]] of Object.entries(p.rub)) {   // Rub Marks: emblem glyphs flat on the wall base, Whisker Sense only
         const g = new THREE.Mesh(new THREE.PlaneGeometry(0.22, 0.22), cardMat(T.glyph.brickTex, { gate: 0, sway: 0 }));
         g.material.vertexShader = /* glsl */`varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0); }`;
         g.position.set(x + (face === "+x" ? 0.01 : -0.01), y + this.gy(z), z); g.rotation.y = face === '+x' ? Math.PI / 2 : -Math.PI / 2; g.name = `rub-${p.id}-${k}`; g.userData.rub = { patch: p.id, k };
@@ -138,15 +138,15 @@ export class ScentLayer {
   update(dt, ctx) {
     this.t += dt; const sk = ctx.sense; this.sense = sk;
     for (const p of this.posts) {
-      const st = this.terr.patch(p.id), n = Math.max(1, st.wisps), key = st.owner || 'wallSitters', mat = p.mesh.material;
+      const st = this.terr.patch(p.id), n = Math.max(1, Math.min(4, st.wisps)), key = this.T.wisps[st.owner] ? st.owner : 'wallSitters', mat = p.mesh.material;
       p.mesh.visible = st.wisps > 0;
       mat.uniforms.map.value = this.T.wisps[key][n][Math.floor(this.t * 6) % 2];   // on twos (12 fps drawings, two drawings)
-      mat.uniforms.droop.value = st.scent < 60 ? 1 : 0; mat.uniforms.lift.value = sk; mat.uniforms.fade.value = ctx.fadeOf ? ctx.fadeOf(p.id) : 1;
-      p.mesh.scale.set(0.8 + 0.06 * n, (0.8 + 0.06 * n) * (st.scent < 60 ? 0.85 : 1), 1);
+      mat.uniforms.droop.value = st.droop ? 1 : 0; mat.uniforms.lift.value = sk; mat.uniforms.fade.value = ctx.fadeOf ? ctx.fadeOf(p.id) : 1;
+      p.mesh.scale.set(0.8 + 0.06 * n, (0.8 + 0.06 * n) * (st.droop ? 0.85 : 1), 1);
     }
     for (const r of this.ribbons) {
       const gate = r.sense ? sk : 1, m = r.mesh.material.uniforms; m.gate.value = gate; r.mesh.visible = gate > 0.02;
-      if (r.glyph && r.patch) { const st = this.terr.patch(r.patch); m.map.value = st.owner === 'bell' ? this.T.glyph.bellTex : this.T.glyph.brickTex; }
+      if (r.glyph && r.patch) { const st = this.terr.patch(r.patch); m.map.value = st.owner === 'bell' ? this.T.glyph.bellTex : this.T.glyph.brickTex; const mk = st.rub_marks && st.rub_marks.find((q) => q.id === r.mesh.userData.rub.k); if (mk && mk.over_marked) m.gate.value = Math.min(m.gate.value, 0.35); }
     }
     for (const q of this.pops) {
       q.t += dt; const f = Math.floor(q.t * 12);   // twos

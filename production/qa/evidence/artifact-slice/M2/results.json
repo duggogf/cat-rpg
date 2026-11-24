@@ -1,0 +1,2263 @@
+{
+ "vantage": {
+  "0-day": {
+   "calls": 68,
+   "shadowCalls": 55,
+   "triangles": 219336,
+   "texMB": 124.9,
+   "mikan": [
+    0.3,
+    0,
+    45.8
+   ],
+   "mode": "ground"
+  },
+  "1-day": {
+   "calls": 157,
+   "shadowCalls": 86,
+   "triangles": 229698,
+   "texMB": 124.9,
+   "mikan": [
+    0,
+    0,
+    6.5
+   ],
+   "mode": "ground"
+  },
+  "2-day": {
+   "calls": 73,
+   "shadowCalls": 76,
+   "triangles": 221854,
+   "texMB": 124.9,
+   "mikan": [
+    -1.7,
+    1.58,
+    3.2
+   ],
+   "mode": "top"
+  },
+  "3-day": {
+   "calls": 57,
+   "shadowCalls": 57,
+   "triangles": 218904,
+   "texMB": 124.9,
+   "mikan": [
+    0,
+    -1.215,
+    -20
+   ],
+   "mode": "ground"
+  },
+  "4-day": {
+   "calls": 201,
+   "shadowCalls": 26,
+   "triangles": 236510,
+   "texMB": 124.9,
+   "mikan": [
+    0,
+    -5.811,
+    -34
+   ],
+   "mode": "ground"
+  },
+  "5-day": {
+   "calls": 38,
+   "shadowCalls": 41,
+   "triangles": 216662,
+   "texMB": 124.9,
+   "mikan": [
+    -1,
+    0,
+    52.2
+   ],
+   "mode": "ground"
+  },
+  "0-dusk": {
+   "calls": 68,
+   "shadowCalls": 103,
+   "triangles": 219336,
+   "texMB": 124.9,
+   "mikan": [
+    0.3,
+    0,
+    45.8
+   ],
+   "mode": "ground"
+  },
+  "1-dusk": {
+   "calls": 157,
+   "shadowCalls": 109,
+   "triangles": 229698,
+   "texMB": 124.9,
+   "mikan": [
+    0,
+    0,
+    6.5
+   ],
+   "mode": "ground"
+  },
+  "2-dusk": {
+   "calls": 73,
+   "shadowCalls": 109,
+   "triangles": 221854,
+   "texMB": 124.9,
+   "mikan": [
+    -1.7,
+    1.58,
+    3.2
+   ],
+   "mode": "top"
+  },
+  "3-dusk": {
+   "calls": 57,
+   "shadowCalls": 107,
+   "triangles": 218904,
+   "texMB": 124.9,
+   "mikan": [
+    0,
+    -1.215,
+    -20
+   ],
+   "mode": "ground"
+  },
+  "4-dusk": {
+   "calls": 201,
+   "shadowCalls": 78,
+   "triangles": 236510,
+   "texMB": 124.9,
+   "mikan": [
+    0,
+    -5.811,
+    -34
+   ],
+   "mode": "ground"
+  },
+  "5-dusk": {
+   "calls": 38,
+   "shadowCalls": 103,
+   "triangles": 216662,
+   "texMB": 124.9,
+   "mikan": [
+    -1,
+    0,
+    52.2
+   ],
+   "mode": "ground"
+  }
+ },
+ "bot": [
+  {
+   "seed": 7,
+   "seconds": 300,
+   "frames": 9000,
+   "camInsideGeometry": 0,
+   "catOutOfFrustum": 3,
+   "catBehindSolid": 0,
+   "catInFramePct": 99.97,
+   "hops": 6,
+   "waypointsReached": 18,
+   "samples": [
+    {
+     "t": 0,
+     "mikan": [
+      0,
+      0,
+      58
+     ],
+     "cam": [
+      0,
+      0.97,
+      60.95
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 10,
+     "mikan": [
+      0.11,
+      0,
+      46.07
+     ],
+     "cam": [
+      -1.41,
+      0.44,
+      46.15
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 20,
+     "mikan": [
+      -0.23,
+      0,
+      34.3
+     ],
+     "cam": [
+      0.28,
+      1.28,
+      37.29
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 30,
+     "mikan": [
+      -0.26,
+      0,
+      22.39
+     ],
+     "cam": [
+      -1.4,
+      1.22,
+      23.16
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 40,
+     "mikan": [
+      -1.12,
+      0,
+      11.86
+     ],
+     "cam": [
+      -1.44,
+      1.06,
+      14.32
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 50,
+     "mikan": [
+      0.36,
+      0,
+      0.25
+     ],
+     "cam": [
+      1.39,
+      0.72,
+      -0.69
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 60,
+     "mikan": [
+      0.07,
+      0,
+      -9.32
+     ],
+     "cam": [
+      1.52,
+      2.43,
+      -7.54
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 70,
+     "mikan": [
+      -1.37,
+      -1.5,
+      -21.04
+     ],
+     "cam": [
+      0.32,
+      -1.51,
+      -23.27
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 80,
+     "mikan": [
+      -0.11,
+      -5.22,
+      -32.41
+     ],
+     "cam": [
+      -1.06,
+      -4.17,
+      -30.47
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 90,
+     "mikan": [
+      0.46,
+      -9,
+      -44
+     ],
+     "cam": [
+      1.44,
+      -8.73,
+      -46.15
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 100,
+     "mikan": [
+      0.21,
+      -9,
+      -55.3
+     ],
+     "cam": [
+      -0.77,
+      -6.36,
+      -53.36
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 110,
+     "mikan": [
+      0.1,
+      -9,
+      -47.57
+     ],
+     "cam": [
+      1.4,
+      -8.65,
+      -47.77
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 120,
+     "mikan": [
+      0.19,
+      -6.46,
+      -35.7
+     ],
+     "cam": [
+      -1.39,
+      -5.73,
+      -36.68
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 130,
+     "mikan": [
+      -0.46,
+      -2.36,
+      -24.01
+     ],
+     "cam": [
+      1.03,
+      0.48,
+      -25.05
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 140,
+     "mikan": [
+      -0.04,
+      0,
+      -12.4
+     ],
+     "cam": [
+      1.81,
+      0.6,
+      -10.18
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 150,
+     "mikan": [
+      0.01,
+      0,
+      -1.86
+     ],
+     "cam": [
+      -1.39,
+      1.18,
+      -2.45
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 160,
+     "mikan": [
+      2.19,
+      0,
+      8.51
+     ],
+     "cam": [
+      2.19,
+      0.98,
+      5.36
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 170,
+     "mikan": [
+      0.34,
+      0,
+      19.67
+     ],
+     "cam": [
+      -0.24,
+      2.91,
+      17.89
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 180,
+     "mikan": [
+      0.1,
+      0,
+      31.29
+     ],
+     "cam": [
+      -0.64,
+      1.79,
+      28.72
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 190,
+     "mikan": [
+      0.84,
+      0,
+      41.9
+     ],
+     "cam": [
+      0.6,
+      2,
+      39.15
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 200,
+     "mikan": [
+      -0.61,
+      0,
+      53.54
+     ],
+     "cam": [
+      1.42,
+      0.28,
+      51.37
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 210,
+     "mikan": [
+      -0.09,
+      0,
+      57.19
+     ],
+     "cam": [
+      -0.79,
+      0.84,
+      60.26
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 220,
+     "mikan": [
+      -0.71,
+      0,
+      45.98
+     ],
+     "cam": [
+      1.38,
+      2.33,
+      46.77
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 230,
+     "mikan": [
+      -0.4,
+      0,
+      35.57
+     ],
+     "cam": [
+      1.47,
+      1.33,
+      37.34
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 240,
+     "mikan": [
+      -0.97,
+      0,
+      23.9
+     ],
+     "cam": [
+      0.14,
+      0.97,
+      26.16
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 250,
+     "mikan": [
+      -1.25,
+      0,
+      13.24
+     ],
+     "cam": [
+      -1.08,
+      2.72,
+      15.38
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 260,
+     "mikan": [
+      -1.7,
+      1.58,
+      2.56
+     ],
+     "cam": [
+      -1.7,
+      2.98,
+      5.96
+     ],
+     "mode": "top"
+    },
+    {
+     "t": 270,
+     "mikan": [
+      -0.41,
+      0,
+      -7.6
+     ],
+     "cam": [
+      0.23,
+      2.91,
+      -5.8
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 280,
+     "mikan": [
+      -0.41,
+      -1.06,
+      -19.39
+     ],
+     "cam": [
+      -0.63,
+      -1.08,
+      -22.16
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 290,
+     "mikan": [
+      0,
+      -4.81,
+      -31.28
+     ],
+     "cam": [
+      0.84,
+      -2.44,
+      -28.91
+     ],
+     "mode": "ground"
+    }
+   ],
+   "fails": [
+    {
+     "i": 7323,
+     "kind": "out",
+     "cam": [
+      -1.43,
+      1.43,
+      19.69
+     ],
+     "mikan": [
+      -1.15,
+      0.89,
+      19.3
+     ],
+     "mode": "ground",
+     "hop": true
+    },
+    {
+     "i": 7324,
+     "kind": "out",
+     "cam": [
+      -1.52,
+      1.68,
+      19.71
+     ],
+     "mikan": [
+      -1.22,
+      1.13,
+      19.3
+     ],
+     "mode": "ground",
+     "hop": true
+    },
+    {
+     "i": 7325,
+     "kind": "out",
+     "cam": [
+      -1.61,
+      1.93,
+      19.73
+     ],
+     "mikan": [
+      -1.28,
+      1.33,
+      19.3
+     ],
+     "mode": "ground",
+     "hop": true
+    }
+   ]
+  },
+  {
+   "seed": 11,
+   "seconds": 300,
+   "frames": 9000,
+   "camInsideGeometry": 2,
+   "catOutOfFrustum": 34,
+   "catBehindSolid": 11,
+   "catInFramePct": 99.5,
+   "hops": 8,
+   "waypointsReached": 17,
+   "samples": [
+    {
+     "t": 0,
+     "mikan": [
+      0,
+      0,
+      58
+     ],
+     "cam": [
+      -0.14,
+      1.56,
+      60.78
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 10,
+     "mikan": [
+      0.89,
+      0,
+      47.43
+     ],
+     "cam": [
+      1.45,
+      0.63,
+      49.17
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 20,
+     "mikan": [
+      1.03,
+      0,
+      36.87
+     ],
+     "cam": [
+      0.52,
+      0.96,
+      39.91
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 30,
+     "mikan": [
+      1,
+      0,
+      30.11
+     ],
+     "cam": [
+      -1.19,
+      1.08,
+      27.93
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 40,
+     "mikan": [
+      -0.34,
+      0,
+      18.61
+     ],
+     "cam": [
+      -0.76,
+      0.31,
+      20.81
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 50,
+     "mikan": [
+      0.04,
+      0,
+      7.26
+     ],
+     "cam": [
+      -0.96,
+      2.88,
+      6.05
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 60,
+     "mikan": [
+      0.13,
+      0,
+      -2.19
+     ],
+     "cam": [
+      -1.24,
+      2.89,
+      -1
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 70,
+     "mikan": [
+      -0.48,
+      0,
+      -14
+     ],
+     "cam": [
+      0.09,
+      2.91,
+      -12.17
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 80,
+     "mikan": [
+      -1.7,
+      -0.94,
+      -22.66
+     ],
+     "cam": [
+      -3,
+      0.75,
+      -22.28
+     ],
+     "mode": "top"
+    },
+    {
+     "t": 90,
+     "mikan": [
+      -0.12,
+      -5.47,
+      -33.08
+     ],
+     "cam": [
+      0.52,
+      -5.34,
+      -35.01
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 100,
+     "mikan": [
+      0.22,
+      -9,
+      -45.1
+     ],
+     "cam": [
+      -1.39,
+      -7.79,
+      -43.52
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 110,
+     "mikan": [
+      0.35,
+      -9,
+      -56.59
+     ],
+     "cam": [
+      -0.94,
+      -8.41,
+      -59.15
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 120,
+     "mikan": [
+      0.27,
+      -9,
+      -45.85
+     ],
+     "cam": [
+      0.33,
+      -8.72,
+      -43.64
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 130,
+     "mikan": [
+      -0.15,
+      -5.9,
+      -34.24
+     ],
+     "cam": [
+      1.45,
+      -5.46,
+      -33.82
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 140,
+     "mikan": [
+      -0.18,
+      -1.89,
+      -22.44
+     ],
+     "cam": [
+      -1.8,
+      0.96,
+      -23.04
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 150,
+     "mikan": [
+      0.55,
+      0,
+      -10.3
+     ],
+     "cam": [
+      2.02,
+      2.91,
+      -9.59
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 160,
+     "mikan": [
+      1.28,
+      0,
+      -2.85
+     ],
+     "cam": [
+      1.07,
+      2.62,
+      -0.79
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 170,
+     "mikan": [
+      0.9,
+      0,
+      -2.49
+     ],
+     "cam": [
+      0.18,
+      2.91,
+      -0.91
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 180,
+     "mikan": [
+      -0.29,
+      0,
+      5.4
+     ],
+     "cam": [
+      1.43,
+      0.33,
+      5.18
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 190,
+     "mikan": [
+      -0.11,
+      0,
+      16.77
+     ],
+     "cam": [
+      -1.21,
+      0.79,
+      17.24
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 200,
+     "mikan": [
+      -0.78,
+      0,
+      28.47
+     ],
+     "cam": [
+      1.53,
+      1.41,
+      29.9
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 210,
+     "mikan": [
+      -0.99,
+      0,
+      39.17
+     ],
+     "cam": [
+      -1.39,
+      1.26,
+      39.42
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 220,
+     "mikan": [
+      -0.39,
+      0,
+      51.38
+     ],
+     "cam": [
+      -1.22,
+      0.42,
+      51.53
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 230,
+     "mikan": [
+      -0.05,
+      0,
+      59.72
+     ],
+     "cam": [
+      -1.16,
+      0.4,
+      62.67
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 240,
+     "mikan": [
+      -0.02,
+      0,
+      47.8
+     ],
+     "cam": [
+      1.42,
+      0.48,
+      46.82
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 250,
+     "mikan": [
+      -0.37,
+      0,
+      36.07
+     ],
+     "cam": [
+      -1.37,
+      0.42,
+      36.12
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 260,
+     "mikan": [
+      -0.01,
+      0,
+      24.17
+     ],
+     "cam": [
+      1.62,
+      2.57,
+      23.37
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 270,
+     "mikan": [
+      -0.87,
+      0,
+      12.89
+     ],
+     "cam": [
+      1.99,
+      0.25,
+      13.16
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 280,
+     "mikan": [
+      0.02,
+      0,
+      2.36
+     ],
+     "cam": [
+      1.39,
+      0.33,
+      3.43
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 290,
+     "mikan": [
+      -0.19,
+      0,
+      -8.36
+     ],
+     "cam": [
+      0.48,
+      1.85,
+      -5.86
+     ],
+     "mode": "ground"
+    }
+   ],
+   "fails": [
+    {
+     "i": 450,
+     "kind": "out",
+     "cam": [
+      1.43,
+      0.91,
+      41.99
+     ],
+     "mikan": [
+      1.27,
+      0.53,
+      41.87
+     ],
+     "mode": "ground",
+     "hop": true
+    },
+    {
+     "i": 451,
+     "kind": "out",
+     "cam": [
+      1.43,
+      0.97,
+      41.96
+     ],
+     "mikan": [
+      1.31,
+      0.77,
+      41.87
+     ],
+     "mode": "ground",
+     "hop": true
+    },
+    {
+     "i": 452,
+     "kind": "out",
+     "cam": [
+      1.43,
+      1.06,
+      41.93
+     ],
+     "mikan": [
+      1.35,
+      0.97,
+      41.87
+     ],
+     "mode": "ground",
+     "hop": true
+    },
+    {
+     "i": 453,
+     "kind": "out",
+     "cam": [
+      1.44,
+      1.18,
+      41.91
+     ],
+     "mikan": [
+      1.39,
+      1.13,
+      41.87
+     ],
+     "mode": "ground",
+     "hop": true
+    },
+    {
+     "i": 454,
+     "kind": "out",
+     "cam": [
+      1.57,
+      1.44,
+      41.88
+     ],
+     "mikan": [
+      1.43,
+      1.26,
+      41.87
+     ],
+     "mode": "ground",
+     "hop": true
+    },
+    {
+     "i": 455,
+     "kind": "out",
+     "cam": [
+      1.68,
+      1.68,
+      41.84
+     ],
+     "mikan": [
+      1.47,
+      1.34,
+      41.87
+     ],
+     "mode": "ground",
+     "hop": true
+    }
+   ]
+  },
+  {
+   "seed": 23,
+   "seconds": 300,
+   "frames": 9000,
+   "camInsideGeometry": 46,
+   "catOutOfFrustum": 120,
+   "catBehindSolid": 4,
+   "catInFramePct": 98.62,
+   "hops": 5,
+   "waypointsReached": 18,
+   "samples": [
+    {
+     "t": 0,
+     "mikan": [
+      0,
+      0,
+      58
+     ],
+     "cam": [
+      0,
+      1.61,
+      60.77
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 10,
+     "mikan": [
+      0.27,
+      0,
+      45.96
+     ],
+     "cam": [
+      -1.31,
+      0.31,
+      46.86
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 20,
+     "mikan": [
+      1.09,
+      0,
+      35.37
+     ],
+     "cam": [
+      1.91,
+      2.66,
+      38.19
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 30,
+     "mikan": [
+      -1.35,
+      0,
+      23.75
+     ],
+     "cam": [
+      0.98,
+      2.22,
+      24.57
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 40,
+     "mikan": [
+      -1.23,
+      0,
+      12.22
+     ],
+     "cam": [
+      -1.42,
+      0.86,
+      12.22
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 50,
+     "mikan": [
+      0.49,
+      0,
+      0.8
+     ],
+     "cam": [
+      -1.98,
+      2.11,
+      0.49
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 60,
+     "mikan": [
+      0.27,
+      0,
+      -9.81
+     ],
+     "cam": [
+      -1.39,
+      0.91,
+      -11.66
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 70,
+     "mikan": [
+      -0.3,
+      -1.61,
+      -21.45
+     ],
+     "cam": [
+      -1.42,
+      1.2,
+      -22.85
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 80,
+     "mikan": [
+      0.47,
+      -5.65,
+      -33.56
+     ],
+     "cam": [
+      -1.74,
+      -3.26,
+      -32.65
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 90,
+     "mikan": [
+      0.44,
+      -9,
+      -45.48
+     ],
+     "cam": [
+      -1.42,
+      -8.68,
+      -45.77
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 100,
+     "mikan": [
+      0.55,
+      -9,
+      -57.21
+     ],
+     "cam": [
+      -0.02,
+      -8.72,
+      -54.8
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 110,
+     "mikan": [
+      0,
+      -9,
+      -45.21
+     ],
+     "cam": [
+      0.95,
+      -6.38,
+      -47.22
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 120,
+     "mikan": [
+      -0.29,
+      -5.55,
+      -33.3
+     ],
+     "cam": [
+      -1.09,
+      -2.91,
+      -31.99
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 130,
+     "mikan": [
+      1.07,
+      -1.59,
+      -21.39
+     ],
+     "cam": [
+      2.05,
+      1.26,
+      -20.17
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 140,
+     "mikan": [
+      1.06,
+      0,
+      -9.75
+     ],
+     "cam": [
+      -0.08,
+      2.91,
+      -11.23
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 150,
+     "mikan": [
+      0.9,
+      0,
+      -2.49
+     ],
+     "cam": [
+      1.43,
+      1.22,
+      -2.43
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 160,
+     "mikan": [
+      0.85,
+      0,
+      4.08
+     ],
+     "cam": [
+      -0.84,
+      0.3,
+      6.33
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 170,
+     "mikan": [
+      0.45,
+      0,
+      15.91
+     ],
+     "cam": [
+      0.13,
+      2.9,
+      14.05
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 180,
+     "mikan": [
+      -0.77,
+      0,
+      27.28
+     ],
+     "cam": [
+      -1.67,
+      2.91,
+      28.59
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 190,
+     "mikan": [
+      0.21,
+      0,
+      38.86
+     ],
+     "cam": [
+      -0.78,
+      0.32,
+      40.62
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 200,
+     "mikan": [
+      -0.79,
+      0,
+      50.27
+     ],
+     "cam": [
+      -0.84,
+      1.55,
+      47.45
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 210,
+     "mikan": [
+      -0.19,
+      0,
+      60.64
+     ],
+     "cam": [
+      1.46,
+      0.33,
+      60.88
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 220,
+     "mikan": [
+      -0.27,
+      0,
+      49.04
+     ],
+     "cam": [
+      1.29,
+      1.12,
+      48.86
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 230,
+     "mikan": [
+      -0.82,
+      0,
+      39.53
+     ],
+     "cam": [
+      -1.2,
+      0.96,
+      39.82
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 240,
+     "mikan": [
+      -0.54,
+      0,
+      28.06
+     ],
+     "cam": [
+      -1.4,
+      0.28,
+      29.32
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 250,
+     "mikan": [
+      -0.47,
+      0,
+      16.25
+     ],
+     "cam": [
+      1.01,
+      2.91,
+      15.49
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 260,
+     "mikan": [
+      -1.7,
+      1.58,
+      4.85
+     ],
+     "cam": [
+      -1.7,
+      2.95,
+      8.26
+     ],
+     "mode": "top"
+    },
+    {
+     "t": 270,
+     "mikan": [
+      0.03,
+      0,
+      -5.28
+     ],
+     "cam": [
+      1.25,
+      0.25,
+      -7.65
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 280,
+     "mikan": [
+      0.42,
+      -0.5,
+      -17.04
+     ],
+     "cam": [
+      -1.21,
+      -0.54,
+      -19.35
+     ],
+     "mode": "ground"
+    },
+    {
+     "t": 290,
+     "mikan": [
+      -0.17,
+      -3.87,
+      -28.64
+     ],
+     "cam": [
+      -0.89,
+      -2.97,
+      -31.33
+     ],
+     "mode": "ground"
+    }
+   ],
+   "fails": [
+    {
+     "i": 984,
+     "kind": "out",
+     "cam": [
+      -1.35,
+      0.63,
+      20.62
+     ],
+     "mikan": [
+      -1.12,
+      0,
+      20.6
+     ],
+     "mode": "ground",
+     "hop": false
+    },
+    {
+     "i": 985,
+     "kind": "out",
+     "cam": [
+      -1.35,
+      0.63,
+      20.58
+     ],
+     "mikan": [
+      -1.13,
+      0,
+      20.55
+     ],
+     "mode": "ground",
+     "hop": false
+    },
+    {
+     "i": 986,
+     "kind": "out",
+     "cam": [
+      -1.36,
+      0.63,
+      20.54
+     ],
+     "mikan": [
+      -1.14,
+      0,
+      20.51
+     ],
+     "mode": "ground",
+     "hop": false
+    },
+    {
+     "i": 987,
+     "kind": "out",
+     "cam": [
+      -1.36,
+      0.64,
+      20.5
+     ],
+     "mikan": [
+      -1.15,
+      0,
+      20.46
+     ],
+     "mode": "ground",
+     "hop": false
+    },
+    {
+     "i": 988,
+     "kind": "out",
+     "cam": [
+      -1.37,
+      0.64,
+      20.46
+     ],
+     "mikan": [
+      -1.16,
+      0,
+      20.43
+     ],
+     "mode": "ground",
+     "hop": false
+    },
+    {
+     "i": 989,
+     "kind": "out",
+     "cam": [
+      -1.38,
+      0.64,
+      20.42
+     ],
+     "mikan": [
+      -1.17,
+      0,
+      20.39
+     ],
+     "mode": "ground",
+     "hop": false
+    }
+   ]
+  }
+ ],
+ "flows": {
+  "rescue": {
+   "query": "test=1&hud=1&start=showcase_l2d2",
+   "steps": [
+    {
+     "step": "At Laundry Pole Yard: the post is Mikan’s but fading (48, 2 drooping gold wisps); the challenger stakes it from the fence top",
+     "js": "__cat.teleport(0.05, -0.9, 20)",
+     "shot": "flow-rescue-00.png",
+     "state": {
+      "influence": 95,
+      "window": false,
+      "boss": "den_wall",
+      "mode": "ground",
+      "home": false,
+      "phase": "day",
+      "discovered": {
+       "daifuku": false
+      },
+      "posts": {
+       "LWC": "bell:80:3w",
+       "LPY": "bell:48:2w",
+       "PA": "bell:75:3w",
+       "TSS": "bell:70:3w",
+       "DEN": "wall_sitters:100:4w"
+      },
+      "hash": "1bf8e25384c6880e"
+     }
+    },
+    {
+     "step": "Holding E: the Rescue Spray hold ring fills (1.2 s)",
+     "js": "__cat.input({ e: true, frames: 18 })",
+     "shot": "flow-rescue-01.png",
+     "state": {
+      "influence": 95,
+      "window": false,
+      "boss": "den_wall",
+      "mode": "ground",
+      "home": false,
+      "phase": "day",
+      "discovered": {
+       "daifuku": false
+      },
+      "posts": {
+       "LWC": "bell:80:3w",
+       "LPY": "bell:48:2w",
+       "PA": "bell:75:3w",
+       "TSS": "bell:70:3w",
+       "DEN": "wall_sitters:100:4w"
+      },
+      "hash": "1bf8e25384c6880e"
+     }
+    },
+    {
+     "step": "Rescue Spray lands: sparkle cloud and pop, 4 gold wisps, Patch tag; influence 95 -> 100 opens the Boss window",
+     "js": "__cat.input({ e: true, frames: 22 })",
+     "shot": "flow-rescue-02.png",
+     "state": {
+      "influence": 100,
+      "window": true,
+      "boss": "S_M",
+      "mode": "ground",
+      "home": false,
+      "phase": "day",
+      "discovered": {
+       "daifuku": false
+      },
+      "posts": {
+       "LWC": "bell:80:3w",
+       "LPY": "bell:90:4w",
+       "PA": "bell:75:3w",
+       "TSS": "bell:70:3w",
+       "DEN": "wall_sitters:100:4w"
+      },
+      "hash": "6d91846448ef61f2"
+     }
+    },
+    {
+     "step": "Daifuku comes down from the Den toward his Morning stop (authored clip, control kept)",
+     "js": "__cat.input({ frames: 25 })",
+     "shot": "flow-rescue-03.png",
+     "state": {
+      "influence": 100,
+      "window": true,
+      "boss": "S_M",
+      "mode": "ground",
+      "home": false,
+      "phase": "day",
+      "discovered": {
+       "daifuku": false
+      },
+      "posts": {
+       "LWC": "bell:80:3w",
+       "LPY": "bell:90:4w",
+       "PA": "bell:75:3w",
+       "TSS": "bell:70:3w",
+       "DEN": "wall_sitters:100:4w"
+      },
+      "hash": "6d91846448ef61f2"
+     }
+    },
+    {
+     "step": "Whisker Sense: compass ring with the roaming-Boss crown tick and the challenger stake",
+     "js": "__cat.input({ frames: 50, tab: true })",
+     "shot": "flow-rescue-04.png",
+     "state": {
+      "influence": 100,
+      "window": true,
+      "boss": "S_M",
+      "mode": "ground",
+      "home": false,
+      "phase": "day",
+      "discovered": {
+       "daifuku": true
+      },
+      "posts": {
+       "LWC": "bell:80:3w",
+       "LPY": "bell:90:4w",
+       "PA": "bell:75:3w",
+       "TSS": "bell:70:3w",
+       "DEN": "wall_sitters:100:4w"
+      },
+      "hash": "1c5fab6eb917bbda"
+     }
+    }
+   ],
+   "lastEvents": [
+    "MarkApplied:rescue_spray",
+    "ScentChanged",
+    "InfluenceChanged",
+    "BossWindowChanged",
+    "BossMoved:S_M"
+   ]
+  },
+  "rival": {
+   "query": "test=1&hud=1&start=l1d1",
+   "steps": [
+    {
+     "step": "Life 1: Laundry Pole Yard is the Wall Sitters’ (80, 3 sage wisps). Whisker Sense shows the Rub Marks and the Keeper’s trail",
+     "js": "__cat.teleport(-1.25, -1.3, 300); __cat.input({ frames: 10, tab: true })",
+     "shot": "flow-rival-00.png",
+     "state": {
+      "influence": 0,
+      "window": false,
+      "boss": "den_wall",
+      "mode": "ground",
+      "home": false,
+      "phase": "day",
+      "discovered": {
+       "daifuku": false
+      },
+      "posts": {
+       "LWC": "strays:80:3w",
+       "LPY": "wall_sitters:80:3w",
+       "PA": "wall_sitters:80:3w",
+       "TSS": "wall_sitters:80:3w",
+       "DEN": "wall_sitters:100:4w"
+      },
+      "hash": "90809100a460a9be"
+     }
+    },
+    {
+     "step": "Over-mark LPY.rub1 (0.4 s rub, -10): a small puff; the Wall Sitter on the coping sees it (seen = loud)",
+     "js": "__cat.input({ e: true, frames: 16 })",
+     "shot": "flow-rival-01.png",
+     "state": {
+      "influence": 0,
+      "window": false,
+      "boss": "den_wall",
+      "mode": "ground",
+      "home": false,
+      "phase": "day",
+      "discovered": {
+       "daifuku": false
+      },
+      "posts": {
+       "LWC": "strays:80:3w",
+       "LPY": "wall_sitters:70:3w",
+       "PA": "wall_sitters:80:3w",
+       "TSS": "wall_sitters:80:3w",
+       "DEN": "wall_sitters:100:4w"
+      },
+      "hash": "7632754a2fe769c2"
+     }
+    },
+    {
+     "step": "Counter-Spray the post twice (-30 each, always loud): sparkle pops; wisps thin; the Keeper is called at <= 30",
+     "js": "__cat.teleport(0.05, -0.9, 20); __cat.input({ e: true, frames: 40 }); __cat.input({ e: true, frames: 40 })",
+     "shot": "flow-rival-02.png",
+     "state": {
+      "influence": 0,
+      "window": false,
+      "boss": "den_wall",
+      "mode": "ground",
+      "home": false,
+      "phase": "day",
+      "discovered": {
+       "daifuku": false
+      },
+      "posts": {
+       "LWC": "strays:80:3w",
+       "LPY": "wall_sitters:10:1w",
+       "PA": "wall_sitters:80:3w",
+       "TSS": "wall_sitters:80:3w",
+       "DEN": "wall_sitters:100:4w"
+      },
+      "hash": "7b61b4afbe60b7b8"
+     }
+    },
+    {
+     "step": "M3 stand-in: a Verdict clears the Keeper (verdict() is M3’s; called here only to show the Claim). Claim Spray offered",
+     "js": "__cat.verdict(\"LPY\", \"chase\"); __cat.input({ frames: 4 })",
+     "shot": "flow-rival-03.png",
+     "state": {
+      "influence": 0,
+      "window": false,
+      "boss": "den_wall",
+      "mode": "ground",
+      "home": false,
+      "phase": "day",
+      "discovered": {
+       "daifuku": false
+      },
+      "posts": {
+       "LWC": "strays:80:3w",
+       "LPY": "wall_sitters:10:1w:nokeeper",
+       "PA": "wall_sitters:80:3w",
+       "TSS": "wall_sitters:80:3w",
+       "DEN": "wall_sitters:100:4w"
+      },
+      "hash": "a0d2cd57f91507a2"
+     }
+    },
+    {
+     "step": "Claim Spray: the post is Mikan’s at 70, gold wisps",
+     "js": "__cat.input({ e: true, frames: 40 })",
+     "shot": "flow-rival-04.png",
+     "state": {
+      "influence": 25,
+      "window": false,
+      "boss": "den_wall",
+      "mode": "ground",
+      "home": false,
+      "phase": "day",
+      "discovered": {
+       "daifuku": false
+      },
+      "posts": {
+       "LWC": "strays:80:3w",
+       "LPY": "bell:70:3w",
+       "PA": "wall_sitters:80:3w",
+       "TSS": "wall_sitters:80:3w",
+       "DEN": "wall_sitters:100:4w"
+      },
+      "hash": "978db76783a8fe02"
+     }
+    }
+   ],
+   "lastEvents": [
+    "MarkApplied:over_mark",
+    "AngerRaised:over_mark",
+    "ContestBristled",
+    "MarkApplied:counter_spray",
+    "AngerRaised:counter_spray",
+    "ScentChanged",
+    "InfluenceChanged",
+    "MarkApplied:counter_spray",
+    "AngerChanged",
+    "AngerRaised:counter_spray",
+    "ScentChanged",
+    "TurfWavesStopped",
+    "KeeperCalled",
+    "InfluenceChanged",
+    "PatchChanged",
+    "ClaimOffered",
+    "MarkApplied:claim_spray",
+    "ScentChanged",
+    "PatchChanged",
+    "InfluenceChanged"
+   ]
+  },
+  "sniff": {
+   "query": "test=1&hud=1&start=l1d1&vantage=2",
+   "steps": [
+    {
+     "step": "On the High Perch (wall coping), Daifuku on the Den wall within 10 m, undiscovered",
+     "js": "__cat.input({ frames: 2 })",
+     "shot": "flow-sniff-00.png",
+     "state": {
+      "influence": 0,
+      "window": false,
+      "boss": "den_wall",
+      "mode": "top",
+      "home": false,
+      "phase": "day",
+      "discovered": {
+       "daifuku": false
+      },
+      "posts": {
+       "LWC": "strays:80:3w",
+       "LPY": "wall_sitters:80:3w",
+       "PA": "wall_sitters:80:3w",
+       "TSS": "wall_sitters:80:3w",
+       "DEN": "wall_sitters:100:4w"
+      },
+      "hash": "97ffc1925615fc82"
+     }
+    },
+    {
+     "step": "Hold Whisker Sense with him on screen: the fill ring closes over 1.0 s",
+     "js": "__cat.input({ frames: 18, tab: true })",
+     "shot": "flow-sniff-01.png",
+     "state": {
+      "influence": 0,
+      "window": false,
+      "boss": "den_wall",
+      "mode": "top",
+      "home": false,
+      "phase": "day",
+      "discovered": {
+       "daifuku": false
+      },
+      "posts": {
+       "LWC": "strays:80:3w",
+       "LPY": "wall_sitters:80:3w",
+       "PA": "wall_sitters:80:3w",
+       "TSS": "wall_sitters:80:3w",
+       "DEN": "wall_sitters:100:4w"
+      },
+      "hash": "b98bacc546c76402"
+     }
+    },
+    {
+     "step": "Discovered (sim CatDiscovered): tape star",
+     "js": "__cat.input({ frames: 14, tab: true })",
+     "shot": "flow-sniff-02.png",
+     "state": {
+      "influence": 0,
+      "window": false,
+      "boss": "den_wall",
+      "mode": "top",
+      "home": false,
+      "phase": "day",
+      "discovered": {
+       "daifuku": true
+      },
+      "posts": {
+       "LWC": "strays:80:3w",
+       "LPY": "wall_sitters:80:3w",
+       "PA": "wall_sitters:80:3w",
+       "TSS": "wall_sitters:80:3w",
+       "DEN": "wall_sitters:100:4w"
+      },
+      "hash": "9a6344b182157d34"
+     }
+    }
+   ],
+   "lastEvents": [
+    "CatDiscovered:daifuku"
+   ]
+  },
+  "dusk": {
+   "query": "test=1&hud=1&vantage=0",
+   "steps": [
+    {
+     "step": "Low Wall Corner, Day",
+     "js": "__cat.input({ frames: 2 })",
+     "shot": "flow-dusk-00.png",
+     "state": {
+      "influence": 95,
+      "window": false,
+      "boss": "den_wall",
+      "mode": "ground",
+      "home": false,
+      "phase": "day",
+      "discovered": {
+       "daifuku": false
+      },
+      "posts": {
+       "LWC": "bell:80:3w",
+       "LPY": "bell:48:2w",
+       "PA": "bell:75:3w",
+       "TSS": "bell:70:3w",
+       "DEN": "wall_sitters:100:4w"
+      },
+      "hash": "1bf8e25384c6880e"
+     }
+    },
+    {
+     "step": "Nap on the Sunspot (E): the phase blends Day -> Dusk",
+     "js": "__cat.teleport(0.45, 44.2, 200); __cat.input({ e: true, frames: 18 }); __cat.input({ frames: 40 })",
+     "shot": "flow-dusk-01.png",
+     "state": {
+      "influence": 95,
+      "window": false,
+      "boss": "den_wall",
+      "mode": "ground",
+      "home": false,
+      "phase": "day",
+      "discovered": {
+       "daifuku": false
+      },
+      "posts": {
+       "LWC": "bell:80:3w",
+       "LPY": "bell:48:2w",
+       "PA": "bell:75:3w",
+       "TSS": "bell:70:3w",
+       "DEN": "wall_sitters:100:4w"
+      },
+      "hash": "1bf8e25384c6880e"
+     }
+    },
+    {
+     "step": "The lamp wave runs uphill (lamps light one after another)",
+     "js": "__cat.input({ frames: 50 })",
+     "shot": "flow-dusk-02.png",
+     "state": {
+      "influence": 95,
+      "window": false,
+      "boss": "den_wall",
+      "mode": "ground",
+      "home": false,
+      "phase": "dusk",
+      "discovered": {
+       "daifuku": false
+      },
+      "posts": {
+       "LWC": "bell:80:3w",
+       "LPY": "bell:48:2w",
+       "PA": "bell:75:3w",
+       "TSS": "bell:70:3w",
+       "DEN": "wall_sitters:100:4w"
+      },
+      "hash": "20e116f4304144e6"
+     }
+    },
+    {
+     "step": "Dusk; the Call; the Head Home thread runs from Mikan up the lane to Haru’s gate (H also shows it)",
+     "js": "__cat.input({ frames: 70, home: true })",
+     "shot": "flow-dusk-03.png",
+     "state": {
+      "influence": 95,
+      "window": false,
+      "boss": "den_wall",
+      "mode": "ground",
+      "home": false,
+      "phase": "dusk",
+      "discovered": {
+       "daifuku": false
+      },
+      "posts": {
+       "LWC": "bell:80:3w",
+       "LPY": "bell:48:2w",
+       "PA": "bell:75:3w",
+       "TSS": "bell:70:3w",
+       "DEN": "wall_sitters:100:4w"
+      },
+      "hash": "20e116f4304144e6"
+     }
+    },
+    {
+     "step": "Following the thread into Haru’s garden: the wall blend lowers and tightens the camera and fades the street HUD",
+     "js": "__cat.teleport(-0.2, 54.3, 90); __cat.input({ f: 1, frames: 45 })",
+     "shot": "flow-dusk-04.png",
+     "state": {
+      "influence": 95,
+      "window": false,
+      "boss": "den_wall",
+      "mode": "ground",
+      "home": false,
+      "phase": "dusk",
+      "discovered": {
+       "daifuku": false
+      },
+      "posts": {
+       "LWC": "bell:80:3w",
+       "LPY": "bell:48:2w",
+       "PA": "bell:75:3w",
+       "TSS": "bell:70:3w",
+       "DEN": "wall_sitters:100:4w"
+      },
+      "hash": "20e116f4304144e6"
+     }
+    }
+   ],
+   "lastEvents": [
+    "PhaseChanged"
+   ]
+  },
+  "highroad": {
+   "query": "test=1&hud=1",
+   "steps": [
+    {
+     "step": "Beside the left plaster wall uphill of the corner",
+     "js": "__cat.teleport(-1.2, 9.0, 0)",
+     "shot": "flow-highroad-00.png",
+     "state": {
+      "influence": 95,
+      "window": false,
+      "boss": "den_wall",
+      "mode": "ground",
+      "home": false,
+      "phase": "day",
+      "discovered": {
+       "daifuku": false
+      },
+      "posts": {
+       "LWC": "bell:80:3w",
+       "LPY": "bell:48:2w",
+       "PA": "bell:75:3w",
+       "TSS": "bell:70:3w",
+       "DEN": "wall_sitters:100:4w"
+      },
+      "hash": "1bf8e25384c6880e"
+     }
+    },
+    {
+     "step": "Space: hop onto the coping, the High Road ribbon (camera 3.4 m, +16°)",
+     "js": "__cat.input({ space: true, frames: 20 })",
+     "shot": "flow-highroad-01.png",
+     "state": {
+      "influence": 95,
+      "window": false,
+      "boss": "den_wall",
+      "mode": "top",
+      "home": false,
+      "phase": "day",
+      "discovered": {
+       "daifuku": false
+      },
+      "posts": {
+       "LWC": "bell:80:3w",
+       "LPY": "bell:48:2w",
+       "PA": "bell:75:3w",
+       "TSS": "bell:70:3w",
+       "DEN": "wall_sitters:100:4w"
+      },
+      "hash": "1bf8e25384c6880e"
+     }
+    },
+    {
+     "step": "Walk the ribbon toward the High Perch",
+     "js": "__cat.input({ f: 1, frames: 60 })",
+     "shot": "flow-highroad-02.png",
+     "state": {
+      "influence": 95,
+      "window": false,
+      "boss": "den_wall",
+      "mode": "top",
+      "home": false,
+      "phase": "day",
+      "discovered": {
+       "daifuku": false
+      },
+      "posts": {
+       "LWC": "bell:80:3w",
+       "LPY": "bell:48:2w",
+       "PA": "bell:75:3w",
+       "TSS": "bell:70:3w",
+       "DEN": "wall_sitters:100:4w"
+      },
+      "hash": "1bf8e25384c6880e"
+     }
+    }
+   ],
+   "lastEvents": []
+  }
+ },
+ "errors": []
+}

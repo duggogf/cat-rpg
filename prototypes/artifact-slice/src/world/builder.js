@@ -90,7 +90,9 @@ class Geo {
 }
 
 /* --------------------------------------------------------------- the builder */
+let _gy = () => 0;
 export function buildWorld(L, tex) {
+  _gy = (z) => groundY(L, z);
   const env = new THREE.Group(), backdrop = new THREE.Group(), late = new THREE.Group();
   const colliders = [], casters = new Set(), cards = [];
   const mesh = (geo, mat, cast = true) => { const m = new THREE.Mesh(geo, mat); env.add(m); if (cast) casters.add(m); return m; };
@@ -389,6 +391,28 @@ export function buildWorld(L, tex) {
     const g = celProp([celPart(b, (p, n) => stone.clone().lerp(moss, THREE.MathUtils.smoothstep(vnoise(p.x * 6, p.y * 6, p.z * 6) + (n.y > 0.5 ? 0.6 : 0), 0.35, 0.6)), new THREE.Vector3(0, 0.31, 0))], x, z, 'denStone', 0.3);
     soft.push({ obj: g, x, z, r: 0.5 });
   }
+  // Persimmon Alley's post: the utility pole under the persimmon tree (inked: a cat marks it), crooked transformer box
+  if (L.pa) {
+    const [x, z] = L.pa.pole, H = 7.6, parts = [];
+    const p = new THREE.CylinderGeometry(0.1, 0.14, H, 18, 6); p.translate(0, H / 2, 0); parts.push(celPart(p, (q) => rgb(q.y < 0.5 ? '#9C8F80' : '#B3A898'), new THREE.Vector3(0, H / 2, 0)));
+    const tbox = new THREE.CylinderGeometry(0.19, 0.19, 0.6, 18); tbox.rotateZ(-0.12); tbox.translate(0.3, 4.9, 0); parts.push(celPart(tbox, solid('#93A0AE'), new THREE.Vector3(0.3, 4.9, 0)));
+    const arm = new THREE.BoxGeometry(1.4, 0.09, 0.09); arm.translate(0, H - 0.4, 0); parts.push(celPart(arm.toNonIndexed(), solid('#9C9080'), new THREE.Vector3(0, H - 0.4, 0)));
+    const plate = new THREE.BoxGeometry(0.16, 0.24, 0.02); plate.translate(0, 1.45, -0.13); plate.userData.noHull = true; parts.push(celPart(plate.toNonIndexed(), solid('#E9E2CE'), new THREE.Vector3(0, 1.45, 0)));
+    const g = celProp(parts, x, z, 'utilityPole', -Math.PI / 2, groundY(L, z));
+    soft.push({ obj: g, x, z, r: 0.35 }); env.add(contactBlob(x, z, 0.3, 0.26));
+    colliders.push(Object.assign(new THREE.Box3(new THREE.Vector3(x - 0.15, 0, z - 0.15), new THREE.Vector3(x + 0.15, H, z + 0.15)), { soft: true }));
+  }
+  // Tofu Shop Step's post: the milk-crate stack at the shop's back door (inked)
+  if (L.tss) {
+    const [x, z] = L.tss.crates, y0 = groundY(L, z), parts = [];
+    [[0, 0, '#5C8FC6'], [0.03, 0.31, '#E7C34A'], [-0.02, 0.62, '#5C8FC6']].forEach(([dx, dy, col]) => {
+      const b = new THREE.BoxGeometry(0.42, 0.3, 0.34); b.translate(dx, dy + 0.15, 0); parts.push(celPart(b.toNonIndexed(), solid(col), new THREE.Vector3(dx, dy + 0.15, 0)));
+      const slot = new THREE.BoxGeometry(0.3, 0.06, 0.01); slot.translate(dx, dy + 0.2, -0.175); slot.userData.noHull = true; parts.push(celPart(slot.toNonIndexed(), solid('#33273B'), new THREE.Vector3(dx, dy + 0.2, 0)));
+    });
+    const g = celProp(parts, x, z, 'milkCrates', Math.PI / 2 + 0.1, y0);
+    soft.push({ obj: g, x, z, r: 0.35 }); env.add(contactBlob(x, z, 0.32, 0.28));
+    colliders.push(Object.assign(new THREE.Box3(new THREE.Vector3(x - 0.22, y0, z - 0.22), new THREE.Vector3(x + 0.22, y0 + 0.95, z + 0.22)), { soft: true }));
+  }
   /* ---- street lamps: painted posts; heads and ground pools light in a wave at Dusk (U.lampWave) */
   const lamps = [];
   if (L.lamps) {
@@ -470,16 +494,16 @@ export function buildWorld(L, tex) {
       wood.add(p0, '#9A6A44'); wood.add(p1, '#9A6A44');
     }
     mesh(wood.build(), envMat({ map: tex.fence, tint: '#C9A88E', grain: 0.1, alphaCut: 0.5 })).name = 'gates';
-    for (const [x, z] of L.vending || []) { // stands at the fence end, front facing down-lane (-Z)
+    for (const [x, z] of L.vending || []) { // stands against the fence, front facing the lane (-X); its sides show from up and down the lane
       const vg = new Geo(), w = 0.9, dpt = 0.7, h = 1.83;
-      vg.box([x - w / 2, 0, z - dpt / 2, x + w / 2, h, z + dpt / 2], { faces: 'pxnxpzpy', tu: 10, tv: 10, color: '#3F78B8' });
-      vg.box([x - w / 2 - 0.01, h - 0.12, z - dpt / 2 - 0.04, x + w / 2 + 0.01, h, z + dpt / 2], { faces: 'pxnxnzpy', tu: 10, tv: 10, color: '#2E5C91' });
+      vg.box([x - dpt / 2, 0, z - w / 2, x + dpt / 2, h, z + w / 2], { faces: 'pxpznzpy', tu: 10, tv: 10, color: '#3F78B8' });
+      vg.box([x - dpt / 2 - 0.04, h - 0.12, z - w / 2 - 0.01, x + dpt / 2, h, z + w / 2 + 0.01], { faces: 'nxpznzpy', tu: 10, tv: 10, color: '#2E5C91' });
       mesh(vg.build(), envMat({ vertexColors: true, grain: 0.4 })).name = 'vendingBody';
-      const fg = new Geo(), fz = z - dpt / 2 - 0.003;
-      fg.quad([x + w / 2, 0, fz], [x - w / 2, 0, fz], [x - w / 2, h - 0.12, fz], [x + w / 2, h - 0.12, fz], () => [0, 0]);
+      const fg = new Geo(), fx = x - dpt / 2 - 0.003;
+      fg.quad([fx, 0, z - w / 2], [fx, 0, z + w / 2], [fx, h - 0.12, z + w / 2], [fx, h - 0.12, z - w / 2], () => [0, 0]);
       fg.uv.splice(0, 8, 0, 0, 1, 0, 0, 1, 1, 1);
       mesh(fg.build(), envMat({ map: tex.vending, grain: 0, emit: 1 })).name = 'vendingFront';
-      colliders.push(new THREE.Box3(new THREE.Vector3(x - w / 2, 0, z - dpt / 2), new THREE.Vector3(x + w / 2, h, z + dpt / 2)));
+      colliders.push(new THREE.Box3(new THREE.Vector3(x - dpt / 2, 0, z - w / 2), new THREE.Vector3(x + dpt / 2, h, z + w / 2)));
       env.add(contactBlob(x, z, 0.65, 0.55, 0.35));
     }
     const ac = new Geo();
@@ -531,6 +555,6 @@ export function contactBlob(x, z, rx, rz, opacity = 0.45) {
   // MultiplyBlending in three expects premultiplied output: dst * src.rgb; fold alpha into colour
   m.fragmentShader = m.fragmentShader.replace('gl_FragColor = vec4(shadow, a);', 'gl_FragColor = vec4(mix(vec3(1.0), shadow, a), 1.0);');
   const g = new THREE.PlaneGeometry(rx * 2, rz * 2); g.rotateX(-Math.PI / 2);
-  const mesh = new THREE.Mesh(g, m); mesh.position.set(x, 0.006, z); mesh.renderOrder = 2;
+  const mesh = new THREE.Mesh(g, m); mesh.position.set(x, _gy(z) + 0.006, z); mesh.renderOrder = 2;
   return mesh;
 }

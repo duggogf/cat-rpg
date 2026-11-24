@@ -34,13 +34,15 @@ export function extendLayout(L) {
     if (z < -18) L.fences.push({ box: [1.6, g(zb) - 0.8, zb, 1.68, top + 1.2, za], step: true });
   }
   // ---- the Den: Daifuku's great wall uphill behind the left gardens, its mossy corner stone, and his seat
-  L.walls.push({ box: [-19.5, 0, -12.5, -9.6, 3.2, -2.6], coping: 0.1, tex: 'wall', tint: '#C9C3AE', den: true });
-  L.hedges.push([-12.5, 3.55, -6.5, 1.8, 0.5, 2.6], [-15.5, 3.6, -10.5, 1.6, 0.5, 1.6], [-9.9, 2.4, -11.8, 0.6, 0.7, 0.8]);
-  L.den = { stone: [-9.75, -2.85], seat: [-10.2, 3.3, -5.4, 1.5], name: 'Den: Daifuku’s Wall' };
+  L.walls.push({ box: [-19.5, 0, -1.6, -9.6, 3.2, 9.5], coping: 0.1, tex: 'wall', tint: '#C9C3AE', den: true });
+  L.hedges.push([-12.5, 3.55, 6.0, 1.8, 0.5, 2.6], [-15.5, 3.6, 1.5, 1.6, 0.5, 1.6], [-9.9, 2.4, 9.0, 0.6, 0.7, 0.8]);
+  L.den = { stone: [-9.75, -1.45], seat: [-10.2, 3.3, 4.6, 1.5], name: 'Den: Daifuku’s Wall' };
+  // the M0 garden tree uphill of the corner moves aside so the perch has a clear sightline to the Den
+  const t2 = L.trees.find((t) => t.trunk[0] === -4.2 && t.trunk[1] === 3.0); if (t2) { t2.trunk = [-5.6, 12.0]; t2.clumps = [[-5.6, 2.9, 12.0, 1.8, 1.2, 1.9], [-3.4, 1.95, 11.0, 1.2, 0.75, 1.5]]; }
   // ---- trees and greenery along the new runs (the lane keeps 01's density: something on every side)
   L.trees.push(
     { trunk: [-4.0, 22.0], h: 2.6, clumps: [[-4.0, 3.2, 22.0, 2.0, 1.4, 2.2], [-2.6, 2.1, 20.5, 1.2, 0.8, 1.6]] },
-    { trunk: [5.5, 31.0], h: 2.8, clumps: [[5.2, 3.5, 31.0, 2.2, 1.5, 2.2]] },
+    { trunk: [3.4, 25.6], h: 2.8, clumps: [[3.2, 3.5, 25.6, 2.2, 1.5, 2.2], [2.2, 2.6, 23.2, 1.3, 0.9, 1.4]] },   // the persimmon tree over Persimmon Alley's pole
     { trunk: [-4.5, 40.5], h: 2.4, clumps: [[-4.5, 3.0, 40.5, 1.9, 1.3, 2.0], [-2.7, 2.0, 42.0, 1.1, 0.8, 1.4]] },
     { trunk: [-6.5, 52.0], h: 2.2, clumps: [[-6.5, 2.7, 52.0, 1.8, 1.2, 1.8]], home: true },
     { trunk: [-4.0, -26.0], h: 2.4, clumps: [[-4.0, g(-26) + 2.9, -26.0, 2.0, 1.3, 2.0]], base: g(-26) },
@@ -60,18 +62,27 @@ export function extendLayout(L) {
   L.drainpipes.push([-1.555, 22.5, 1.55], [-1.555, 39.0, 1.55]);
   L.bricks.push([1.45, 26.5, 0.4], [-1.42, 35.5, -0.2]);
   // ---- utility poles (+ wires) and street lamps; the lamp wave runs uphill from the lowest lamp
-  L.farPoles = [[1.42, -34], [1.42, 22.0], [-1.42, 46.0], [-14, -3]];
+  L.farPoles = [[1.42, -34], [1.45, 38.0], [-14, -3]];
   L.lamps = [[-1.4, -52], [1.4, -40], [-1.4, -28], [1.4, -17], [1.4, 6.5], [-1.4, 14.0], [1.4, 26.0], [-1.4, 35.0], [1.4, 43.5], [-1.4, 57.0]]
     .map(([x, z]) => [x, z, g(z)]);
-  // ---- the two live Patches (territory-management.md §3.1); Scent Posts are inked (L-1)
+  // ---- the Patches (territory-management.md §3.1). Ids match the territory sim (src/sim/territory,
+  // data/territory/patches.json): one inked landmark per post, two Rub Marks per outer Patch (Whisker Sense only),
+  // the Den's corner stone. LPY's `gatepost` is drawn by the approved M0 stone lantern (the 01 frame's Scent Post):
+  // flagged for Art (rename the landmark or the post id).
   L.mailbox = { at: [-1.25, 47.6] };
   L.patches = [
-    { id: 'LWC', name: 'Low Wall Corner', post: [-1.25, 1.05, 47.6], zone: [30.0, 62.0], rub: [[-1.6, 0.3, 45.2, '+x'], [1.6, 0.3, 50.5, '-x']], home: true },
-    { id: 'LPY', name: 'Laundry Pole Yard', post: [0.6, 1.25, -2.05], zone: [-14.0, 10.0], rub: [[-1.6, 0.3, -1.4, '+x'], [1.6, 0.3, 2.3, '-x']] },
+    { id: 'LWC', post: 'red_mailbox', at: [-1.25, 1.05, 47.6], zone: [38.0, 62.0], rub: { 'LWC.rub1': [-1.6, 0.3, 45.2, '+x'], 'LWC.rub2': [1.6, 0.3, 50.5, '-x'] }, home: true },
+    { id: 'PA', post: 'utility_pole', at: [1.3, 1.7, 24.0], zone: [14.0, 38.0], rub: { 'PA.rub1': [-1.6, 0.3, 21.5, '+x'], 'PA.rub2': [1.6, 0.3, 30.5, '-x'] } },
+    { id: 'LPY', post: 'gatepost', at: [0.6, 1.25, -2.05], zone: [-14.0, 14.0], rub: { 'LPY.rub1': [-1.6, 0.3, -1.4, '+x'], 'LPY.rub2': [1.6, 0.3, 2.3, '-x'] } },
+    { id: 'TSS', post: 'milk_crates', at: [1.15, g(-38) + 1.0, -38.0], zone: [-64.0, -14.0], rub: { 'TSS.rub1': [-1.6, 0.3, -31.0, '+x'], 'TSS.rub2': [1.6, 0.3, -44.0, '-x'] } },
+    { id: 'DEN', post: 'corner_stone', at: [-9.75, 0.75, -1.45], zone: null, rub: {} },
   ];
+  // Boss stops (boss_patrol.json): den_wall (window shut), S_M Laundry Pole Yard (Morning), S_D Tofu Shop's back lane (Day), S_N the Den corner
+  L.stops = { den_wall: [-10.2, 3.3, 4.6], S_M: [0.2, 0, -10.8], S_D: [0.3, 0, -46.5], S_N: [-8.6, 0, 0.4] };
+  L.pa = { pole: [1.3, 24.0] }; L.tss = { crates: [1.15, -38.0] };
   L.sunspot = { at: [0.45, 44.2], r: 0.75 };
-  L.highPerch = [-1.7, 1.58, -4.6];      // the yard perch on the wall coping; the Den seat is within 10 m
-  L.yardStop = [0.2, -10.8];             // Daifuku's Morning patrol stop (a ground arena kit at the crest)
+  L.highPerch = [-1.7, 1.58, 3.2];       // the yard perch on the wall coping; the Den seat is within 10 m
+  L.yardStop = L.stops.S_M;
   L.home = { gate: [-1.7, 54.3], zone: [-12.5, -1.8, 48.9, 66], camera: { dist: 1.8, height: 0.45, pitch: -2 } };
   L.find = [-1.25, 19.6];                // a hidden find (sparkle tick)
   L.spawn.mikan = [0, 0, 0, Math.PI];

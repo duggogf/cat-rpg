@@ -33,7 +33,8 @@ export class OrbitRig {
       const o = pivot.clone().addScaledVector(right, a * r * 0.7).addScaledVector(up, b * r * 0.7);
       for (const box of this.col) { if (box.soft) continue; const t = rayBox(o, dir, box); if (t < best + r) best = Math.min(best, t - r); }
     }
-    return Math.max(EXPLORE.distMin, best);
+    // geometry wins over the 0.8 m floor (camera-system.md §3.4: at the floor the CAT fades; the lens never enters geometry)
+    return Math.max(this.minHit ?? EXPLORE.distMin, best);
   }
   update(dt, target, snap = false) {
     this.pivot.set(target.x, target.y + EXPLORE.pivotH, target.z);
@@ -74,7 +75,7 @@ export function collideCircle(p, r, boxes, footY = 0, headY = 0.4) {
 export const STATES = { explore: { dist: 3.0, pitch: 10, pivotH: 0.45 }, highroad: { dist: 3.4, pitch: 16, pivotH: 0.45 }, home: { dist: 1.8, pitch: -2, pivotH: 0.3 } };
 export class ExploreRig extends OrbitRig {
   constructor(camera, colliders, groundAt) {
-    super(camera, colliders); this.groundAt = groundAt;
+    super(camera, colliders); this.groundAt = groundAt; this.minHit = 0.12;
     this.state = 'explore'; this.k = { ...STATES.explore }; this.zoom = 1; this.pv = [0, 0, 0]; this.p = null; this.lastLook = -99; this.t = 0; this.inside = false;
   }
   look(dYaw, dPitch) { if (!dYaw && !dPitch) return; this.yaw += dYaw; this.pitch = THREE.MathUtils.clamp(this.pitch + dPitch, EXPLORE.pitchMin, EXPLORE.pitchMax); this.lastLook = this.t; }
@@ -90,7 +91,8 @@ export class ExploreRig extends OrbitRig {
       if (Math.abs(d) < 135) this.yaw += Math.sign(d) * Math.min(Math.abs(d), 90 * dt * Math.min(1, (this.t - this.lastLook - 1.5) / 0.3));
     }
     // pivot spring (hold the landing height while airborne)
-    const ty = ctx.airborne ? (this.p ? this.p.y - this.k.pivotH : target.y) : target.y;
+    // hold the take-off height through small hops only; a climb of more than 0.6 m is followed (the §3.3 1.5 m rule, tightened for walls)
+    const ty = ctx.airborne && Math.abs(ctx.rise || 0) < 0.6 ? (this.p ? this.p.y - this.k.pivotH : target.y) : target.y;
     const tgt = [target.x, ty + this.k.pivotH, target.z];
     if (!this.p || snap) { this.p = new THREE.Vector3(...tgt); this.pv = [0, 0, 0]; }
     else { const w = 11, h = Math.min(dt, 1 / 30); const P = ['x', 'y', 'z']; for (let i = 0; i < 3; i++) { const x = this.p[P[i]]; this.pv[i] += (w * w * (tgt[i] - x) - 2 * w * this.pv[i]) * h; this.p[P[i]] = x + this.pv[i] * h; } }
@@ -98,7 +100,20 @@ export class ExploreRig extends OrbitRig {
     const want = THREE.MathUtils.clamp(this.k.dist * this.zoom, EXPLORE.distMin, EXPLORE.distMax);
     const dirOf = (p) => new THREE.Vector3(Math.sin(this.yaw * D2R) * Math.cos(p * D2R), Math.sin(p * D2R), Math.cos(this.yaw * D2R) * Math.cos(p * D2R));
     let pitch = this.pitch, dir = dirOf(pitch), free = this.clearance(this.pivot, dir, want);
+    // whisker probe (§3.4 narrow alleys): squeezed and not steering, swing yaw toward the open side (≤ 60°/s)
+    if (!snap && free < 1.4 && this.t - this.lastLook > 1.0) {
+      const at = (dy) => { const y0 = this.yaw; this.yaw += dy; const f = this.clearance(this.pivot, dirOf(pitch), want); this.yaw = y0; return f; };
+      const l = at(-25), r = at(25);
+      if (Math.max(l, r) > free + 0.2) { this.yaw += (r > l ? 1 : -1) * Math.min(60 * dt, 25); dir = dirOf(pitch); free = this.clearance(this.pivot, dir, want); }
+    }
     if (free < 1.2) { pitch = Math.min(EXPLORE.pitchMax, pitch + 20 * (1.2 - free) / 0.4); dir = dirOf(pitch); free = this.clearance(this.pivot, dir, want); }
+    // pinned against a wall even after the lift: turn toward the nearest clear bearing (≤ 180°/s), over the player's look —
+    // the wall wins, as in the combat camera; the cat stays in frame
+    if (free < 0.9) {
+      let best = null;
+      for (const k of [30, 60, 90, 120, 150]) for (const sg of [1, -1]) { if (best) break; const y0 = this.yaw; this.yaw = y0 + sg * k; const f = this.clearance(this.pivot, dirOf(pitch), want); this.yaw = y0; if (f >= 1.3) best = sg * k; }
+      if (best) { this.yaw += snap ? best : Math.sign(best) * Math.min(Math.abs(best), 180 * dt); dir = dirOf(pitch); free = this.clearance(this.pivot, dir, want); }
+    }
     if (snap || free < this.dist) this.dist = free; else this.dist = Math.min(free, this.dist + (free - this.dist) * (1 - Math.pow(2, -dt / EXPLORE.easeOut)));
     // ground clamp: raise the pitch until the lens clears the lane by 0.25 m
     for (let i = 0; i < 12; i++) {
