@@ -13,11 +13,17 @@ const threeGlobal = {
     b.onLoad({ filter: /.*/, namespace: 'three-global' }, () => ({ contents: 'module.exports = globalThis.THREE;', loader: 'js' }));
   },
 };
-await esbuild.build({
-  entryPoints: [path.join(root, 'src/main.js')], bundle: true, format: 'iife',
-  outfile: path.join(dist, 'game.js'), plugins: [threeGlobal], target: 'es2020',
-  minify: process.argv.includes('--min'), sourcemap: false, legalComments: 'none',
-});
+// Every file in src/entries/ is an entry. `main` -> dist/game.js (the published game);
+// any other entry X (e.g. a lab page) -> dist/X.js plus a dev page dist/X.html.
+const entries = fs.readdirSync(path.join(root, 'src/entries')).filter(f => f.endsWith('.js'));
+for (const f of entries) {
+  const name = f.replace(/\.js$/, '');
+  await esbuild.build({
+    entryPoints: [path.join(root, 'src/entries', f)], bundle: true, format: 'iife',
+    outfile: path.join(dist, name === 'main' ? 'game.js' : name + '.js'), plugins: [threeGlobal], target: 'es2020',
+    minify: process.argv.includes('--min'), sourcemap: false, legalComments: 'none',
+  });
+}
 // Copy runtime assets (baked textures, meshes, data) into dist.
 for (const dir of ['tex', 'mesh', 'data']) {
   const src = path.join(root, 'assets', dir);
@@ -33,4 +39,8 @@ const dev = '<!doctype html><html><head><meta charset="utf-8"><meta name="viewpo
   '<style>:root{color-scheme:light}body{margin:0}</style></head><body>' +
   frag.replace(CDN, '<script src="/node_modules/three/build/three.min.js"></script>') + '</body></html>';
 fs.writeFileSync(path.join(dist, 'dev.html'), dev);
-console.log('built', fs.statSync(path.join(dist, 'game.js')).size, 'bytes');
+for (const f of entries) {
+  const name = f.replace(/\.js$/, '');
+  if (name !== 'main') fs.writeFileSync(path.join(dist, name + '.html'), dev.replace('<script src="game.js"></script>', `<script src="${name}.js"></script>`));
+}
+console.log('built', entries.join(', '), '- game.js', fs.statSync(path.join(dist, 'game.js')).size, 'bytes');
