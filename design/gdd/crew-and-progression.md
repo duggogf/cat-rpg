@@ -14,11 +14,11 @@ The Crew are the cats Mikan has won over: a few known faces, not a collection. A
 
 ## 2. Player Fantasy
 
-*"I know these cats."* You do not pick the cat with the best number; you pick **Pon** because she makes the bucket hit twice as hard and she sulks if you leave her at the Lot, you post **Hige** on the corner because nothing gets past an old Stalwart, and you keep the **Thorn** in the Posse because he was the first cat who ever called you Collar and now he charges the biggest enemy for you, loudly. The swap is the pleasure: bring the Fraidy for the crow-heavy lanes, the Brooder for the rematch with the cat who flattened your friend, the Goofball for the alley full of junk.
+*"I know these cats."* You do not pick the cat with the best number; you pick **Pon** because she makes the bucket hit harder and she sulks if you leave her at the Lot, you post **Hige** on the corner because nothing gets past an old Stalwart, and you keep **Togemaru**, the Thorn, in the Posse because he was the first cat who ever called you Collar and now he charges the biggest enemy for you, loudly. The swap is the pleasure: bring the Fraidy for the crow-heavy lanes, the Brooder for the rematch with the cat who flattened your friend, the Goofball for the alley full of junk.
 
 Teaching is the second pleasure. A Move is something one cat shows another: the old Captain you recruited knows a screech nobody else does, and by tomorrow morning your Bruiser has learned to bellow it too. Every Move a cat did not grow into, it took from another cat.
 
-Pillar fit: **Conduct the Brawl** (four cats who each behave differently under AI, so composition is a combat decision), **Rivals Remember** (a recruited Rival brings its personality, history, Old Scores and signature perk), **Cat's-Eye Truth** (personality is shown by pose, walk and bark, not a stat screen; numbers appear only on the Turf Board).
+Pillar fit: **Conduct the Brawl** (four cats who each behave differently under AI, so composition is a combat decision), **Rivals Remember** (a recruited Rival brings its personality, history, Old Scores and signature perk), **Cat's-Eye Truth** (personality is shown by pose, walk and bark, not a stat screen; numbers count only what a cat owns or pays, such as levels, XP pips and prices, and Loyalty is never a number: presentation ruling R3).
 
 ---
 
@@ -39,7 +39,7 @@ Requested schema extensions (Crew-only, flagged for the schema owner):
 | `origin` | enum `story / friend_stray / rival` | Fixed-Loyalty and release rules |
 | `returned` | bool | Has been Crew before (F6) |
 
-Mikan has **no personality and no Loyalty**. Mikan's AI profile (when the player controls another cat) is Combat's neutral profile.
+Mikan has **no personality and no Loyalty**. Mikan's AI profile (when the player controls another cat) is the **Mikan row of Combat §3.11** (stays 2–4 m from the controlled cat's lock target, base Pay-off rule, no perk).
 
 ### 3.2 Personality — the one model (canon shape: brief §3.5, DR-37)
 
@@ -48,8 +48,8 @@ Six personalities. Nemesis assigns one at generation; it never changes; Style al
 #### 3.2.1 Full personality sheets
 
 **BRAGGART** — *"Watch this."* Loud, front-foot, needs an audience.
-- **Fights like (AI; Combat owns):** picks the enemy with the highest current Nerve (Rivals over trash, Captains over Toughs) and charges it at once; stays in melee; Hisses at telegraphs aimed at itself only (DR-29); first into a Pile-On. Never retreats to support range.
-- **Combat perk (Combat owns value):** its first hit on the encounter **leader** (highest-ranked enemy) adds a Frazzle chunk *(proposed start: +25% of that hit's Frazzle, once per encounter)*.
+- **Fights like (AI; Combat §3.11 owns):** charges the biggest enemy (highest rank, then highest max Nerve) and stays in melee; spends a Pay-off at the first chance.
+- **Combat perk (Combat §3.11):** its first hit on a **Captain or Boss** each encounter adds **+20 FZ** (flat).
 - **On guard (Territory owns values):** raid defence bonus; its posted Patch yields **+10% Tribute** ("residents pay a loud cat").
 - **Loyalty (this doc):** **+1** extra on any day in the Posse. **−2 per day** from the 3rd consecutive day out of the Posse (posting counts as out: he wants to be seen fighting).
 - **Social:** bonds with **Goofball**; clashes with **Braggart**.
@@ -57,8 +57,8 @@ Six personalities. Nemesis assigns one at generation; it never changes; Style al
 - **Why you want him:** fastest cat to open a Captain's Frazzle; best Tribute guard. **Cost:** cannot be parked on a post for long without sulking.
 
 **BROODER** — *"I remember."* Quiet, slow to warm, slower to cool.
-- **Fights like (AI):** hangs back at mid-range for the first seconds of a fight; when an ally is hit by an enemy, marks that enemy and goes for it until it is Routed or Frazzled; prefers Rivals with which it has an Old Score.
-- **Combat perk:** **Old Score doubled** (DR-29's extra Frazzle against a Rival it has Routed or been Routed by is ×2 for this cat).
+- **Fights like (AI; Combat §3.11):** hangs back at 5–7 m until an enemy hits an ally, then goes for that enemy for 6 s; saves Paws for Pay-offs on its avenge target.
+- **Combat perk (Combat §3.11):** **Old Score ×1.5** instead of the usual ×1.25 Frazzle against a Rival it has Routed or been Routed by.
 - **On guard:** **never leaves its post** (cannot be drawn off by a raid feint, Territory defines); its posted Patch's Scent decays slower.
 - **Loyalty:** **every Loyalty change is halved, both ways** (stored in `loyalty_accum`). **+1** (not halved) on every 3rd consecutive night on the same post. Being **dismissed from a post** the Bell Clowder still holds (moved off it by the player, including to another post): **−5** net.
 - **Social:** bonds with **Stalwart**; clashes with **Schemer** and **Goofball** (Goofball's clash column names Brooder).
@@ -66,8 +66,8 @@ Six personalities. Nemesis assigns one at generation; it never changes; Style al
 - **Why you want him:** the steady post-holder whose Loyalty you can forget about for days; the rematch specialist. **Cost:** a bad start takes twice as long to repair; hates being shuffled around.
 
 **SCHEMER** — *"Wait for it."* Opportunist, admires cleverness, despises softness.
-- **Fights like (AI):** circles to the flank or rear of the controlled cat's target; switches to any Ruffled or Frazzled enemy within 6 m; avoids the front of armoured windups.
-- **Combat perk:** **bonus damage on Frazzled** targets *(proposed start: +20%)*.
+- **Fights like (AI; Combat §3.11):** approaches from the target's rear 120°; switches to a Ruffled or Frazzled target within 6 m; spends on Frazzled targets.
+- **Combat perk (Combat §3.11):** **+20% damage to Frazzled** targets.
 - **On guard:** its district's raid forecast in the Morning Sniff **names the raider's motive** (Territory/UX render it).
 - **Loyalty:** a Lesson taken gives **+3** instead of +1. **−2** for each Nose-Touch Verdict Mikan gives that day (max −4/day), wherever the Schemer is.
 - **Social:** bonds with **Fraidy** and **Goofball**; clashes with **Brooder** and **Stalwart** (Stalwart's clash column names Schemer).
@@ -75,8 +75,8 @@ Six personalities. Nemesis assigns one at generation; it never changes; Style al
 - **Why you want it:** the best Pay-off cat in a Frazzle window; the posting that tells you *why* a raid is coming. **Cost:** clashes with your two most reliable personalities; dislikes mercy.
 
 **FRAIDY** — *"Not me, not me."* Jumpy, quick, a superb lookout.
-- **Fights like (AI):** keeps 5–7 m from the nearest enemy; Skitters early from white telegraphs; uses support or ranged options first; re-engages only on Frazzled targets or when an ally is below 30% Nerve.
-- **Combat perk:** a **perfect Skitter gives Pounce** *(proposed start: +¼ Paw; when controlled by the player too)*.
+- **Fights like (AI; Combat §3.11):** keeps 4–6 m away; Skitters white telegraphs eagerly; prefers support and holds Paws for `support` Moves; never climbs to the High Road.
+- **Combat perk (Combat §3.11):** a **perfect Skitter gives +25 Pounce points** (a quarter Paw), also when the player drives it.
 - **On guard:** weak raid defence, but **raises the Caterwaul early** (longer live-defence window).
 - **Loyalty:** **+1** on any day it fought at least one encounter and was never Routed. **−2** extra each time it is Routed (any fight, won or lost).
 - **Social:** bonds with **Stalwart**, **Schemer** and **Goofball**; clashes with **Braggart**.
@@ -84,8 +84,8 @@ Six personalities. Nemesis assigns one at generation; it never changes; Style al
 - **Why you want it:** the cat that rarely gets Routed and feeds the Pounce Gauge when the player drives it well; the early-warning Sentry. **Cost:** lowest guard strength; a bad day makes it miserable.
 
 **STALWART** — *"Behind me."* Honourable bodyguard.
-- **Fights like (AI):** stays within 3 m of the controlled cat; Braces against attacks on itself; moves into the path of white telegraphs aimed at the controlled cat when it can reach them; strikes whatever is attacking the controlled cat.
-- **Combat perk:** **allies within 3 m take less damage** *(proposed start: −15%; never below DR-31's 30% floor)*.
+- **Fights like (AI; Combat §3.11):** stays within 3 m of the controlled cat; Braces against attacks aimed at itself; takes attack-token priority from enemies; spends on whatever is attacking the controlled cat.
+- **Combat perk (Combat §3.11):** **allies within 3 m take ×0.85 damage** (never below the 30% floor).
 - **On guard:** **best raid defence** of the six.
 - **Loyalty:** **+1** for each Nose-Touch Verdict or each won Rival fight that opened with a Standoff (not an Ambush), max **+2/day**. **−3** for each Humble Verdict Mikan gives.
 - **Social:** bonds with **Brooder**, **Fraidy** and **Goofball**; clashes with **Schemer**.
@@ -93,8 +93,8 @@ Six personalities. Nemesis assigns one at generation; it never changes; Style al
 - **Why you want it:** keeps the controlled cat alive; the post you never worry about. **Cost:** Humble (the Tribute Verdict) costs its goodwill.
 
 **GOOFBALL** — *"Ooh, a bucket!"* Playful, easy-going, needs company.
-- **Fights like (AI):** heads for the nearest usable prop (bucket, scooter horn, ledge junk) and triggers it at enemies; otherwise plays near the pack with string attacks; showboats after a Rout.
-- **Combat perk:** **props it triggers hit harder** *(proposed start: ×1.5 prop damage and Frazzle)*.
+- **Fights like (AI; Combat §3.11):** goes for props that would catch an enemy (within 6 m); otherwise picks randomly between the nearest two enemies (seeded); fires eligible Pay-offs on a seeded 50% roll.
+- **Combat perk (Combat §3.11):** **props it triggers: ×1.3 effect**.
 - **On guard:** **Humbled residents on its Patch never simmer.**
 - **Loyalty:** **Share a Morsel counts double** (+4). **−2** for each day spent **Lounging** at the Lot (neither in the Posse nor posted at the Night Shuffle).
 - **Social:** bonds with **everyone except Brooder**, including another Goofball; clashes with **Brooder**.
@@ -117,7 +117,7 @@ Six personalities. Nemesis assigns one at generation; it never changes; Style al
 Among the slice's one-of-each six: **7 bonded, 4 clashing, 4 neutral** pairs.
 
 **Effects (DR-37):**
-- **Bonded pair, both in the Posse:** a stronger Tag-In between them (Combat owns the value; *proposed start: +50% Tag-In strike Frazzle*). The UX Crew card and the Posse picker show the ♥ link.
+- **Bonded pair, both in the Posse:** a stronger Tag-In between them (Combat §3.3: **MV ×1.25 and +10 FZ**). The UX Crew card and the Posse picker show the ♥ link.
 - **Bonded pair, both posted in the same district at the Night Shuffle:** **+1 Loyalty each per night**.
 - **Clashing pair "together"** (both in the Posse that day, or both posted in the same district that night): **−1 Loyalty each per day**, once per clashing partner.
 - In the slice there is **one district**, so the two Sentries are always "together". A Posse cat and a Sentry are never together.
@@ -128,8 +128,8 @@ Among the slice's one-of-each six: **7 bonded, 4 clashing, 4 neutral** pairs.
 |---|---|---|
 | To crack a Captain fast | Braggart + Schemer | One opens Frazzle on the leader; the other cashes the window |
 | To survive a Boss phase | Stalwart near the controlled cat | Damage shield around the cat you are driving |
-| To exploit a Fear prop | Goofball | Props ×1.5 (Water bucket, scooter horn, ledge junk) |
-| Revenge on a Rival who beat your cat | Brooder | Old Score ×2 |
+| To exploit a Fear prop | Goofball | Props ×1.3 (Water bucket, scooter horn, ledge junk) |
+| Revenge on a Rival who beat your cat | Brooder | Old Score ×1.5 |
 | A cat that will not get flattened | Fraidy (driven by you) | Distance AI, Pounce from perfect Skitters |
 | To hold a Patch under a forecast raid | Stalwart, then Braggart | Best defence; defence + Tribute |
 | To know why a raid is coming | Schemer on post | Motive in the Sniff |
@@ -140,22 +140,22 @@ Among the slice's one-of-each six: **7 bonded, 4 clashing, 4 neutral** pairs.
 
 **Constraint (DR-01, DR-37):** the six slice recruitables carry **one personality each**, and their Styles split 2 Bruiser / 2 Scrapper / 2 Yowler. Names marked *working* are proposals; Narrative names the old wall cat with this doc (DR action list 5), Nemesis generates Rival names and personalities, and this table is the **seed request** to Nemesis for the slice's fixed seeds. Strengths/Fears are proposals to Nemesis (selection) and Combat (values).
 
-| | **Hige** *(working)* | **Pon** *(working)* | **Kinako** *(working)* | **The First Thorn** (name: Nemesis; working "Togemaru") | **Kagi** *(working)*, Laundry-Pole Captain | **Daifuku** |
+| | **Hige** *(working)* | **Pon** *(working)* | **Kinako** *(working)* | **Togemaru**, the First Thorn, Keeper of Laundry Pole Yard (name adopted by Nemesis) | **Kagi** *(working)*, Captain of Tofu Shop Step | **Daifuku** |
 |---|---|---|---|---|---|---|
 | **Role** | The old wall cat; story recruit 1 | Story recruit 2 | Friend Stray | Rival (Tough) | Rival (Captain) | Rival (Boss) |
 | **Personality** | **Stalwart** | **Goofball** | **Fraidy** | **Braggart** | **Schemer** | **Brooder** |
 | **Style** | Bruiser | Yowler | Scrapper | Scrapper | Yowler | Bruiser |
-| **Look** | Big grey tom, torn left ear (old, authored), heavy jowls, sits like a loaf on the low wall | Small round calico, one ear always half-folded, tail up like a question mark | Pale fawn ("kinako" soy flour) shorthair, huge ears, thin, always half-crouched | Lean black-and-tan tom, spiky cheek ruff, struts | Long-bodied silver tabby, narrow eyes, sits on laundry poles looking down | Canon: enormous white-and-grey tom who never leaves his wall |
-| **Joins** | Life 1 day 1, ≈ 0:08–0:10, after teaching Whisker Sense ("Use your whiskers, Collar.") | Life 1 day 2, at a Narrative beat (proposal: the crows cornering her at the laundry poles are day 2's first fight; she tags along) | Life 2 day 1: one-time scent-trail favour (§3.4.3) | Recruit Verdict, Life 1 day 2 earliest (**free, fixed yes**: PP-07) | Recruit Verdict, Life 2 | Recruit Verdict at the Den, Regard ≥ 50 (DR-09); end of Life 2 |
+| **Look** | Big grey tom, torn left ear (old, authored), heavy jowls, sits like a loaf on the low wall | Small round calico, one ear always half-folded, tail up like a question mark | Pale fawn ("kinako" soy flour) shorthair, huge ears, thin, always half-crouched | Lean black-and-tan tom, spiky cheek ruff, struts | Long-bodied silver tabby, narrow eyes, sits on the tofu shop's awning looking down | Canon: enormous white-and-grey tom who never leaves his wall |
+| **Joins** | Life 1 day 1, ≈ 0:08–0:10, after teaching Whisker Sense ("Use your whiskers, Collar.") | Life 1 day 2, at a Narrative beat (proposal: the crows cornering her at the laundry poles are day 2's first fight; she tags along) | Life 2 day 1: one-time scent-trail favour, **the day's required first objective** (§3.4.3) | Recruit Verdict, Life 1 day 2 earliest, at the Laundry Pole Yard contest (**free, fixed yes**: PP-07) | Recruit Verdict, Life 2 day 3 earliest (Tofu Shop Step) | Recruit Verdict at the Den, Regard ≥ 50 (DR-09); end of Life 2 |
 | **Join level** | Mikan's level | Mikan's level | Mikan's level − 1 (min 1) | Own level (Nemesis) | Own level (≈ 6) | Own level (≈ 9) |
 | **Starting Loyalty** | **60** fixed (True) | **55** fixed (Steady) | **50** fixed (Steady) | F6 (worked: 36, Aloof) | F6 (worked: 40 fair / 45 feast) | F6 (worked: 56 fair / 61 feast) |
-| **Signature perk** | none (story) | none (story) | none (Stray) | Strength → perk *(proposal: **Quick Start**, begins each fight with ½ Paw)* | *(proposal: **Thick Ruff**, takes Claw damage ×0.8, covering the Yowler's Claw weakness)* | *(proposal: **Immovable**, cannot be knocked back or knocked off ledges)* |
+| **Signature perk** | none (story) | none (story) | none (Stray) | Strength → perk *(proposal, from Combat §3.9's menu: **+15% Nerve**)* | *(proposal, menu: **Thick Ruff**, resists Claw ×0.6, covering the Yowler's Claw weakness)* | *(proposal, menu: **immune to Cowed**; no effect on knock-offs or stagger. Never "cannot be knocked off": Combat §3.13 forbids it on Daifuku)* |
 | **Fear (kept)** | — | — | — | *(proposal)* Cucumbers | *(proposal)* Loud Noise | *(proposal)* Water (the bucket) |
-| **Arrives knowing** | Belly Flop, Shoulder Check | Purr, Withering Hiss | Claw Flurry, Wall-Kick | Nemesis kit (Tough: 2 Moves) | Nemesis kit (Captain: 4 Moves, incl. **Banshee Screech**) | Authored Boss kit (incl. **Sit On It**) |
+| **Arrives knowing** | Belly Flop, Shoulder Check | Purr, Withering Hiss | Face Swat, Bunny-Kick | Nemesis kit (Tough: 2 Moves) | Nemesis kit (Captain: 4 Moves, incl. **Banshee Screech**) | Authored Boss kit (incl. **Sit On It**) |
 | **Bonds / clashes in the six** | ♥ Fraidy, Goofball, Brooder · ✗ Schemer | ♥ all but Brooder · ✗ Brooder | ♥ Stalwart, Schemer, Goofball · ✗ Braggart | ♥ Goofball · ✗ Fraidy | ♥ Fraidy, Goofball · ✗ Brooder, Stalwart | ♥ Stalwart · ✗ Schemer, Goofball |
 | **Hook in one line** | The bodyguard who taught you to smell the street | Prop chaos and the reason everyone gets along | The skittish lookout who never gets flattened | Your first enemy, now your loudest friend | The clever one who brings the screech, and friction | The old king who never leaves his post, and only warms to the cat who earned it |
 
-**What the roster asks of the player.** The comfortable "family" Posse (Hige + Pon + Kinako) is all-bonded but has no Frazzle opener and no Pay-off specialist. The "Rival" Posse (Thorn + Kagi + Pon) hits harder at Captains and is bond-linked through Pon, but leaves Hige or Kinako to guard. With 6 cats, 3 Posse places and 2 Sentry slots, exactly one cat lounges every day: never Pon (−2), and not the Thorn for long (−2 from day 3). Posting Thorn with Kinako (clash) costs both; posting Hige with Daifuku (bond) earns both.
+**What the roster asks of the player.** The comfortable "family" Posse (Hige + Pon + Kinako) is all-bonded but has no Frazzle opener and no Pay-off specialist. The "Rival" Posse (Togemaru + Kagi + Pon) hits harder at Captains and is bond-linked through Pon, but leaves Hige or Kinako to guard. With 6 cats, 3 Posse places and 2 Sentry slots, exactly one cat lounges every day: never Pon (−2), and not Togemaru for long (−2 from day 3). Posting Togemaru with Kinako (clash) costs both; posting Hige with Daifuku (bond) earns both.
 
 ### 3.4 Recruitment (DR-09, deterministic)
 
@@ -169,7 +169,7 @@ Among the slice's one-of-each six: **7 bonded, 4 clashing, 4 neutral** pairs.
 Fixed: they join at their beat, at Mikan's level, with fixed Loyalty (Hige 60, Pon 55) and no Bribe. They cannot be released in the slice.
 
 #### 3.4.3 Friend Stray (one-time favour, DR-18)
-Kinako is found by a Whisker Sense scent trail in Life 2 day 1 (UX/Level place it). The favour: drive off the crows harrying it at its hiding place (a Critter fight), then **Slow Blink** at it from within 4 m (hold Sit, UX binds it). It follows Mikan to the Lot and joins, Loyalty 50. No daily Trust pips, no food, no roll. If the player skips it, the trail persists until found. Strays have no signature perk.
+Kinako is found by a Whisker Sense scent trail in Life 2 day 1 (UX/Level place it). **The favour is Life 2 day 1's required first objective: the Lot opens after it**, so it cannot be skipped and every player has a 4-cat Posse before Life 2 day 2 teaches the Relay (Combat §3.16, DR-01). The favour: drive off the crows harrying it at its hiding place (a Critter fight), then press **Interact (North / E) within 4 m**, which plays Mikan's slow-blink gesture; Kinako follows. (Not hold Sit, which is Head Home under DR-08, and not Slow Blink, which is the combat tactical mode.) It follows Mikan to the Lot and joins, Loyalty 50. No daily Trust pips, no food, no roll. Strays have no signature perk.
 
 #### 3.4.4 Join step, full Crew and release
 1. The joining cat keeps `name, title, coat_seed, style, personality, level, xp, traits, memory, signature_strength` and its kit (into `known_moves` and slots). `rank` is cleared; `former_rank` is set by Nemesis; `clowder = Bell`; `assignment = lot`; `loyalty` per F6 or the fixed value. Emits `CatRecruited(cat_id, origin)`.
@@ -190,7 +190,7 @@ Every Crew cat has exactly one `assignment`:
 | **Warden** | The Den's first Sentry slot; True+ only (DR-10) | As Sentry | As Sentry | As Sentry |
 | **Lounging** | the rest | Nothing | 25% share (F3) | 0 (Goofball −2) |
 
-1. **Posse growth (PP-08, PP-09, DR-22):** Mikan + Hige by ≈ minute 10 (two-cat Pile-On by minute 15); + Pon on Life 1 day 2 (three cats); + Kinako or a Rival recruit by **Life 2 day 2** (four cats). Kinako's favour on Life 2 day 1 guarantees it.
+1. **Posse growth (PP-08, PP-09, DR-22):** Mikan + Hige by ≈ minute 10 (two-cat Pile-On by minute 15); + Pon on Life 1 day 2 (three cats); + Kinako on **Life 2 day 1** (four cats, before Life 2 day 2's Relay lesson). Kinako's favour is that day's required first objective (§3.4.3), so the 4-cat Posse is guaranteed whether or not the player recruits a Rival.
 2. **Changing the Posse at the Lot:** free, any number of times.
 3. **Tail-Up (DR-38, PP-31; UX shows it as the in-field swap):** outside the Lot, D-pad Left/Right opens the picker. Mikan raises tail and chirps; the outgoing cat peels off towards the Lot and the chosen cat arrives over the High Road in ≈ 5 s. Only **Lounging** cats can be called; posted cats show greyed (un-post them at the Turf Board). Not during an encounter, Standoff or Verdict; not inside Haru's wall; **30 s cooldown**; a Routed cat cannot be called until it recovers (Sunspot nap or home). There is no mid-fight bench swap (DR-29).
 4. A cat brought in arrives with the Nerve it last had today; Zoomies gauges are Combat's.
@@ -215,7 +215,7 @@ Every Crew cat has exactly one `assignment`:
 5. **Level-difference multiplier** (F3) is both catch-up (a cat behind the Posse levels fast) and anti-grind brake.
 6. **Turf XP** (F5): Patch captured → the Posse gains a flat award; `DistrictClaimed` → every Crew cat gains 50% of its own `xp_to_next`.
 7. Level-ups resolve at encounter end; one encounter pays at most 2 levels' worth. No XP items; Morsels buy Lessons and Bribes, never levels.
-8. **Slice level cap: 10** (`SLICE_LEVEL_CAP`); XP stops at the cap. Rivals and Strays use the same curves; Combat applies rank multipliers on top.
+8. **Slice level cap: 10** (`SLICE_LEVEL_CAP`); XP stops at the cap. Rivals and Strays use the same curves; Combat applies rank multipliers on top. **Exception (Combat §3.12):** while a Rival is a Captain, Combat uses Nerve weight 1.0 instead of its Style's; once recruited it uses its Style row like any Crew cat.
 9. **Pacing target (DR-38):** Life 1 ends at Lv 3; the Posse is **Lv 7–9 at the Daifuku fight**; Lv 8 at Life 2's end (brief §8). Derivation in F2.
 10. **Mikan** uses the Scrapper row, 2 Paws in the slice (Combat), no age modifier in the slice (ageing is Backlog).
 
@@ -232,29 +232,29 @@ Every Crew cat has exactly one `assignment`:
 | **True** | 60–79 | Can teach; **Warden-eligible**; release is a clean parting |
 | **Sworn** | 80–100 | As True (heir eligibility: Backlog) |
 
-3. Loyalty never changes stats, Moves, level or XP. It is shown on the Crew card as the cat's pose and tier name (UX), never a number outside the Turf Board.
+3. Loyalty never changes stats, Moves, level or XP. It is shown on the Crew card and the Turf Board as the cat's pose and tier name (UX), **never as a number** (presentation ruling R3).
 4. **Betrayal in the slice:** the formula is live, but Wavering/Turncoat is switched on only in Life 3+ (Nemesis unlock ladder, DR-23). In the slice a cat below 30 (or a Schemer below 35) shows the Shifty pose and is gate-limited; no Sniff warnings, no Turncoat. Nemesis owns the betrayal event when it unlocks.
 5. Loyalty is a live tension in the slice through: low-start Rival recruits (F6), clashes, Braggart/Goofball neglect, Fraidy Routs, Schemer/Stalwart Verdict reactions, and the Brooder's half-speed.
 
 ### 3.8 Moves: learnsets, Instinct, Lessons and slots (DR-05, DR-38)
 
-**Combat owns every Move definition and number.** This doc owns only the learnset table `assets/data/crew/learnsets.*`, keyed by `move_id`: `styles[], source, rank, instinct_level`. The ids below are the slice's 12 Moves as named in Combat's archived starter list; **Combat's round-2 slice catalogue is canonical**, and if Combat renames or replaces a Move, the row follows the id. Every slice Move is a Set-up or a Pay-off (Combat's tag); AI cats fire Pay-offs on their own and Set-ups only when commanded (DR-29), so which Moves you slot on an AI cat matters.
+**Combat owns every Move definition and number.** This doc owns only the learnset table `assets/data/crew/learnsets.*`, keyed by `move_id`: `styles[], source, rank, instinct_level`. The ids below are the slice's 12 Moves of **Combat §3.10, which is canonical**; and if Combat renames or replaces a Move, the row follows the id. Every slice Move is a Set-up or a Pay-off (Combat's tag); AI cats fire Pay-offs on their own and Set-ups only when commanded (DR-29), so which Moves you slot on an AI cat matters.
 
 #### 3.8.1 Slice learnsets (12 Moves)
 
 | move_id | Native Style | Paws (Combat) | Rank | Instinct level (native) | Cross-Style learners (Lesson only) |
 |---|---|---|---|---|---|
-| `claw_flurry` | Scrapper | 1 | I | 1 | — |
-| `wall_kick` | Scrapper | 1 | I | 1 | Yowler |
+| `face_swat` | Scrapper | 1 | I | 1 | — |
+| `bunny_kick` | Scrapper | 1 | I | 1 | Yowler |
 | `scruff_toss` | Scrapper | 1 | II | 4 | Bruiser |
 | `shred` | Scrapper | 2 | II | 7 | — |
-| `belly_flop` | Bruiser | 1 | I | 1 | — |
+| `belly_flop` | Bruiser | 1 | I | 1 | Yowler |
 | `shoulder_check` | Bruiser | 1 | I | 1 | Scrapper |
-| `loaf` | Bruiser | 1 | II | 4 | Yowler |
+| `puff_up` | Bruiser | 1 | II | 4 | — (Combat gives the Yowler no Ruffle Move) |
 | `sit_on_it` | Bruiser | 2 | II | 7 | — |
 | `purr` | Yowler | 1 | I | 1 | — |
 | `withering_hiss` | Yowler | 1 | I | 1 | Scrapper |
-| `big_talk` | Yowler | 1 | II | 4 | Bruiser |
+| `howl` | Yowler | 1 | II | 4 | Bruiser |
 | `banshee_screech` | Yowler | 2 | II | 7 | — |
 
 Shape: each Style grows into two Rank I Moves at Lv 1, a Rank II at Lv 4 and its 2-Paw capstone at Lv 7. Each Style can be taught exactly **two** foreign 1-Paw Moves; 2-Paw capstones never cross for Crew cats. **Mikan can learn any of the 12.**
@@ -263,7 +263,7 @@ Shape: each Style grows into two Rank I Moves at Lv 1, a Rank II at Lv 4 and its
 A cat adds a native Move to `known_moves` automatically on reaching its `instinct_level` (or on joining at or above it). Free. Shown as a Lot notification next morning.
 
 #### 3.8.3 Lessons (the teaching route)
-1. **Where/when:** at the Lot (clock paused). Taking or giving a Lesson costs no clock time.
+1. **Where/when:** at the Lot (clock paused), **from Life 2 day 3** (Day Loop §3.9's teaching ladder, one new system a day per DR-22). Taking or giving a Lesson costs no clock time.
 2. **Teacher:** any cat that has the Move in `known_moves`. A Crew teacher must be **Steady+**. **Mikan teaches up to 3 Lessons a day; every other cat 1** (DR-38).
 3. **Learner:** any Crew cat or Mikan whose Style is the Move's native Style or listed as a cross-Style learner (Mikan: any Move). Learner level ≥ 1 for Rank I, ≥ **4** for Rank II.
 4. **Price** (Territory's sheet, DR-14; F10): Rank I 40, Rank II 120 Morsels, ×1.5 if cross-Style for the learner. Paid from the Stash.
@@ -274,12 +274,12 @@ A cat adds a native Move to `known_moves` automatically on reaching its `instinc
 
 #### 3.8.4 Slots
 1. **4 Move slots** per cat (canon). At the Lot, any known Move can be slotted or unslotted for free.
-2. **Mikan may slot at most 2 cross-Style Moves** (DR-33); the other slots hold Scrapper Moves. Mikan's cross-Style Moves never gain the native Style's passive (Combat). There is no hidden potency penalty.
+2. **Mikan may slot at most 2 cross-Style Moves** (DR-33); the other slots hold Scrapper Moves. There is no hidden potency penalty (and Combat has no Style passive to withhold).
 3. Slots change only at the Lot. A Tail-Up'd cat arrives with its current slots.
-4. **Zoomies** (Combat owns the three slice Zoomies and their gauges; Zoomies tiers are cut, CP-14): Mikan's unlocks at the cat flap beat (Life 2 day 2); a Crew cat's unlocks at **Lv 6**. One per Style; no Zoomies II.
+4. **Zoomies** (Combat owns the three slice Zoomies and their gauges; Zoomies tiers are cut, CP-14): Mikan's unlocks on **Life 2 day 3**, where Combat §3.16 teaches Zoomies (on the Captain); a Crew cat's unlocks at **Lv 6**. One per Style; no Zoomies II.
 
 #### 3.8.5 Rival kits (service to Nemesis/Combat, CP-X9)
-`DefaultKit(style, level, rank)`: Nemesis sets the count (Tough 2 Moves, Captain 4, Boss authored). Crew's selection rule: the cat's native Moves whose `instinct_level ≤ level`, most recent first; a Captain whose native list is short of 4 fills with its Style's capstone. So a Lv 6 Yowler Captain carries Purr, Withering Hiss, Big Talk and Banshee Screech, and recruiting it brings the capstone two levels early. Knacks are Backlog.
+`DefaultKit(style, level, rank)`: Nemesis sets the count (Tough 2 Moves, Captain 4, Boss authored). Crew's selection rule: the cat's native Moves whose `instinct_level ≤ level`, most recent first; a Captain whose native list is short of 4 fills with its Style's capstone. So a Lv 6 Yowler Captain carries Purr, Withering Hiss, Howl and Banshee Screech, and recruiting it brings the capstone two levels early. Knacks are Backlog.
 
 ### 3.9 Protagonist share (DR-33, CP-5, PP-20)
 
@@ -424,7 +424,7 @@ Fixed values (not F6): story recruits Hige 60, Pon 55; Friend Stray 50.
 
 **Output range.** Clamped 5–80. Unclamped extremes: maximum 50 + 30 + 10 + 10 = **100** (G 0, Regard 100, Goofball, feast) → 80; minimum under the availability gate (G ≥ 90 needs Regard ≥ 50): 50 − 40 + 15 − 5 + 0 − 20 = **0** → 5; without the gate the expression could reach −15, which the clamp absorbs.
 
-**Worked examples.** First Thorn (G_pre 55, Regard 10, Braggart, Life 1): 50 − 22 + 3 + 0 + 5 = **36** (Aloof: cannot teach yet). Kagi (G_pre 40, Regard 20, Schemer, fair): 50 − 16 + 6 − 5 + 5 = **40**; feast **45** (Steady: can teach Banshee Screech at once; that is what a feast buys). Daifuku (G_pre 30, Regard 60, Brooder, fair): 50 − 12 + 18 − 5 + 5 = **56**; feast **61** (True: Warden-eligible).
+**Worked examples.** Togemaru, the First Thorn (G_pre 55, Regard 10, Braggart, Life 1): 50 − 22 + 3 + 0 + 5 = **36** (Aloof: cannot teach yet). Kagi (G_pre 40, Regard 20, Schemer, fair): 50 − 16 + 6 − 5 + 5 = **40**; feast **45** (Steady: can teach Banshee Screech at once; that is what a feast buys). Daifuku (G_pre 30, Regard 60, Brooder, fair): 50 − 12 + 18 − 5 + 5 = **56**; feast **61** (True: Warden-eligible).
 
 ### F7. Daily Loyalty change
 
@@ -450,13 +450,13 @@ Social events: +1 per bonded partner posted in the same district (per night); �
 
 **Output range.** Δ is clamped to ±8 (Brooder −4 to +5); Loyalty is clamped 0–100. Realistic raw maxima sit at +7 (Goofball: Posse 2 + Morsel 4 + Lesson 1; Schemer: Posse 2 + Morsel 2 + Lesson 3), so the +8 cap only bites on bonded Sentries with stacked events. Raw minimum ≈ −20 (a Fraidy Routed in three lost fights while clashing), which the cap holds at −8. No unusable values.
 
-**Worked example (a Life 2 day).** Posse: Thorn, Kagi, Pon; Sentries: Hige and Kinako (district seen); Lounging: none (5 Crew). Share a Morsel given; Mikan Nose-Touches one Rival; Kagi takes a Lesson.
-- **Thorn** (Braggart): Posse 2 + Braggart 1 + Morsel 2 = **+5**.
+**Worked example (a Life 2 day).** Posse: Togemaru, Kagi, Pon; Sentries: Hige and Kinako (district seen); Lounging: none (5 Crew). Share a Morsel given; Mikan Nose-Touches one Rival; Kagi takes a Lesson.
+- **Togemaru** (Braggart): Posse 2 + Braggart 1 + Morsel 2 = **+5**.
 - **Kagi** (Schemer): Posse 2 + Morsel 2 + Lesson 3 − Nose-Touch 2 = **+5**.
-- **Pon** (Goofball): Posse 2 + Morsel 4 = **+6**. (Bonded with Thorn and Kagi in the Posse: stronger Tag-Ins, no Loyalty.)
+- **Pon** (Goofball): Posse 2 + Morsel 4 = **+6**. (Bonded with Togemaru and Kagi in the Posse: stronger Tag-Ins, no Loyalty.)
 - **Hige** (Stalwart): post 1 + Morsel 2 + bond with Kinako 1 + Nose-Touch 1 = **+5**.
 - **Kinako** (Fraidy): post 1 + Morsel 2 + bond with Hige 1 = **+4**.
-Swap Hige for Thorn on the post and Thorn/Kinako clash: Thorn post 1 + Morsel 2 − clash 1 = +2 (and −2 from day 3 out of the Posse), Kinako +2.
+Swap Hige for Togemaru on the post and Togemaru/Kinako clash: Togemaru post 1 + Morsel 2 − clash 1 = +2 (and −2 from day 3 out of the Posse), Kinako +2.
 
 ### F8. Bribe (price from Territory's sheet, DR-09/DR-14)
 
@@ -493,7 +493,7 @@ PowerRating(cat) = round( (nerve / PR_NERVE_DIV + bite + hide + voice + zip) × 
 
 **Output range.** Bounded. Minimum **50** (any Lv 1 cat, empty slots: stat sum 50 for every slice Style because of the budget-5 rule). Maximum **≈ 245** (Lv 10 Bruiser, Σ rank 8: 210 × 1.16 = 243.6 → 244). Shown only on the Turf Board.
 
-**Worked example.** Lv 5 Hige with Belly Flop (I), Shoulder Check (I), Loaf (II), Big Talk (II): stats 38.1 + 22 + 28 + 17 + 16 = 121.1 × (1 + 0.02 × 6) = **136**.
+**Worked example.** Lv 5 Hige with Belly Flop (I), Shoulder Check (I), Puff Up (II), Howl (II): stats 38.1 + 22 + 28 + 17 + 16 = 121.1 × (1 + 0.02 × 6) = **136**.
 
 ### F10. Lesson price (Territory's sheet, DR-14)
 
@@ -507,7 +507,7 @@ lesson_price = LESSON_RANK_PRICE[rank] × (CROSS_MULT if cross_style(learner) el
 | CROSS_MULT | float | 1.5 | Canon |
 | lesson_price | int | 40–180 | Morsels from the Stash |
 
-**Output range.** 40 (Rank I native) to **180** (Rank II cross-Style). **Worked example.** Teaching Big Talk (Yowler, II) to Hige (Bruiser): 120 × 1.5 = **180**.
+**Output range.** 40 (Rank I native) to **180** (Rank II cross-Style). **Worked example.** Teaching Howl (Yowler, II) to Hige (Bruiser): 120 × 1.5 = **180**.
 
 ---
 
@@ -535,7 +535,8 @@ lesson_price = LESSON_RANK_PRICE[rank] × (CROSS_MULT if cross_style(learner) el
 | Crew of fewer than 3 (Life 1) | Posse plays with fewer cats; Pile-On needs ≥ 2 standing (Combat) |
 | Posse loses; a Routed Posse cat | −3 for Routed in a lost fight; XP none; recovers at a Sunspot or home |
 | Daifuku recruited at the Den (end of Life 2) | Joins before the Closing; the slice ends on the title card. His ex-Boss neglect multiplier (2) applies from Life 3 |
-| The player never recruits a Rival | The slice still shows all six personalities (three as Rivals); a 4-cat Posse is guaranteed by Kinako (Life 2 day 1) |
+| The player never recruits a Rival | The slice still shows all six personalities (three as Rivals); a 4-cat Posse is guaranteed by Kinako, whose favour is Life 2 day 1's required first objective (the Lot opens after it) |
+| The player tries to go to the Lot before Kinako's favour on Life 2 day 1 | The Lot is closed until the favour is done; the scent trail is the day's first objective marker |
 | Released Friend Stray rejoins | `returned = true`, fixed Loyalty 50 − 20 = 30 |
 
 ---
@@ -597,7 +598,7 @@ Owned elsewhere (do not tune here): combat-perk magnitudes (Combat), guard-perk 
 5. **AC-5 (one personality model):** the schema has one `personality` field; no `temperament` field exists; personality never alters a stat. *(lint)*
 6. **AC-6 (pacing):** in the Lives 1–2 sim (DR-57) with the light, median and heavy policies, Posse level at the Daifuku fight is 7–9 for median and light play and ≤ 9.5 for heavy; Life 1 ends at Lv 3 ± 0.5. *(sim)*
 7. **AC-7 (catch-up):** a Lv 4 cat in Lv 7 fights reaches Lv 6 within 13 same-level-Tough kills (F3 gives ≈ 11.8; same-level pace would be 22). *(unit)*
-8. **AC-8 (Posse growth):** in playtests, 100% of testers have 2 cats by minute 15 (two-cat Pile-On, DR-03), 3 by the end of Life 1, and a 4-cat Posse by Life 2 day 2. *(playtest)*
+8. **AC-8 (Posse growth):** in playtests, 100% of testers have 2 cats by minute 15 (two-cat Pile-On, DR-03), 3 by the end of Life 1, and a 4-cat Posse by the end of Life 2 day 1 (before the Relay lesson on day 2). *(playtest)*
 9. **AC-9 (personality reads):** after 2 h, ≥ 70% of unbriefed testers can name one cat's personality-driven behaviour in a fight ("the grey one stays next to me") and one reason they posted or benched a specific cat. *(playtest)*
 10. **AC-10 (no dominant roster):** across playtest logs, no single 3-cat Posse is chosen on > 60% of Life 2 days, and at least 4 of 6 cats each spend ≥ 1 day posted. *(telemetry)*
 11. **AC-11 (social puzzle):** every slice day after Life 2 day 1 presents at least one posting choice where the bonded option and the strongest-guard option differ (true by roster construction; verify in the Turf Board). *(design check)*
@@ -627,6 +628,13 @@ Owned elsewhere (do not tune here): combat-perk magnitudes (Combat), guard-perk 
 - **Multi-district social rules** (bonded/clashing "same district" across 3 districts), Warden per district.
 - **Life 8 Loyalty** (no absence drain, DR-11) and Life 9 Crew-carries numbers (Narrative §9 owns the frame).
 - **Prowler and Trickster** personality AI notes for those Styles' kits.
+- *From the round-2 check (`design/reviews/round-2/combat-and-crew.md`), not fixed in iteration 3:*
+- **R-1 Brooder dismissal arithmetic** — the edge case says −10 raw → −5, but F7 clamps to ±8 before halving (→ −4). Set dismissal to −8 raw, or exempt it from `DAILY_CAP`.
+- **R-3 Leader levels** — Daifuku Lv ≈ 9 (Bribe 288) and Kagi Lv 6 here vs Combat's leader-level rule (Combat B-21) and Territory's Daifuku Lv 8 (Bribe 256). Settle with Combat/Nemesis; F8's example becomes 256/512 at Lv 8.
+- **R-4 Slice body ≈ 54 KB** vs the 50 KB target (§3.2.1's combat lines are now short pointers; trim further later).
+- **R-5 AC-6 / F2 pacing** is a hand derivation; confirm in the Lives 1–2 economy sim with Combat's sim encounter lengths (skirmishes 18–28 s, not 16–24).
+- **X-1 Brooder visibility** — Daifuku is the only Brooder and joins at the end of Life 2, so no tester fights beside Brooder AI. Use Stalwart Hige, Goofball Pon and Braggart Togemaru as DR-02's three prototype personalities; test the Brooder in the grey box.
+- **Pon's join beat** — "crows at the laundry poles" sits on Laundry Pole Yard, which is Togemaru's Patch on Life 1 day 2; Narrative to confirm the two beats don't collide.
 
 ---
 
@@ -675,4 +683,21 @@ Owned elsewhere (do not tune here): combat-perk magnitudes (Combat), guard-perk 
 | PP-20 | FIXED | Mikan capped at 2 cross-Style slots; Crew carry personality and signature perks (§3.9) |
 | PP-31 | FIXED | Tail-Up is the single in-field swap rule (§3.5.3) |
 
-**Assumptions for creative-director / owner review:** working names Hige, Pon, Kinako, Kagi, Togemaru (Narrative/Nemesis); the six seeds' personality assignments and proposed Strengths/Fears (Nemesis, Combat); slice Move ids pending Combat's round-2 catalogue; schema extensions in §3.1; A-1 fight supply (≈ 12.5 TE/day) to be confirmed by Day-loop/Combat encounter density.
+**2026-11-24 — Iteration 3 (final fix pass; `design/reviews/round-2/combat-and-crew.md`, `presentation.md`, `nemesis-territory-dayloop.md`).**
+
+| Fix | Status | How |
+|---|---|---|
+| Crew 1 · Move ids | FIXED | §3.8.1 now uses Combat §3.10 ids: `claw_flurry`→`face_swat`, `wall_kick`→`bunny_kick`, `loaf`→`puff_up` (no cross learner; the Yowler's second cross slot is `belly_flop`), `big_talk`→`howl`. Propagated to §3.3 (Kinako: Face Swat, Bunny-Kick), §3.8.5, F9 (still 136), F10 (still 180). "Archived starter list" wording deleted |
+| Crew 2 · Signature Strengths | FIXED | From Combat §3.9's menu: Togemaru +15% Nerve; Kagi resists Claw ×0.6; Daifuku immune to Cowed (never "cannot be knocked off") |
+| Crew 3 · Combat columns | FIXED | Every "Fights like" and "Combat perk" line in §3.2.1, the §3.2.2 bonded Tag-In (MV ×1.25, +10 FZ) and §3.2.3 cells (props ×1.3, Old Score ×1.5) now carry Combat §3.11's values and cite it. Stalwart body-blocking removed (Combat B-23). §3.1 points Mikan's AI to Combat's new Mikan row |
+| Crew 4 · Kinako input | FIXED | Interact (North / E) within 4 m plays Mikan's slow-blink gesture (§3.4.3) |
+| Crew 5 · 4-cat Posse | FIXED | Kinako's favour is Life 2 day 1's required first objective; the Lot opens after it (§3.3, §3.4.3, §3.5.1, §5, AC-8) |
+| Crew 6 · Zoomies day | FIXED | Mikan's Zoomies unlock on Life 2 day 3 (§3.8.4); Crew stays Lv 6 |
+| Lessons day | FIXED | Lessons open at the Lot from Life 2 day 3 (§3.8.3.1), per Day Loop §3.9 and the Nemesis/Territory review |
+| Names and posts | FIXED | Togemaru (the First Thorn, Braggart Scrapper, Keeper of Laundry Pole Yard) used throughout; Kagi is Captain of Tofu Shop Step, recruitable from Life 2 day 3 |
+| Captain Nerve | FIXED | §3.6.8 notes Combat's new rule: a Captain uses Nerve weight 1.0 while it is a Captain (Combat §3.12, iteration-3 retune) |
+| Number rule (R3) | FIXED | Loyalty is never a number (§3.7.3); Pillar line restated |
+| R-2 · Style passive | FIXED | Deleted the "never gains the native Style's passive" line (§3.8.4); Combat has no passive |
+| R-1, R-3, R-4, R-5, X-1 | BACKLOG | Moved to `## Backlog (post-slice)` |
+
+**Assumptions for creative-director / owner review:** working names Hige, Pon, Kinako, Kagi (Narrative/Nemesis; Togemaru adopted by Nemesis in round 2); the six seeds' personality assignments and proposed Strengths/Fears (Nemesis, Combat); schema extensions in §3.1; A-1 fight supply (≈ 12.5 TE/day) to be confirmed by Day-loop/Combat encounter density.

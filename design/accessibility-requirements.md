@@ -1,6 +1,6 @@
 # Accessibility Requirements — Cat RPG
 
-*Owner: ux-designer · Date: 2026-11-23 · Status: v1 (commissioned by DR-56; slice scope) · Canon: `design/creative-brief.md` v1.2 §8, `design/reviews/round-1/director-rulings.md` DR-08, DR-48, DR-50, DR-51, DR-54*
+*Owner: ux-designer · Date: 2026-11-23 · Status: v1 (commissioned by DR-56; slice scope) · Canon: `design/creative-brief.md` v1.3 §8, `design/reviews/round-1/director-rulings.md` DR-08, DR-48, DR-50, DR-51, DR-54*
 
 **What this is.** The project-wide floor. Every GDD, screen spec and build of the vertical slice must meet it; `design/ux/hud.md` and `design/ux/key-screens.md` apply it. Where a feel value in any doc (Combat's tier table, the art bible) conflicts with §1, **§1 wins** (DR-50). Requirements marked **REQUEST** are not yet agreed by the owning doc and are not promised to players until they are.
 
@@ -29,10 +29,10 @@
 
 | Option | Effect | Default |
 |---|---|---|
-| **Reduce Flashes** | Impact frames become a local Ink outline pulse; full-screen frames off; glyph bursts lose their white core | Off |
+| **Reduce Flashes** | Impact frames become a +1 px line hold with no luminance change (Combat §3.17, Art §10.4); full-screen frames off; glyph bursts lose their white core | Off |
 | **Reduce Motion** | Shake off; T4/T5 camera punches off; parallax off; HUD bump off; Fence Line replay becomes a list; Verdict cards cut instead of fanning | Off |
 | Screen shake | Slider 0–100% in 25% steps | 100% |
-| Hit-stop intensity | 0 / 50 / 100% (Combat confirms 0% keeps timings fair) | 100% |
+| Hit-stop intensity | 0 / 50 / 100% (**0% is a REQUEST** until Combat confirms it keeps timings fair; 50/100% ship) | 100% |
 | Onomatopoeia | On / Smaller (T5 at T4 size) / Off | On |
 | Camera (DR-48) | FOV slider, camera speed, auto-centre toggle, motion comfort (dampened orbit, no auto-swing) | Combat/Camera defaults |
 | First-launch prompt | Offers Reduce Flashes and Reduce Motion before the cold open, with a photosensitivity note | Shown once |
@@ -50,8 +50,9 @@
 | Telegraphs | White / Paper Cream / Frazzle Magenta | Solid ring (dodge) / dashed + triangle (Hiss it) / zigzag edge (get out) |
 | Patch owner | Clowder colour wisps | Clowder emblem on the Scent Post and Patch tag |
 | Scent strength | Wisp brightness | Wisp **count** 1–4; number on the Turf Board |
-| Frazzle | Magenta zigzag bar | Zigzag shape; Frazzled countdown ring + pips |
-| Damage weakness / resist | Tint | Numeral frame shape |
+| Frazzle gauge | Static Yellow `#FFE14A` zigzag bar | Zigzag-edged bar shape |
+| Frazzled (state) | Frazzle Magenta outline | Fur-puff silhouette, spiral eyes, orbiting squiggles; Frazzled countdown ring + pips |
+| Damage weakness / resist | Tint | **Spark shape**: extra Ink crack wedge (weakness) / blunted spark at 70% (resist) (Art §10.3); works with damage numerals Off, the slice default (R3) |
 | Household members | Yellow / teal / coral / plum | Textile motif and lightness step: Haru plain/round, Sora stripes, Koharu dots, Gran cross-hatch (art bible §4.5) |
 | Call glyph | Singer's colour | Shape codes the voice (Haru: three smooth arcs) |
 | Disabled UI | — | Halftone overlay, contrast ≥ 3:1 (DR-51) |
@@ -72,7 +73,7 @@ The human story is told partly by music (the Call, Haru's piano, the Dusk chime)
 | The bell's fourth beat | A bell glint on Mikan's collar on the downbeat |
 | The Dusk chime | **The Dusk lamp wave** runs uphill with the chime |
 | Off-screen sound at home | Mikan's ear-and-head turn + an **ear Sense Icon** pointing at the source |
-| Murmur tone | **Tone Sense Icons over Mikan** (warm, sad, sharp, laughter), authored per vignette. Never a translation |
+| Murmur tone | **Tone Sense Icons over Mikan**: Narrative §3.1's four tone puffs, **Round** (warm) · **Spiky** (sharp) · **Drooping** (low, unhappy) · **Bouncing** (bright, excited), authored per vignette. Never a translation |
 | Haru's piano | Visible hands and keys; tone Sense Icon for how it sounded (badly at 16) |
 | A Rival's yowl-sting | **Sting contour glyph** on the name-card and Rival card, so the sting can be learned by sight |
 | Rival Ambush yowl-sting | Directional edge flare with a 2.0 s drain arc; the last 0.75 s (the counter window) turns Ink |
@@ -181,8 +182,17 @@ Cut: Slow Blink at 2% (no distinct need), "Crew initiative" (Tactics are Backlog
 - Screen-reader / menu narration for system UI (never for human content).
 - Life 8 carriers (the silenced Call; Home Scent note) per Narrative §9.
 - Full-game audit against a named accessibility tier.
+- Hit-stop 0% setting: ships only once Combat confirms fairness (REQUEST).
 
 ## Revision Log
+
+**2026-11-24, Iteration 3 (round-2 presentation review, final pass).**
+
+| Item | How |
+|---|---|
+| Fix 1 · Tone icons | §3 uses Narrative's four tone puffs (Round, Spiky, Drooping, Bouncing), matching HUD §5.1 |
+| Fix 2 · §2 colour rows | Frazzle split into gauge (Static Yellow zigzag bar) and Frazzled state (Magenta + fur-puff); weakness/resist twin is the spark shape, since numerals default Off (R3) |
+| Backlog taken | Reduce Flashes wording now Combat's (+1 px line hold, no luminance change); hit-stop 0% marked REQUEST |
 
 **2026-11-23, v1 (new doc commissioned by DR-56; carries UX-10 and accessibility rulings).**
 

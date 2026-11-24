@@ -1,7 +1,7 @@
 # UX Spec: Key Screens — Cat RPG (vertical slice, round 2)
 
 *Owner: ux-designer · Date: 2026-11-23 · Status: round-2 slice rewrite (the first draft is archived at `design/backlog/first-drafts/key-screens.md`)*
-*Canon: `design/creative-brief.md` v1.2 and `design/reviews/round-1/director-rulings.md` (DR-xx). Companions: `design/ux/hud.md` (HUD, control map), `design/accessibility-requirements.md`.*
+*Canon: `design/creative-brief.md` v1.3 and `design/reviews/round-1/director-rulings.md` (DR-xx). Companions: `design/ux/hud.md` (HUD, control map), `design/accessibility-requirements.md`.*
 
 **Scope.** The slice screens: the **Fence Line** (§2), the **Rival card** (§3), the **Verdict** (§4), the **Turf Board** (§5), the **Crew roster, Posse and Lessons** (§6) and the **first-15-minutes and first-hour onboarding plan** (§7). Every number, threshold and rule shown is read from its owning GDD; this doc decides only what is shown, where, and how the player moves through it.
 
@@ -163,7 +163,7 @@ Never shown: Grudge or Regard numerals, recruit thresholds, AI weights, combat v
 
 ```
 +--------------------------------------------------------------------------+
-| /=[ (sage) THE FIRST THORN   "the Soggy"   /  ]=\       claw: /          |
+| /=[ (sage) TOGEMARU  the First Thorn  "the Soggy" / ]=\   claw: /        |
 |                                                                          |
 |  +------------------------+   PERSONALITY                                |
 |  |                        |   [Braggart icon]  BRAGGART                   |
@@ -174,8 +174,8 @@ Never shown: Grudge or Regard numerals, recruit thresholds, AI weights, combat v
 |  +------------------------+                                              |
 |   threat: (paw)(PAW) bigger       sting: _/\_/\__/^\_                    |
 |                                                                          |
-|  STRENGTHS  [Iron Chin]  [?]      -> if recruited: always-on perk        |
-|  FEARS      [Water]  [?]                                                 |
+|  STRENGTHS  [+15% Nerve]  [?]     -> if recruited: always-on perk        |
+|  FEARS      [Cucumber]  [?]                                              |
 |  OLD SCORE  [old wall cat]  "Still owe you for the gutter."              |
 |                                                                          |
 |  HISTORY  (pinned)                                                       |
@@ -334,7 +334,8 @@ Framing: the view from the kei truck roof. One painted terraced strip of Hidamar
 | State | Behaviour |
 |---|---|
 | Life 1 | Tab hidden; the Lot shows Crew only |
-| Life 2 day 2 (first visit) | Opens with a hint card on the forecast Patch: "Raids only take weak Patches. Guard it, or Spray it Strong." |
+| Life 2 day 1 (first visit) | Opens with a hint card on Laundry Pole Yard: "Post a cat. It guards and earns." |
+| Life 2 day 2 (first forecast) | Hint card on the forecast Patch: "Raiders come tonight. Guard it, or Spray it Strong." (Strong Patches can still be raided; worst case Scuffed) |
 | No raid forecast | Forecast row empty; the posting decision is about Tribute and Loyalty |
 | Patch lost overnight | Stamp flips to the raider's emblem with a torn-paper edge; preview line: "Take it back: a Standoff with the raid leader" |
 | Not at the Lot | Turf Board unavailable (management stays at the Lot); street shows wisps only |
@@ -356,19 +357,19 @@ Six cats at most (cap 6). Each is a large tile with the cat **animated in its pe
 |  |  front,   |        |  from a   |   X    |  out,     |                 |
 |  |  braced)  |        |  crate)   |--------|  prancing)|                 |
 |  | STALWART  |        | FRAIDY    |        | BRAGGART !|                 |
+|  | HIGE      |        | KINAKO    |        | TOGEMARU  |                 |
 |  | old wall  |        | Friend    |        | the Thorn |                 |
-|  | cat       |        | Stray     |        | (ex-Rival)|                 |
-|  | Bruiser   |        | Yowler    |        | Scrapper  |                 |
+|  | Bruiser   |        | Scrapper  |        | Scrapper  |                 |
 |  | POSSE <   |        | POSSE v   |        | lounging  |                 |
 |  +-----------+        +-----------+        +-----------+                 |
 |  +-----------+        +-----------+        +-----------+                 |
 |  | BROODER   |        | SCHEMER   |        | GOOFBALL ~|  ~ = cloud      |
-|  | ...       |        | ...       |        | posted:   |                 |
+|  | DAIFUKU   |        | KAGI      |        | PON posted|                 |
 |  |           |        |           |        | Laundry P.|                 |
 |  +-----------+        +-----------+        +-----------+                 |
 |  <3 bonded   X clashing    (S) open card   (W) Posse builder             |
 +--------------------------------------------------------------------------+
- (who is which personality is illustrative; Crew/Nemesis assign one per personality)
+ (slice six per Crew §3.3 / brief v1.3: Hige Stalwart · Kinako Fraidy · Togemaru Braggart · Daifuku Brooder · Kagi Schemer · Pon Goofball; Daifuku only joins at slice end)
 ```
 
 ### 6.2 The Crew card (One Cat Card, Crew variant)
@@ -437,8 +438,8 @@ A single button on its tab: the cost (Σ Crew levels), the Stash, and a preview 
 |---|---|---|---|---|
 | 0:00–0:04 | **K1.1 The Box in the Rain.** Haru **hums** (not the Call). | Camera orbit (right stick) at the very end | The kitten looks up at the yellow raincoat; a stick pictogram fades in once | Player orbits |
 | 0:04–0:05 | The garden | **Move**, **Jump/Hop** to the low wall (South) | A butterfly lands on the wall; South glyph on first approach | Reaches the wall |
-| 0:05–0:06:30 | A crow on the path | **Swat / Attack** (West): the 3-hit string | West glyph as the crow lands; the third hit's finisher gets its T2 burst | Crow hit |
-| 0:06:30–0:08 | The crow dives | **Skitter** (East) on a white telegraph | Slow first dive; white ring decal + East glyph | One Skitter |
+| 0:05–0:06:30 | A crow on the **lane-side wall top**, outside the garden (R4: no combat inside the wall) | **Swat / Attack** (West): the 3-hit string | West glyph as the crow lands; the third hit's finisher gets its T2 burst | Crow hit |
+| 0:06:30–0:08 | The crow dives (still on the lane-side wall top) | **Skitter** (East) on a white telegraph | Slow first dive; white ring decal + East glyph | One Skitter |
 | ≈ 0:08–0:10 | **The old wall cat**: "Use your whiskers, Collar." | **Whisker Sense** (R2 hold): trail and compass ring | The cat says it; R2 glyph; the trail leads to the cat's spot | Follows the trail; **first story recruit joins** (free) |
 | 0:10–0:11 | Two Strays in the lane | **Switch** (D-pad Left to the wall cat, Up back to Mikan) | The wall cat gets cornered; its plate pulses with its D-pad glyph | One switch |
 | 0:11–0:12 | | **First Paw** fills | Paw pip pops with a bell tick; hint "Paws buy Moves" | — |
@@ -451,10 +452,10 @@ A single button on its tab: the cost (Σ Crew levels), the Stash, and a preview 
 | ≈ Time | Beat | New verb / element |
 |---|---|---|
 | 0:15–0:17 | Low Wall Corner, scripted short escalation: 1 Rub, 1 Counter-Spray on the rival mark | **Rub** (a `seen` visit), reading **scent wisps** |
-| 0:17–0:19 | One wave, then the Keeper | **Hiss** on the Keeper's **yellow** telegraph (Hiss pom glows; North glyph) |
+| 0:17–0:19 | One wave, then the Keeper (an **untracked Stray**: Routing it gives no Verdict) | **Hiss** on the Keeper's **yellow** telegraph (Hiss pom glows; North glyph) |
 | 0:19–0:20 | A Tough at low Nerve in the wave | **Back Down** (Hiss at ≤ 15%): the Tough bolts. Hint after, not before |
 | 0:20–0:21 | The post is below Strong | **Spray** (North): **Patch claimed**, Life 1 turf goal met; Patch tag flips to the Bell |
-| 0:21–0:24 | **The First Thorn Standoff** (name-card, sting contour) | **Brace** (R1 hold) against its string; normal interruptible flee (DR-41). If Routed, the first Verdict happens here (see §7.6) |
+| 0:21–0:24 | **The First Thorn Standoff**: **Togemaru** (Braggart Scrapper), after the Low Wall Corner claim (name-card, sting contour) | **Brace** (R1 hold) against its string; it flees as normal (DR-41), so the first Verdict normally stays on day 2. If it is Routed anyway, see §7.6 |
 | 0:24–0:25 | Sunspot | **Nap**: the **phase dial** jumps half a phase; heal |
 | 0:25–0:27 | Dusk chime, the lamp wave; **K1.3 The first Call** | **Call glyph**; **Head Home** thread (D-pad Down hold) |
 | 0:27–0:30 | Evening at home; sleep | Home verbs by pictogram (Eat, Rub, Lap, Meow); Bond hearts |
@@ -473,11 +474,12 @@ A single button on its tab: the cost (Σ Crew levels), the Stash, and a preview 
 
 | Day | Headline teach | Also switching on |
 |---|---|---|
-| Life 2 day 1 | **Ambush** (from the High Road, Pounce opener; and the Rival yowl-sting with the Skitter/Brace counter) | Fence Line, 3-item Sniff |
-| Life 2 day 2 | **Sentries and the Turf Board** (one posting decision) + **Share a Morsel** | Posse of 4; K2.3 the cat flap → **Night** |
-| Life 2 day 3 | **Lessons** (Rank I) | First raid forecast in the Sniff (scripted from the arc lead); the night raid resolves |
-| Life 2 day 4 | **Props and Fears** (bucket, scooter horn, cucumber junk) | **Zoomies** (the gauge has been filling; the hint fires the first time it is full); the one Caterwaul |
-| Life 2 day 5+ | Daifuku: "knock him off into the bucket" | No new verbs |
+| Life 2 day 1 | **Ambush** (from the High Road, Pounce opener; and the Rival yowl-sting with the Skitter/Brace counter) | The Friend Stray favour is the **required first objective**: Interact (North / E) within 4 m plays Mikan's slow-blink gesture and **Kinako** follows (the Lot opens after it). Fence Line, 3-item Sniff; **Sentries and the Turf Board** (one posting decision, first taught on Laundry Pole Yard) |
+| Life 2 day 2 | **Props and Fears** (bucket, scooter horn, cucumber junk) | **Relay** with the Posse of 4; **Share a Morsel**; the first raid, **forecast in that morning's Sniff**, fires that Night as **the Caterwaul**; K2.3 the cat flap is a Dusk beat → **Night** |
+| Life 2 day 3 | **Zoomies** (the gauge has been filling; the hint fires the first time it is full; Captain **Kagi** at Tofu Shop Step) | **Lessons** (Rank I) at the Lot; from now on one forecast raid a night |
+| Life 2 day 4+ | **The Den and Daifuku**: "knock him off into the bucket" | No new verbs |
+
+This sheet is the owner (DR-22, §7.1 rule 5); `combat-system.md` §3.16 and `day-loop.md` §3.9 cite it. Turf Board and Sentries sit on L2D1 to match Territory §3.12 (Sentries posted before the first raid on L2D2 night).
 
 ### 7.5 First-hour acceptance
 
@@ -497,7 +499,7 @@ A single button on its tab: the cost (Σ Crew levels), the Stash, and a preview 
 
 ## 8. Assumptions for creative-director review
 
-- **A-1 Numbers.** Read "the Turf Board is the only place numbers appear" as governing territory, nemesis and Loyalty values. Currency counts appear where spent (Bribe row, Lessons, Share a Morsel, Stash) and Crew levels appear on Crew cards. If the strict reading is intended, Bribe steps become fish-pile sizes and levels become pips.
+- **A-1 Numbers. CONFIRMED (round-2 R3, brief v1.3).** Numbers count what the cat owns or pays; they never measure a feeling, a relationship or a human. Territory numbers only on the Turf Board; currency counts where spent (Bribe row, Lessons, Share a Morsel, Stash); Crew levels and XP pips on Crew cards; never Grudge, Regard, Loyalty or Rival levels.
 - **A-2 One assignment per cat** (Posse, Posted or Lounging); posting a Posse cat removes it from the Posse. Territory and Crew to confirm.
 - **A-3** The slice's three outer Patch names are placeholders.
 - **A-4** Disposition pose set in §2.4 is an example; Nemesis owns the mapping from Grudge/Regard to pose.
@@ -516,8 +518,20 @@ A single button on its tab: the cost (Σ Crew levels), the Stash, and a preview 
 - Per-screen split of this doc after the slice build.
 - One-handed presets.
 - Kits, Wall Watch, Usurper on the Fence Line.
+- Fence Line "Last night" replay: one held hero frame (the new arrival landing on its perch, with a stamp) for trailer capture; re-run the flash test on the replay hops.
+- First-hour clock: `day-loop.md` puts K1.4 at ≈ 0:40–0:45, §7.3 at 0:52–0:57. Re-time both against the first playable.
+- Rival card history lines in §3.3 are illustrative; re-cut them once Nemesis's day-1 flee / day-2 gatepost schedule is in the prototype.
 
 ## Revision Log
+
+**2026-11-24, Iteration 3 (round-2 presentation review, final pass; also `combat-and-crew.md` and `nemesis-territory-dayloop.md`).**
+
+| Item | How |
+|---|---|
+| Fix 1 · Life 2 teaching ladder | §7.4 re-ordered: L2D1 Ambush (+ Friend Stray favour as required first objective, Turf Board and Sentries), L2D2 Props and Fears (+ Relay, first forecast raid as the Caterwaul, K2.3 at Dusk), L2D3 Zoomies (+ Lessons), L2D4+ Den and Daifuku. Matches Combat §3.16 and Day-loop; Turf Board/Sentries on L2D1 follow Territory §3.12 and the nemesis review rather than the presentation review's "keep on L2D2", so all three system docs agree. §5.5 unlock rows follow; the "raids only take weak Patches" hint removed (Strong Patches are raidable) |
+| Fix 2 · Crow (R4) | §7.2 crow beat on the lane-side wall top, outside the garden |
+| A-1 | CONFIRMED by R3 |
+| Names and Moves | First Thorn = Togemaru (Braggart Scrapper, Fear Cucumbers, Strength +15% Nerve) in §3.3 and §7.3; roster names the slice six; Kinako is a Scrapper; recruit input is Interact within 4 m (not hold Sit); Low Wall Corner Keeper is an untracked Stray, so the first Verdict stays on day 2 |
 
 **2026-11-23, round 2 (fresh slice rewrite; issues from `design/reviews/round-1/ux--art-direction.md` and director-rulings Part 2 §8).**
 

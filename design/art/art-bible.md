@@ -4,7 +4,7 @@
 > **Owned By**: art-director
 > **Last Updated**: 2026-11-23
 > **Art Director Sign-Off (AD-ART-BIBLE)**: Not yet reviewed
-> **Canon**: `design/creative-brief.md` v1.2, then `design/reviews/round-1/director-rulings.md` (DR-xx). The first draft is archived at `design/backlog/first-drafts/art-bible.md` and is a content backlog, not canon.
+> **Canon**: `design/creative-brief.md` v1.3, then `design/reviews/round-1/director-rulings.md` (DR-xx). The first draft is archived at `design/backlog/first-drafts/art-bible.md` and is a content backlog, not canon.
 > **Scope**: the vertical slice (DR-01): Lives 1–2, Hidamari Lane, Haru's House, the Lot. Full-game material is one line each in the Backlog section.
 
 **Style reference.** The user's reference is the look of *Shin chan: Shiro and the Coal Town*: flat cel-shaded figures with a thin, even dark line, soft contact shadows, lush painted backgrounds with a soft-gradient sky, and warm, rounded, cream UI. We take that look, not that game's characters, layouts or trade dress (brief §9 originality rule).
@@ -159,6 +159,8 @@ The slice tracks ≤ 12 Rivals plus Strays and generated Crew, so the generator 
 
 **Rank scale:** Tough ×1.0 · Captain ×1.15 · Daifuku ×1.6 (authored). Bigger always means higher rank.
 
+**Global cat scale (iteration 3; brief v1.3).** **One cat scale for every cat: 1.25× a real cat (≈ 0.56 m nose to rump), the same on the street and at home, with no per-context swap.** Humans, furniture and props are true scale. The Life 1 kitten comes from bone scale (§5.1), and the rank scale above multiplies on top of 1.25×. Camera (`camera-system.md` §4.1) and HUD size their floors against this value. Confirmed by Camera's home mock (T3): Mikan in a 16-year-old's lap and on the piano bench must read as a cat, not a dog.
+
 ### 3.5 History worn on the model: silhouette Scars and Titles
 
 Scars are cartoon-cosmetic and never read as wounds: no red, no open marks, no blood (tone guardrails). DR-40: every player-sourced Scar is a **silhouette Scar** until the cat has two. All six are placed to read **from the behind-and-above camera**.
@@ -174,7 +176,7 @@ Scars are cartoon-cosmetic and never read as wounds: no red, no open marks, no b
 
 Non-silhouette Scars (third and later; close-up only): three pale scratch lines on a flank (lighter than the coat, never red), a bald patch, a bent whisker. At most 4 Scars shown. The first Scar goes to the side the finishing hit came from where data allows. **Mikan's plaster** after a wipe (DR-40.6, tag `mikan_plastered`) uses the head-plaster asset, placed over the ginger eye patch at the brow.
 
-**Titles (6 in the slice)** appear as a **stamp emblem** on the Standoff name-card and the Fence Line: an inked roundel in the Clowder colour with one pictogram (no letters). Captains and Daifuku also wear one piece of **regalia**, a found object: a frayed rope loop, a clothes-peg on one ear, a bottle-cap pendant, a leaf that never falls off. **Collars mean pets:** in the slice only Mikan wears one. Bell Clowder Crew wear a knotted **bell-gold cord** at the tail base (a gang mark, not a collar), so Sentries read as yours in the world without UI.
+**Titles (6 in the slice)** appear as a **stamp emblem** on the Standoff name-card and the Fence Line: an inked roundel in the Clowder colour with one pictogram (no letters). The HUD ribbon and Rival card show the stamp **and** the Title as readable text: Titles are cat language, which is allowed. Captains and Daifuku also wear one piece of **regalia**, a found object: a frayed rope loop, a clothes-peg on one ear, a bottle-cap pendant, a leaf that never falls off. **Collars mean pets:** in the slice only Mikan wears one. Bell Clowder Crew wear a knotted **bell-gold cord** at the tail base (a gang mark, not a collar), so Sentries read as yours in the world without UI.
 
 ### 3.6 Environment and UI shape rules
 
@@ -220,7 +222,7 @@ Shape always backs colour. Fixes from AB-7 and DR-51 are marked ✱.
 
 | Meaning | Colour | Hex | Shape backup |
 |---|---|---|---|
-| Posse / Bell Clowder | Bell-Gold keyline + 1 px Paper Cream rim ✱ | `#F2B01E` | Bell-shaped overhead tick |
+| Posse / Bell Clowder | Bell-Gold keyline + 1 px Paper Cream rim ✱ | `#F2B01E` | Overhead **chevron** tick on allies; the **controlled cat** carries the **bell** tick (HUD §4.1 priority 1) |
 | Wall Sitters (enemy) | Sage outline + 1 px Paper Cream rim ✱ | `#A8C878` | Brick-block emblem on name-card and Fence Line |
 | Stray (untracked) | Ink outline + Cream rim | `#33273B` | No emblem |
 | Nerve | Nerve Green ✱ | `#5CC46B` | Bar length. Below 25% the fill becomes Ink-hatched Paper Cream and wobbles (the coral low state is removed: coral is Koharu's) |
@@ -316,7 +318,7 @@ The UI never uses the household hues at full saturation, and never painted textu
 
 | Risk pair | Backup |
 |---|---|
-| Posse keyline vs. Sage outline | Gold has the overhead bell tick; enemies carry the Frazzle gauge; outline widths differ in greyscale (gold keyline 2 px, Sage outline 2.5 px) |
+| Posse keyline vs. Sage outline | Gold has the overhead chevron tick (bell on the controlled cat); enemies carry the Frazzle gauge; outline widths differ in greyscale (gold keyline 2 px, Sage outline 2.5 px) |
 | Bell-Gold vs. Static Yellow vs. Haru Yellow | Context: gold is street and keyline, Static Yellow is gauge only, Haru Yellow is home only. Shapes differ (tick, zigzag bar, cloth) |
 | Claw vs. Summer Sky | Claw arcs always carry an Ink keystroke on their outer edge |
 | Yowl Lilac vs. Shadow Wisteria | Lilac is lighter by ≈ 25 L* and is always a wavy arc |
@@ -429,17 +431,17 @@ A Showa-nostalgic hillside lane of old wooden houses and plaster garden walls st
 An old wooden house with a veranda, garden and low wall. Inside the wall: no combat, no VFX, no onomatopoeia, soft contrast. Rooms in the slice: **garden**, **entryway (genkan)**, **kitchen/Main Room with the upright piano**, **Haru's room**, and the **Alcove** for the morning rin ritual.
 
 **Witness objects** (the dual story told by things; P3). Each is inked if Mikan can act on it, painted if not:
-- **The Box** from the shrine steps (Life 1), later Mikan's bed in the entryway.
-- **The bowl** and its mat on the kitchen floor.
+- **The Box** from the shrine steps (Life 1): below the entryway step at first, then **beside Gran's cushion in the Main Room** from K1.4 for the rest of the game (Narrative §3.5).
+- **The saucer** (day 1, chipped, in the entryway), then **the blue-and-white Bowl** from K1.3 with a **chip state** (unchipped → chipped; same Bowl all game), on its mat in the Main Room.
 - **The upright piano** (inked keys and lid; Mikan can walk on the keys), with Scribble sheet music.
 - **The raincoat hook** in the genkan, yellow raincoat on it.
 - **Haru's desk and study lamp** (the lamp pool is the Life 2 night image).
-- **The cat flap** (Life 2 day 2): a new, slightly too-bright inked panel in the back door.
+- **The cat flap** (Life 2, K2.3): a new, slightly too-bright inked panel in the **veranda door**.
 - **The envelope** (K2.5): plain cream, a Scribble address, never readable.
 - **The Grandpa photo** and its plum cloth in the Alcove; the rin bowl beside it.
-- **The genkan shoe line-up:** Haru's school shoes, Gran's sandals, a pair of yellow slippers.
+- **The genkan shoe line-up:** Haru's **loafers**, Gran's **plum sandals**, and **yellow rain boots on day 1 only** (Narrative §3.5).
 
-**The daily change** (DR-23): one object per day changes and gets a Home Scent trail; set dressing supplies ≥ 7 swap states in the slice (moved cushion, new mug, school bag dropped, flowers, umbrella open to dry, a sweater on the chair, a gift curio on the step).
+**The daily find** (DR-23): one object per day changes and gets a Home Scent trail. Art builds **Narrative §3.6's pool of 8 daily finds** (for example the ginger-cat charm on Haru's school bag, Gran's new reading glasses, a towel warm from the line, the Scribble score with a pencil circle); there is no separate Art swap list.
 
 **Camera grammar at home:** the same third-person camera at cat height (0.3–0.6 m). Rooms are dressed for that view: floor, skirting, furniture undersides and table legs are the hero surfaces; ceilings are simple. Vignettes use authored shots; the composition rule in §1.4 applies.
 
@@ -489,7 +491,7 @@ The user's direction is **rounded, cream-and-brown, bubbly**. We take the refere
 
 - **UI and cat speech:** one rounded sans family with full CJK coverage (candidate: M PLUS Rounded 1c, OFL), two weights. Ink on Cream for body text.
 - **Hierarchy at 1080p:** headers 44 px bold; body 32 px; **floor 28 px** (UX-X14; 18 px at 720p for the later handheld check). Barks ≤ 60 characters in 32 px.
-- **Numbers** appear only on the Turf Board (DR-47) and in system menus.
+- **Numbers** (round-2 R3; brief v1.3): *numbers count what the cat owns or pays; they never measure a feeling, a relationship or a human.* Allowed: Morsels, Shinies, Tribute, the Stash, prices, Crew levels and XP pips (Lot tabs, Turf Board, Verdict Bribe row, Pause, the Doorstep Tribute card, the street pickup tick and encounter tally). Territory numbers only on the Turf Board. Never: Grudge, Regard, Loyalty, Rival levels, anything inside the house except the Doorstep card, anything in the world (Scribble). Combat damage numerals are **Off by default** (UX option); weakness and resistance read from the spark shape (§10.3).
 - **Combat onomatopoeia is not a font** (§10.7).
 
 ### 7.5 Iconography and UI motion
@@ -565,7 +567,7 @@ Target: 1080p60 on a GTX 1060 / RX 580-class PC (min spec, proposed). The handhe
 | **Animation** | **6 personality sets** × (2 idles, walk, trot, sit, 3 bark poses, Fence Line pose, Pile-On flourish) = 60 clips · **3 Style sets** (Scrapper, Bruiser, Yowler) × (3-hit string, Pounce, Tag-In strike, Hop, Skitter, Brace, Hiss, 4 Move poses, Zoomies, hit-react ×2, Frazzled, Routed bolt, Back Down) ≈ 57 clips · shared (Spray, Sniff, nap, climb, ledge-hang, knock-off fall, Splat) |
 | **Humans** | Haru (raincoat, uniform, home clothes) · Gran · 4 street sets · hand pose library (≈ 20 poses) |
 | **Critters** | Crow (walk, hop, peck, take-off, hit, flee) |
-| **Environment** | Hidamari Lane (5 Patches, High Road, Den, 4 Sunspots, 5 Scent Post types) · Haru's House (garden, genkan, Main Room with piano, Haru's room, Alcove) · the Lot · 4 phase skies and backdrop sets · ≥ 7 daily-change swap states |
+| **Environment** | Hidamari Lane (5 Patches, High Road, Den, 4 Sunspots, 5 Scent Post types) · Haru's House (garden, genkan, Main Room with piano, Haru's room, Alcove) · the Lot · 4 phase skies and backdrop sets · Narrative's 8 daily-find states |
 | **VFX** | §10 drawings: 3 damage-type sets (Claw, Thump, Yowl), hit sparks, slash arcs, speed-line sets ×3, impact frame masks, Pile-On cloud loop, Frazzled/Ruffled states, 3 Style cut-in layouts, Tag-In streak, telegraph decals ×3, dust family, Spray puff, scent wisps, Whisker Sense trails and compass ring, Head Home thread, Fear drawings ×3 |
 | **Lettering** | 16 words × 2 sizes (T4/T5) per language: **English and Japanese** for the slice |
 | **UI** | Panel kit, balloon kit, 6 personality icons, 6 Title stamps, brick-block and bell emblems, Sense Icons, Call glyph, phase dial, Fence Line wall |
@@ -621,6 +623,8 @@ Combat owns the tier table and every number in it: hit-stop, shake, impact frame
 | **Yowl** (Yowler) | Two wavy arcs | **Sound arcs:** concentric wavy crescents travelling out in a cone, small spiral glyphs riding them | Yowl Lilac `#B9A0FF`, Cream core, Ink edge | Rhythmic: 2–3 pulses |
 | Heal / purr | A small heart | Soft rings rising with hearts | Purr Rose `#FFB3C1` | Slow; the only gentle effect |
 
+**Weakness and resistance twins (R3; numerals default Off):** a **weakness** hit adds one extra Ink **crack wedge** breaking out of the type spark; a **resisted** hit draws a **blunted spark** at 70% size with rounded tips. Shape-only, so it reads in greyscale and with damage numerals Off (HUD §4.1, Accessibility §2).
+
 **Slash-arc rules:** the arc follows the actual paw path (authored per string hit, not a generic sprite), so a 3-hit Scrapper string reads as three different arcs (low right, high left, and a full-circle flurry finisher). The arc sits in world space, camera-facing, thickness ≥ 4 px at the combat framing. On the finisher the arc thickens and a second, offset arc in Ink trails one drawing behind.
 
 ### 10.4 Speed lines, action lines and impact frames
@@ -628,12 +632,12 @@ Combat owns the tier table and every number in it: hit-stop, shake, impact frame
 **Speed and action lines** are Ink wedges of uneven length and weight (Paper Cream on Night and dark grounds). They swap between 3 drawings on twos and never scroll smoothly.
 - **Local streak (T2):** parallel lines trailing a dashing or leaping cat, Tag-In leaps included.
 - **Radial focus (T3–T4):** lines converging on the target from the screen edge; the centre third stays clear, so the hit is framed, not hidden.
-- **Full-field (T5):** the scene is replaced by a flat panel (the acting Clowder's colour as a **static** backing) with Ink or Cream lines over it. The lines are never in a Clowder colour (DR-50).
+- **Full-field (T5):** the scene is replaced by a flat panel (the acting Clowder's colour as a **static** backing) with Ink or Cream lines over it. The lines are never in a Clowder colour (DR-50). **Panel luminance rule (iteration 3):** every T5 flat-panel backing (Clowder colour here, static Bell-Gold under the Pile-On, the coat colour behind the Zoomies cut-in) is **value-matched to the current phase key within ±0.10 relative luminance of the frame's mean** (Night uses a darkened shade of the hue), **or** it enters behind a halftone wipe of ≥ 3 drawings. The panel's arrival **counts as one flash** in the §10.9 budget.
 - **Standoff bands:** a horizontal band of parallel lines behind each cat.
 
 **Impact frames:** the classic hit emphasis, built to be flash-safe.
-- **Drawing 1 (the inversion):** the image reduces to three flat values: background to Paper Cream (to Ink at Night), figures to solid Ink silhouettes with Cream lines, the effect shape in its damage colour. A limited-palette inverted drawing, not a mathematical negative.
-- **Drawing 2:** a Cream flash limited to the effect shape and a radial burst; the scene returns beneath it, so it is not a full-screen flash.
+- **Drawing 1 (the inversion; within Combat §3.17's cap):** the image reduces to three flat values: the background flattens to **one mid-value tone matched to the current frame's mean luminance (±0.10)**, figures become solid Ink silhouettes with Cream lines, and the effect shape keeps its damage colour. A limited-palette inverted drawing, not a mathematical negative, and never a full-screen jump to Paper Cream or Ink.
+- **Drawing 2:** a Cream flash limited to the effect shape and a radial burst (local); the scene returns beneath it, so it is not a full-screen flash.
 - Then the hit-stop hold on the normal-colour impact pose, with the line thickened by +1 px for the hold.
 - **Local** (T3): masked to a burst shape around the contact point, **≤ 15% of the screen**. **Full-screen** (T4–T5): lengths per Combat; rate limit per §10.9.
 - **Reduce Flashes** option: the impact frame becomes a +1 px line hold and a freeze, with no luminance change.
@@ -648,11 +652,11 @@ Combat owns the tier table and every number in it: hit-stop, shake, impact frame
 
 **Frazzled (stagger).** The silhouette **puffs by ≈ 15%** into a zigzag-edged shape (every tail bottle-brushes), spiral eyes, three Static Yellow squiggles and two stars orbiting the head on twos; the outline becomes Frazzle Magenta. On trigger (T4): radial lines, the impact frame, a lettered word. **It must read in pure silhouette.** On recovery the fur deflates over 3 drawings with a puff of loose fur wedges. A Frazzled enemy is the Pile-On invitation: its orbiting stars are the visual hook; the prompt itself is UX's.
 
-**Pile-On (the signature image).** A hand-drawn **scalloped dust cloud**: Paper Cream with a lavender shade `#D8D2EA` and a heavy 5 px Ink line, **3.5 m across (Full) / 2.5 m (Quick)**, boiling through an 8-drawing loop on twos. Out of it pop, at irregular intervals: paws, tails and ears **in the real coat colours of the cats inside** (from their coat seeds), stars, paw-pad glyphs, a flying tuft, the Posse's bell ticks bobbing on top. Each Posse cat gets one beat with its **personality flourish** (§3.3). The background drops to a flat panel of full-field Ink lines on a static Bell-Gold backing. It ends on one big burst drawing, the giant lettered word, and the cloud blowing apart into four puffs to reveal the Posse posed over the Routed target. Duration per Combat; shake only on the beats.
+**Pile-On (the signature image).** A hand-drawn **scalloped dust cloud**: Paper Cream with a lavender shade `#D8D2EA` and a heavy 5 px Ink line, **3.5 m across (Full) / 2.5 m (Quick)**, boiling through an 8-drawing loop on twos. Out of it pop, at irregular intervals: paws, tails and ears **in the real coat colours of the cats inside** (from their coat seeds), stars, paw-pad glyphs, a flying tuft, the Posse's chevron ticks (and the controlled cat's bell) bobbing on top. Each Posse cat gets one beat with its **personality flourish** (§3.3). The background drops to a flat panel of full-field Ink lines on a static Bell-Gold backing, value-matched to the phase per the §10.4 panel luminance rule. It ends on one big burst drawing, the giant lettered word, and the cloud blowing apart into four puffs to reveal the Posse posed over the Routed target. Duration per Combat; shake only on the beats.
 
 **Routed.** No injury, no collapse: a take (eyes wide, one drawing), then the cat bolts in a stretched smear with a dust-puff trail of three shrinking clouds and a small spinning star where it stood. For a remembered Rival Routed from an Ambush, the memory line's balloon appears over the flattened cat (DR-40.2). **Back Down:** the Tough's ears flatten, its tail tucks, it shrinks 10% and backs away in three hops before bolting.
 
-**Zoomies cut-in (the limit break).** A diagonal wedge-ended band (6 px Ink border) wipes across the upper two-fifths of the screen, showing the cat through the portrait rig (a close-up 3D shot of the same cel model) over full-field Ink lines on a static backing in the cat's coat colour, eyes flashing a four-point glint. In over 3 drawings, hold, out over 2; Combat owns the length and the skip. **3 layouts in the slice**, one per Style: Scrapper (low diagonal, claws raised), Bruiser (straight horizontal band, chest-out roar), Yowler (rising diagonal, mouth open, sound arcs spilling out of the band). The Zoomies that follows owns the screen as T5.
+**Zoomies cut-in (the limit break).** A diagonal wedge-ended band (6 px Ink border) wipes across the upper two-fifths of the screen, showing the cat through the portrait rig (a close-up 3D shot of the same cel model) over full-field Ink lines on a static backing in the cat's coat colour (value-matched per the §10.4 panel luminance rule), eyes flashing a four-point glint. In over 3 drawings, hold, out over 2; Combat owns the length and the skip. **3 layouts in the slice**, one per Style: Scrapper (low diagonal, claws raised), Bruiser (straight horizontal band, chest-out roar), Yowler (rising diagonal, mouth open, sound arcs spilling out of the band). The Zoomies that follows owns the screen as T5.
 
 **Boss phase break (Daifuku).** Daifuku slides off his ledge in a held "take", the bucket splat (opaque Cream-and-cyan blob shapes, no liquid), plaster cross on his head if the player is on a rematch (DR-21), and the giant lettered word.
 
@@ -694,7 +698,7 @@ Per §4.3: white (solid, chevrons), yellow (Cream dashed, triangle), red (Magent
 | Yowl (voice) | **YOWWL · MRRAOW** |
 | Frazzle / stagger | **FWOOMP · BZZT** |
 | Rout / bolt | **ZOOM · FWIP** |
-| Pile-On / Zoomies | **POW · KA-BLAM · SCRAMBLE** |
+| Pile-On / Zoomies | **POW · KA-BLAM · BAP-BAP-BAP** |
 
 **The Japanese set (16, native onomatopoeia; draft):** ズバッ · シャッ · ザシュッ · ドカッ · ドーン · バキッ · ボフッ · ギャオー · ニャーッ · ボワッ · ビリッ · ピューッ · サッ · ドカーン · バババッ · ドタバタ.
 
@@ -740,10 +744,23 @@ Per §4.3: white (solid, chevrons), yellow (Cream dashed, triangle), red (Magent
 - Generator expansion: more tails, ears, patterns and the head axis for portraits.
 - Reference-closeness decision (E-1) beyond the default, once the mock frames are seen.
 - Photo mode and key-art compositions.
+- Raincoat "bloom" (Audio §11) as an optional Melody-presence twin: decide after the home mock; if kept, a stepped tone change, never a glow (P5).
+- Whisker compass ring pointer count (Art ≤ 5): HUD does not restate it; keep 5 unless the compass test shows a need.
 
 ---
 
 ## Revision Log
+
+### 2026-11-24: Iteration 3 (round-2 presentation review, final pass)
+
+| Fix | How |
+|---|---|
+| 1 Impact frame vs Combat luminance cap | §10.4 Drawing 1 background is a mid-value tone matched to frame mean (±0.10); Drawing 2 stays local; every T5 flat panel (Clowder, Pile-On Bell-Gold, Zoomies coat) value-matched within 0.10 or brought in by a ≥ 3-drawing halftone wipe, and counted as a flash (§10.4, §10.5) |
+| 2 Cat scale | One global scale 1.25× (≈ 0.56 m), street and home, no swap; humans and props true scale; kitten from bone scale (§3.4) |
+| 3 Posse tick | Chevron on allies, bell on the controlled cat (§4.3, §4.8, Pile-On) |
+| 4 Witness objects | Box beside Gran's cushion from K1.4; saucer then blue-and-white Bowl with chip state; flap in the veranda door; loafers, plum sandals, rain boots day 1 only; Narrative's 8 daily finds replace the 7 swap states (§6.3, §8.5) |
+| 5 Numbers (R3) | §7.4 restated as the one-line rule; weakness crack wedge and resisted blunted spark added (§10.3) |
+| Backlog taken | SCRAMBLE replaced by BAP-BAP-BAP (§10.7); Titles shown as stamp plus readable text (§3.5) |
 
 ### 2026-11-23: Round 2 (slice rewrite)
 

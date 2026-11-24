@@ -1,7 +1,7 @@
 # HUD Design — Cat RPG (vertical slice, round 2)
 
 *Owner: ux-designer · Date: 2026-11-23 · Status: round-2 slice rewrite (the first draft is archived at `design/backlog/first-drafts/hud.md`)*
-*Canon: `design/creative-brief.md` v1.2 and `design/reviews/round-1/director-rulings.md` (DR-xx). Where this doc and a ruling disagree, the ruling wins and this doc is wrong.*
+*Canon: `design/creative-brief.md` v1.3 and `design/reviews/round-1/director-rulings.md` (DR-xx). Where this doc and a ruling disagree, the ruling wins and this doc is wrong.*
 *Companions: `design/ux/key-screens.md` (Fence Line, Rival card, Verdict, Turf Board, Crew, onboarding) and `design/accessibility-requirements.md` (the project-wide floor every element here must meet).*
 
 **Scope.** The slice HUD for the three contexts of Lives 1–2: **street** (exploration), **combat** and **home**, under the **third-person camera behind the cat** (brief §4.1, DR-48). It also holds the **control map** (DR-08; UX owns the map, Combat owns the actions). It does not define any system rule: every value shown here is read from the owning system.
@@ -33,7 +33,7 @@ The HUD **falls away at the garden wall over 800 ms** and returns when Mikan cro
 Third-person, behind and above (DR-48): explore ≈ 3 m back / 1 m up; combat pulls to ≈ 6–8 m to frame the controlled cat and its lock target; Slow Blink lifts to a tactical three-quarter view; home is the same camera at 0.3–0.6 m.
 
 Consequences for the HUD:
-- The controlled cat sits in the lower-middle of the frame and is large (≈ 10–20% of screen height exploring). **The bottom-centre band (middle 40% width, bottom 25% height) is a permanent keep-out** for screen-anchored elements; it belongs to the cat, hint cards and accessibility cues.
+- The controlled cat sits in the lower-middle of the frame and is large (≈ 10–20% of screen height exploring; ≈ 18% at default, ≥ 6.7% in combat). All world-anchored marker sizes assume Art's **one global cat scale, 1.25× a real cat (≈ 0.56 m)** (`art-bible.md` §3.4, `camera-system.md` §4.1). **The bottom-centre band (middle 40% width, bottom 25% height) is a permanent keep-out** for screen-anchored elements; it belongs to the cat, hint cards and accessibility cues.
 - The **centre 40% of the screen** never holds a persistent screen-anchored element.
 - The old top-down "ring under the corner panels" problem (UX-2.1) is moot: the ring is now in depth, ahead of the camera. The corners are genuinely free.
 - **Edge arrows** (Combat/Camera own the rule) point to off-screen Posse cats (bell-gold, with the cat's D-pad glyph) and off-screen attackers (Clowder colour, with a halftone pulse when a telegraph is winding up).
@@ -144,20 +144,20 @@ Goal: under T4/T5 VFX, shake and dust, the player must always find (1) the contr
 | **Identity ribbon** | TC | Slanted Clowder banner, name, Title, claw-mark rank pips (Tough 1, Captain 2, Boss 3), ≤ 3 known Fear/Strength stamps, storm mark if Nemesis, Old Score stamp if active. Boss: **segmented Nerve bar (3 phases)** | **Named Rivals, Captains and Daifuku only.** Strays and Crows get no ribbon. It is the Standoff name-card shrinking into place (one component) |
 | **Red callout** | Docked under the identity ribbon | Telegraph pictogram (zigzag) for a Captain's or Boss's red move | Never over the cat; no text |
 | **Telegraphs** | World decals + overhead glyph | White = dodge (solid ring), yellow = Hiss it (Paper Cream dashed + triangle), red = get out (Frazzle Magenta zigzag edge) | Owned by Combat/Art; render above the Pile-On dust |
-| **Damage numerals** | World | Size by hit tier, not magnitude; frame shape encodes weakness/resist | Default **"Big hits"** (player-authored T3+); options All / Big hits / Off. AI basic hits never show. Multi-hits merge. Max 6 on screen |
+| **Damage numerals** | World | Size by hit tier, not magnitude. Weakness and resistance read from the **spark shape** (Art §10.3: extra crack wedge / blunted spark), not the numeral frame | Default **Off** in the slice (R3; the manga feel lives in glyphs and the single lettered word); options Off / Big hits (player-authored T3+) / All. AI basic hits never show. Multi-hits merge. Max 6 on screen |
 | **Lettered onomatopoeia** | World-anchored | One hand-lettered word at T4 (≈ 12% height) / T5 (≈ 30%) | Max one on screen; never over the controlled cat or the HUD (DR-49); T5 giant word only while the HUD is hidden for the cinematic |
 | **Bark balloon** | World | Fight barks are **icon-only** (DR-44); the Old Score bark and Standoff lines are text | One at a time |
 | **Tag-In cue** | Crew plates + world | See §4.3 | — |
 | **Relay chain** | Above the plate stack | Up to 4 cat-face poms lighting in order; 3 s drain line | Only during a Relay |
 
-**Rule of no world text (UX-2.5, as ruled):** in real-time combat the only world-space text is damage numerals, one bark balloon and onomatopoeia. Ally Move ribbons are cut; the cut-in and VFX carry them.
+**Rule of no world text (UX-2.5, as ruled; R3):** in real-time combat the only world-space text is **one bark balloon plus one lettered word** (Combat §3.17). Damage numerals are added only if the player turns them on. Ally Move ribbons are cut; the cut-in and VFX carry them.
 
 ### 4.2 Wireframe — combat, real time (1080p)
 
 ```
 +--------------------------------------------------------------------------+
-|                  /=[ (sage) THE FIRST THORN  "Soggy"  /// ]=\            |
-|                   \ [Water] [?]   ~storm~                  /             |
+|                  /=[ (sage) TOGEMARU  the First Thorn  /// ]=\           |
+|                   \ [Cucumber] [?]   ~storm~               /             |
 |                                                                          |
 |   <(C2)  edge arrow: Crew 2 off-screen left                              |
 |                         [====----] Nerve                                 |
@@ -185,7 +185,7 @@ The switch is the D-pad (Up = Mikan, Left/Down/Right = Crew 1/2/3) or Z/X/C/V. A
 
 1. On the qualifying hit, a **bell-gold spark ring** pops on the controlled cat (world) and a bell tick sounds (Audio).
 2. Simultaneously, the D-pad glyphs on every standing Crew plate **pop to 115% with a bell-gold rim** for the window. A bonded partner's glyph adds a small heart-link stamp (stronger Tag-In, DR-37).
-3. On a successful Tag-In, the incoming plate flashes once, the camera eases over 150 ms (never cuts) and the **Relay chain** lights its first two faces. Each further tag within 3 s lights the next face; a cat already in the chain shows its glyph halftoned (each cat once per Relay).
+3. On a successful Tag-In, the incoming plate flashes once, the camera eases over Camera's Tag-In blend (0.3 s, `camera-system.md` §3.5; never cuts) and the **Relay chain** lights its first two faces. Each further tag within 3 s lights the next face; a cat already in the chain shows its glyph halftoned (each cat once per Relay).
 4. A plain switch outside the window gives no spark and no Relay.
 
 Teaching note: the Life 1 hint card shows the timing on the first two windows only; after that the cue alone carries it. Accessibility requests a wider window option (see `design/accessibility-requirements.md` §5).
@@ -252,7 +252,7 @@ Unaffordable rows stay in place, focusable, halftoned, with the reason as an ico
 4. **Identity channels have non-colour twins:** Posse = bell-gold keyline + chevron + D-pad glyph; enemies = Clowder outline + emblem pip on the overhead bar; controlled cat = bell + ground ring.
 5. **Dust may hide the cats in a Pile-On (that is the joke), never a telegraph.**
 6. **Glyph-burst cap:** ≤ 3 bursts on screen, at most one T3+ size; one screen-wide effect at a time (brief §4.1).
-7. **Acceptance:** random-pause test, 19 of 20 testers find the controlled cat in < 1 s, with 10 combatants and T4 effects, at 1080p and at 720p (PC window; handheld check is Backlog).
+7. **Acceptance:** random-pause test, 19 of 20 testers find the controlled cat in < 1 s, with 6 enemies plus the Posse (the slice maximum) and T4 effects, at 1080p and at 720p (PC window; handheld check is Backlog).
 
 ### 4.7 Visual budget (combat)
 
@@ -273,7 +273,7 @@ Unaffordable rows stay in place, focusable, halftoned, with the reason as an ico
 
 ### 5.1 Rules
 
-- **Near zero.** Inside the wall the only on-screen elements are: **Bond hearts** (over Mikan, 2 s, when Bond changes), **Sense Icons** over Mikan (fish, heart, rain cloud, ear, question mark and the tone set: sun-pom warm, rain-cloud sad, zigzag sharp, bouncing notes laughter), the **Call glyph**, and context prompts for home verbs as pictograms (Eat, Rub, Lap, Meow, Knock, piano paw).
+- **Near zero.** Inside the wall the only on-screen elements are: **Bond hearts** (over Mikan, 2 s, when Bond changes), **Sense Icons** over Mikan (fish, heart, rain cloud, ear, question mark and the four **tone puffs** from Narrative §3.1: **Round** = warm · **Spiky** = sharp · **Drooping** = low, unhappy · **Bouncing** = bright, excited), the **Call glyph**, and context prompts for home verbs as pictograms (Eat, Rub, Lap, Meow, Knock, piano paw).
 - **Nothing translates human speech.** Murmur Ribbons are cut (DR-54). Tone Sense Icons show what Mikan *felt*, authored per vignette, never what a human *meant*. No subtitle track exists for Murmur, in any setting.
 - **Off-screen sound at home:** Mikan's ear-and-head turn plus an **ear Sense Icon** pointing at the source. No edge chips.
 - **The daily find:** a fresh Home Scent trail (faint, the household's textile motif) leads to the "What changed today?" object; no marker, no text.
@@ -291,7 +291,7 @@ Unaffordable rows stay in place, focusable, halftoned, with the reason as an ico
 |       |  _ _ _ _ _ _ _ _  |              ||    ||                        |
 |       |_|_|_|_|_|_|_|_|_|_|              ||    ||                        |
 |                                                                          |
-|                         (sun-pom)  <- tone Sense Icon, over Mikan        |
+|                         (round puff) <- tone puff Sense Icon, over Mikan |
 |                          /\_/\                                           |
 |                         ( o.o )                                          |
 |                                                                          |
@@ -345,7 +345,7 @@ Priority 1 is read first and must survive every VFX state; lower priorities hide
 | 6 | Time of day | Curfew trade | Phase dial; world light | Street |
 | 6 | Patch ownership and strength | Spray or post | World wisps; Patch tag | Street |
 | 7 | Morsels picked up | Low stakes | Pickup tick | Street |
-| 8 | Damage numerals | Feedback only | Size by tier; frame shape | Combat |
+| 8 | Damage numerals (Off by default) | Feedback only | Size by tier; weakness/resist in the spark shape | Combat |
 | — | Haru's life | Never HUD | Staging, light, music, Sense Icons | Home |
 
 ---
@@ -423,7 +423,7 @@ Cut (DR-08): Whack, Bap, Righting input, hold-charge attacks, Tactics (slice), L
 | HUD fade at the garden wall | 800 ms | 400–1200 | Pillar 2 beat; playtest the feel |
 | Phase dial size / emphasis | 48 px / 4 s | 40–64 px / 2–6 s | Setting: Always / Contextual / Off |
 | Enemy bar linger after hit | 3 s | 1–5 s | Clutter vs info |
-| Damage numerals default | Big hits | All / Big / Off | |
+| Damage numerals default | **Off** | Off / Big hits / All | R3 |
 | Tag-In plate glyph pop | 115%, window length | 105–130% | Window length is Combat's |
 | Relay chain drain | 3 s | Combat's value | Read, not owned |
 | Controlled plate scale | ×1.3 | ×1.15–1.5 | |
@@ -434,7 +434,7 @@ Cut (DR-08): Whack, Bap, Righting input, hold-charge attacks, Tactics (slice), L
 
 ## 10. Acceptance criteria
 
-1. Random-pause test: 19 of 20 testers find the controlled cat in < 1 s with 10 combatants and T4 effects, at 1080p and 720p.
+1. Random-pause test: 19 of 20 testers find the controlled cat in < 1 s with 6 enemies plus the Posse (the slice maximum) and T4 effects, at 1080p and 720p (10 combatants is the full-game stress test, Backlog).
 2. In the combat prototype, ≥ 80% of testers can say, unprompted after one fight, "when the ring is on an enemy, press North for the Pile-On".
 3. ≥ 75% of testers perform ≥ 1 Tag-In per encounter without a hint after the Life 1 teaching (supports DR-02).
 4. No screen-anchored element enters the centre 40% or the bottom-centre keep-out, verified on capture at 16:9, 16:10 and 21:9.
@@ -461,8 +461,20 @@ Cut (DR-08): Whack, Bap, Righting input, hold-charge attacks, Tactics (slice), L
 - One-handed control presets (UX-10; prototype before promising).
 - Per-screen split of HUD specs once the slice HUD is built.
 - Botan's identity ribbon variant (hand-bell, Trickster stamps).
+- Pile-On prompt word: HUD teaches "Pile-On" by hint card only; Combat §3.17 also letters the word on its first 3 showings. Pick one after the combat prototype (the hint card is enough for UX).
+- Random-pause test at 10 combatants (full-game stress test; the slice test runs at 6 enemies + Posse).
 
 ## Revision Log
+
+**2026-11-24, Iteration 3 (round-2 presentation review, final pass).**
+
+| Item | How |
+|---|---|
+| Fix 1 · Damage numerals (R3) | Default **Off** (§4.1, §6 P8, §9); option Off / Big hits / All kept; weakness/resist moved to Art's spark shape; no-world-text rule = one bark balloon + one lettered word |
+| Fix 2 · Tone Sense Icons | Narrative's four tone puffs (Round, Spiky, Drooping, Bouncing) replace sun-pom / rain-cloud / zigzag / notes (§5.1, §5.2 wireframe) |
+| Cat scale | World-anchored sizes assume Art's 1.25× (§2) |
+| Backlog taken | Tag-In ease cites Camera's 0.3 s; random-pause test at 6 enemies + Posse |
+| Names | Combat wireframe ribbon shows Togemaru, the First Thorn, Fear Cucumber |
 
 **2026-11-23, round 2 (fresh slice rewrite; issues from `design/reviews/round-1/ux--art-direction.md` and director-rulings Part 2 §8).**
 
