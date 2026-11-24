@@ -85,7 +85,8 @@ if (strip) {
   // owner turnaround layout: FRONT, SIDE (facing left), BACK at the sheet's eye-level camera
   (turn4 ? [0, -90, 180, -40] : [0, -90, 180]).forEach((deg, i, A) => {
     const c = createCatInternal({ cast: q.get('cast') || 'mikan', scale: 1.25, seed: 5 });
-    c.object3D.position.set((i - (A.length - 1) / 2) * 0.8 + (i === 1 ? 0.06 : 0), 0, 0); // spaced so no tail crosses a neighbour c.object3D.rotation.y = deg * Math.PI / 180;
+    c.object3D.position.set((i - (A.length - 1) / 2) * 0.8 + (i === 1 ? 0.06 : 0), 0, 0); // spaced so no tail crosses a neighbour
+    c.object3D.rotation.y = deg * Math.PI / 180;
     c.setLighting(PH.light); scene.add(c.object3D); cats.push(c);
   });
 } else {
