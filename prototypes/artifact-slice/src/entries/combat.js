@@ -597,7 +597,7 @@ function present(dt, alpha, menu = [], cut = null) {
   let offFrame = false;
   if (T && C) { const a = project(T.head), b = project(C.pos); offFrame = Math.abs(a.nx) > 0.6 || Math.abs(b.nx) > 0.8 || b.ny < -0.75 || a.ny > 0.75; }
   const standoffK = s.mode === 'standoff' ? Math.min(1, s.t / 3) : 0;
-  const bigK = C ? Math.max(1, ...[...fighters.values()].filter((f) => f.side === 'enemy' && f.root.visible && f.pos.distanceTo(C.pos) < 5).map((f) => f.scaleK)) : 1;
+  const bigK = C ? Math.max(1, ...[...fighters.values()].filter((f) => f.side === 'enemy' && f.root.visible && f.pos.distanceTo(C.pos) < (f.scaleK > 1.5 ? 9 : 5)).map((f) => Math.min(1.6, f.scaleK))) : 1;
   ccam.update(dt, realT, { bigK, free: !T, C: C ? C.pos.clone() : new THREE.Vector3(), T: T ? T.pos.clone() : null, enemiesCentroid: cen, aspect: cam.aspect, slowBlink: s.slow_blink,
     highRoad: C && T && Math.abs(C.pos.y - T.pos.y) > 0.6, mode: pile && pile.phase === 'main' ? 'pileon' : s.mode, pileCenter: pile ? pile.centerW : null,
     standoffFocus, standoffK, offFrame, globalStop, targetNY: T ? project(T.head).ny : null, clearance, occluded: C ? (pose) => occludedAt(pose, [C.head, T ? T.head : null]) : null });
@@ -647,7 +647,7 @@ function present(dt, alpha, menu = [], cut = null) {
     const c = pile.phase === 'out' ? pile.screen : pile.anchor;
     pileCtx = { ...pile, center: { x: Math.min(w * 0.7, Math.max(w * 0.3, c.x)), y: Math.min(h * 0.62, Math.max(h * 0.4, c.y)) } };
   }
-  scr.update(dt, { cut: !!cut, skip: skipDraw, w, h, project, controlledBox: cb, hudRects: opt.hud && !skipDraw ? hud.rects() : [], pile: pileCtx, tw, overheads, arrows });
+  scr.update(dt, { cut: !!cut, skip: skipDraw, w, h, project, controlledBox: cb, hudRects: opt.hud && (!skipDraw || (scr.word && !scr.word.place)) ? hud.rects() : [], pile: pileCtx, tw, overheads, arrows });
   // HUD
   if (skipDraw) pendingMenu.push(...menu);
   else if (opt.hud) {
@@ -792,7 +792,7 @@ async function boot() {
       counts: { ...counts }, ko: ko ? +(realT - ko.t0).toFixed(3) : null, pile: !!pile, impact: !!impact, camera: cam.position.toArray().map((v) => +v.toFixed(3)), yaw: +ccam.pose.yaw.toFixed(2), stats: { ...lastStats } }),
     hash: () => enc.hash(),
     latency: () => latencyLog.slice(),
-    debug: () => ({ screen: scr.fx.map((f) => ({ kind: f.kind, t: +f.t.toFixed(3), dur: f.dur, from: f.from && project(f.from), to: f.to && project(f.to) })), word: scr.word && scr.word.text, world: fx.items.length, cats: [...fighters.values()].map((f) => ({ id: f.id, intent: f.intent, vis: f.root.visible, lod: f.cat.lod, tri: f.cat.triangles, d: +f.pos.distanceTo(cam.position).toFixed(2) })) }),
+    debug: () => ({ screen: scr.fx.map((f) => ({ kind: f.kind, t: +f.t.toFixed(3), dur: f.dur, from: f.from && project(f.from), to: f.to && project(f.to) })), word: scr.word && scr.word.text, place: scr.word && scr.word.place, rects: hud.rects().map((r) => [r.x, r.y, r.w, r.h].map(Math.round)), world: fx.items.length, cats: [...fighters.values()].map((f) => ({ id: f.id, intent: f.intent, vis: f.root.visible, lod: f.cat.lod, tri: f.cat.triangles, d: +f.pos.distanceTo(cam.position).toFixed(2) })) }),
     snapshot: () => snap,
     /** Advance n rendered frames of 1/60 s (deterministic), drawing only the last unless every = true. */
     frames: (n = 1, every = false) => { for (let i = 0; i < n; i++) { skipDraw = !every && i < n - 1; frame(DT); } skipDraw = false; return window.__cat.state(); },

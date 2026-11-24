@@ -98,7 +98,7 @@ export class ScreenFX {
     this.fx = this.fx.filter((f) => f.t < f.dur);
     if (this.word) { this.word.t += dt; if (this.word.t > this.word.ms / 1000 + 0.1) this.word = null; }
     const di = Math.floor(ctx.tw / TWO);
-    if (ctx.skip) { this.stale = true; return; }
+    if (ctx.skip) { this.stale = true; if (this.word && !this.word.place && ctx.hudRects && ctx.hudRects.length) this.drawWord(ctx, Math.floor(ctx.tw / TWO)); return; }   // place a new word against live HUD rects even on undrawn frames
     if (di === this.lastDrawing && !ctx.force && !this.stale) return;
     this.stale = false;   // drawings change on twos
     this.lastDrawing = di;
@@ -263,15 +263,19 @@ export class ScreenFX {
     const anchor = W.screen || (W.at ? ctx.project(W.at) : { x: ctx.w / 2, y: ctx.h * 0.3 });
     if (!W.place && ctx.pile) { W.place = { x: Math.max(est / 2 + 30, ctx.w * 0.06 + est / 2), y: ctx.h * 0.17 }; W.rot = -9; }
     if (!W.place) {
-      const cb = ctx.controlledBox, hud = ctx.hudRects || [];
+      const cb = ctx.controlledBox, hud = (ctx.hudRects || []).slice();
+      // damage numbers are HUD too: never under the word
+      for (const d of this.fx) if (d.kind === 'dmg') { const q = ctx.project(d.f.head); hud.push({ x: q.x - ctx.h * 0.06, y: q.y - ctx.h * 0.22, w: ctx.h * 0.12, h: ctx.h * 0.14 }); }
       const cands = [[0.25, -1.1], [-0.25, -1.1], [0.6, -0.6], [-0.6, -0.6], [0, -1.5], [0.8, 0.1], [-0.8, 0.1], [0.9, -1.4], [-0.9, -1.4], [1.1, 0.6], [-1.1, 0.6], [0, 1.2], [0, -2.2]];
+      // plus a screen grid (as offsets from the anchor), so a clear spot is found even when the near ones are all covered
+      for (let gy = 0.14; gy < 0.75; gy += 0.07) for (let gx = 0.12; gx < 0.9; gx += 0.06) cands.push([(gx * ctx.w - anchor.x) / est, (gy * ctx.h - anchor.y) / ht]);
       let best = null, bestScore = -1e9;
       for (const [ox, oy] of cands) {
         let x = anchor.x + ox * est, y = anchor.y + oy * ht;
         x = Math.min(ctx.w - est / 2 - 24, Math.max(est / 2 + 24, x)); y = Math.min(ctx.h - ht / 2 - 24, Math.max(ht / 2 + 24, y));
         const box = { x: x - est / 2, y: y - ht / 2, w: est, h: ht };
         const ov = (r) => Math.max(0, Math.min(box.x + box.w, r.x + r.w) - Math.max(box.x, r.x)) * Math.max(0, Math.min(box.y + box.h, r.y + r.h) - Math.max(box.y, r.y));
-        let score = -ov(cb) * 4 - hud.reduce((a, r) => a + ov(r) * 40, 0) - Math.hypot(x - anchor.x, y - anchor.y) * 0.2;   // any HUD overlap outweighs distance
+        let score = -ov(cb) * 4 - hud.reduce((a, r) => a + ov(r) * 40, 0) - Math.hypot(x - anchor.x, y - anchor.y) * 0.5;   // any HUD overlap outweighs distance
         if (score > bestScore) { bestScore = score; best = { x, y }; }
       }
       W.place = best; W.rot = W.tier >= 5 ? -10 : (W.dir && W.dir[0] < 0 ? 10 : -10);

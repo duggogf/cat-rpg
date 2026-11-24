@@ -36,7 +36,7 @@ export const CAST_MAP = {
   kinako: { cast: 'kinako', rank: 1, kit: { coat: { base: '#E3C39A', patch: '#5E4636' }, pattern: 'pointed', tail: 'whip', ears: 'tall', build: 'long', carry: 'comma', eye: 'blue', expr: 'shock' } },
   togemaru: { cast: 'togemaru', rank: 1, kit: { coat: { base: '#37323F', white: '#D9A060', patch: '#D9A060' }, pattern: 'tuxedo', tail: 'plume', ears: 'standard', build: 'long', carry: 'flag', eye: 'yellowgreen', expr: 'smug', scars: ['notch'] } },
   kagi: { cast: 'kagi', rank: 1.15, kit: { coat: { base: '#CDD1DC', patch: '#7D8397' }, pattern: 'tabby', tail: 'whip', ears: 'tall', build: 'long', carry: 'blade', eye: 'yellowgreen', expr: 'smug' } },
-  daifuku: { cast: 'daifuku', rank: 1.6, extra: 1.25, kit: { coat: { base: '#FFF8EC', patch: '#A9AEC0' }, pattern: 'saddle', tail: 'stub', ears: 'round', build: 'round', carry: 'anchor', eye: 'copper', expr: 'smug' } },
+  daifuku: { cast: 'daifuku', rank: 1.6, extra: 1.35, kit: { coat: { base: '#FFF8EC', patch: '#A9AEC0' }, pattern: 'saddle', tail: 'stub', ears: 'round', build: 'round', carry: 'anchor', eye: 'copper', expr: 'smug' } },
   goma: { cast: 'tough', opts: { coat: 'chocolate', pattern: 'tabby', tail: 'ringed', ears: 'round', build: 'round', personality: 'brooder', rank: 1.08, eye: 'copper', seed: 11 } },
   sasa: { cast: 'tough', opts: { coat: { base: 'cream', patch: '#C99A55' }, pattern: 'tabby', tail: 'plume', ears: 'tall', build: 'long', personality: 'schemer', eye: 'yellowgreen', seed: 12 } },
   stray: [

@@ -150,7 +150,13 @@ numbers** (on by default; `?dmg=0` starts them off).
 - **Flash screening** on the 10 s Special-chain capture (stagger, sequential cut-ins, KO) passes: 2 per 1 s, 2 per 5 s, red change 1%.
 - `publish-check` is green for `?chapter=combat&fight=toughs3|captain|daifuku` and the default page.
 
-**Sim issue found:** at one Daifuku FinalKO, a routed Mikan's position came out non-finite. Every pose and camera value went NaN, and the frame rendered black. The presentation now keeps the last finite position; the sim should fix the root cause.
+**Touch-ups:**
+- Lettering is placed by testing candidate spots, near the hit and across a screen grid, against every live HUD element: plates, ribbon, key strip, world bars, reticle, ticks, prompts and damage numbers. THOOM! now sits in clear space.
+- Daifuku is drawn 1.35× his cast rank (≈ 2.2× a Posse cat), and the camera pulls back and up when a big opponent is near.
+- The shockwave draws the sim's 0.7 m hitting band as a Cream ring with magenta hatching and heavy Ink edges, plus a dashed magenta boundary at its 6 m maximum radius.
+- Enemy outlines stay red when staggered; stagger reads from the spiral eyes, orbit and ring.
+
+**Sim issue found (fixed in sim c73fa0d):** at one Daifuku FinalKO, a routed Mikan's position came out non-finite. Every pose and camera value went NaN, and the frame rendered black. The presentation now keeps the last finite position; the sim should fix the root cause.
 
 **Weak spots:**
 - Chains that include the final blow defer the KO until the chain ends.
