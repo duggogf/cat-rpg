@@ -118,7 +118,7 @@ s.push(`<rect x="-20" y="2000" width="${W + 40}" height="40" fill="#8A5E3E" filt
 s.push(K.glow(260, 60, 1100, 640, '#FFC27A', 0.55) + K.glow(1500, 980, 900, 380, '#F7A45A', 0.25));
 s.push(`<rect width="${W}" height="${H}" fill="#7A4E8C" opacity="0.16" style="mix-blend-mode:multiply"/>`);
 // knot holes and a few nail heads
-s.push(`<g filter="url(#k-rough)"><ellipse cx="1340" cy="1050" rx="14" ry="8" fill="#5A3C2A"/><ellipse cx="520" cy="826" rx="10" ry="6" fill="#5A3C2A"/></g>`);
+s.push(`<g filter="url(#k-rough)"><ellipse cx="520" cy="826" rx="10" ry="6" fill="#5A3C2A"/></g>`);
 const DX0 = 36, DY0 = 116, DX1 = 1316, DY1 = 806;   // the map is painted in this design space, then fitted to the board
 const boardD = `M${MX0 + 40} ${MY0}H${MX1 - 44}Q${MX1} ${MY0} ${MX1} ${MY0 + 46}V${MY1 - 40}Q${MX1} ${MY1} ${MX1 - 40} ${MY1}H${MX0 + 44}Q${MX0} ${MY1} ${MX0} ${MY1 - 44}V${MY0 + 40}Q${MX0} ${MY0} ${MX0 + 40} ${MY0}Z`;
 s.push(`<path d="${boardD}" fill="${C.wisteria}" opacity="0.55" transform="translate(6 9)" filter="url(#k-soft)"/>`);
