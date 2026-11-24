@@ -6,64 +6,40 @@
 <link rel="stylesheet" href="kit/kit.css">
 <style>
   body { margin: 0; background: #111; }
-  /* header: same bar as the Turf Board (frame 08) */
-  .hdr { left: 36px; top: 20px; width: 1848px; height: 76px; padding: 0 22px 0 26px; display: flex; align-items: center; gap: 22px; }
-  .hdr .k-h { white-space: nowrap; }
-  .infl { display: flex; align-items: center; gap: 12px; flex: 1; }
-  .bar { position: relative; flex: 1; height: 34px; border: var(--frame) solid var(--ink); border-radius: 18px 20px 17px 21px; background: var(--recessed); overflow: hidden; }
-  .bar .gold { position: absolute; left: 0; top: 0; bottom: 0; width: 82%; background: var(--gold); border-right: var(--frame) solid var(--ink); }
-  .bar .fade { position: absolute; left: 82%; top: 0; bottom: 0; width: 6%; background: repeating-linear-gradient(-55deg, var(--gold) 0 6px, var(--recessed) 6px 11px); border-right: 2px dashed var(--ink); }
-  .pct { font: 800 32px/1 var(--font); color: var(--ink); min-width: 74px; text-align: right; }
-  .hdr { height: 96px !important; }
-  .bar .sage { position: absolute; left: 88%; right: 0; top: 0; bottom: 0; background: var(--sage); }
-  .strip { display: flex; align-items: center; gap: 4px; }
-  .scn { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 4px 4px 2px; }
-  .tab { height: 40px; padding: 0 14px; display: inline-flex; align-items: center; border-radius: 22px 20px 23px 19px; font: 800 28px/1 var(--font); color: var(--cocoa); }
-  .tab.on { background: var(--cocoa); color: var(--cream); }
-  .dots { display: flex; gap: 3px; height: 12px; }
-  .dots i { width: 11px; height: 11px; border-radius: 50% 50% 46% 46%; box-sizing: border-box; }
-  .dots .m { background: var(--gold); border: 2px solid var(--ink); }
-  .dots .s { background: var(--ink); opacity: .55; }
-  .dots .e { border: 2px dashed var(--cocoa); }
-  .xtag { position: absolute; top: 74px; left: 50%; transform: translateX(-50%) rotate(-3deg); display: flex; align-items: center; gap: 6px; height: 48px; padding: 0 14px 0 4px; background: var(--cream); border: 3px solid var(--ink); border-radius: 10px 14px 12px 16px; box-shadow: 3px 4px 0 rgba(110,106,168,.6); font: 800 28px/1 var(--font); color: var(--ink); white-space: nowrap; }
-  .xtag svg { display: block; }
-  .sh { min-width: 48px; height: 44px; font-size: 22px; padding: 0 8px; }
-  /* left fact column */
-  .facts { left: 36px; top: 132px; display: flex; flex-direction: column; gap: 10px; }
-  .fact { display: flex; flex-direction: column; gap: 6px; }
-  .fact .lab { font: 800 32px/1 var(--font); color: var(--cream); text-shadow: 0 2px 0 var(--ink), 2px 0 0 var(--ink), -2px 0 0 var(--ink), 0 -2px 0 var(--ink), 2px 3px 0 var(--ink); }
-  .post { display: inline-block; width: 34px; height: 34px; border-radius: 12px 14px 11px 15px; border: 3px solid var(--ink); } .post.gold { background: var(--gold); } .post.fade { background: repeating-linear-gradient(-55deg, var(--gold) 0 5px, var(--cream) 5px 9px); } .post.sage { background: var(--sage); }
-  .fact .val { display: inline-flex; align-items: center; gap: 8px; width: max-content; padding: 6px 16px 6px 10px; background: var(--cream); border: 3px solid var(--cocoa); border-radius: 18px 22px 19px 23px; box-shadow: var(--drop); font: 700 28px/1 var(--font); color: var(--ink); }
-  .fact .val b { font-weight: 800; }
-  /* name ribbon + role tag, in-world */
-  .nt { position: absolute; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 0; }
-  .nt .k-ribbon { height: 40px; font-size: 28px; padding: 0 26px 0 14px; }
-  .nt .rib { position: relative; display: flex; align-items: center; }
-  .gtag { position: absolute; left: 50%; top: -40px; transform: translateX(-30%) rotate(-4deg); display: flex; align-items: center; gap: 4px; height: 36px; padding: 0 10px 0 4px; background: var(--cream); border: 3px solid var(--ink); border-radius: 8px 12px 10px 12px; box-shadow: 2px 3px 0 rgba(110,106,168,.6); font: 800 26px/1 var(--font); color: var(--ink); white-space: nowrap; }
-  .gtag svg { display: block; }
-  .nt .role { margin-top: -2px; padding: 4px 12px 5px; background: var(--cream); border: 3px solid var(--cocoa); border-radius: 6px 8px 10px 8px; font: 700 26px/1 var(--font); color: var(--cocoa); box-shadow: 2px 3px 0 rgba(110,106,168,.5); display: flex; align-items: center; gap: 6px; white-space: nowrap; }
-  .nt .role svg { display: block; }
-  .nt--boss .k-ribbon { height: 48px; font-size: 32px; }
-  .nt--sil .k-ribbon { --k-clowder: #CFC6D6; }
-  .nt--dim { opacity: .45; }
-  /* relationship tag (hover): paper tag with icon */
-  .rtag { position: absolute; transform: translateX(-50%) rotate(-4deg); display: flex; align-items: center; gap: 6px; height: 44px; padding: 0 14px 0 8px; background: #FFE9B0; border: 3px solid var(--ink); border-radius: 10px 14px 12px 16px; box-shadow: 3px 4px 0 rgba(110,106,168,.6); font: 800 28px/1 var(--font); color: var(--ink); white-space: nowrap; }
+  /* header: one bean, place name + scene strip only (no bar, no crown, no %) */
+  .hdr { left: 24px; top: 20px; width: 1872px; height: 72px; padding: 0 22px 0 30px; display: flex; align-items: center; justify-content: space-between; box-sizing: border-box; }
+  .strip { display: flex; align-items: center; gap: 10px; }
+  .sc { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .em { width: 44px; height: 44px; border-radius: 50%; background: var(--cream); border: 3px solid var(--cocoa); box-sizing: border-box; display: flex; align-items: center; justify-content: center; }
+  .em svg { display: block; }
+  .em--haze { opacity: .5; }
+  .pill { display: flex; align-items: center; gap: 8px; height: 46px; padding: 0 18px 0 4px; border-radius: 24px 22px 25px 21px; background: var(--cocoa); font: 800 28px/1 var(--font); color: var(--cream); }
+  .pill .em { border-color: var(--ink); }
+  .dots { display: flex; gap: 3px; height: 8px; }
+  .dots i { width: 8px; height: 8px; border-radius: 50%; box-sizing: border-box; }
+  .dots .m { background: var(--cocoa); }
+  .dots .s { border: 1.5px solid var(--cocoa); }
+  .sh { min-width: 46px; height: 40px; font-size: 22px; padding: 0 8px; }
+  /* one name ribbon per cat */
+  .nm { position: absolute; transform: translateX(-50%); display: flex; align-items: center; }
+  .nm .k-ribbon { height: 40px; font-size: 28px; padding: 0 26px 0 14px; }
+  .nm--dim { opacity: .55; }
+  .nm--focus .k-ribbon { --k-clowder: var(--sage); box-shadow: 0 0 0 4px var(--gold); }
+  .star { position: absolute; right: 8px; top: -12px; }
+  .rtag { margin-left: -4px; display: flex; align-items: center; gap: 6px; height: 40px; padding: 0 14px 0 8px; background: var(--cream); border: 3px solid var(--ink); border-radius: 8px 12px 10px 12px; box-shadow: 2px 3px 0 rgba(110,106,168,.6); font: 800 28px/1 var(--font); color: var(--ink); transform: rotate(-3deg); }
   .rtag svg { display: block; }
-  /* Daifuku's card, bottom-left */
-  #card { left: 28px; top: 806px; width: 760px; height: 246px; padding: 0; overflow: visible; }
-  #card .head { position: relative; display: flex; align-items: center; gap: 14px; margin: -28px 0 0 -12px; height: 86px; padding: 0 62px 0 14px; width: max-content; box-sizing: border-box;
-    background: var(--sage); color: var(--ink); border: 4px solid var(--ink); border-right: 0; clip-path: polygon(0 0, 100% 0, calc(100% - 40px) 100%, 0 100%); }
-  #card .nm { font: 800 42px/1 var(--font); letter-spacing: .02em; }
-  #card .tt { font: 700 28px/1.05 var(--font); margin-top: 4px; }
-  #card .r1 { display: flex; align-items: center; gap: 16px; padding: 8px 24px 0; font: 700 28px/1 var(--font); color: var(--ink); }
-  #card .r1 > span { display: inline-flex; align-items: center; gap: 8px; }
-  #card .r1 .sep { width: 3px; height: 30px; background: #D9C3A0; }
-  #card .hist { padding: 8px 24px 0; display: flex; flex-direction: column; gap: 2px; }
-  #card .row { display: flex; align-items: center; gap: 8px; font: 500 28px/1.15 var(--font); color: var(--ink); white-space: nowrap; }
-  #card .day { font: 800 24px/1 var(--font); color: var(--cocoa); width: 36px; }
-  #card .ties svg { display: block; flex: none; } #card .ties { position: absolute; left: 24px; right: 20px; bottom: 12px; display: flex; align-items: center; gap: 8px; padding-top: 8px; border-top: 3px dotted #D9C3A0; font: 700 28px/1 var(--font); color: var(--ink); white-space: nowrap; }
-  #card .ties b { color: var(--cocoa); font-weight: 800; }
-  #help { right: 34px; bottom: 26px; display: flex; gap: 12px; align-items: center; }
+  /* the card (focus only), bottom-left 676 x 256 */
+  #card { left: 24px; top: 800px; width: 676px; height: 256px; padding: 0; overflow: visible; }
+  #card .head { position: relative; display: flex; align-items: center; gap: 12px; margin: -26px 0 0 -10px; height: 80px; padding: 0 56px 0 12px; width: max-content; box-sizing: border-box;
+    background: var(--sage); color: var(--ink); border: 4px solid var(--ink); border-right: 0; clip-path: polygon(0 0, 100% 0, calc(100% - 36px) 100%, 0 100%); font: 800 36px/1 var(--font); }
+  #card .head small { font: 700 28px/1 var(--font); }
+  #card .r { display: flex; align-items: center; gap: 10px; padding: 6px 24px 0; font: 700 28px/1.1 var(--font); color: var(--ink); white-space: nowrap; }
+  #card .r svg { display: block; flex: none; }
+  #card .sep { width: 3px; height: 28px; background: #D9C3A0; margin: 0 4px; }
+  #card .sw { display: inline-flex; align-items: center; height: 38px; padding: 0 14px; border-radius: 20px; background: var(--ink); color: var(--cream); font: 800 26px/1 var(--font); }
+  #card .day { font: 800 24px/1 var(--font); color: var(--cocoa); }
+  #card .q { font-weight: 500; }
+  #help { right: 24px; bottom: 24px; display: flex; gap: 12px; align-items: center; }
 </style>
 </head>
 <body>
@@ -123,8 +99,8 @@ s.push(`<g filter="url(#k-rough)"><path d="${poly(lq(0.1, 0.26, 0.2, 0.42))}" fi
 s.push(K.roof({ quad: [[-60, -40], [760, 200], [742, 232], [-40, 34]], rows: 3, cols: 16, color: '#6E7E98' }));
 s.push(K.castShadow(poly([[-40, 34], [742, 232], [742, 270], [-40, 120]]), 0.5));
 // pots + plants at the facade foot
-s.push(K.foliage({ x: 150, y: 860, w: 280, h: 240, seed: 71 }) + K.foliage({ x: 470, y: 690, w: 170, h: 140, seed: 72 }) + K.foliage({ x: 640, y: 610, w: 110, h: 90, seed: 73 }));
-s.push(K.prop({ kind: 'pot', x: 470, y: 760, scale: 1.5 }) + K.prop({ kind: 'pot', x: 646, y: 636, scale: 1.0 }));
+s.push(K.foliage({ x: 150, y: 860, w: 280, h: 240, seed: 71 }) + K.foliage({ x: 470, y: 690, w: 170, h: 140, seed: 72 }));
+s.push(K.prop({ kind: 'pot', x: 470, y: 760, scale: 1.5 }));
 
 /* ---------- the right side: plaster wall, corrugated fence, hedge, laundry pole ---------- */
 const RT_ = [[1178, 230], [1960, 30]], RB = [[1178, 590], [1960, 1110]];
@@ -155,98 +131,94 @@ s.push(K.castShadow('M1208 596L1960 880L1960 1110L1500 1110Z', 0.22));
 /* ---------- Dusk grade over the set (before the cats) ---------- */
 s.push(`<rect width="${W}" height="${H}" fill="#F2A27A" opacity="0.22" style="mix-blend-mode:multiply"/>`);
 s.push(K.glow(960, 330, 520, 300, '#FFCF8A', 0.45));
+// quiet foreground in the card zone: stones and a plant (no cats here)
+s.push(K.foliage({ x: 90, y: 1050, w: 300, h: 150, seed: 91 }));
 
-/* ---------- the gang, staged by fixed role (Boss on the perch, Captains on the steps, Toughs on the path) ---------- */
-const POS = { daifuku: [960, 386], kagi: [852, 616], ohagi: [1078, 616], goma: [650, 762], togemaru: [1236, 792], sasa: [930, 1016], kuri: [1440, 1000] };
+/* ---------- focus state: TOGEMARU. Related: Daifuku (his Boss, by the arrow), Goma (Rival). Everyone else dims. ---------- */
+s.push(`<defs><filter id="rv-dim" x="-20%" y="-20%" width="140%" height="140%"><feFlood flood-color="#6E6AA8" result="f"/><feComposite in="f" in2="SourceAlpha" operator="in" result="fa"/><feComposite in="SourceGraphic" in2="fa" operator="arithmetic" k1="0" k2="0.55" k3="0.45" k4="0"/></filter></defs>`);
+const dim = (svg) => `<g filter="url(#rv-dim)" opacity="0.9">${svg}</g>`;
+const POS = { daifuku: [960, 386], kagi: [860, 600], ohagi: [1076, 600], goma: [700, 700], togemaru: [1214, 760], sasa: [800, 968], kuri: [1190, 968] };
 const [dx, dy] = POS.daifuku;
-// dashed arrows: each member -> its Boss only; same-side arrows merge into one line up the steps
-const dash = (d, head) => `<path d="${d}" fill="none" stroke="${C.cream}" stroke-width="10" stroke-linecap="round" opacity="0.9"/><path d="${d}" fill="none" stroke="${C.ink}" stroke-width="4" stroke-dasharray="12 10" stroke-linecap="round"/>`;
-const head = (x, y, ang) => `<g transform="translate(${x} ${y}) rotate(${ang})"><path d="M-16 -11L4 0L-16 11" fill="none" stroke="${C.cream}" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M-16 -11L4 0L-16 11" fill="none" stroke="${C.ink}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></g>`;
-const JL = [904, 536], JR = [1016, 536];
-s.push(dash(`M${JL[0]} ${JL[1]}Q900 470 934 418`) + head(934, 418, -62) + dash(`M${JR[0]} ${JR[1]}Q1020 470 986 418`) + head(986, 418, -118));
-s.push(dash(`M860 520Q880 540 ${JL[0]} ${JL[1]}`) + dash(`M690 672Q760 560 ${JL[0]} ${JL[1]}`) + dash(`M880 830Q850 640 ${JL[0]} ${JL[1]}`));
-s.push(dash(`M1066 520Q1040 540 ${JR[0]} ${JR[1]}`) + dash(`M1206 668Q1130 560 ${JR[0]} ${JR[1]}`) + dash(`M1400 840Q1200 640 ${JR[0]} ${JR[1]}`));
 
-// Daifuku on his cushion (focused/hovered): cream rim, crown, steam puffs (Seething)
-s.push(K.glow(dx, dy - 80, 220, 140, '#FFF0C8', 0.7));
-s.push(`<ellipse cx="${dx}" cy="${dy + 2}" rx="118" ry="16" fill="none" stroke="${C.cream}" stroke-width="7"/>`);
+// arrows: two faint trunks; only Togemaru's branch + the right trunk are bright
+const dash = (d, w, op) => `<path d="${d}" fill="none" stroke="${C.cream}" stroke-width="${w + 5}" stroke-linecap="round" opacity="${op}"/><path d="${d}" fill="none" stroke="${C.ink}" stroke-width="${w}" stroke-dasharray="12 10" stroke-linecap="round" opacity="${op}"/>`;
+const head = (x, y, ang, w, op) => `<g transform="translate(${x} ${y}) rotate(${ang})" opacity="${op}"><path d="M-14 -10L4 0L-14 10" fill="none" stroke="${C.cream}" stroke-width="${w + 5}" stroke-linecap="round" stroke-linejoin="round"/><path d="M-14 -10L4 0L-14 10" fill="none" stroke="${C.ink}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/></g>`;
+s.push(dash('M906 548Q896 480 932 424', 2, 0.35) + head(932, 424, -62, 2, 0.35));                     // left trunk (faint)
+s.push(dash('M760 630Q820 570 906 548', 2, 0.35) + dash('M836 548L906 548', 2, 0.35) + dash('M800 870Q820 680 906 548', 2, 0.35));
+s.push(dash('M1060 548L1014 548', 2, 0.35) + dash('M1180 880Q1120 680 1014 548', 2, 0.35));           // dim right branches
+s.push(dash('M1170 600Q1160 470 1050 440Q1010 430 992 424', 4, 1) + head(992, 424, -165, 4, 1));  // Togemaru's own arrow
+
+// Daifuku (his Boss): full colour, crown on the perch, two steam puffs above
 s.push(K.inked(K.blob(K.xf([[-90, 0], [-84, -16], [0, -22], [84, -16], [90, 0], [70, 10], [0, 14], [-70, 10]], { x: dx, y: dy })), '#8E6EB8', 2.5));
-s.push(K.cat({ ...RV.CAST.daifuku, pose: 'loaf', expr: 'angry', x: dx, y: dy - 8, scale: 1.6, shadow: false }));
+s.push(K.cat({ ...RV.CAST.daifuku, pose: 'loaf', expr: 'smug', x: dx, y: dy - 8, scale: 1.6, shadow: false }));
 s.push(`<g transform="translate(${dx + 58} ${dy - 118}) rotate(14)">${K.inked('M0 0Q14 -16 30 -10Q21 5 0 0Z', '#7DB857', 2.2)}</g>`);
 s.push(`<g transform="translate(${dx} ${dy - 146})">${K.inked('M-26 10L-26 -10L-13 0L0 -18L13 0L26 -10L26 10Z', C.gold, 2.6)}</g>`);
-s.push(K.dustCloud({ x: dx - 112, y: dy - 150, r: 24, puffs: 4, seed: 2 }) + K.dustCloud({ x: dx + 116, y: dy - 162, r: 28, puffs: 4, seed: 7 }));
-s.push(`<g fill="none" stroke="${C.ink}" stroke-width="3" stroke-linecap="round"><path d="M${dx - 104} ${dy - 122}q-8 10 0 20q8 10 0 18"/><path d="M${dx + 106} ${dy - 130}q8 10 0 20q-8 10 0 18"/></g>`);
-s.push(`<g transform="translate(${dx + 150} ${dy - 40}) rotate(-20)">${K.inked(K.ell(0, 8, 17, 14), C.pad, 2.6)}${[[-14, -10], [-5, -17], [5, -17], [14, -10]].map(([x, y]) => K.inked(K.ell(x, y, 5.5, 6.5), C.pad, 2.2)).join('')}</g>`);
-// Captains on the steps
-s.push(K.cat({ ...RV.CAST.kagi, pose: 'side-walk', expr: 'smug', x: POS.kagi[0], y: POS.kagi[1], scale: 1.0 }));
-s.push(`<g transform="translate(${POS.kagi[0] + 42} ${POS.kagi[1] - 100}) rotate(-20)">${K.inked('M-4 -14H4V9H-4Z', '#F2D8A0', 1.8)}</g>`);
-s.push(K.cat({ ...RV.CAST.ohagi, pose: 'front-sit', x: POS.ohagi[0], y: POS.ohagi[1], scale: 1.1, flip: true }));
-s.push(`<g transform="translate(${POS.ohagi[0]} ${POS.ohagi[1] - 66})"><path d="M-12 -9Q0 4 12 -9" stroke="${C.ink}" stroke-width="2" fill="none"/>${K.inked(K.ell(0, 2, 7, 7), '#D8B04A', 1.8)}</g>`);
-// unmet cats wait in the shade along the walls (not on a spot)
-s.push(K.castShadow('M650 520L760 520L780 600L640 610Z', 0.4) + K.castShadow('M1460 540L1580 530L1600 700L1440 710Z', 0.35));
-s.push(sil(K.cat({ ...RV.CAST.hanpen, pose: 'front-sit', x: 706, y: 586, scale: 0.82, shadow: false })) + sil(K.cat({ ...RV.CAST.nori, pose: 'front-sit', x: 1520, y: 600, scale: 0.9, shadow: false, flip: true })));
-s.push([[706, 476], [1520, 476]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="17" fill="${C.cream}" stroke="${C.ink}" stroke-width="2.5"/><text x="${x}" y="${y + 9}" text-anchor="middle" font-family="'M PLUS Rounded 1c'" font-weight="800" font-size="26" fill="${C.cocoa}">?</text>`).join(''));
-// Toughs on the path
-s.push(K.cat({ ...RV.CAST.goma, pose: 'loaf', expr: 'angry', x: POS.goma[0], y: POS.goma[1], scale: 1.45 }));
-const tg = { x: POS.togemaru[0], y: POS.togemaru[1], sc: 1.5 };
-s.push(RV.hackles({ x: tg.x, y: tg.y, scale: tg.sc, rim: C.sage }));
-s.push(RV.notched(K.cat({ ...RV.CAST.togemaru, pose: 'front-sit', expr: 'angry', outline: 'ink', x: tg.x, y: tg.y, scale: tg.sc, flip: true }), [RV.frontNotch(tg.x, tg.y, tg.sc, 'l')], { rim: C.cream }));
-s.push(RV.storm({ x: tg.x + 6, y: tg.y - 244, s: 0.9 }));
-s.push(K.cat({ ...RV.CAST.sasa, pose: 'front-sit', expr: 'happy', carry: 'spring', x: POS.sasa[0], y: POS.sasa[1], scale: 1.8 }));
-s.push(`<g transform="translate(${POS.sasa[0] - 70} ${POS.sasa[1] - 210}) rotate(-8)"><path d="M-28 -8H28V8H-28Z" fill="#F6E7B8" opacity="0.92"/><path d="M0 -7l2.4 5l5.6 .7l-4 4l1 5.5l-5 -2.6l-5 2.6l1 -5.5l-4 -4l5.6 -.7z" fill="${C.gold}" stroke="${C.ink}" stroke-width="1.5"/></g>`); // tape star: new
-s.push(K.cat({ ...RV.CAST.kuri, pose: 'side-walk', expr: 'shock', x: POS.kuri[0], y: POS.kuri[1], scale: 1.6, flip: true }));
+s.push(K.dustCloud({ x: dx - 80, y: dy - 196, r: 22, puffs: 4, seed: 2 }) + K.dustCloud({ x: dx + 84, y: dy - 206, r: 25, puffs: 4, seed: 7 }));
+
+// dimmed: Captains, Sasa, Kuri, and the two unmet silhouettes in the wall shade
+s.push(dim(K.cat({ ...RV.CAST.kagi, pose: 'side-walk', expr: 'smug', x: POS.kagi[0], y: POS.kagi[1], scale: 1.0 }) + `<g transform="translate(${POS.kagi[0] + 42} ${POS.kagi[1] - 100}) rotate(-20)">${K.inked('M-4 -14H4V9H-4Z', '#F2D8A0', 1.8)}</g>`));
+s.push(dim(K.cat({ ...RV.CAST.ohagi, pose: 'front-sit', x: POS.ohagi[0], y: POS.ohagi[1], scale: 1.1, flip: true })));
+s.push(K.castShadow('M520 520L660 516L690 660L500 672Z', 0.5) + K.castShadow('M1310 520L1450 516L1470 660L1300 672Z', 0.5));
+s.push(`<g opacity="0.72">${sil(K.cat({ ...RV.CAST.hanpen, pose: 'front-sit', x: 590, y: 640, scale: 0.92, shadow: false }))}${sil(K.cat({ ...RV.CAST.nori, pose: 'front-sit', x: 1380, y: 640, scale: 0.9, shadow: false, flip: true }))}</g>`);
+s.push(dim(K.cat({ ...RV.CAST.sasa, pose: 'front-sit', expr: 'happy', carry: 'spring', x: POS.sasa[0], y: POS.sasa[1], scale: 1.55 })));
+s.push(dim(K.cat({ ...RV.CAST.kuri, pose: 'side-walk', expr: 'shock', x: POS.kuri[0], y: POS.kuri[1], scale: 1.4, flip: true })));
+
+// Goma (Rival): full colour
+s.push(K.cat({ ...RV.CAST.goma, pose: 'loaf', expr: 'angry', x: POS.goma[0], y: POS.goma[1], scale: 1.4 }));
+
+// Togemaru, focused: lifted 4 px, Bell-Gold rim, storm mark on his head aimed at the camera
+const tg = { x: POS.togemaru[0], y: POS.togemaru[1] - 4, sc: 1.55 };
+s.push(K.shadow({ x: tg.x, y: tg.y + 6, rx: 70, ry: 10, opacity: 0.5 }));
+s.push(K.glow(tg.x, tg.y - 90, 150, 140, '#FFF0C0', 0.55));
+s.push(RV.hackles({ x: tg.x, y: tg.y, scale: tg.sc, rim: C.gold }));
+s.push(RV.notched(K.cat({ ...RV.CAST.togemaru, pose: 'front-sit', expr: 'angry', outline: 'gold', x: tg.x, y: tg.y, scale: tg.sc, flip: true, shadow: false }), [RV.frontNotch(tg.x, tg.y, tg.sc, 'l')], { rim: C.cream }));
+s.push(RV.storm({ x: tg.x + 4, y: tg.y - 236, s: 0.85 }));
 
 /* ---------- grade: soft violet edge ---------- */
 s.push(`<radialGradient id="vg" cx="0.5" cy="0.42" r="0.75"><stop offset="0.55" stop-color="#6E5AA0" stop-opacity="0"/><stop offset="1" stop-color="#6E5AA0" stop-opacity="0.34"/></radialGradient><rect width="${W}" height="${H}" fill="url(#vg)" style="mix-blend-mode:multiply"/>`);
 
 /* ---------- UI ---------- */
 const ink = C.ink, st2 = `stroke="${ink}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"`;
-const crownSvg = (n) => `<svg width="${n}" height="${n * 0.8}" viewBox="-19 -15 38 30"><path d="M-16 10L-16 -6L-7 2L0 -11L7 2L16 -6L16 10Z" fill="${C.gold}" stroke="${ink}" stroke-width="2.6" stroke-linejoin="round"/></svg>`;
-const pawRow = (bell) => `<svg width="${bell ? 52 : 40}" height="26" viewBox="${bell ? -26 : -20} -13 ${bell ? 52 : 40} 26">${[-12, 0, 12].map((x) => `<ellipse cx="${x}" cy="4" rx="5" ry="4.2" fill="${C.pad}" ${st2}/><circle cx="${x - 3.5}" cy="-3.5" r="2.4" fill="${C.pad}" ${st2}/><circle cx="${x + 3.5}" cy="-3.5" r="2.4" fill="${C.pad}" ${st2}/>`).join('')}${bell ? `<circle cx="22" cy="2" r="6" fill="${C.gold}" ${st2}/>` : ''}</svg>`;
-const puffs = (n) => `<svg width="64" height="30" viewBox="0 0 64 30">${[0, 1, 2].map((i) => `<circle cx="${12 + i * 20}" cy="15" r="9" fill="${i < n ? C.cream : 'none'}" stroke="${i < n ? ink : '#B8A890'}" stroke-width="2.5" stroke-dasharray="${i < n ? '' : '3 3'}"/>`).join('')}</svg>`;
-const stp = (g, c, n) => RV.stamp(g, { size: n || 40, color: c || C.cream });
-const brick = `<svg width="42" height="32" viewBox="-24 -17 48 34"><path d="M-21 -14h42v28h-42z" fill="${C.cream}" stroke="${ink}" stroke-width="3"/><path d="M-21 0h42M0 -14v14M-10 0v14M11 0v14" stroke="${ink}" stroke-width="3" fill="none"/></svg>`;
-// Style icons (role tag): Bruiser fist, Scrapper claw, Yowler sound arc
-const STY = {
-  fist: `<svg width="26" height="26" viewBox="-13 -13 26 26"><path d="M-9 -2Q-9 -9 -2 -9H5Q10 -9 10 -3V3Q10 9 3 9H-4Q-9 9 -9 3Z" fill="${C.cream}" ${st2}/><path d="M-3 -9V-1M3 -9V-1" fill="none" ${st2}/></svg>`,
-  claw: `<svg width="26" height="26" viewBox="-13 -13 26 26"><path d="M-9 9L-2 -10M-1 10L6 -9M7 9L11 -4" fill="none" stroke="${ink}" stroke-width="3.2" stroke-linecap="round"/></svg>`,
-  arc: `<svg width="26" height="26" viewBox="-13 -13 26 26"><path d="M-8 -6Q-2 0 -8 6M-2 -10Q7 0 -2 10M4 -12Q15 0 4 12" fill="none" stroke="${ink}" stroke-width="2.8" stroke-linecap="round"/></svg>`,
+const E = {
+  stone: `<path d="M-11 9V-4Q-11 -11 0 -11Q11 -11 11 -4V9Z" fill="#C8BEB4" ${st2}/><path d="M-6 0H6" ${st2}/>`,
+  lantern: `<path d="M-8 -4Q-9 -11 0 -11Q9 -11 8 -4Q9 7 0 9Q-9 7 -8 -4Z" fill="#E8604A" ${st2}/><path d="M-8 -1H8" ${st2}/>`,
+  anchor: `<path d="M0 -11V9M-6 -6H6M-10 2Q-8 9 0 9Q8 9 10 2" fill="none" ${st2}/><circle cy="-11" r="2.6" fill="none" ${st2}/>`,
+  lighthouse: `<path d="M-5 10L-3 -6H3L5 10Z" fill="${C.cream}" ${st2}/><path d="M-4 -1H4" stroke="#B8738E" stroke-width="3"/><path d="M-4 -6L0 -11L4 -6Z" fill="#B8738E" ${st2}/>`,
+  bus: `<path d="M0 10V-2" ${st2}/><circle cy="-6" r="6.5" fill="${C.cream}" ${st2}/><path d="M-3 -6H3" ${st2}/>`,
+  bell: `<circle r="9" fill="${C.gold}" ${st2}/><path d="M-5 2H5M0 2V7" fill="none" ${st2}/><circle cx="-3" cy="-4" r="2" fill="${C.cream}"/>`,
 };
-const gang = `<span class="gtag">${pawRow()}Gang</span>`;
-const nt = (x, y, name, role, sty) => `<div class="nt" style="left:${x}px;top:${y}px"><span class="rib"><span class="k-ribbon k-ribbon--sage">${name}</span>${gang}</span><span class="role">${role}${STY[sty]}</span></div>`;
-const dots = (met, sil, empty) => `<span class="dots">${'<i class="m"></i>'.repeat(met)}${'<i class="s"></i>'.repeat(sil)}${empty ? '<i class="e"></i>' : ''}</span>`;
-const scene = (name, d, on, extra) => `<span class="scn${on ? ' on' : ''}"><span class="tab${on ? ' on' : ''}">${name}</span>${d}${extra || ''}</span>`;
-const toge = K.ui.portrait({ size: 44, ring: '#7FA34A', cat: { ...RV.CAST.togemaru, expr: 'angry' } });
-const hige = K.ui.portrait({ size: 40, ring: C.gold, cat: { ...K.CAST.oldWallCat } });
-const post = (cls) => `<i class="post ${cls}"></i>`;
+const em = (k, haze) => `<span class="em${haze ? ' em--haze' : ''}"><svg width="30" height="30" viewBox="-13 -13 26 26">${E[k]}</svg></span>`;
+const dots = (m, h) => `<span class="dots">${'<i class="m"></i>'.repeat(m)}${'<i class="s"></i>'.repeat(h)}</span>`;
+const sc = (inner, d) => `<span class="sc">${inner}${d}</span>`;
+const claws = `<svg width="28" height="28" viewBox="-14 -14 28 28"><path d="M-10 -10L10 10M10 -10L-10 10" stroke="${ink}" stroke-width="3.5" stroke-linecap="round"/><path d="M-10 -10l5 1M10 -10l-1 5" stroke="${ink}" stroke-width="2.5" stroke-linecap="round"/></svg>`;
+const stp = (g, c) => RV.stamp(g, { size: 40, color: c || C.cream });
+const clawIco = `<svg width="28" height="28" viewBox="-13 -13 26 26"><path d="M-9 9L-2 -10M-1 10L6 -9M7 9L11 -4" fill="none" stroke="${ink}" stroke-width="3.2" stroke-linecap="round"/></svg>`;
+const moon = RV.stamp(`<path d="M4 -12A12 12 0 1 0 12 4A9 9 0 1 1 4 -12Z" fill="${C.cream}" ${st2}/>`, { size: 40, color: '#4A3F6E' });
+const stormIco = `<svg width="30" height="26" viewBox="-15 -13 30 26"><path d="${K.blob(K.pomPts(0, -3, 10, 5, 0.16))}" fill="#4A3F55"/><path d="M-1 2L-5 10H0L-2 15L6 5H1L3 2Z" fill="${C.staticYellow}" stroke="${ink}" stroke-width="1.6"/></svg>`;
+const tape = `<svg class="star" width="30" height="22" viewBox="-15 -11 30 22"><path d="M-14 -7H14V7H-14Z" fill="#F6E7B8"/><path d="M0 -6l2 4.4l4.8 .6l-3.5 3.4l.9 4.8l-4.2 -2.3l-4.2 2.3l.9 -4.8l-3.5 -3.4l4.8 -.6z" fill="${C.gold}" stroke="${ink}" stroke-width="1.3"/></svg>`;
+const nm = (x, y, name, cls, extra) => `<div class="nm ${cls || ''}" style="left:${x}px;top:${y}px"><span class="k-ribbon k-ribbon--sage">${name}</span>${extra || ''}</div>`;
 
 document.getElementById('stage').innerHTML = K.svg(W, H, s.join(''), 'class="k-world"') + `
   <div class="k-abs k-panel k-panel--sm hdr">
     <span class="k-h">Hidamari Lane</span>
-    <div class="infl">${K.ui.icon({ name: 'bell', size: 40 })}<div class="bar"><i class="gold"></i><i class="fade"></i><i class="sage"></i></div>${crownSvg(46)}</div>
     <div class="strip"><span class="k-btn k-key sh">L1</span>
-      ${scene('Lane', dots(7, 2), true)}${scene('Arcade', dots(0, 3))}${scene('Shiosai', dots(0, 3))}${scene('Summit', dots(0, 2))}${scene('Outsiders', dots(0, 0, 1))}
-      ${scene('Bell', dots(5, 0), false, `<span class="xtag">${hige}${pawRow(1)}Old Gang</span>`)}
+      ${sc(`<span class="pill">${em('stone')}Lane</span>`, dots(7, 2))}${sc(em('lantern', 1), dots(0, 3))}${sc(em('anchor', 1), dots(0, 3))}${sc(em('lighthouse', 1), dots(0, 2))}${sc(em('bus'), dots(0, 0))}${sc(em('bell'), dots(5, 0))}
       <span class="k-btn k-key sh">R1</span></div>
   </div>
-  <div class="k-abs facts">
-    <div class="fact"><span class="lab">Tonight</span><span class="val">${RV.stamp(`<path d="M4 -12A12 12 0 1 0 12 4A9 9 0 1 1 4 -12Z" fill="${C.cream}" ${st2}/>`, { size: 36, color: '#4A3F6E' })}${toge}<b>Togemaru</b> → Persimmon Alley</span></div>
-    <div class="fact"><span class="lab">Your posts</span><span class="val">${post('gold')}${post('gold')}${post('fade')}${post('sage')}</span></div>
-    <div class="fact"><span class="lab">The Boss</span><span class="val">${puffs(2)}<b>Seething</b></span></div>
-    <div class="fact"><span class="lab">Objective</span><span class="val">${crownSvg(34)}Fill the bar: he comes down.</span></div>
-  </div>
-  <div class="nt nt--boss" style="left:${dx}px;top:118px"><span class="k-ribbon k-ribbon--sage">DAIFUKU</span><span class="role">Boss of Hidamari Lane</span></div>
-  ${nt(806, 640, 'Kagi', 'Captain · Sneak', 'arc')}${nt(1124, 640, 'Ohagi', 'Captain · Shield', 'fist')}
-  ${nt(540, 586, 'Goma', 'Enforcer', 'fist')}${nt(1420, 690, 'Togemaru', 'Brawler', 'claw')}
-  ${nt(1110, 900, 'Sasa', 'Prankster', 'claw')}${nt(1600, 860, 'Kuri', 'Lookout', 'arc')}
+  ${nm(dx, 404, 'DAIFUKU')}
+  ${nm(POS.kagi[0], 614, 'Kagi', 'nm--dim')}${nm(POS.ohagi[0], 614, 'Ohagi', 'nm--dim')}
+  ${nm(POS.goma[0] + 70, 714, 'Goma', '', `<span class="rtag">${claws}Rival</span>`)}
+  ${nm(tg.x, 774, 'Togemaru', 'nm--focus')}
+  <div class="nm nm--dim" style="left:${POS.sasa[0]}px;top:982px"><span class="k-ribbon k-ribbon--sage">Sasa</span>${tape}</div>
+  ${nm(POS.kuri[0], 982, 'Kuri', 'nm--dim')}
   <div class="k-abs k-panel" id="card">
-    <div class="head">${K.ui.portrait({ size: 80, ring: ink, bg: '#F7C99A', cat: { ...RV.CAST.daifuku, expr: 'angry', scale: 0.9 } })}${brick}
-      <div><div class="nm">DAIFUKU</div><div class="tt">Boss of Hidamari Lane</div></div>${crownSvg(38)}</div>
-    <div class="r1"><span>${stp(`<path d="M-10 14V-6Q-10 -14 0 -14Q10 -14 10 -6" fill="none" stroke="${ink}" stroke-width="5" stroke-linecap="round"/><path d="M-10 14V-6Q-10 -14 0 -14Q10 -14 10 -6" fill="none" stroke="#CDD1DC" stroke-width="2.4" stroke-linecap="round"/>`)}Brooder</span><span class="sep"></span>${stp(RV.GLYPH.hackles)}${stp(RV.GLYPH.earsBack)}<span class="sep"></span><span>${puffs(2)}Seething</span></div>
-    <div class="hist"><div class="row"><span class="day">D4</span>"Come back when the Lane smells of you, Collar."</div></div>
-    <div class="ties"><b>Ties</b> ${pawRow()} Gang: Kagi, Ohagi +4 &nbsp;${pawRow(1)} Old Gang: Hige</div>
+    <div class="head">${K.ui.portrait({ size: 76, ring: C.gold, bg: '#F7C99A', cat: { ...RV.CAST.togemaru, expr: 'angry', outline: 'ink' } })}TOGEMARU <small>· the First Thorn</small></div>
+    <div class="r">${clawIco}Brawler<span class="sep"></span>${stp(RV.GLYPH.flag)}Braggart</div>
+    <div class="r">${stp(RV.GLYPH.hackles)}${stp(RV.GLYPH.earsBack)}<span class="sw">${stormIco}&nbsp;Sworn Enemy</span></div>
+    <div class="r"><span class="day">D3</span><span class="q">"My post smells of bell."</span></div>
+    <div class="r">${moon}<span class="q">Tonight: raids Persimmon Alley.</span></div>
   </div>
-  <div class="k-abs" id="help"><span class="k-prompt">${K.ui.faceButtons({ size: 42, lit: 'n' })}Last night</span><span class="k-prompt">${K.ui.faceButtons({ size: 42, lit: 's' })}Card</span><span class="k-prompt">${K.ui.faceButtons({ size: 42, lit: 'w' })}Go to</span><span class="k-prompt">${K.ui.faceButtons({ size: 42, lit: 'e' })}Back</span></div>`;
+  <div class="k-abs" id="help"><span class="k-prompt">${K.ui.faceButtons({ size: 42, lit: 's' })}Card</span><span class="k-prompt">${K.ui.faceButtons({ size: 42, lit: 'e' })}Back</span></div>`;
 </script>
 </body>
 </html>

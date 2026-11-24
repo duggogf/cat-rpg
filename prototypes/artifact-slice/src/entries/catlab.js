@@ -1,0 +1,99 @@
+// PROTOTYPE - NOT FOR PRODUCTION
+// M0 cat look-dev lab -> dist/catlab.html
+// Query: cast=both|mikan|wallSitter  view=front34|side|back34|back|front  angle=<deg cat yaw, overrides view>
+//        gait=idle|walk  speed=<m/s>  t=<sim seconds to step before a single frame>  (no t = live loop)
+//        cam=third|close  dist=<m>  h=<camera height m>  ol=<outline scale>  strip=1 (six tail carriages, flat black)
+//        phase=day|dusk
+import * as THREE from 'three';
+import { loadCatAssets, createCatInternal, DAY_LIGHT } from '../render/cats/cat.js';
+
+const q = new URLSearchParams(location.search);
+const num = (k, d) => (q.has(k) ? parseFloat(q.get(k)) : d);
+const app = document.getElementById('app');
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(1);
+renderer.setSize(app.clientWidth || innerWidth, app.clientHeight || innerHeight);
+renderer.toneMapping = THREE.NoToneMapping;
+app.appendChild(renderer.domElement);
+const W = renderer.domElement.width, H = renderer.domElement.height;
+const scene = new THREE.Scene();
+const strip = q.get('strip') === '1';
+const phase = q.get('phase') || 'day';
+const PH = {
+  day: { zen: '#3F9BE6', hor: '#A9DBF5', ground: '#C9BDA2', ground2: '#B9AC93', light: DAY_LIGHT },
+  dusk: { zen: '#8E6FB0', hor: '#F7A45A', ground: '#B89A86', ground2: '#A88C7E',
+    light: { keyDir: new THREE.Vector3(-0.8, 0.21, 0.3).normalize(), keyColor: new THREE.Color('#FFC27A'), shadeColor: new THREE.Color('#7A4E8C'), rimColor: new THREE.Color('#FFDDB5') } },
+}[phase];
+
+// ---- painted backdrop: sky gradient + a soft, unlined painted ground (no lighting on paint)
+function canvasTex(w, h, draw) { const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; }
+if (strip) scene.background = new THREE.Color().setStyle('#FBF1DC', THREE.SRGBColorSpace);
+else scene.background = canvasTex(4, 256, (g, w, h) => { const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, PH.zen); gr.addColorStop(0.75, PH.hor); gr.addColorStop(1, PH.hor); g.fillStyle = gr; g.fillRect(0, 0, w, h); });
+const groundTex = canvasTex(1024, 1024, (g, w, h) => {
+  g.fillStyle = strip ? '#EADBBB' : PH.ground; g.fillRect(0, 0, w, h);
+  let s = 11; const r = () => ((s = (s * 16807) % 2147483647) / 2147483647);
+  for (let i = 0; i < 260; i++) { // soft paint dabs
+    g.globalAlpha = 0.05 + r() * 0.07; g.fillStyle = r() < 0.5 ? PH.ground2 : '#E2D6BC';
+    g.beginPath(); g.ellipse(r() * w, r() * h, 20 + r() * 70, 10 + r() * 30, r() * 3, 0, Math.PI * 2); g.fill();
+  }
+});
+groundTex.wrapS = groundTex.wrapT = THREE.RepeatWrapping; groundTex.repeat.set(6, 6);
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), new THREE.MeshBasicMaterial({ map: groundTex }));
+ground.rotation.x = -Math.PI / 2; scene.add(ground);
+if (!strip) { // a far plaster wall card so the frame has a horizon read
+  const wall = new THREE.Mesh(new THREE.PlaneGeometry(40, 0.9), new THREE.MeshBasicMaterial({ color: new THREE.Color().setStyle('#F3E3C3', THREE.SRGBColorSpace) }));
+  wall.position.set(0, 0.45, -6); scene.add(wall);
+}
+
+// ---- cats
+loadCatAssets('').then(main);
+function main() {
+const cats = [];
+const VIEW = { front: 0, front34: 35, side: 90, back34: 145, back: 180 };
+const yaw = (q.has('angle') ? num('angle', 0) : VIEW[q.get('view') || 'front34']) * Math.PI / 180;
+const gait = q.get('gait') || 'idle', speed = num('speed', 0.6);
+if (strip) {
+  const order = ['flag', 'post', 'spring', 'blade', 'anchor', 'comma'];
+  order.forEach((carry, i) => {
+    const c = createCatInternal({ cast: q.get('cast') || 'wallSitter', scale: 1.25, carry, silhouette: true, seed: i + 3 });
+    c.object3D.position.set((i - 2.5) * 0.62, 0, 0);
+    c.object3D.rotation.y = Math.PI; // from behind
+    scene.add(c.object3D); cats.push(c);
+  });
+} else {
+  const which = q.get('cast') || 'both';
+  const list = which === 'both' ? ['mikan', 'wallSitter'] : [which];
+  list.forEach((cast, i) => {
+    const c = createCatInternal({ cast, scale: 1.25, seed: 5 + i * 11 });
+    c.object3D.position.set(list.length > 1 ? (i - 0.5) * 0.9 : 0, 0, 0);
+    c.object3D.rotation.y = yaw;
+    c.setLighting(PH.light);
+    scene.add(c.object3D); cats.push(c);
+  });
+}
+for (const c of cats) { c.setGait(gait, speed); c.setOutlineScale(num('ol', 1)); }
+
+// ---- camera: third-person height by default
+const cam = new THREE.PerspectiveCamera(num('fov', 40), W / H, 0.05, 200);
+if (strip) { cam.position.set(0, num('h', 1.5), num('dist', 3.2)); cam.lookAt(0, 0.2, 0); }
+else if (q.get('cam') === 'close') { cam.position.set(0, num('h', 0.55), num('dist', 1.5)); cam.lookAt(0, 0.28, 0); }
+else { cam.position.set(0, num('h', 0.95), num('dist', 2.2)); cam.lookAt(0, 0.26, 0); }
+
+const step = 1 / 60;
+if (q.has('t')) {
+  const n = Math.round(num('t', 0) / step);
+  for (let i = 0; i < n; i++) for (const c of cats) c.update(step);
+  for (const c of cats) c.update(0);
+  renderer.render(scene, cam);
+  window.__ready = true;
+} else {
+  let last = performance.now(), first = true;
+  renderer.setAnimationLoop((now) => {
+    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    for (const c of cats) c.update(dt);
+    renderer.render(scene, cam);
+    if (first) { first = false; window.__ready = true; }
+  });
+}
+window.__cat = { cats, scene, cam, renderer, info: () => renderer.info.render };
+}

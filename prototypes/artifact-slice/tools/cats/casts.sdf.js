@@ -27,8 +27,8 @@ export function buildCast(o) {
   const bx = B.bx, by = B.by, lg = B.leg, hs = B.head, ln = B.len;
   const pos = {};
   // ---- skeleton (rest = standing, legs straight down, tail straight back)
-  const legTop = 0.122 * lg + 0.018;       // shoulder / hip pivot height
-  const knee = 0.062 * lg + 0.006;
+  const legTop = 0.1 * lg + 0.018;       // shoulder / hip pivot height
+  const knee = 0.052 * lg + 0.006;
   const spineY = legTop + 0.03 * by;
   const zF = 0.07 * ln, zH = -0.085 * ln;   // front / hind leg z
   const xF = 0.036 * bx, xH = 0.046 * bx;
@@ -80,7 +80,7 @@ export function buildCast(o) {
     const U = front ? (s > 0 ? 'fUL' : 'fUR') : (s > 0 ? 'hUL' : 'hUR');
     const L = front ? (s > 0 ? 'fLL' : 'fLR') : (s > 0 ? 'hLL' : 'hLR');
     const top = pos[U], kn = pos[L];
-    const r0 = (front ? 0.024 : 0.027) * Math.sqrt(bx), r1 = (front ? 0.021 : 0.022) * Math.sqrt(bx);
+    const r0 = (front ? 0.028 : 0.031) * Math.sqrt(bx), r1 = (front ? 0.025 : 0.026) * Math.sqrt(bx);
     const pawZ = kn[2] + 0.008;
     P({ t: 'cap', a: [top[0], top[1] - 0.01, top[2]], b: kn, ra: r0, rb: r1, bone: U, k: 0.022 });
     P({ t: 'cap', a: kn, b: [kn[0], 0.026, pawZ - 0.004], ra: r1, rb: r1 * 0.96, bone: L, k: 0.008 });
@@ -124,15 +124,15 @@ export function buildCast(o) {
   }
 
   const shells = [
-    { name: 'body', part: PART.body, cell: 0.0042, sigma: 0.012, prims: body },
-    { name: 'head', part: PART.head, cell: 0.0032, sigma: 0.006, prims: head },
+    { name: 'body', part: PART.body, cell: 0.005, sigma: 0.012, prims: body },
+    { name: 'head', part: PART.head, cell: 0.0036, sigma: 0.006, prims: head },
     { name: 'tail', part: PART.tail, cell: o.tail === 'pom' ? 0.0028 : 0.0035, sigma: 0.006, prims: tail },
   ];
   // ---- collar + bell (Mikan only; collars mean pets)
   if (o.collar) {
     const axis = v3.norm([0, 0.93, 0.42]);
-    const cc = [0, headC[1] - 0.084 * hs, headC[2] - 0.022];
-    shells.push({ name: 'collar', part: PART.collar, cell: 0.0024, sigma: 0.01, prims: [{ t: 'tor', c: cc, axis, R: 0.05 * bx, r: 0.0085, bone: 'neck', k: 0 }] });
+    const cc = [0, headC[1] - 0.098 * hs, headC[2] - 0.03];
+    shells.push({ name: 'collar', part: PART.collar, cell: 0.0024, sigma: 0.01, prims: [{ t: 'tor', c: cc, axis, R: 0.054 * bx, r: 0.0095, bone: 'neck', k: 0 }] });
     const front = v3.add(cc, [0, -0.026, 0.05 * bx + 0.01]);
     shells.push({ name: 'bell', part: PART.bell, cell: 0.0018, sigma: 0.01, prims: [{ t: 'sph', c: front, r: 0.0165, bone: 'neck', k: 0 }] });
   }

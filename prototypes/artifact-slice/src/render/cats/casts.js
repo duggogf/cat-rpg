@@ -39,7 +39,7 @@ export const CASTS = {
       // a small white blaze between the eyes; plus the patch over the LEFT eye (+X)
       float front = smoothstep(0.01, 0.075, h.z);
       float ang = atan(h.x, -h.z);
-      float edge = mix(-0.006, 0.026, front) + 0.0045 * sin(ang * 6.0) * (1.0 - front);
+      float edge = mix(-0.018, 0.026, front) + 0.0045 * sin(ang * 6.0) * (1.0 - front);
       edge += 0.03 * front * max(0.0, 1.0 - abs(h.x) / 0.016);
       if (h.y > edge) return c_ginger;
       vec3 q = (h - vec3(0.047, 0.004, 0.06)) / vec3(0.044, 0.04, 0.06);
@@ -86,7 +86,7 @@ export const CASTS = {
       // cheek stripes
       float ch = abs(h.x);
       if (ch > 0.07 && abs(h.y + 0.012 - (ch - 0.07) * 0.2) < 0.0055 && h.z > -0.02) return c_stripe;
-      if (h.z > 0.035 && h.y < -0.018) return c_muzzle;
+      if (h.z > 0.04 && h.y < -0.02 && abs(h.x) < 0.045) return c_muzzle;
       return c_base;
     }
     // ringed tail

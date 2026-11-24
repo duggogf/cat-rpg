@@ -1,11 +1,10 @@
+// PROTOTYPE - NOT FOR PRODUCTION
 // Cat module — CONTRACT between the cat builder (owns src/render/cats/, src/anim/,
 // tools/cats/, tools/bake-meshes.mjs, assets/mesh/) and the environment builder
 // (owns everything else, imports only this file).
 //
-// This is a PLACEHOLDER (a capsule) that honours the contract so integration can start;
-// the cat builder replaces the implementation, never the signatures.
-//
 //   await loadCatAssets(baseUrl)           -> resolves when meshes/atlases are loaded ('' = same folder)
+//                                             fetches `${baseUrl}mesh/<cast>.json|.bin` (build copies assets/mesh -> dist/mesh)
 //   createCat({ cast, scale })              -> Cat
 //       cast:  'mikan' | 'wallSitter'       (more casts later: 'daifuku', 'togemaru', ...)
 //       scale: world scale multiplier (art bible: 1.25 x real cat size; 1.0 = real size)
@@ -19,21 +18,21 @@
 //   Cat.dispose()
 //
 // Characters receive NO shadow map; the cat draws its own soft contact blob.
-import * as THREE from 'three';
+// Implementation: SDF-baked skinned mesh, cel fill + inverted-hull ink (see cat.js).
+// Render notes for integrators: the cat shaders write raw sRGB (keep renderer.toneMapping =
+// NoToneMapping for the cat pass) and size the line from the CURRENT render target height.
+import { loadCatAssets as load, createCatInternal } from './cat.js';
 
-export async function loadCatAssets(baseUrl = '') { return true; }
+export async function loadCatAssets(baseUrl = '') { return load(baseUrl); }
 
 export function createCat({ cast = 'mikan', scale = 1.25 } = {}) {
-  const col = cast === 'mikan' ? '#F28C28' : '#A8A8A0';
-  const g = new THREE.Group();
-  const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.09 * scale, 0.22 * scale, 6, 12),
-    new THREE.MeshToonMaterial({ color: col }));
-  body.rotation.x = Math.PI / 2; body.position.y = 0.15 * scale; g.add(body);
-  let t = 0, gait = 'idle', spd = 0;
+  const c = createCatInternal({ cast, scale });
   return {
-    object3D: g,
-    update(dt) { t += dt; body.position.y = 0.15 * scale + (gait === 'walk' ? Math.abs(Math.sin(t * 8)) * 0.01 : 0); },
-    setGait(name, speed = 0) { gait = name; spd = speed; },
-    setLighting() {}, setOutlineScale() {}, dispose() { g.clear(); },
+    object3D: c.object3D,
+    update: (dt) => c.update(dt),
+    setGait: (name, speed = 0) => c.setGait(name, speed),
+    setLighting: (l) => c.setLighting(l),
+    setOutlineScale: (k) => c.setOutlineScale(k),
+    dispose: () => c.dispose(),
   };
 }

@@ -84,7 +84,7 @@ The owner's note on the old Turf Board ("the UI are all over the place") applies
 
 ### 2.1 Purpose and access
 
-**Every unique cat in Yunagi, one gang at a time, each gang staged as a scene** (OR-03, owner C1 and C6). The owner asked for a roster of every unique cat (C1), and then for it to be shown "similarly to this instead of a line from left to right. This shows more dynamic" (C6, `design/reviews/refs/rivals-board-layout-ref.webp`). So each gang is shown **in its own place, in deep perspective**: its Boss on a raised perch at the far end, its cats down the steps and the path toward the camera, each with a name ribbon and a short **role tag**, and dashed arrows showing who they answer to. Cats you have not met are **silhouettes** in the shade. Hovering one cat hangs **relationship tags** on the other discovered cats it is tied to (OR-04). It must read as *a gang with a pecking order and a place of its own, who know each other and know you*, at a glance.
+**Every unique cat in Yunagi, one gang at a time, each gang staged as a scene** (OR-03, owner C1 and C6). The owner asked for a roster of every unique cat (C1), and then for it to be shown "similarly to this instead of a line from left to right. This shows more dynamic" (C6, `design/reviews/refs/rivals-board-layout-ref.webp`). So each gang is shown **in its own place, in deep perspective**: its Boss on a raised perch at the far end, its cats down the steps and the path toward the camera, each with a name ribbon, and faint dashed arrows showing who they answer to. Cats you have not met are **silhouettes** in the shade. At rest each cat carries only its name; pointing at one cat dims the rest, tags at most 3 rare ties and slides up its card (§2.7, §2.8). It must read as *a gang with a pecking order and a place of its own, who know each other and know you*, at a glance.
 
 The UI name is **"Rivals"**. "Nemesis" is never shown (G12); the arc lead's face is *Sworn Enemy* or *Sworn Rival*.
 
@@ -99,7 +99,7 @@ The UI name is **"Rivals"**. "Nemesis" is never shown (G12); the arc lead's face
 
 ### 2.2 The town roster as scenes (how C1's "every unique cat" fits C6's staging)
 
-**One scene per gang, plus Outsiders and your own Crew: six scenes, cycled with L1/R1 (Q/E, or a click on the scene strip).** The **scene strip** in the header is the whole-town roster at a glance: one tab per scene, and under each tab a row of tiny chestnut dots, one per cat in that scene, **filled in its colours when met, a flat silhouette dot when not**. No counts or numbers.
+**One scene per gang, plus Outsiders and your own Crew: six scenes, cycled with L1/R1 (Q/E, or a click on the scene strip).** The **scene strip** in the header is the whole-town roster at a glance: L1 glyph · **six emblem poms** (48 px; Wall Sitters' corner stone, Awning Gang's lantern, Salt Paws' anchor, Steam Court's lighthouse, Outsiders' bus-stop sign, the Bell) · R1 glyph. **Only the active tab is named** (a Cocoa pill with its name beside the emblem); inactive tabs are emblems only, and hovering or focusing one shows its name in a small tooltip. Under each emblem sits **one row of 8 px dots**, one per cat in that scene, **filled when met, hollow when not** (up to 10, then "+"). A silhouette scene has a **hazed emblem** and hollow dots, so "which gangs have I not met" still reads from the strip in one glance. No counts or numbers.
 
 | # | Scene (tab) | Staged in | Perch (far end) | Down the steps and path | In the slice |
 |---|---|---|---|---|---|
@@ -110,11 +110,11 @@ The UI name is **"Rivals"**. "Nemesis" is never shown (G12); the arc lead's face
 | 5 | **Outsiders** | The bus stop at the edge of town, a torn timetable poster (Scribble), the coast road | **No perch** (nobody answers to anyone) | Challengers, newcomers and turncoats, each beside a small stamp of the Patch it stakes or keeps | Populated as they arrive (challenger on L2D4) |
 | 6 | **The Bell** (your Crew) | The Lot: the kei truck, crates, the back fence | **Mikan** on the kei truck roof | Crew on the truck bed and crates (Posse nearest the camera), Sentries by the fence gate | Always discovered |
 
-**Locked scenes in Life 2:** tabs 2–4 are visible and openable, painted in haze with an unlit perch, so the climb ahead is part of the roster; their focus text is "Further up the hill." The scene strip's order is the town climbing: Lane → Arcade → Shiosai → Summit, then Outsiders, then the Bell.
+**Locked scenes in Life 2:** tabs 2–4 are visible and openable, painted in haze with an unlit perch, so the climb ahead is part of the roster; each shows one centred caption, "Further up the hill." The scene strip's order is the town climbing: Lane → Arcade → Shiosai → Summit, then Outsiders, then the Bell.
 
 **Opening scene:** the scene of the cat it was opened for; otherwise the district Mikan is in (the Lane in the slice).
 
-**Cross-scene ties:** a tie to a discovered cat in **another** scene hangs its tag on that scene's tab in the strip (with the cat's mini chip), and is listed on the card's Ties line; West / R ("Go to") or a click on the tag jumps to that scene focused on that cat. Example: focusing Hige in the Bell scene hangs **Old Boss** with Daifuku's chip on the Hidamari Lane tab.
+**Cross-scene ties:** a tie to a discovered cat in **another** scene shows, **during focus only**, as **one mini chip** (the cat's chip + the tag word) under that scene's tab in the strip (max one per tab; "+1" if there are more); the full Rival card lists every tie (§3.2). West / R ("Go to") or a click on the chip jumps to that scene focused on that cat. Example: focusing Hige in the Bell scene hangs one **Old Boss** chip with Daifuku's portrait under the Hidamari Lane tab.
 
 ### 2.3 How a scene is staged
 
@@ -122,15 +122,15 @@ The UI name is **"Rivals"**. "Nemesis" is never shown (G12); the arc lead's face
 
 **Undiscovered cats wait in the shade.** An unmet cat is a flat Ink silhouette standing **in the shadow along the alley walls**, not on its role spot, so its position gives nothing away (OR-03: no name, tags, pose or traits). A Boss silhouette sits on its perch with a crown outline. On discovery the cat **steps out of the shade onto its spot** (the pin beat, §2.9).
 
-**Dashed arrows = who answers to whom.** One dashed cream arrow (Ink-edged) runs from each discovered gang member **up the path to its Boss's perch**: the Gang/Boss relation of OR-04 and nothing more. There is **no Tough-to-Captain chain**: no such relation exists in the rules, and drawing one would invent a hierarchy that G11 tells us to keep flat. Arrows from cats on the same side merge into one line up the steps, so the picture stays a few strong lines, not a web. Outsiders have no arrows. In the Bell scene, Crew arrows run to Mikan. Roamers have an arrow only if they belong to that gang.
+**Dashed arrows = who answers to whom.** One dashed cream arrow (Ink-edged) runs from each discovered gang member **up the path to its Boss's perch**: the Gang/Boss relation of OR-04 and nothing more. There is **no Tough-to-Captain chain**: no such relation exists in the rules, and drawing one would invent a hierarchy that G11 tells us to keep flat. **At rest the arrows are faint:** cream dashes with an Ink edge, **2 px at 35% opacity**; cats left of the centre line merge into **one left trunk** up the steps, cats right of it into **one right trunk**, and no arrow crosses the centre line or runs behind a ribbon, so the picture stays a few quiet lines, not a web. **On focus** the focused cat's arrow (and its trunk to the perch) goes to **4 px at full opacity**; focusing a Boss brings every member's arrow to full. Outsiders have no arrows. In the Bell scene, Crew arrows run to Mikan. Roamers have an arrow only if they belong to that gang.
 
 **Arrows to an empty perch:** if the Boss is Gone, in the Crew or in truce, the arrows still point to the perch (membership is a fixed fact), drawn dotted, and the perch shows his mark (§2.5). No gang cat is ever drawn on it (G6).
 
 **The arc lead** (Togemaru) carries his storm mark aimed **out of the picture at the camera**, i.e. at the player, wherever his scene is.
 
-### 2.4 Role tags (one short label per cat, fixed for life)
+### 2.4 Role tags (one short label per cat, on its card, fixed for life)
 
-Under each discovered cat's **name ribbon** (in its Clowder colour) hangs a **role tag**: a short word that says the cat's own job in its gang, plus a **Style icon** for the combat hint. The word comes from the cat's **personality** (how it fights, brief §3.5); the icon from its **Style**; the prefix from its **fixed role**. All three are set at generation and never change, so **the tag can never change because of what Mikan did to another cat**.
+The focused cat's card carries its **role tag** (§2.8; never hung on the cat in the scene, where depth already shows rank): a short word that says the cat's own job in its gang, plus a **Style icon** for the combat hint. The word comes from the cat's **personality** (how it fights, brief §3.5); the icon from its **Style**; the prefix from its **fixed role**. All three are set at generation and never change, so **the tag can never change because of what Mikan did to another cat**.
 
 | Personality | Tag word | Why (its own "fights like" and "on guard") |
 |---|---|---|
@@ -157,7 +157,9 @@ Words are a vocabulary for Narrative to polish; "Sentry", "Warden" and "Keeper" 
 
 ### 2.5 Cats and marks
 
-Every discovered cat stands in **one disposition pose** (Nemesis owns the mapping) with its name ribbon, role tag, and these marks. Each mark has a shape twin, never colour alone.
+Every discovered cat stands in **one disposition pose** (Nemesis owns the mapping) with its name ribbon and these marks. Each mark has a shape twin, never colour alone.
+
+**At rest, ≤ 1 drawn mark per cat**, in priority: storm mark (arc lead) > steam puffs (Boss) > truce sprig > grumble cloud > head plaster; every mark the cat carries is listed on its card (§2.8). The **tape star** is a corner sticker on the cat's ribbon, not a separate mark. Marks sit **on or touching their own cat** (the storm mark attached to Togemaru's head, aimed at the camera). **Silhouettes** are flat Ink at 70% in the wall shade with **no "?" and no ribbon** (a Boss silhouette keeps its crown outline); on focus a "?" pom pops over it and the card reads "Not met yet."
 
 | Mark | Meaning | Who can carry it |
 |---|---|---|
@@ -173,7 +175,7 @@ Every discovered cat stands in **one disposition pose** (Nemesis owns the mappin
 | Faded legend card + paw prints off the frame edge | **Gone** for good (Chased Off) | Its old spot |
 | Turned away + two-pip morning mark | Wavering (Crew only) | Bell scene |
 
-**Roaming Boss** (window open, OR-09): the perch is **empty** (cushion still dented, crown notch), Daifuku is drawn **halfway down the steps, walking out of the scene** with a short line of crown paw-marks, and the fact column says where he is now. The empty perch is the picture of the owner's "the boss will now start to roam the streets". A Boss who is Recruited, Chased Off or Nose-Touched leaves the perch empty with his knot, legend card or sprig; no gang cat ever takes it (G6).
+**Roaming Boss** (window open, OR-09): the perch is **empty** (cushion still dented, crown notch), Daifuku is drawn **halfway down the steps, walking out of the scene** with a short line of crown paw-marks, and his card says where he is now. The empty perch is the picture of the owner's "the boss will now start to roam the streets". A Boss who is Recruited, Chased Off or Nose-Touched leaves the perch empty with his knot, legend card or sprig; no gang cat ever takes it (G6).
 
 ### 2.6 Layout and wireframe (1080p, Hidamari Lane scene, Life 2 day 3, Dusk)
 
