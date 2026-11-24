@@ -8,6 +8,7 @@ const BUILD = {
   round: { bx: 1.2, by: 1.12, leg: 0.84, head: 1.27, len: 1.0 },
   standard: { bx: 1, by: 1, leg: 1, head: 1.22, len: 1 },  // head ≈ 45–50% of height (owner turnaround)
   long: { bx: 0.88, by: 0.94, leg: 1.2, head: 1.12, len: 1.12 },
+  huge: { bx: 1.38, by: 1.2, leg: 0.8, head: 1.32, len: 1.05 },   // Daifuku: Round at maximum puff (× rank 1.6 at runtime)
 };
 export const BONES = ['root', 'hips', 'chest', 'neck', 'head', 'earL', 'earR',
   'tail1', 'tail2', 'tail3', 'tail4', 'tail5', 'tail6',
@@ -17,10 +18,12 @@ const PARENT = { hips: 'root', chest: 'hips', neck: 'chest', head: 'neck', earL:
   fUL: 'chest', fLL: 'fUL', fUR: 'chest', fLR: 'fUR', hUL: 'hips', hLL: 'hUL', hUR: 'hips', hLR: 'hUR' };
 
 /** Part ids (the shader's coat functions switch on these). */
-export const PART = { body: 0, head: 1, tail: 2, collar: 3, bell: 4, legs: 5 };
+export const PART = { body: 0, head: 1, tail: 2, collar: 3, bell: 4, legs: 5, regalia: 6 };
 
 /**
- * @param {object} o build, tail ('pom'|'whip'|'ringed'|'plume'|'stub'), ears ('standard'|'tall'|'round'), collar (bool)
+ * @param {object} o build ('round'|'standard'|'long'|'huge'), tail ('pom'|'whip'|'ringed'|'plume'|'stub'),
+ *   ears ('standard'|'tall'|'round'|'huge'), collar (bool), notch ('L'|'R': V bite in that ear, +X = L),
+ *   fold ('L'|'R': tip folded forward), ruff (spiky cheek ruff), jowls (cheek scale, 1 = none), peg (clothes-peg regalia on the R ear)
  */
 export function buildCast(o) {
   const B = BUILD[o.build || 'standard'];
@@ -54,15 +57,16 @@ export function buildCast(o) {
     standard: { hw: 0.047, h: 0.092, tip: 0.007, th: 0.022 },
     tall: { hw: 0.036, h: 0.088, tip: 0.008, th: 0.018 },
     round: { hw: 0.044, h: 0.07, tip: 0.0, th: 0.022 },
+    huge: { hw: 0.056, h: 0.112, tip: 0.008, th: 0.02 },
   }[o.ears || 'standard'];
   const ears = [1, -1].map((s) => {
     const base = [headC[0] + s * 0.041 * hs, headC[1] + 0.054 * hs, headC[2] - 0.016 * hs];
     pos[s > 0 ? 'earL' : 'earR'] = base;
     const up = v3.norm([s * 0.78, 1, -0.16]);
     const F = frame(base, up, [s * 0.62, 0, 1]);
-    const E = earShape, sc = hs;
-    return { t: 'ear', F, A: [-E.hw * sc, -0.01], B: [E.hw * sc, -0.01], C: [s * E.tip * sc, E.h * sc],
-      hw: E.hw * sc, th: E.th * sc, rr: o.ears === 'round' ? 0.01 : 0.005, cup: 0.011, bone: s > 0 ? 'earL' : 'earR', k: 0.016, side: s };
+    const E = earShape, sc = hs, folded = o.fold === (s > 0 ? 'L' : 'R');
+    return { t: 'ear', F, A: [-E.hw * sc, -0.01], B: [E.hw * sc, -0.01], C: [s * E.tip * sc, E.h * sc * (folded ? 0.6 : 1)], folded,
+      hw: E.hw * sc, th: E.th * sc, rr: o.ears === 'round' ? 0.01 : 0.005, H: E.h * sc, cup: 0.011, bone: s > 0 ? 'earL' : 'earR', k: 0.016, side: s };
   });
 
   // ---- torso shell: a bean (round rump, deep chest), thick neck. Legs are a SEPARATE shell so
@@ -105,7 +109,8 @@ export function buildCast(o) {
   const H = (x) => head.push(x);
   const hc = headC;
   H({ t: 'ell', c: hc, r: [0.086 * hs, 0.082 * hs, 0.09 * hs], bone: 'head', k: 0 }); // round cranium; narrower than the cheeks (a dome from behind)
-  for (const s of [1, -1]) H({ t: 'ell', c: [hc[0] + s * 0.052 * hs, hc[1] - 0.019 * hs, hc[2] + 0.02 * hs], r: [0.068 * hs * (o.build === 'round' ? 1.08 : 1), 0.052 * hs, 0.064 * hs], bone: 'head', k: 0.034 });
+  const jw = o.jowls || 1, cheekK = (o.build === 'round' || o.build === 'huge') ? 1.08 : 1;
+  for (const s of [1, -1]) H({ t: 'ell', c: [hc[0] + s * 0.052 * hs * (1 + (jw - 1) * 0.5), hc[1] - (0.019 + (jw - 1) * 0.03) * hs, hc[2] + 0.02 * hs], r: [0.068 * hs * cheekK * jw, 0.052 * hs * (1 + (jw - 1) * 0.6), 0.064 * hs], bone: 'head', k: 0.034 });
   // lifted muzzle: a small stop under the brow (low blend), the nose tip the most forward point, chin tucked back
   H({ t: 'ell', c: [hc[0], hc[1] - 0.038 * hs, hc[2] + 0.074 * hs], r: [0.037 * hs, 0.026 * hs, 0.034 * hs], bone: 'head', k: 0.016 });
   H({ t: 'ell', c: [hc[0], hc[1] - 0.025 * hs, hc[2] + 0.107 * hs], r: [0.014 * hs, 0.01 * hs, 0.011 * hs], bone: 'head', k: 0.012 }); // small upturned nose tip
@@ -113,6 +118,24 @@ export function buildCast(o) {
   // crown dome between the ears (from behind: a soft dome, not a box with ear tabs)
   H({ t: 'ell', c: [hc[0], hc[1] + 0.05 * hs, hc[2] - 0.01 * hs], r: [0.05 * hs, 0.044 * hs, 0.064 * hs], bone: 'head', k: 0.03 });
   for (const e of ears) H(e);
+  for (const e of ears) {
+    const bone = e.bone, F = e.F;
+    if (e.folded) { // the tip folds forward: a flap hinged at the shortened ear's top
+      const top = v3.add(F.o, v3.mul(F.v, e.C[1] * 0.96));
+      const Ff = frame(top, v3.add(v3.mul(F.w, 0.85), v3.mul(F.v, -0.35)), v3.mul(F.v, -1));
+      H({ t: 'ear', F: Ff, A: [-e.hw * 0.58, -0.004], B: [e.hw * 0.58, -0.004], C: [0, e.H * 0.42], hw: e.hw * 0.58, th: e.th * 0.9, rr: 0.004, cup: 0, bone, k: 0.008 });
+    }
+  }
+  if (o.ruff) for (const s of [1, -1]) for (const [dy, tilt] of [[-0.018, -0.15], [-0.042, -0.75]]) { // spiky cheek ruff (Togemaru)
+    const b = [hc[0] + s * 0.098 * hs, hc[1] + dy * hs, hc[2] + 0.012 * hs];
+    const F = frame(b, v3.norm([s, tilt, -0.15]), [0, 0, 1]);
+    H({ t: 'ear', F, A: [-0.016 * hs, -0.012], B: [0.016 * hs, -0.012], C: [0, 0.03 * hs], hw: 0.016 * hs, th: 0.018, rr: 0.003, cup: 0, bone: 'head', k: 0.008 });
+  }
+  if (o.notch) { // silhouette Scar: a deep V bite out of the ear's outer edge (cut last)
+    const e = ears[o.notch === 'L' ? 0 : 1], out = e.side > 0 ? 1 : -1;
+    const Pm = [out * e.hw * 0.62, e.C[1] * 0.5];
+    H({ t: 'vcut', F: e.F, A: [Pm[0] + out * 0.02, Pm[1] + 0.016], B: [Pm[0] + out * 0.02, Pm[1] - 0.016], C: [Pm[0] - out * 0.017, Pm[1]], th: 0.05, bone: e.bone, cut: true });
+  }
 
   // ---- tail shell
   const tail = [];
@@ -138,12 +161,19 @@ export function buildCast(o) {
     }
   }
 
+  const hk = `head_${o.build || 'standard'}_${o.ears || 'standard'}${o.notch ? '_n' + o.notch : ''}${o.fold ? '_f' + o.fold : ''}${o.ruff ? '_ruff' : ''}${o.jowls ? '_j' + o.jowls : ''}${o.peg ? '_peg' : ''}`;
+  const bk = `body_${o.build || 'standard'}`, tk = `tail_${o.build || 'standard'}_${o.tail || 'whip'}`;
   const shells = [
-    { name: 'body', part: PART.body, cell: 0.0045, sigma: 0.012, prims: body },
-    { name: 'legs', part: PART.legs, cell: 0.0036, sigma: 0.014, prims: legsP }, // soft joints: no fold-through at the wrist
-    { name: 'head', part: PART.head, cell: 0.003, sigma: 0.006, prims: head },
-    { name: 'tail', part: PART.tail, cell: o.tail === 'pom' ? 0.0026 : 0.0035, sigma: 0.006, prims: tail },
+    { name: 'body', group: bk, part: PART.body, cell: 0.0045, sigma: 0.012, prims: body },
+    { name: 'legs', group: bk, part: PART.legs, cell: 0.0036, sigma: 0.014, prims: legsP }, // soft joints: no fold-through at the wrist
+    { name: 'head', group: hk, part: PART.head, cell: 0.003, sigma: 0.006, prims: head },
+    { name: 'tail', group: tk, part: PART.tail, cell: o.tail === 'pom' ? 0.0026 : 0.0035, sigma: 0.006, prims: tail },
   ];
+  if (o.peg) { // Kagi's regalia: a cream clothes-peg clipped to the outer edge of his right ear
+    const e = ears[1], a = v3.add(v3.add(e.F.o, v3.mul(e.F.u, -e.hw * 0.62)), v3.mul(e.F.v, e.C[1] * 0.38));
+    const b = v3.add(v3.add(a, v3.mul(e.F.u, -0.03)), v3.mul(e.F.v, -0.01));
+    shells.push({ name: 'peg', group: hk, part: PART.regalia, cell: 0.0018, sigma: 0.01, prims: [{ t: 'cap', a, b, ra: 0.0075, rb: 0.0075, bone: 'earR', k: 0 }] });
+  }
   // ---- collar + bell (Mikan only; collars mean pets): seated ON the neck, square to its axis
   let collar = null;
   if (o.collar) {
@@ -151,10 +181,10 @@ export function buildCast(o) {
     const cc = v3.add(nA, v3.mul(v3.sub(nB, nA), 0.5));
     const R = 0.054 * bx + 0.002;
     collar = { c: cc, axis };
-    shells.push({ name: 'collar', part: PART.collar, cell: 0.0022, sigma: 0.01, prims: [{ t: 'tor', c: cc, axis, R, r: 0.011, bone: 'neck', k: 0 }] });
+    shells.push({ name: 'collar', group: `collar_${o.build || 'standard'}`, part: PART.collar, cell: 0.0022, sigma: 0.01, prims: [{ t: 'tor', c: cc, axis, R, r: 0.011, bone: 'neck', k: 0 }] });
     const f = v3.norm(v3.sub([0, 0, 1], v3.mul(axis, axis[2])));
     const front = v3.add(v3.add(cc, v3.mul(f, R + 0.012)), [0, -0.019, 0.017]); // hangs proud of the full chest
-    shells.push({ name: 'bell', part: PART.bell, cell: 0.0018, sigma: 0.01, prims: [{ t: 'sph', c: front, r: 0.0165, bone: 'neck', k: 0 }] });
+    shells.push({ name: 'bell', group: `collar_${o.build || 'standard'}`, part: PART.bell, cell: 0.0018, sigma: 0.01, prims: [{ t: 'sph', c: front, r: 0.0165, bone: 'neck', k: 0 }] });
   }
   return {
     bones: BONES.map((n) => ({ name: n, parent: PARENT[n] || null, pos: pos[n] })),
@@ -162,14 +192,28 @@ export function buildCast(o) {
     meta: {
       paws: { xF: xF * 1.03, xH: xH * 1.03, zF: pos.fLL[2] + 0.018, zH: zH + 0.004 },
       headC, hs, rump, spineY, ears: ears.map((e) => ({ o: e.F.o, u: e.F.u, v: e.F.v, w: e.F.w, A: e.A, B: e.B, C: e.C, th: e.th, side: e.side })),
-      tailLen, legTop, zF, zH, xF, xH, collar,
+      tailLen, legTop, zF, zH, xF, xH, collar, earDims: { hw: earShape.hw, h: earShape.h, tip: earShape.tip },
     },
   };
 }
 
-/** The casts baked for M0. */
+/** Geometry of every named cast (look lives in src/render/cats/casts.js). */
 export const CASTS = {
   mikan: { build: 'standard', tail: 'pom', ears: 'standard', collar: true },
-  // Wall Sitter tough: Round build (Bruiser-weighted), thick ringed tail, small round ears.
-  wallSitter: { build: 'round', tail: 'ringed', ears: 'round', collar: false },
+  // Wall Sitter tough (M0): Round build (Bruiser-weighted), thick ringed tail, small round ears.
+  wallSitter: { build: 'round', tail: 'ringed', ears: 'round' },
+  // The old wall cat (art bible §5.2: lean grey elder on the Long mesh, the one notched ear; GDD: heavy jowls)
+  hige: { build: 'long', tail: 'whip', ears: 'tall', notch: 'R', jowls: 1.22 },
+  // Small round calico, one ear always half-folded
+  pon: { build: 'round', tail: 'plume', ears: 'round', fold: 'L' },
+  // Pale fawn, huge ears, thin
+  kinako: { build: 'long', tail: 'whip', ears: 'huge' },
+  // Lean black-and-tan tom, spiky cheek ruff, deep V notch in the ear on the viewer's right front-on (+X)
+  togemaru: { build: 'long', tail: 'plume', ears: 'standard', notch: 'L', ruff: true },
+  // Long-bodied silver tabby, tall ears, clothes-peg regalia
+  kagi: { build: 'long', tail: 'whip', ears: 'tall', peg: true },
+  // The Boss: an enormous loaf, folded jowls visible past the cheeks from behind, thick short tail
+  daifuku: { build: 'huge', tail: 'stub', ears: 'round', jowls: 1.35 },
 };
+/** Generic gang members: every build × ears × tail combination is baked (parts are shared). */
+export const TOUGH = { builds: ['round', 'standard', 'long'], ears: ['standard', 'tall', 'round'], tails: ['whip', 'plume', 'ringed', 'stub'] };

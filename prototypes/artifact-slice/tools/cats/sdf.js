@@ -73,6 +73,10 @@ export function prim(P, p) {
       const ox = Math.max(d2, 0), oz = Math.max(dz, 0);
       return Math.hypot(ox, oz) + Math.min(Math.max(d2, dz), 0) - P.rr;
     }
+    case 'vcut': { // a triangular prism (2D triangle A,B,C in frame F, extruded ±th): used as a cutter
+      const l = toFrame(P.F, p);
+      return Math.max(sdTri2(l[0], l[1], P.A, P.B, P.C), Math.abs(l[2]) - P.th);
+    }
     default: throw new Error('unknown prim ' + P.t);
   }
 }
@@ -97,6 +101,7 @@ export function shellBounds(S, pad) {
     else if (P.t === 'cap') { grow(P.a, P.ra); grow(P.b, P.rb); }
     else if (P.t === 'tor') grow(P.c, P.R + P.r);
     else if (P.t === 'ear') grow(P.F.o, Math.max(P.hw, P.C[1]) + P.th + P.rr + 0.02);
+    else if (P.t === 'vcut') continue;
   }
   return { mn: mn.map((v) => v - pad), mx: mx.map((v) => v + pad) };
 }
