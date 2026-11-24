@@ -212,8 +212,9 @@ export function createCatInternal(opts = {}) {
     object3D: group,
     bones, mesh,
     update(dt) {
-      // LOD (hysteresis): full above 14% of screen height, the low mesh below 12%; 'full' / 'low' force it.
-      setLevel(lodMode === 'full' ? 0 : lodMode === 'low' ? 1 : (lodLevel ? (share > 0.14 ? 0 : 1) : (share < 0.12 ? 1 : 0)));
+      // LOD (hysteresis): full above 18% of screen height, the low mesh below 15% (the whole 4.5–7.2 m combat
+      // framing); 'full' / 'low' force it (use 'full' for the controlled cat).
+      setLevel(lodMode === 'full' ? 0 : lodMode === 'low' ? 1 : (lodLevel ? (share > 0.18 ? 0 : 1) : (share < 0.15 ? 1 : 0)));
       // A cream rim shell added in this cat's subtree by the combat presentation (named 'keyline-rim') is
       // dropped below 5% of screen height, where it is under a pixel and only costs triangles.
       if (share < 0.05) for (const c of group.children) if (c.name === 'keyline-rim') c.visible = false;

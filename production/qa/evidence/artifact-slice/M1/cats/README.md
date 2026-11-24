@@ -34,3 +34,24 @@ Captured 2026-11-24 with `node tools/shot.mjs` (headless SwiftShader) from `prot
 
 - Daifuku's grey cap reads a little like a helmet in front 3/4.
 - From straight behind, Mikan's curled long tail and stub-tailed toughs leave the silhouette to the ears and build.
+
+## Level of detail (M1 performance)
+
+| File | What it shows |
+|---|---|
+| `05-lod-full-vs-low-5m-7m.png` | The 10-cat lineup from an elevated combat camera (fov 45°, 2.2 m high). Rows: 5 m full, 5 m low, 7 m full, 7 m low. Silhouette, faces, ink weight and tail carriage read the same |
+| `06-lod-full-vs-low-7m-zoom2x.png` | The first four cats at 7 m, enlarged 2×: full (top) against low (bottom) |
+
+- **How it works:** each part bakes a second, decimated index over the same vertices, so the LOD costs index data only (+0.4 MB). Each cat has its own geometry that shares every buffer and picks the full or low index range through its two groups. Extra hull shells built on the cat's geometry (the combat keyline and rim) therefore follow the LOD automatically.
+- **Selection:** `auto` (default) uses the full mesh above 18% of screen height and the low mesh below 15%. `Cat.setLod('full')` is for the controlled cat. `createCat({ lod })`, `Cat.lod` and `Cat.triangles` are additions.
+- **Rim:** a shell named `keyline-rim` in the cat's subtree is hidden below 5% of screen height.
+- **Triangles per pass:** Mikan 24.5k full / 7.2k low; the other casts 23k / about 6.8k.
+
+**10-cat brawl, per pass** (controlled cat forced to full):
+
+| Camera distance | Per pass | Fill + ink + keyline + rim (4 passes) |
+|---|---|---|
+| 7 m | 85.8k | about 343k |
+| 4.5 m (Daifuku stays full because he is large on screen) | 102k | about 408k |
+
+Before LOD, the same brawl drew about 0.86–0.92M triangles.
