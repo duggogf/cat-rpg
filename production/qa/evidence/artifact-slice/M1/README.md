@@ -96,6 +96,31 @@ main-thread time under SwiftShader. Real-time FPS on a GPU is unmeasured.
 - **Clip:** `fight-clip.webm` is 7 s at 60 fps around a Tough Rout, for judging shake and hit-stop in motion.
 - Run `node tools/m1-shots.mjs --only brawl,clip` for those two sections.
 
+
+## M1.1 (owner direction, `design/reviews/owner-feedback/combat-m1.1-spec.md`): presentation
+
+The player controls **Mikan only**. Controls: WASD move; the mouse drives the camera (click captures the pointer);
+LMB light; RMB heavy (hold to charge); Space dodge; Shift dash; **Tab lock-on cycle**; **F Special** (a context
+prompt, only on a staggered enemy); **R skill bar**; P / Esc pause. The gamepad mirrors this but is untested.
+Z X C V switching and the Tag-In cue are gone. Run `?script=demo` for the M1.1 player bot. The presentation reads the
+reworked sim's API (`light`, `heavy` held, `dodge`, `dash`, `special`, `skillBar`, `lockOn`; `special_prompt`,
+`special_chain`, `intent`, `staggered_s`, `attack`) and falls back to the M1 inputs on the old sim.
+
+| File | What it shows |
+|---|---|
+| `stagger-01..04.png`, `stagger-sheet.png` | Stagger cinematic. A zoom onto the staggered cat with a ≈ 30° swing so Mikan does not hide it, the sim's time slow, then the shattered-glass blink: Ink and Cream cracks, with Cream shard tints at ≤ 0.16 alpha so they pulse softly and never strobe. Full treatment for Captains, Bosses and the first stagger; light for Toughs |
+| `special-cutin-1..4a/b.png`, `team-finisher-1..3.png`, `special-chain-sheet.png` | F Special chain. Mikan's cut-in, then each crew cat with a ready meter, then the Team finisher (the Pile-On art, one beat per cat with its face and word), ending on KA-BLAM. During each cut-in, time is stopped and only that cat renders, close up, over an impact-frame panel: the cat's colour value-matched to the frame's mean luminance, full-field Ink lines, a 3-drawing halftone wipe in. The name band shows the Special (Midnight Laps / Landslide / Midnight Aria) and the chain's paw pips. Cut-ins are shortened after the first chain (the sim's timing) |
+| `skillbar-*.png` | Skill bar (R). Time slows; Q/E picks a crew cat to force its skill; target brackets; the cast shows a name banner in the cat's colour, a wind-up pose and a plate highlight |
+| `latency-*.png`, `results.json.latency` | Three rapid clicks. The first light is on screen within the sim's first active frame (`latency_ticks`); the later presses are dropped or buffered (the one-slot buffer), so three attacks never queue |
+| `stalk-1..4.png`, `stalk-sheet.png`, `results.json.intents` | AI intents, animated. While squaring off, cats face their opponent: a low creep for circling, stalking and flanking; an arched, puffed posture with hiss glyphs and claw ticks; a crouched retreat; a stretched dash-in with a streak. The sim's `intent` is used when it is specific; its default is refined from the cat's motion |
+| `brawl10.png` | 10-cat triangle budget (`results.json.brawl`) |
+| `fight-clip.webm` | 10 s at 60 fps: strings, a stagger, the full Special chain and the Team finisher |
+
+Plates no longer show control keys. Each plate has a Special meter (a ring in the cat's colour; it pulses when full)
+and lights in the caster's colour when that cat uses a Move. A lock-on reticle marks the locked enemy, and an F
+SPECIAL prompt appears over a staggered enemy when Mikan's meter is ready. The key strip reads Tab Lock · R Skills ·
+P Pause.
+
 ## Known gaps / deviations (for the art + creative directors)
 
 - **Combat poses are procedural** (lunge, recoil, squash, arch, puff, splat) on a wrapper: the cat rig has only

@@ -4,7 +4,7 @@
 // on twos, the screen layer (lines, lettering, Pile-On set-piece) and the kit-CSS HUD.
 // Query params:
 //   ?fight=toughs3|captain|daifuku|sandbox|challenger|lose   (encounter; default toughs3)
-//   ?seed=N  ?phase=day|dusk  ?script=bot|median|daifuku|passive (a bot drives the controlled cat; demo/attract)
+//   ?seed=N  ?phase=day|dusk  ?script=demo (an M1.1 player bot drives Mikan) | bot|median|daifuku|passive (sim smoke bots)
 //   ?test=1 (deterministic: no real-time pacing; window.__cat drives frames)  ?flash=reduce  ?motion=0..1
 //   ?res=0.85 (render scale)  ?post=0 (paint post off)  ?hud=0  ?brace=toggle  ?rim=0 (drop the cream rim shell: -1 pass per cat)
 import * as THREE from 'three';
@@ -687,7 +687,7 @@ async function boot() {
   }
   input.bind();
   chapterPill();
-  hud.setHint(script ? 'Demo: a bot is playing · reload without ?script to fight yourself' : 'WASD move · LMB attack · Space hop · Shift skitter · RMB brace · F hiss / Pile-On · Tab Slow Blink · 1-4 Moves · Z X C V switch · wheel lock · P pause');
+  hud.setHint(script ? 'Demo: a bot is playing · reload without ?script to fight yourself' : 'Click to capture the mouse · WASD move · LMB light · RMB heavy (hold) · Space dodge · Shift dash · Tab lock-on · F Special (staggered enemy) · R skills · P pause');
   let last = performance.now(), first = true;
   const loop = (now) => {
     const dt = Math.min(0.05, (now - last) / 1000); last = now;
