@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Cat RPG — Frame 05: Rival Standoff (mock screenshot)</title>
+<link rel="stylesheet" href="kit/kit.css">
+<style>
+  body { margin: 0; background: #111; }
+  #dial { right: 44px; top: 36px; }
+  /* Standoff name-card: wedge-ended band slammed into the upper third (art bible §7.5) */
+  #card { left: 0; top: 44px; display: flex; align-items: center; }
+  #card .band { position: relative; display: flex; align-items: center; gap: 22px; height: 176px; padding: 0 200px 0 44px; background: var(--ink); color: var(--cream);
+    clip-path: polygon(0 0, 100% 0, calc(100% - 70px) 100%, 0 100%); }
+  #card .band::after { content: ''; position: absolute; left: 0; right: 76px; bottom: 12px; height: 6px; background: var(--sage); clip-path: polygon(0 0, 100% 0, calc(100% - 4px) 100%, 0 100%); }
+  #card .who { display: flex; flex-direction: column; gap: 6px; }
+  #card .name { font: 400 58px/1 'Dela Gothic One', var(--font); letter-spacing: .03em; color: var(--cream); }
+  #card .title { font: 800 30px/1 var(--font); color: var(--sage); }
+  #card .rank { display: flex; align-items: center; gap: 12px; font: 800 28px/1 var(--font); color: var(--cream); opacity: .95; }
+  #card .stamp { position: absolute; right: 96px; top: 50%; transform: translateY(-50%) rotate(-8deg); }
+  #bark { left: 930px; top: 250px; }
+  #bark .k-bubble { --tail-x: 40px; max-width: 640px; font-size: 34px; padding: 40px 44px 30px; }
+  #posse { left: 40px; bottom: 34px; display: flex; gap: 18px; align-items: flex-end; }
+  #posse .p { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  #posse .k-gauge { width: 112px; height: 18px; }
+  #prompt { right: 54px; bottom: 44px; display: flex; gap: 14px; }
+</style>
+</head>
+<body>
+<div class="k-stage" id="stage"></div>
+<script src="kit/kit.js"></script>
+<script src="rival-helpers.js"></script>
+<script>
+/* FRAME 05 — RIVAL STANDOFF. Hidamari Lane, Dusk (golden hour). Mikan walks the High Road (a garden-wall top)
+ * toward Laundry Pole Yard; Togemaru, the First Thorn, blocks the wall with two Toughs behind him.
+ * Perspective: horizon y=430, focal 1300 px, camera 0.75 m above the wall top, wall centre x=860.
+ *   wall-top y at distance d (m): 430 + 0.75*1300/d        screen x of a point X m right: 860 + X*1300/d */
+const K = Kit, C = K.C, W = 1920, H = 1080, HZ = 430, F = 1300, CX = 860, CH = 0.75;
+const P = (X, Y, d) => [CX + X * F / d, HZ + (CH - Y) * F / d];   // Y = height above the wall top
+const pts = (a) => a.map((p) => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join('L');
+const s = [];
+
+/* ---------- dusk sky, sun, clouds ---------- */
+s.push(K.sky({ w: W, h: 640, phase: 'dusk', zenith: '#6E5FAE', horizon: '#FFAE5E' }));
+s.push(K.glow(330, 420, 1100, 400, '#FFC27A', 0.6));
+s.push(RV.sun({ x: 330, y: 404, r: 40 }));
+s.push(K.cloud({ x: 1540, y: 540, w: 860, h: 600, seed: 3, shade: '#B97FA6', light: '#FFD9B4' }));
+s.push(`<g opacity="0.55" filter="url(#k-soft)"><path d="M420 200Q560 186 720 196Q800 204 860 200" stroke="#FFD7B8" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M140 250Q300 238 470 246" stroke="#FFD0B0" stroke-width="5" fill="none" stroke-linecap="round"/></g>`);
+s.push(K.glow(1300, 250, 420, 220, '#FFB37A', 0.4)); // the cloud's sun side catches fire
+s.push(`<rect x="0" y="${HZ}" width="${W}" height="${H - HZ}" fill="#9C7F92"/>`);
+
+/* ---------- sea, headland, far town on the hill ---------- */
+s.push(RV.duskSea({ x: 0, y: HZ - 4, w: 1200, h: 70, sunX: 330 }));
+s.push(K.hill({ pts: [[860, 434], [980, 420], [1100, 392], [1240, 352], [1400, 318], [1600, 300], [1800, 286], [1930, 270]], baseY: 520, color: '#7C6BA0', seed: 5 }));
+s.push(K.hill({ pts: [[-10, 438], [60, 428], [160, 424], [240, 432]], baseY: 460, color: '#8E7AA6', seed: 9 }));
+s.push(`<g opacity="0.8"><path d="M1784 290L1790 246H1800L1806 290Z" fill="#F2DCD6"/><path d="M1786 262H1804V270H1786Z" fill="#B97C92"/><path d="M1788 246H1802L1795 238Z" fill="#B97C92"/><circle cx="1795" cy="252" r="9" fill="#FFF2C8" opacity="0.6"/></g>`);
+const farRoof = (x, y, w, h, c) => K.roof({ quad: [[x + w * 0.12, y], [x + w * 0.88, y], [x + w, y + h], [x, y + h]], rows: 3, cols: 7, color: c || '#6E6292' }) + `<rect x="${x + w * 0.06}" y="${y + h}" width="${w * 0.88}" height="${h * 0.8}" fill="#D9A9A6"/><rect x="${x + w * 0.06}" y="${y}" width="${w * 0.6}" height="2.5" fill="#FFCF98"/>`;
+s.push(farRoof(1000, 404, 110, 20) + farRoof(1120, 384, 130, 22, '#776A98') + farRoof(1270, 368, 120, 22) + farRoof(1420, 352, 140, 24, '#776A98') + farRoof(1580, 338, 120, 22) + farRoof(1160, 420, 150, 26, '#625788') + farRoof(1340, 404, 150, 26) + farRoof(1520, 392, 140, 26, '#625788'));
+s.push(K.glow(1420, 410, 700, 120, '#F3BBA8', 0.35));
+
+/* ---------- left, far below: the lane and the houses' roofs (the wall is ~1.8 m high) ---------- */
+s.push(K.surface({ pts: [[-10, 458], [700, 458], [700, 1090], [-10, 1090]], color: '#B88E8C', grime: 0.1 }));
+s.push(K.roof({ quad: [[-40, 466], [520, 458], [610, 590], [-60, 650]], rows: 5, cols: 16, color: '#5E5888' }));
+s.push(`<path d="M-40 466L520 458L524 468L-40 478Z" fill="#FFCB90"/>`); // sunlit ridge
+s.push(K.surface({ pts: [[-60, 650], [610, 590], [610, 690], [-60, 772]], color: '#E8B79E', grime: 0.15 }));
+s.push(`<g filter="url(#k-rough)"><rect x="90" y="672" width="110" height="60" fill="#FFD98A" opacity="0.9"/><path d="M145 672V732M90 702H200" stroke="#7A5068" stroke-width="5"/><rect x="330" y="652" width="90" height="54" fill="#FFD98A" opacity="0.85"/><path d="M375 652V706" stroke="#7A5068" stroke-width="5"/></g>`);
+s.push(K.roof({ quad: [[-80, 760], [500, 700], [590, 860], [-100, 960]], rows: 5, cols: 14, color: '#52507E' }));
+s.push(`<path d="M-80 760L500 700L504 710L-80 772Z" fill="#FFC388"/>`);
+s.push(K.castShadow('M-100 930L600 840L640 1090L-100 1090Z', 0.5));
+s.push(K.pole({ x: 470, y: 720, h: 800, w: 36 }));
+
+/* ---------- right: Laundry Pole Yard (Togemaru's old patch), house in shade, persimmon ---------- */
+s.push(K.surface({ pts: [[1180, 300], [1930, 250], [1930, 600], [1180, 600]], color: '#C99AA0', grime: 0.15 }));
+s.push(`<g filter="url(#k-rough)"><rect x="1560" y="340" width="150" height="90" fill="#FFD98A"/><rect x="1560" y="340" width="150" height="90" fill="none" stroke="#6E4A58" stroke-width="7"/><path d="M1635 340V430M1560 385H1710" stroke="#6E4A58" stroke-width="5"/></g>`);
+s.push(K.glow(1635, 385, 160, 90, '#FFD98A', 0.35));
+s.push(K.roof({ quad: [[1210, 190], [1930, 140], [1960, 300], [1160, 330]], rows: 7, cols: 22, color: '#5A5486' }));
+s.push(`<path d="M1210 190L1930 140L1932 152L1210 202Z" fill="#FFC68C"/>`);
+s.push(K.castShadow('M1160 330L1960 300L1960 340L1166 372Z', 0.5));
+// yard ground far below the wall, in the wall's violet shadow with one warm streak
+s.push(K.ground({ pts: [[1100, 600], [1930, 600], [1930, 1090], [1100, 1090]], color: '#B48E86', seed: 7 }));
+s.push(K.castShadow('M1100 600L1930 600L1930 1090L1100 1090Z', 0.42));
+s.push(`<path d="M1100 700L1930 640L1930 700L1100 770Z" fill="#FFC890" opacity="0.35" filter="url(#k-soft2)"/>`);
+// laundry poles and sheets, sun shining through them
+s.push(`<g filter="url(#k-rough)"><path d="M1250 760V444M1590 760V430" stroke="#6E5A6E" stroke-width="10"/><path d="M1240 456L1600 440" stroke="#9C8496" stroke-width="5"/>
+  <path d="M1268 456L1350 452L1354 574L1272 580Z" fill="#FFF0D6"/><path d="M1332 453L1350 452L1354 574L1336 575Z" fill="#E8B2A6"/>
+  <path d="M1368 451L1430 448L1432 532L1370 536Z" fill="#FFCF96"/><path d="M1414 449L1430 448L1432 532L1416 533Z" fill="#E09A80"/>
+  <path d="M1448 447L1526 443L1530 574L1452 578Z" fill="#FFF0D6"/><path d="M1508 444L1526 443L1530 574L1512 575Z" fill="#E8B2A6"/></g>`);
+s.push(K.glow(1400, 500, 220, 100, '#FFE6B8', 0.35));
+s.push(K.castShadow('M1268 700L1530 690L1700 760L1420 780Z', 0.3));
+s.push(K.prop({ kind: 'bucket', x: 1660, y: 800, scale: 1.3 }));
+s.push(K.foliage({ x: 1180, y: 640, w: 200, h: 120, seed: 64, tones: { dark: '#2F4A4E', mid: '#4C6E52', light: '#86985A', hi: '#E3B878' } }));
+// persimmon tree (right foreground)
+s.push(`<path d="M1800 1090C1790 900 1840 760 1820 600L1870 596C1880 760 1840 900 1860 1090Z" fill="#5E4458" filter="url(#k-rough)"/><path d="M1800 1090C1790 900 1840 760 1820 600L1836 598C1846 760 1810 900 1820 1090Z" fill="#B07E6E" filter="url(#k-rough)"/>`);
+s.push(K.foliage({ x: 1780, y: 560, w: 440, h: 300, seed: 66, tones: { dark: '#2E4C46', mid: '#507449', light: '#93A456', hi: '#F2C27A' } }));
+let kaki = ''; [[1660, 520], [1720, 610], [1810, 470], [1880, 600], [1760, 690], [1630, 640], [1900, 700]].forEach(([x, y]) => { kaki += K.inked(K.ell(x, y, 14, 12), '#F08A3A', 2) + `<path d="M${x - 6} ${y - 11}L${x} ${y - 7}L${x + 6} ${y - 11}" stroke="#3E6A3A" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="${x - 5}" cy="${y - 3}" r="3" fill="#FFE0B0"/>`; });
+s.push(kaki);
+
+/* ---------- wires against the sky ---------- */
+s.push(K.wires({ pts: [[470, -10], [1960, 120]], sag: 70, width: 2.5, color: '#43365A' }) + K.wires({ pts: [[478, 40], [1960, 190]], sag: 80, width: 2, color: '#43365A' }) + K.wires({ pts: [[-20, 110], [462, 30]], sag: 40, width: 2.5, color: '#43365A' }));
+
+/* ---------- the High Road: the wall top, a pale coping ribbon running away from camera ---------- */
+const wt = (X, d) => P(X, 0, d);
+const nearD = 1.05, farD = 7.2;
+const topQuad = [wt(-0.26, farD), wt(0.26, farD), wt(0.26, nearD), wt(-0.26, nearD)];
+// sunlit far-side cheek of the wall: a thin strip under the right edge (the camera sits a hair right of the wall)
+s.push(K.surface({ pts: [wt(0.26, farD), wt(0.26, nearD), [P(0.26, 0, nearD)[0] + 36, H + 20], [P(0.26, -1.8, farD)[0] + 3, P(0.26, -1.8, farD)[1]]], color: '#E7B496', grime: 0.3 }));
+s.push(K.wall({ quad: topQuad, color: '#F4D8B6', top: '#F9E4C4', bottom: '#F1C9A0', grime: 0.08, copingH: 0.0, base: false }));
+// coping tiles: lines across the ribbon
+let tiles = ''; for (let d = 1.2; d < farD; d *= 1.17) { const a = wt(-0.26, d), b = wt(0.26, d); tiles += `<path d="M${a[0].toFixed(1)} ${a[1].toFixed(1)}L${b[0].toFixed(1)} ${b[1].toFixed(1)}" stroke="#C9967A" stroke-width="${Math.max(1, 6 / d * 1.4).toFixed(1)}" opacity="0.55"/>`; }
+s.push(`<g filter="url(#k-rough)">${tiles}</g>`);
+// warm sun streak along the left lip, violet shade along the right lip
+s.push(`<path d="M${pts([wt(-0.26, farD), wt(-0.16, farD), wt(-0.16, nearD), wt(-0.26, nearD)])}Z" fill="#FFF0CF" opacity="0.6" filter="url(#k-soft)"/>`);
+s.push(`<path d="M${pts([wt(0.12, farD), wt(0.26, farD), wt(0.26, nearD), wt(0.12, nearD)])}Z" fill="#8E78B8" opacity="0.28" style="mix-blend-mode:multiply" filter="url(#k-soft)"/>`);
+s.push(`<path d="M${pts([wt(-0.26, farD), wt(-0.25, farD), wt(-0.25, nearD), wt(-0.26, nearD)])}Z" fill="#FFF6E0" opacity="0.9"/>`);
+
+/* ---------- foreground foliage spilling up beside the wall (framing) ---------- */
+s.push(K.foliage({ x: 140, y: 960, w: 560, h: 300, seed: 71, tones: { dark: '#344E4E', mid: '#4E7552', light: '#87A05A', hi: '#E9BF78' } }));
+s.push(K.foliage({ x: 380, y: 1040, w: 420, h: 200, seed: 73, tones: { dark: '#2E4648', mid: '#466C4E', light: '#7E9A58', hi: '#E0B470' } }));
+s.push(K.foliage({ x: 1420, y: 1030, w: 420, h: 220, seed: 75, tones: { dark: '#2E4648', mid: '#466C4E', light: '#7E9A58', hi: '#E0B470' } }));
+
+/* ---------- the wall runs into a house: its roof ridge crosses behind the Thorn; the followers sit on it ---------- */
+const ridgeY = 556, eaveY = P(0, 0, farD)[1] + 4;
+s.push(K.surface({ pts: [[650, ridgeY - 4], [1130, ridgeY - 10], [1130, eaveY + 40], [650, eaveY + 40]], color: '#E2B9A6', grime: 0.2 }));
+s.push(K.roof({ quad: [[640, ridgeY], [1140, ridgeY - 8], [1180, eaveY], [610, eaveY + 6]], rows: 3, cols: 16, color: '#6C6494' }));
+s.push(`<path d="M640 ${ridgeY}L1140 ${ridgeY - 8}L1141 ${ridgeY - 1}L640 ${ridgeY + 8}Z" fill="#FFD7A4"/>`);
+s.push(K.castShadow(`M610 ${eaveY + 6}L1180 ${eaveY}L1180 ${eaveY + 16}L610 ${eaveY + 22}Z`, 0.45));
+s.push(K.cat({ ...RV.CAST.kuri, pose: 'front-sit', expr: 'angry', outline: 'sage', x: 716, y: ridgeY + 6, scale: 1.12 }));
+s.push(K.cat({ ...RV.CAST.sasa, pose: 'front-sit', expr: 'smug', outline: 'sage', x: 1118, y: ridgeY - 4, scale: 1.08, flip: true }));
+
+/* ---------- Togemaru, the First Thorn: square on the wall, hackles up, torn ear against the sky ---------- */
+const tg = wt(0.06, 2.7), tgS = 2.75;
+s.push(K.castShadow(`M${tg[0] - 70} ${tg[1] - 4}L${tg[0] + 80} ${tg[1] - 6}L${tg[0] + 190} ${tg[1] + 24}L${tg[0] - 10} ${tg[1] + 30}Z`, 0.38));
+s.push(K.glow(tg[0], tg[1] - 150, 230, 190, '#FFE0A8', 0.5)); // backlight halo
+s.push(RV.hackles({ x: tg[0], y: tg[1], scale: tgS }));
+s.push(RV.notched(K.cat({ ...RV.CAST.togemaru, pose: 'front-sit', expr: 'hiss', outline: 'sage', x: tg[0], y: tg[1], scale: tgS }), [RV.frontNotch(tg[0], tg[1], tgS, 'r')], { rim: C.sage }));
+s.push(K.ticks({ x: tg[0], y: tg[1] - 160, r: 120, n: 3, a0: -150, a1: -110, len: 20 }) + K.ticks({ x: tg[0], y: tg[1] - 160, r: 120, n: 3, a0: -70, a1: -30, len: 20 }));
+
+/* ---------- Mikan, from behind, on the wall top ---------- */
+const mk = wt(-0.12, 1.62);
+s.push(K.castShadow(`M${mk[0] - 50} ${mk[1] - 6}L${mk[0] + 50} ${mk[1] - 10}L${mk[0] + 210} ${mk[1] + 30}L${mk[0] + 120} ${mk[1] + 50}Z`, 0.36));
+s.push(K.cat({ ...K.CAST.mikan, pose: 'back', carry: 'post', x: mk[0], y: mk[1], scale: 2.3 }));
+
+/* ---------- golden-hour grade: warm wash from the sun side, violet in the far corners ---------- */
+s.push(`<rect width="${W}" height="${H}" fill="#FFB070" opacity="0.10" style="mix-blend-mode:multiply"/>`);
+s.push(K.glow(300, 420, 900, 520, '#FFD9A0', 0.18));
+s.push(`<radialGradient id="vig" cx="0.45" cy="0.45" r="0.75"><stop offset="0.6" stop-color="#6E5AA0" stop-opacity="0"/><stop offset="1" stop-color="#6E5AA0" stop-opacity="0.22"/></radialGradient><rect width="${W}" height="${H}" fill="url(#vig)" style="mix-blend-mode:multiply"/>`);
+
+/* ---------- UI ---------- */
+const claw = (on) => `<svg width="30" height="34" viewBox="-15 -17 30 34"><path d="M-8 14L-1 -14M0 14L7 -12" fill="none" stroke="${on ? C.sage : '#6E6382'}" stroke-width="5" stroke-linecap="round"/></svg>`;
+const titleStamp = RV.stamp(RV.GLYPH.bell + `<path d="M-16 -16L16 16" stroke="${C.ink}" stroke-width="3.5" stroke-linecap="round"/>`, { size: 88, color: C.sage });
+const portrait = K.ui.portrait({ size: 132, ring: C.sage, bg: '#F7C99A', cat: { ...RV.CAST.togemaru, expr: 'angry' } });
+const posse = [
+  { cat: { ...K.CAST.mikan }, ring: C.gold, v: 88 },
+  { cat: { ...K.CAST.oldWallCat, collar: 'cord' }, ring: C.gold, v: 100 },
+  { cat: { ...K.CAST.goofball, collar: 'cord' }, ring: C.gold, v: 76 },
+];
+document.getElementById('stage').innerHTML = K.svg(W, H, s.join(''), 'class="k-world"') + `
+  <div class="k-abs" id="dial">${K.ui.phaseDial({ phase: 'dusk', t: 0.35, size: 190 })}</div>
+  <div class="k-abs" id="card">
+    <div class="band">${portrait}
+      <div class="who"><div class="name">TOGEMARU</div><div class="title">the First Thorn · Bell-Ringer</div>
+        <div class="rank">${claw(true)}${claw(false)}${claw(false)}<span>Tough of the Lane</span></div></div>
+      <div class="stamp">${titleStamp}</div>
+    </div>
+  </div>
+  <div class="k-abs" id="bark"><div class="k-bubble"><span class="k-ribbon k-ribbon--sage">Togemaru</span>You notched my ear at Laundry Pole Yard. Round two, Collar.</div></div>
+  <div class="k-abs" id="posse">${posse.map((p) => `<div class="p">${K.ui.portrait({ size: 104, ring: p.ring, cat: p.cat })}<div class="k-gauge" style="--v:${p.v}%"><i></i></div></div>`).join('')}</div>`;
+</script>
+</body>
+</html>

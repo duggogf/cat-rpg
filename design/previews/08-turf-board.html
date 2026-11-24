@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Cat RPG — Frame 08: Turf Board (mock screenshot)</title>
+<link rel="stylesheet" href="kit/kit.css">
+<style>
+  body { margin: 0; background: #111; }
+  /* ---- frame-local UI (built from the kit's tokens; kit.css untouched) ---- */
+  .tb-title { left: 36px; top: 22px; display: flex; align-items: center; gap: 18px; padding: 12px 34px 12px 22px; }
+  .tb-title .k-h { font-size: 44px; }
+  .tb-title .sub { font: 700 30px/1 var(--font); color: var(--cocoa); opacity: .85; }
+  .tb-tabs { left: 640px; top: 30px; display: flex; gap: 10px; align-items: center; }
+  .tb-tab { height: 56px; padding: 0 26px; display: inline-flex; align-items: center; gap: 10px; border-radius: 28px 30px 27px 31px; background: var(--recessed); border: var(--frame) solid var(--cocoa); font: 800 28px/1 var(--font); color: var(--cocoa); box-shadow: 0 4px 0 var(--cocoa); box-sizing: border-box; }
+  .tb-tab.on { background: var(--cocoa); color: var(--cream); box-shadow: 0 4px 0 var(--ink); border-color: var(--ink); }
+  .tb-sentries { right: 36px; top: 26px; display: flex; align-items: center; gap: 14px; padding: 10px 26px 10px 18px; }
+  .tb-sentries b { font: 800 34px/1 var(--font); color: var(--ink); }
+
+  /* Patch stamp on the map */
+  .stamp { position: absolute; transform: translate(-50%, 0); background: var(--cream); border: var(--frame) solid var(--cocoa); border-radius: 26px 32px 28px 34px / 30px 26px 32px 28px; box-shadow: var(--drop); padding: 8px 18px 9px; white-space: nowrap; text-align: left; }
+  .stamp .nm { font: 800 28px/1.05 var(--font); color: var(--cocoa); display: flex; align-items: center; gap: 8px; }
+  .stamp .rw { display: flex; align-items: center; gap: 10px; margin-top: 5px; font: 800 28px/1 var(--font); color: var(--ink); }
+  .stamp .rw .fish { display: inline-flex; align-items: center; gap: 2px; color: var(--cocoa); }
+  .stamp.sel { border-color: var(--ink); box-shadow: 0 0 0 5px var(--gold), 0 0 0 8px var(--ink), var(--drop); }
+  .stamp.den { border-color: var(--ink); }
+  .num { font: 800 30px/1 var(--font); }
+  .crack { display: inline-flex; align-items: center; gap: 4px; padding: 2px 10px 2px 6px; border-radius: 14px; background: var(--ink); color: var(--cream); font: 800 28px/1 var(--font); }
+
+  /* right panel */
+  .side { left: 1352px; top: 116px; width: 536px; height: 700px; padding: 20px 28px 20px; display: flex; flex-direction: column; gap: 12px; }
+  .side .hd { display: flex; align-items: center; gap: 14px; }
+  .side .hd .k-h { font-size: 40px; line-height: 1; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 14px; border-radius: 20px 22px 19px 23px; border: 2.5px solid var(--cocoa); background: var(--recessed); font: 800 28px/1 var(--font); color: var(--cocoa); box-sizing: border-box; white-space: nowrap; }
+  .row { display: flex; align-items: center; gap: 12px; font: 700 28px/1.15 var(--font); color: var(--ink); }
+  .lab { font: 800 28px/1 var(--font); color: var(--cocoa); min-width: 118px; }
+  .scentbar { position: relative; flex: 1; height: 28px; border: var(--frame) solid var(--ink); border-radius: 15px 17px 14px 18px; background: var(--recessed); overflow: visible; }
+  .scentbar > i { position: absolute; left: 0; top: 0; bottom: 0; width: 54%; background: var(--gold); border-right: var(--frame) solid var(--ink); border-radius: 12px 0 0 12px; }
+  .scentbar > u { position: absolute; left: 60%; top: -12px; bottom: -12px; width: 5px; margin-left: -2.5px; background: var(--ink); border-radius: 3px; }
+  .preview { background: var(--recessed); border: var(--frame) solid var(--cocoa); border-radius: 30px 36px 32px 38px / 34px 30px 36px 32px; padding: 14px 18px 14px; display: flex; flex-direction: column; gap: 9px; position: relative; }
+  .preview .tag { position: absolute; top: -20px; left: 20px; }
+  .fit { display: inline-flex; gap: 4px; align-items: center; }
+  .sep { height: 0; border-top: 3px dotted rgba(107, 74, 53, .45); margin: 2px 0; }
+
+  /* crew line */
+  .crew { position: absolute; top: 864px; width: 252px; }
+  .crew .card { background: var(--cream); border: var(--frame) solid var(--cocoa); border-radius: 30px 34px 30px 36px / 32px 30px 34px 30px; box-shadow: var(--drop); padding: 8px 10px 8px 4px; display: flex; align-items: center; gap: 4px; height: 124px; box-sizing: border-box; }
+  .crew .tx { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+  .crew .nm { font: 800 28px/1 var(--font); color: var(--ink); display: flex; align-items: center; gap: 4px; }
+  .crew .pers { font: 700 28px/1 var(--font); color: var(--cocoa); }
+  .crew .st { display: inline-flex; }
+  .crew.ghost .card { background: transparent; border: 3px dashed var(--cocoa); box-shadow: none; opacity: .7; }
+  .pill-s { display: inline-flex; align-items: center; gap: 6px; height: 38px; padding: 0 14px; border-radius: 20px 18px 21px 17px; font: 800 28px/1 var(--font); box-sizing: border-box; }
+  .pill-s.posse { background: var(--gold); color: var(--ink); border: 2.5px solid var(--ink); }
+  .pill-s.posted { background: var(--cocoa); color: var(--cream); }
+  .pill-s.carry { background: var(--cream); color: var(--cocoa); border: 2.5px dashed var(--cocoa); }
+
+  .foot { left: 1352px; top: 846px; width: 536px; height: 140px; padding: 18px 30px; display: flex; flex-direction: column; justify-content: center; gap: 12px; }
+  .foot .eq { display: flex; align-items: center; gap: 12px; font: 800 32px/1 var(--font); color: var(--ink); white-space: nowrap; }
+  .foot .eq small { font: 700 28px/1 var(--font); color: var(--cocoa); }
+  .hints { left: 40px; top: 1012px; display: flex; gap: 26px; align-items: center; font: 800 28px/1 var(--font); color: var(--cream); text-shadow: 0 2px 0 rgba(51, 39, 59, .6); }
+  .hints span { display: inline-flex; align-items: center; gap: 8px; }
+  .hints .k-key { min-width: 46px; height: 46px; font-size: 24px; box-shadow: 0 3px 0 var(--cocoa); }
+</style>
+</head>
+<body>
+<div class="k-stage" id="stage"></div>
+<script src="kit/kit.js"></script>
+<script>
+/* FRAME 08 — THE TURF BOARD. Life 2, the Lot at Dusk. The view from the kei-truck roof: the Lane's
+ * painted map is pinned to the Lot's weathered plank fence, Crew portraits hang from clothes-pegs.
+ * State shown: all four outer Patches held, the Den OPEN (3/4), Pon (Goofball) posted at Laundry Pole
+ * Yard, a Wall Sitter Captain (Goma) forecast to raid Tofu Shop Step tonight, and the player carrying
+ * Hige (Stalwart) over that Patch: the drop preview is open. Numbers: territory-management.md §3.1/§3.2. */
+const K = Kit, C = K.C, W = 1920, H = 1080;
+const s = [];
+const MX0 = 36, MY0 = 116, MX1 = 1316, MY1 = 806;     // the map board
+
+/* ---------- personality pictograms (frame-local; pom-backed, Ink line) ---------- */
+const PERS = {
+  Stalwart: (st) => `<path d="M0 -15L13 -10V0Q13 11 0 16Q-13 11 -13 0V-10Z" fill="#9FB6D8" ${st}/><path d="M0 -10V11" fill="none" ${st}/>`,
+  Goofball: (st) => `<circle r="13" fill="#F6809A" ${st}/><path d="M-12 -4Q0 2 12 -5M-9 7Q0 0 9 9M-4 -12Q2 0 -2 12" fill="none" ${st}/>`,
+  Fraidy: (st) => `<path d="M-4 -15Q-8 -2 -4 4Q-1 -2 -4 -15Z" fill="${C.cream}" ${st}/><circle cx="-4" cy="11" r="2.6" fill="${C.ink}"/><path d="M7 -12Q3 0 7 5Q10 0 7 -12Z" fill="${C.cream}" ${st}/><circle cx="7" cy="11" r="2.6" fill="${C.ink}"/>`,
+  Schemer: (st) => `<path d="M-15 2Q0 -12 15 2Q0 10 -15 2Z" fill="${C.cream}" ${st}/><path d="M0 -5Q-3 2 0 8Q3 2 0 -5Z" fill="${C.ink}"/><path d="M-14 -9L-6 -6M14 -9L6 -6" fill="none" ${st}/>`,
+  Braggart: (st) => `<path d="M-14 8L-12 -10L-5 -2L0 -14L5 -2L12 -10L14 8Z" fill="${C.gold}" ${st}/>`,
+  Brooder: (st) => `<path d="M-13 6Q-15 -6 -5 -7Q-2 -15 6 -11Q15 -10 13 0Q16 8 6 8Z" fill="#B7A9CF" ${st}/><path d="M-6 13l-2 4M2 13l-2 4" fill="none" ${st}/>`,
+};
+const pIcon = (name, size = 40, bg = C.cream) => {
+  const st = `stroke="${C.ink}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"`;
+  return `<svg viewBox="-22 -22 44 44" width="${size}" height="${size}" style="display:block;flex:none"><circle r="20" fill="${bg}" stroke="${C.cocoa}" stroke-width="3"/>${PERS[name](st)}</svg>`;
+};
+const fishIco = (size = 30) => K.ui.icon({ name: 'fish', size });
+const bellIco = (size = 30) => K.ui.icon({ name: 'bell', size });
+const brickIco = (size = 30) => K.ui.icon({ name: 'brick', size });
+const shieldIco = (size = 32) => `<svg viewBox="-20 -20 40 40" width="${size}" height="${size}" style="display:block;flex:none"><path d="M0 -16L14 -10V0Q14 12 0 17Q-14 12 -14 0V-10Z" fill="${C.gold}" stroke="${C.ink}" stroke-width="2.6" stroke-linejoin="round"/><path d="M-6 0l4 5l9 -10" fill="none" stroke="${C.ink}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const moonIco = (size = 30) => `<svg viewBox="-20 -20 40 40" width="${size}" height="${size}" style="display:block;flex:none"><path d="M6 -15A16 16 0 1 0 15 7A12 12 0 1 1 6 -15Z" fill="#EAF0FF" stroke="${C.ink}" stroke-width="2.6" stroke-linejoin="round"/></svg>`;
+const heartIco = (size = 30) => K.ui.icon({ name: 'heart', size });
+const clawX = (size = 30) => `<svg viewBox="-20 -20 40 40" width="${size}" height="${size}" style="display:block;flex:none"><circle r="18" fill="${C.cream}" stroke="${C.ink}" stroke-width="2.5"/><path d="M-9 -10Q-2 -2 9 10M-3 -12Q2 -4 12 4M9 -10Q2 -2 -9 10M3 -12Q-2 -4 -12 4" fill="none" stroke="${C.ink}" stroke-width="2.6" stroke-linecap="round"/></svg>`;
+
+/* ---------- the Crew (kit CAST looks; names per crew-and-progression.md §3.3) ---------- */
+const CREW = {
+  hige: { name: 'Hige', pers: 'Stalwart', cat: { ...K.CAST.oldWallCat, carry: 'post', expr: 'neutral' } },
+  pon: { name: 'Pon', pers: 'Goofball', cat: { ...K.CAST.goofball } },
+  kinako: { name: 'Kinako', pers: 'Fraidy', cat: { ...K.CAST.fraidy } },
+  kagi: { name: 'Kagi', pers: 'Schemer', cat: { ...K.CAST.schemer } },
+  toge: { name: 'Togemaru', pers: 'Braggart', cat: { ...K.CAST.braggart } },
+};
+const GOMA = { coat: 'charcoal', pattern: 'tabby', ears: 'tall', build: 'standard', eye: 'yellowgreen', expr: 'angry', tail: 'whip', scars: ['notch'] };
+const portrait = (cat, size, ring) => K.ui.portrait({ cat, size, ring: ring || C.cocoa });
+
+/* =====================================================================================
+ * 1. THE LOT'S PLANK FENCE AT DUSK (backdrop for the whole screen)
+ * ===================================================================================== */
+s.push(`<rect width="${W}" height="${H}" fill="#7A5238"/>`);
+s.push(K.fence({ quad: [[-20, -10], [W + 20, -10], [W + 20, H + 10], [-20, H + 10]], n: 22, seed: 9, color: '#B98654', rail: false, gap: 0.05 }));
+s.push(`<rect x="-20" y="806" width="${W + 40}" height="40" fill="#8A5E3E" filter="url(#k-rough)"/><rect x="-20" y="806" width="${W + 40}" height="8" fill="#E8B880" opacity="0.6" filter="url(#k-rough)"/>`);
+// dusk light raking across the boards from the left, with a warm pool behind the map
+s.push(K.glow(260, 60, 1100, 640, '#FFC27A', 0.55) + K.glow(1500, 980, 900, 380, '#F7A45A', 0.25));
+s.push(`<rect width="${W}" height="${H}" fill="#7A4E8C" opacity="0.16" style="mix-blend-mode:multiply"/>`);
+// knot holes and a few nail heads
+s.push(`<g filter="url(#k-rough)"><ellipse cx="1340" cy="1050" rx="14" ry="8" fill="#5A3C2A"/><ellipse cx="520" cy="826" rx="10" ry="6" fill="#5A3C2A"/></g>`);
+
+/* =====================================================================================
+ * 2. THE PAINTED MAP (orthographic overhead: uphill is up, the sea along the bottom)
+ * ===================================================================================== */
+const boardD = `M${MX0 + 40} ${MY0}H${MX1 - 44}Q${MX1} ${MY0} ${MX1} ${MY0 + 46}V${MY1 - 40}Q${MX1} ${MY1} ${MX1 - 40} ${MY1}H${MX0 + 44}Q${MX0} ${MY1} ${MX0} ${MY1 - 44}V${MY0 + 40}Q${MX0} ${MY0} ${MX0 + 40} ${MY0}Z`;
+s.push(`<path d="${boardD}" fill="${C.wisteria}" opacity="0.55" transform="translate(6 9)" filter="url(#k-soft)"/>`);
+let map = '';
+// hillside: deep green uphill to sunlit meadow down by the lane
+map += `<linearGradient id="hillG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4E8A55"/><stop offset="0.45" stop-color="#7DAF62"/><stop offset="1" stop-color="#A9C77A"/></linearGradient><rect x="${MX0}" y="${MY0}" width="${MX1 - MX0}" height="${MY1 - MY0}" fill="url(#hillG)"/>`;
+map += K.texture(MX0, MY0, MX1 - MX0, MY1 - MY0, 'mottle', 0.3) + K.texture(MX0, MY0, MX1 - MX0, MY1 - MY0, 'brush', 0.18);
+// the sea and the shore road
+map += K.sea({ x: MX0, y: 722, w: MX1 - MX0, h: 90, seed: 8 });
+map += `<path d="M${MX0} 716Q300 704 620 718T${MX1} 712V736Q900 744 620 740T${MX0} 742Z" fill="#F1E2BE" filter="url(#k-rough)"/>`;
+map += `<path d="M${MX0} 738Q300 746 620 744T${MX1} 736" stroke="#FFFDF4" stroke-width="5" fill="none" opacity="0.8" filter="url(#k-rough)"/>`;
+// lanes: sandy paths winding up the hill
+const lane = (d, w) => `<path d="${d}" fill="none" stroke="#8C7A63" stroke-width="${w + 8}" stroke-linecap="round" stroke-linejoin="round" opacity="0.35" filter="url(#k-rough)"/><path d="${d}" fill="none" stroke="#E6D3AE" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" filter="url(#k-rough)"/><path d="${d}" fill="none" stroke="#FFF3D6" stroke-width="${w * 0.35}" stroke-linecap="round" stroke-linejoin="round" opacity="0.5" filter="url(#k-rough)"/>`;
+map += lane(`M${MX0 - 10} 690Q300 680 520 640Q680 610 760 560Q860 500 980 470Q1150 430 ${MX1 + 10} 420`, 38);           // the main Lane
+map += lane('M520 640Q470 520 420 420Q380 330 470 250Q560 180 700 160', 26);                                          // up past the laundry yard
+map += lane('M760 560Q770 450 820 380Q860 320 960 300', 22);                                                            // persimmon cut-through
+map += lane('M980 470Q1050 560 1120 640Q1160 690 1200 716', 24);                                                        // down to the shore
+map += lane('M300 690Q290 620 260 560', 18);
+// stone steps on the steep bits
+let steps = ''; for (let i = 0; i < 7; i++) { const t = i / 6, x = 430 - t * 30 + Math.sin(t * 3) * 6, y = 470 - t * 120; steps += `<rect x="${x - 16}" y="${y}" width="32" height="7" rx="2" fill="#CFC2A6"/><rect x="${x - 16}" y="${y + 6}" width="32" height="3" fill="#8C7A63" opacity="0.5"/>`; }
+map += `<g filter="url(#k-rough)">${steps}</g>`;
+
+// houses: little tiled roofs seen from above, with soft wisteria shadow to the lower right
+const house = (x, y, w, h, col, rot) => {
+  const q = [[x, y], [x + w, y], [x + w, y + h / 2], [x, y + h / 2]], q2 = [[x, y + h / 2], [x + w, y + h / 2], [x + w, y + h], [x, y + h]];
+  return `<g transform="rotate(${rot || 0} ${x + w / 2} ${y + h / 2})">` + K.castShadow(`M${x + 8} ${y + 10}h${w}v${h}h${-w}Z`, 0.42) +
+    `<g filter="url(#k-rough)"><rect x="${x + 4}" y="${y + h - 2}" width="${w - 8}" height="16" fill="#EFE0C2"/><rect x="${x + 4}" y="${y + h + 10}" width="${w - 8}" height="4" fill="#B98552"/>${Array.from({ length: Math.max(1, Math.floor(w / 46)) }, (_, i) => `<rect x="${x + 16 + i * 46}" y="${y + h + 1}" width="18" height="9" fill="${i % 2 ? '#FFD98A' : '#5E7F9A'}"/>`).join('')}</g>` +
+    K.roof({ quad: [q[3], q[2], q[1], q[0]], rows: 3, cols: Math.round(w / 12), color: col || '#7E93A8' }) + K.roof({ quad: q2, rows: 3, cols: Math.round(w / 12), color: K.mix(col || '#7E93A8', '#3F4E66', 0.25) }) + `</g>`;
+};
+// trees: gouache clumps with a cast shadow
+const tree = (x, y, r, seed, tones) => K.castShadow(`M${x - r * 0.7 + 14} ${y + 14}a${r * 0.85} ${r * 0.6} 0 1 0 ${r * 1.7} 0a${r * 0.85} ${r * 0.6} 0 1 0 ${-r * 1.7} 0Z`, 0.4) + K.foliage({ x, y, w: r * 2, h: r * 1.7, seed, tones });
+
+/* DEN — Daifuku's great wall across the top of the hill, mossy, with the sea in sight */
+map += tree(640, 150, 70, 3) + tree(1270, 160, 60, 5) + tree(760, 128, 50, 11);
+map += house(880, 120, 150, 70, '#73879C', -2) + house(1080, 128, 110, 62, '#7E93A8', 3);
+const denWall = 'M640 236Q800 222 980 226Q1140 230 1290 214';
+map += `<path d="${denWall}" stroke="${C.wisteria}" stroke-width="40" fill="none" opacity="0.35" transform="translate(6 16)" filter="url(#k-soft)"/>`;
+map += `<path d="${denWall}" stroke="#E7D7BC" stroke-width="34" fill="none" stroke-linecap="round" filter="url(#k-rough)"/><path d="${denWall}" stroke="#FBF6E6" stroke-width="12" fill="none" stroke-linecap="round" transform="translate(0 -9)" filter="url(#k-rough)"/>`;
+map += `<g filter="url(#k-leaf-fine)" fill="#7FA35A"><ellipse cx="720" cy="236" rx="40" ry="12"/><ellipse cx="1060" cy="240" rx="56" ry="11"/><ellipse cx="1200" cy="226" rx="30" ry="10"/></g>`;
+map += K.prop({ kind: 'bucket', x: 1032, y: 268, scale: 0.42 });
+
+/* LAUNDRY POLE YARD — the yard with the lines of washing and the old gatepost */
+map += house(70, 140, 170, 84, '#7E93A8', -3) + house(260, 130, 120, 70, '#8799AC', 2) + house(90, 300, 120, 72, '#74889E', 1);
+map += `<path d="M230 360Q300 300 380 352Q350 430 270 430Q210 410 230 360Z" fill="#D9C79E" opacity="0.8" filter="url(#k-rough)"/>`;          // packed-earth yard
+const laundry = (x1, y1, x2, y2, n, seed) => { const R = K.rng(seed); let l = `<path d="M${x1} ${y1}L${x2} ${y2}" stroke="#7A6A5C" stroke-width="3"/>`; for (let i = 0; i < n; i++) { const t = (i + 0.5) / n, x = x1 + (x2 - x1) * t, y = y1 + (y2 - y1) * t; const c = ['#FFFDF4', '#F7D9A8', '#BFD7EA', '#FFFDF4', '#E9C9D6'][Math.floor(R() * 5)]; l += K.castShadow(`M${x - 8 + 6} ${y + 6}h16v14h-16Z`, 0.35, 'soft') + `<rect x="${x - 9}" y="${y - 2}" width="18" height="${12 + R() * 8}" rx="2" fill="${c}" transform="rotate(${(R() - 0.5) * 10} ${x} ${y})"/>`; } return l; };
+map += `<g filter="url(#k-rough)">${laundry(236, 250, 400, 238, 7, 3)}${laundry(236, 282, 410, 276, 6, 7)}</g>`;
+map += tree(470, 390, 46, 17) + tree(150, 440, 52, 19);
+/* PERSIMMON ALLEY — the cut-through under the persimmon tree */
+map += house(560, 420, 120, 64, '#7E93A8', 4) + house(860, 600, 130, 66, '#73879C', -3) + house(640, 660, 110, 52, '#8799AC', 2);
+map += tree(810, 470, 62, 23, { dark: '#3E7444', mid: '#5E9450', light: '#8DBB62', hi: '#BAD67A' });
+map += `<g>${[[782, 452], [826, 444], [800, 486], [846, 476], [770, 494], [836, 506]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="7" fill="#E0954A" stroke="#9A5A2E" stroke-width="1.5"/><circle cx="${x - 2}" cy="${y - 2}" r="2" fill="#FFE2B0"/>`).join('')}</g>`;
+/* TOFU SHOP STEP — the shop with the striped awning and the milk crates */
+map += house(1150, 470, 140, 80, '#6F8296', -2) + house(1010, 340, 120, 66, '#7E93A8', 3) + house(1200, 600, 100, 56, '#8799AC', -4);
+map += `<g filter="url(#k-rough)">${[0, 1, 2, 3, 4, 5].map((i) => `<rect x="${1150 + i * 23}" y="550" width="23" height="18" fill="${i % 2 ? '#FFFDF4' : '#6E95C8'}"/>`).join('')}<rect x="1150" y="566" width="138" height="5" fill="${C.wisteria}" opacity="0.5"/></g>`;
+map += tree(990, 640, 40, 29);
+/* LOW WALL CORNER — Haru's house: the wooden roof, garden, low wall, red mailbox */
+map += house(96, 556, 180, 96, '#6F8296', -2);
+map += `<path d="M84 666Q190 676 296 664" stroke="#EADBC0" stroke-width="12" fill="none" stroke-linecap="round" filter="url(#k-rough)"/>`; // Haru's low wall
+map += K.flowers({ x: 132, y: 690, w: 80, h: 30, seed: 4, n: 3 }) + tree(320, 560, 36, 31);
+map += `<g opacity="0.9">${K.glow(190, 600, 140, 70, '#FFD98A', 0.55)}</g>`;   // a lit window: someone is home
+
+// set dressing: hedges along the lanes, flower beds, a vegetable plot, tall grass up the hill
+{ const R = K.rng(404); const spots = [[150, 250], [420, 160], [520, 300], [690, 380], [930, 400], [1250, 400], [1290, 690], [880, 700], [560, 700], [440, 600], [180, 520], [60, 380], [1000, 560], [660, 560], [380, 260], [1150, 290]];
+  spots.forEach(([x, y], i) => { map += tree(x, y, 18 + R() * 16, 60 + i, i % 3 ? null : { dark: '#2F6E4A', mid: '#4C8F4A', light: '#7DB857', hi: '#B5D873' }); });
+  [[470, 214, '#7E8FD8'], [700, 330, '#E9C9D6'], [1050, 680, '#7E8FD8'], [600, 520, '#FFFDF4'], [210, 470, '#E9C9D6']].forEach(([x, y, c], i) => { map += K.flowers({ x, y, w: 56, h: 22, seed: 70 + i, n: 3, color: c }); });
+  let rows = ''; for (let i = 0; i < 5; i++) rows += `<path d="M${380 + i * 4} ${616 + i * 12}h80" stroke="#5E9A4A" stroke-width="7" stroke-linecap="round"/>`;
+  map += `<g filter="url(#k-rough)"><path d="M370 606h104v66h-104z" fill="#A8865E" opacity="0.7"/>${rows}</g>`;
+  map += K.grass({ x1: 560, y1: 300, x2: 1300, y2: 312, n: 30, h: 14, seed: 3 }) + K.grass({ x1: 50, y1: 470, x2: 560, y2: 456, n: 20, h: 12, seed: 6 }); }
+// warm dusk wash over the whole map + soft sun from the upper left
+map += `<rect x="${MX0}" y="${MY0}" width="${MX1 - MX0}" height="${MY1 - MY0}" fill="#FFC27A" opacity="0.14" style="mix-blend-mode:multiply"/>` + K.glow(200, 140, 700, 420, '#FFE7B8', 0.35);
+
+/* ---------- Patch territories: scent borders (gold = ours, sage = Wall Sitters) ---------- */
+const PATCH = {
+  DEN: [[560, 116], [1316, 116], [1316, 332], [1180, 352], [980, 322], [800, 332], [640, 300]],
+  LPY: [[36, 116], [560, 116], [640, 300], [800, 332], [760, 400], [620, 432], [480, 470], [300, 462], [36, 474]],
+  TSS: [[800, 332], [980, 322], [1180, 352], [1316, 332], [1316, 650], [1150, 668], [960, 606], [930, 472], [860, 410]],
+  PA: [[620, 432], [760, 400], [800, 340], [860, 410], [930, 472], [960, 606], [820, 690], [620, 652], [560, 542]],
+  LWC: [[36, 474], [300, 462], [480, 470], [620, 432], [560, 542], [620, 652], [560, 712], [36, 712]],
+};
+const smooth = (pts) => K.blob(pts, true, 0.25);
+const terr = (pts, col, op, sel) => `<path d="${smooth(pts)}" fill="${col}" opacity="${op}" style="mix-blend-mode:${sel ? 'screen' : 'multiply'}"/>`;
+map += terr(PATCH.DEN, '#C9DCA0', 0.32) + terr(PATCH.TSS, '#FFE7A3', 0.5, true);
+const border = (pts, col) => `<path d="${smooth(pts)}" fill="none" stroke="${C.cream}" stroke-width="9" stroke-linejoin="round" opacity="0.85"/><path d="${smooth(pts)}" fill="none" stroke="${col}" stroke-width="5" stroke-dasharray="2 13" stroke-linecap="round" stroke-linejoin="round"/>`;
+['LPY', 'PA', 'LWC', 'TSS'].forEach((k) => { map += border(PATCH[k], C.gold); });
+map += border(PATCH.DEN, '#7FA34A');
+// the selected Patch gets a thick bell-gold edge
+map += `<path d="${smooth(PATCH.TSS)}" fill="none" stroke="#FFE7A3" stroke-width="30" stroke-linejoin="round" opacity="0.5" filter="url(#k-soft)"/><path d="${smooth(PATCH.TSS)}" fill="none" stroke="${C.cream}" stroke-width="13" stroke-linejoin="round"/><path d="${smooth(PATCH.TSS)}" fill="none" stroke="${C.gold}" stroke-width="7" stroke-dasharray="18 10" stroke-linejoin="round"/>`;
+
+/* ---------- Scent Posts (inked landmarks) with wisps, and the little cats at them ---------- */
+const post = {
+  // red mailbox at Haru's wall
+  LWC: (x, y) => K.shadow({ x: x + 3, y, rx: 16, ry: 4 }) + K.inked(`M${x - 4} ${y}V${y - 18}H${x + 4}V${y}Z`, '#6B5A50') + K.inked(`M${x - 12} ${y - 18}V${y - 40}Q${x} ${y - 50} ${x + 12} ${y - 40}V${y - 18}Z`, '#C8504A') + K.inkLine(`M${x - 7} ${y - 34}H${x + 7}`, 2),
+  // the First Thorn's old wooden gatepost
+  LPY: (x, y) => K.shadow({ x: x + 3, y, rx: 16, ry: 4 }) + K.inked(`M${x - 8} ${y}V${y - 46}L${x} ${y - 52}L${x + 8} ${y - 46}V${y}Z`, '#B98654') + K.inkLine(`M${x - 3} ${y - 40}V${y - 8}`, 1.5),
+  // utility pole under the persimmon
+  PA: (x, y) => K.shadow({ x: x + 3, y, rx: 14, ry: 4 }) + K.inked(`M${x - 5} ${y}L${x - 3} ${y - 58}H${x + 3}L${x + 5} ${y}Z`, '#A69A8C') + K.inked(`M${x - 16} ${y - 50}H${x + 16}V${y - 45}H${x - 16}Z`, '#A69A8C') + K.inked(`M${x + 4} ${y - 40}h9v14h-9Z`, '#8996A4'),
+  // milk-crate stack
+  TSS: (x, y) => K.shadow({ x: x + 3, y, rx: 20, ry: 5 }) + K.inked(`M${x - 18} ${y}V${y - 18}H${x + 2}V${y}Z`, '#E9B83E') + K.inked(`M${x + 2} ${y}V${y - 18}H${x + 20}V${y}Z`, '#6E95C8') + K.inked(`M${x - 9} ${y - 18}V${y - 36}H${x + 11}V${y - 18}Z`, '#E9B83E') + K.inkLine(`M${x - 18} ${y - 9}H${x + 20}M${x - 9} ${y - 27}H${x + 11}`, 1.4),
+  // the great wall's mossy corner stone
+  DEN: (x, y) => K.shadow({ x: x + 3, y, rx: 22, ry: 5 }) + K.inked(`M${x - 20} ${y}Q${x - 24} ${y - 22} ${x - 10} ${y - 30}Q${x + 6} ${y - 36} ${x + 18} ${y - 24}Q${x + 24} ${y - 8} ${x + 18} ${y}Z`, '#B9B5B0') + `<path d="M${x - 18} ${y - 22}Q${x - 2} ${y - 36} ${x + 16} ${y - 24}Q${x} ${y - 28} ${x - 18} ${y - 22}Z" fill="#8FB36A"/>`,
+};
+const POSTXY = { LWC: [292, 652], LPY: [318, 418], PA: [772, 578], TSS: [1108, 540], DEN: [1236, 248] };
+const WISP = { LWC: [4, C.gold], LPY: [3, C.gold], PA: [3, C.gold], TSS: [2, C.gold], DEN: [3, C.sage] };
+Object.keys(post).forEach((k) => {
+  const [x, y] = POSTXY[k], [n, col] = WISP[k];
+  map += post[k](x, y);
+  map += K.scentWisps({ x: x + 2, y: y - (k === 'PA' ? 64 : k === 'LPY' ? 56 : 40), count: n, h: k === 'TSS' ? 34 : 46, color: col, seed: x });
+});
+// TSS is below Strong: its wisps droop — add a little cracked stamp
+// tiny diorama cats: Pon guarding the gatepost, Daifuku loafing on his wall, Goma prowling the Den's edge
+map += K.cat({ ...CREW.pon.cat, pose: 'front-sit', x: 354, y: 424, scale: 0.4, lw: 2 });
+map += K.cat({ ...K.CAST.daifuku, pose: 'loaf', outline: 'sage', x: 980, y: 232, scale: 0.62, lw: 2 });
+map += K.cat({ ...GOMA, pose: 'side-walk', outline: 'sage', x: 1196, y: 314, scale: 0.42, flip: true, lw: 2 });
+// Mikan, home: a tiny cat on Haru's wall in the lit window's warmth
+map += K.cat({ ...K.CAST.mikan, pose: 'loaf', x: 230, y: 668, scale: 0.36, lw: 2 });
+
+/* ---------- the raid forecast: a paw-print trail from Goma down to the Tofu Shop Step post ---------- */
+const trail = [[1180, 330], [1210, 380], [1214, 430], [1180, 476], [1140, 500]];
+let paws = ''; const tp = K.blob(trail, false);
+for (let i = 0; i < 6; i++) { const t = (i + 0.5) / 6, idx = t * (trail.length - 1), a = trail[Math.floor(idx)], b = trail[Math.min(trail.length - 1, Math.floor(idx) + 1)], f = idx % 1; const x = a[0] + (b[0] - a[0]) * f + (i % 2 ? 9 : -9), y = a[1] + (b[1] - a[1]) * f; const ang = Math.atan2(b[1] - a[1], b[0] - a[0]) * 180 / Math.PI + 90; paws += `<g transform="translate(${x} ${y}) rotate(${ang}) scale(0.8)">${K.ui.paw({ size: 40, fill: '#A8C878', stroke: '#33273B' }).replace(/<svg[^>]*>/, '').replace('</svg>', '')}</g>`; }
+map += `<g>${paws}</g>`;
+map += `<path d="M1150 494l-26 12l8 -26z" fill="${C.sage}" stroke="${C.ink}" stroke-width="2.5" stroke-linejoin="round"/>`;
+
+/* ---------- the heart-link: Hige (carried) ♥ Pon (posted) — bonded Sentries, +1 Loyalty each night ---------- */
+map += `<path d="M1040 420Q700 330 372 380" fill="none" stroke="${C.cream}" stroke-width="10" stroke-linecap="round" opacity="0.9"/><path d="M1040 420Q700 330 372 380" fill="none" stroke="${C.crimson}" stroke-width="5" stroke-dasharray="1 13" stroke-linecap="round"/>`;
+
+// paper edge + grain on the board
+map += K.texture(MX0, MY0, MX1 - MX0, MY1 - MY0, 'grain', 0.22);
+s.push(K.clipTo(boardD, map));
+s.push(`<path d="${boardD}" fill="none" stroke="#5B3E2C" stroke-width="10"/><path d="${boardD}" fill="none" stroke="#E9C08A" stroke-width="3" transform="translate(0 -2)" opacity="0.7"/>`);
+// brass tacks holding the map to the fence
+[[MX0 + 26, MY0 + 26], [MX1 - 26, MY0 + 26], [MX0 + 26, MY1 - 26], [MX1 - 26, MY1 - 26]].forEach(([x, y]) => { s.push(K.shadow({ x: x + 3, y: y + 4, rx: 10, ry: 6 }) + `<circle cx="${x}" cy="${y}" r="9" fill="${C.gold}" stroke="${C.ink}" stroke-width="2.5"/><circle cx="${x - 3}" cy="${y - 3}" r="3" fill="${C.cream}"/>`); });
+
+/* the carried Hige: lifted portrait over Tofu Shop Step, its shadow on the map, the paw cursor */
+s.push(`<ellipse cx="1070" cy="452" rx="58" ry="20" fill="${C.wisteria}" opacity="0.45" filter="url(#k-soft)"/>`);
+s.push(`<g opacity="0.9"><ellipse cx="1108" cy="548" rx="34" ry="10" fill="none" stroke="${C.ink}" stroke-width="3" stroke-dasharray="7 6"/></g>`);
+
+/* clothes-line for the Crew under the map */
+s.push(`<path d="M-20 846Q480 872 960 856T1340 846" fill="none" stroke="#3F2E28" stroke-width="5" opacity="0.6" transform="translate(0 4)" filter="url(#k-soft)"/><path d="M-20 846Q480 872 960 856T1340 846" fill="none" stroke="#EDE2C8" stroke-width="4"/>`);
+
+/* =====================================================================================
+ * 3. UI
+ * ===================================================================================== */
+let ui = '';
+const at = (x, y, html, cls, style) => `<div class="k-abs ${cls || ''}" style="left:${x}px;top:${y}px;${style || ''}">${html}</div>`;
+
+// header
+ui += `<div class="k-abs k-panel k-panel--sm tb-title"><svg width="46" height="46" viewBox="-24 -24 48 48">${K.ui.paw({ size: 46, fill: C.gold }).replace(/<svg[^>]*>/, '').replace('</svg>', '')}</svg><span class="k-h">Turf Board</span><span class="sub">Hidamari Lane</span></div>`;
+ui += `<div class="k-abs tb-tabs"><span class="k-btn k-key" style="height:48px;min-width:58px;font-size:24px">L1</span><span class="tb-tab">Crew</span><span class="tb-tab on">${bellIco(30)} Turf</span><span class="tb-tab">Lessons</span><span class="tb-tab">Share</span><span class="k-btn k-key" style="height:48px;min-width:58px;font-size:24px">R1</span></div>`;
+ui += `<div class="k-abs k-panel k-panel--sm tb-sentries"><span class="k-small">Sentries</span><b>1 / 2</b><span style="display:flex;gap:6px">${K.ui.paw({ size: 34, fill: C.gold })}${K.ui.paw({ size: 34, fill: C.recessed })}</span></div>`;
+
+// Patch stamps
+const wisps = (n, col) => K.ui.wispRow({ n, color: col || C.gold, size: 30 });
+const stamp = (x, y, html, cls) => `<div class="stamp ${cls || ''}" style="left:${x}px;top:${y}px">${html}</div>`;
+ui += stamp(930, 128, `<div class="nm">${brickIco(30)}Den: Daifuku’s Wall</div><div class="rw">${wisps(3, C.sage)}<span class="num">88</span><span class="chip" style="height:36px;background:${C.cream}">Open</span></div>`, 'den');
+ui += stamp(200, 166, `<div class="nm">${bellIco(28)}Laundry Pole Yard${shieldIco(30)}</div><div class="rw">${wisps(3)}<span class="num">72</span><span class="fish">${fishIco(30)}10</span></div>`);
+ui += stamp(700, 586, `<div class="nm">${bellIco(28)}Persimmon Alley${shieldIco(30)}</div><div class="rw">${wisps(3)}<span class="num">66</span><span class="fish">${fishIco(30)}12</span></div>`);
+ui += stamp(1176, 596, `<div class="nm">${bellIco(28)}Tofu Shop Step${shieldIco(30)}</div><div class="rw">${wisps(2)}<span class="num">54</span><span class="crack">${K.ui.wispRow({ n: 1, max: 1, color: C.cream, size: 24 })}raidable</span></div>`, 'sel');
+ui += stamp(380, 498, `<div class="nm">${bellIco(28)}Low Wall Corner</div><div class="rw">${wisps(4)}<span class="num">91</span><span class="fish">${fishIco(30)}8</span><span class="chip" style="height:36px">Home</span></div>`);
+// Den-open shields on the held outer Patches
+
+
+// posted cats' pegged portraits: Pon at the gatepost
+const peg = (rot) => `<svg width="22" height="44" viewBox="0 0 22 44" style="position:absolute;left:50%;top:-30px;margin-left:-11px;transform:rotate(${rot || 0}deg)"><path d="M3 2h16v30q0 8 -8 10q-8 -2 -8 -10z" fill="#D8B27E" stroke="${C.ink}" stroke-width="2.5"/><path d="M11 4v34" stroke="${C.ink}" stroke-width="2"/><rect x="2" y="14" width="18" height="6" rx="2" fill="#9AA6B0" stroke="${C.ink}" stroke-width="2"/></svg>`;
+ui += at(374, 312, `<div style="position:relative">${portrait(CREW.pon.cat, 92, C.gold)}${peg(-6)}<div style="position:absolute;right:-16px;bottom:-6px">${pIcon('Goofball', 40)}</div></div>`);
+// Keeper of the Den and the raider
+ui += at(1116, 132, `<div style="position:relative">${portrait({ ...K.CAST.daifuku, scale: 0.86, y: 98 }, 76, '#7FA34A')}</div>`);
+ui += at(1222, 340, `<div style="position:relative">${portrait({ ...GOMA }, 80, '#7FA34A')}<div style="position:absolute;left:-118px;top:16px" class="crack">${moonIco(26)}tonight</div></div>`);
+// the carried Hige, tilted, with the paw cursor
+ui += at(990, 330, `<div style="position:relative;transform:rotate(-9deg)">${portrait(CREW.hige.cat, 124, C.gold)}<div style="position:absolute;right:-14px;bottom:2px">${pIcon('Stalwart', 46)}</div></div>`);
+ui += at(1090, 418, K.ui.paw({ size: 54, fill: C.gold }), '', 'transform:rotate(-20deg)');
+// the heart on the link, mid-way
+ui += at(672, 340, `<div style="display:flex;align-items:center;gap:6px;background:${C.cream};border:3px solid ${C.cocoa};border-radius:22px;padding:3px 12px 3px 6px;box-shadow:var(--drop);font:800 28px/1 var(--font);color:${C.crimson}">${heartIco(30)}+1</div>`);
+
+/* ---------- side panel: the selected Patch + the drop preview ---------- */
+ui += `<div class="k-abs k-panel side">
+  <div class="hd">${post.TSS ? `<svg width="58" height="58" viewBox="1080 494 60 60" style="flex:none">${post.TSS(1108, 548)}</svg>` : ''}<div><div class="k-h">Tofu Shop Step</div><div style="display:flex;gap:8px;margin-top:8px"><span class="chip">${bellIco(26)}Yours</span><span class="chip">Back Door</span></div></div></div>
+  <div class="row"><span class="lab">Scent</span>${wisps(2)}<div class="scentbar"><i></i><u></u></div><span class="num">54</span></div>
+  <div class="row" style="margin-top:-4px;padding-left:64px;color:var(--cocoa);white-space:nowrap">Strong at 60<span style="flex:1"></span><span class="chip">${shieldIco(28)}Den open</span></div>
+  <div class="row"><span class="lab">Tonight</span>${portrait(GOMA, 60, '#7FA34A')}<span style="font-weight:800">Goma</span>${K.ui.paw({ size: 30, fill: C.sage })}<span class="chip">motive ?</span></div>
+  <div class="row"><span class="lab">Tribute</span>${fishIco(34)}<span class="num">13</span><span style="color:var(--cocoa)">tomorrow</span></div>
+  <div class="preview" style="margin-top:14px"><span class="k-ribbon k-ribbon--gold tag" style="height:40px;font-size:28px">Post here?</span>
+    <div class="row" style="margin-top:10px">${portrait(CREW.hige.cat, 70, C.gold)}<div><div style="font:800 32px/1 var(--font)">Hige</div><div style="display:flex;gap:6px;align-items:center;margin-top:4px;color:var(--cocoa)">${pIcon('Stalwart', 32)}Stalwart · Anchor</div></div></div>
+    <div class="row">Holds like a wall.</div>
+    <div class="row"><span class="fit">${[1, 1, 1, 1, 0].map((f) => K.ui.paw({ size: 28, fill: f ? C.gold : C.recessed })).join('')}</span><span>Good vs Goma</span></div>
+    <div class="row">${heartIco(30)}<span>Pon at Laundry Pole Yard</span></div>
+  </div>
+  <div style="display:flex;gap:12px;margin-top:auto"><span class="k-btn k-btn--confirm" style="padding:0 22px">${K.ui.faceButtons({ size: 40, lit: 's' })}&nbsp;Post Hige</span><span class="k-btn" style="padding:0 18px">${K.ui.faceButtons({ size: 40, lit: 'e' })}&nbsp;Back</span></div>
+</div>`;
+
+/* ---------- the Crew on the clothes-line ---------- */
+const crewCard = (x, key, status, cls, rot) => { const c = CREW[key], ghost = cls === 'ghost';
+  const pill = status === 'posse' ? `<span class="pill-s posse">${bellIco(26)}Posse</span>` : status === 'posted' ? `<span class="pill-s posted">Posted</span>` : `<span class="pill-s carry">Carrying</span>`;
+  return `<div class="crew ${cls || ''}" style="left:${x}px;transform:rotate(${rot || 0}deg)"><div class="card" style="position:relative">${peg(0)}${ghost ? `<div style="width:84px;height:84px;flex:none;display:flex;align-items:center;justify-content:center;opacity:.5">${K.ui.paw({ size: 50, fill: C.recessed })}</div>` : `<div style="flex:none">${portrait(c.cat, 84, status === 'posse' ? C.gold : C.cocoa)}</div>`}<div class="tx"><div class="nm">${ghost ? 'Hige' : c.name}</div>${ghost ? '' : `<div class="pers" style="display:flex;align-items:center;gap:4px">${pIcon(c.pers, 30)}${c.pers}</div>`}<div class="st">${pill}</div></div></div></div>`; };
+ui += crewCard(30, 'hige', 'carry', 'ghost', -2);
+ui += crewCard(294, 'pon', 'posted', '', 1.5);
+ui += crewCard(558, 'kagi', 'posse', '', -1);
+ui += crewCard(822, 'kinako', 'posse', '', 2);
+ui += crewCard(1086, 'toge', 'posse', '', -1.5);
+// social marks between neighbours on the line
+const mark = (x, html) => at(x, 834, `<div style="background:${C.cream};border-radius:50%;padding:3px;box-shadow:var(--drop)">${html}</div>`);
+ui += mark(524, heartIco(32)) + mark(788, heartIco(32)) + mark(1050, clawX(34));
+// Togemaru: a Lesson is ready ("!")
+ui += at(1080, 852, `<span class="k-btn k-btn--focus" style="min-width:44px;height:44px;padding:0;font-size:28px">!</span>`);
+
+// footer: tomorrow's Tribute
+ui += `<div class="k-abs k-panel foot">
+  <div class="eq"><small>Tomorrow</small>${fishIco(38)}43 <small>− upkeep</small>4 <small>=</small> <span style="color:var(--cocoa)">39</span></div>
+  <div class="eq"><small>Stash</small>${fishIco(34)}128<span style="flex:1"></span><span class="chip">${bellIco(26)}4 / 5 Patches</span></div>
+</div>`;
+ui += `<div class="k-abs hints"><span><span class="k-btn k-key">S</span>Pick up</span><span><span class="k-btn k-key">N</span>Cat card</span><span><span class="k-btn k-key">W</span>Unpost</span><span><span class="k-btn k-key">V</span>Legend</span><span><span class="k-btn k-key">E</span>Leave</span></div>`;
+
+document.getElementById('stage').innerHTML = K.svg(W, H, s.join(''), 'class="k-world"') + ui;
+</script>
+</body>
+</html>

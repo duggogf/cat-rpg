@@ -1,6 +1,6 @@
 # Nemesis System ("Rivals") — Vertical Slice
 
-*Owner: systems-designer (nemesis/AI) · Round 2 rewrite · 2026-11-23 · Status: slice spec for review*
+*Owner: systems-designer (nemesis/AI) · Round 2 rewrite · 2026-11-23 · Iteration 3 (final fix pass) 2026-11-24 · Status: slice spec*
 *Canon: `design/creative-brief.md` v1.2 and `design/reviews/round-1/director-rulings.md`. This is a fresh, slice-only rewrite. The first draft is archived at `design/backlog/first-drafts/nemesis-system.md` and is the content backlog.*
 *In-project name: **Rivals**. Do not use the original game's system name in marketing until counsel has advised (§6.4).*
 
@@ -8,7 +8,7 @@
 
 ## 1. Overview
 
-Rivals is the system that makes every named cat in Hidamari Lane remember Mikan. It covers the **≤ 12 tracked cats** of the slice: the 8 Wall Sitter seats (Daifuku, 2 Captains, 5 ordered Toughs, one of whom is the **First Thorn**), 2 Roamers and ≤ 2 Away. Each one has a **personality** (the same six-value model the Crew uses), two hidden feelings about Mikan (**Grudge** and **Regard**, 0–100, never shown as numbers) and a 10-entry **Memory** of what Mikan did. They wear the result where a third-person camera can see it: **silhouette Scars**, a **Title**, a disposition pose on the **Fence Line** and one sharp line of cat speech that cites what happened. After every won fight against a Rival the player gives one **Verdict**: Chase Off, Humble, Recruit or Nose-Touch. Each answers two questions, *what happens to the cat* and *what happens to the post*, so each costs something different. **Nemesis** is a scarce slot, not a threshold: one for the Lane plus the **arc lead**. Off-screen, the town moves through cheap **director wall events** (one every 2–3 nights) rather than a simulated duel economy. Every change is visible on the wall, and the Morning Sniff mentions it only if it concerns a cat the player knows. The slice must prove one thing: *within two hours, a player can name a Rival and say what they did to it.*
+Rivals is the system that makes every named cat in Hidamari Lane remember Mikan. It covers the **≤ 12 tracked cats** of the slice: the 8 Wall Sitter seats (Daifuku, 2 Captains, 5 ordered Toughs, one of whom is the **First Thorn**), 2 Roamers and ≤ 2 Away. Each one has a **personality** (the same six-value model the Crew uses), two hidden feelings about Mikan (**Grudge** and **Regard**, 0–100, never shown as numbers) and a 10-entry **Memory** of what Mikan did. They wear the result where a third-person camera can see it: **silhouette Scars**, a **Title**, a disposition pose on the **Fence Line** and one sharp line of cat speech that cites what happened. After every won fight against a Rival the player gives one **Verdict**: Chase Off, Humble, Recruit or Nose-Touch. Each answers two questions, *what happens to the cat* and *what happens to the post*, so each costs something different. **Nemesis** is a scarce slot, not a threshold. In Lives 1–2 there is **exactly one**: the **arc lead**, **declared** in the Sniff once it has history with Mikan (the **Declaration**, §3.6). Every player ends the slice with one named Nemesis, as a **Sworn Enemy** or a **Sworn Rival**. A second, Lane slot opens in Life 3. Off-screen, the town moves through cheap **director wall events** (one every 2–3 nights) rather than a simulated duel economy. Every change is visible on the wall, and the Morning Sniff mentions it only if it concerns a cat the player knows. The slice must prove one thing: *within two hours, a player can name a Rival and say what they did to it.*
 
 ## 2. Player Fantasy
 
@@ -16,11 +16,12 @@ Rivals is the system that makes every named cat in Hidamari Lane remember Mikan.
 
 The Rival is a **petty, funny, persistent neighbour**, not an orc warlord. Nobody dies, so everyone comes back, and when they come back they bring the evidence. The player should feel five things, in this order, inside the slice:
 
-1. **It remembers me** (Life 1, day 2, before minute 60): the First Thorn sits on Mikan's gatepost and names the post it lost.
+1. **It remembers me** (Life 1, day 2, before minute 60): the First Thorn sits on its own gatepost at Laundry Pole Yard and names the fight it ran from.
 2. **I marked it** (Life 1–2): a Scar Mikan gave it is visible on the cat in play, not just on a card.
 3. **My choice mattered** (every Verdict): the cat I chased off came back with escorts and an answer to my trick. The cat I spared still holds the Patch I wanted.
 4. **It got one over on me** (even for players who never wipe): Lick In gives a cat a Title for flattening Mikan in a fight the Posse won. It is smug about it for the rest of the slice.
 5. **The wall moved while I slept** (Life 2): one change on the Fence Line every 2–3 nights. When it involves my cat, the Sniff tells me.
+6. **It chose me** (Life 2, usually the day-2 morning): the Sniff's Declaration card names one cat as *my* Nemesis, with the Scars I gave it. It is the one cat on the wall with a storm mark, and it keeps turning up until the slice ends.
 
 **Cat identity, not Mordor with fur.** Mordor supplies the skeleton: a hierarchy screen, persistence, adaptation and promotion on loss. The organs are cat: Verdicts instead of kills, a respect axis (Regard) as well as hate, the Verdict *tell* read from ears and tail, the Gloat, "Collar" as the insult that tracks Clout, scent marks as intel, and Mikan's own plaster from home being read by the street. The design test for every rule below is **"can the player see it?"** Simulation that produces no visible output was cut.
 
@@ -34,15 +35,16 @@ The Rival is a **petty, funny, persistent neighbour**, not an orc warlord. Nobod
 |---|---|---|---|
 | Boss: **Daifuku** | 1 | Authored (Narrative: personality and voice; Nemesis: trait kit) | Bruiser. Never leaves his wall. Proposed personality **Brooder** ("never leaves its post"). Narrative to confirm (A-1) |
 | Captains | 2 | Procedural; one is flagged `recruitable_slice` | Never share a Style |
-| Toughs, seats 1–5 (5 = lowest) | 5 | Procedural; the **First Thorn** starts at seat 5 as Keeper of Low Wall Corner | Ordered on the wall (NS-8) |
+| Toughs, seats 1–5 (5 = lowest) | 5 | Procedural; the **First Thorn** starts at seat 5 as **Keeper of Laundry Pole Yard** (the old wooden yard gatepost) | Ordered on the wall (NS-8) |
 | Roamers | 2 | Procedural | Off-wall. Candidates to refill seats or to become Keeper of an Open Patch |
 | Away | ≤ 2 | (Chased-Off cats) | Shown as an empty seat with paw prints |
 | **Tracked total** | **≤ 12** | | Fresh generation only while tracked < 12 |
 
 - **Rival-recruitable cats in the slice (DR-01):** the First Thorn, the flagged Captain, and Daifuku (Regard ≥ 50 only). Every other Rival shows Recruit greyed, with the tell "turns its tail to the bell".
-- **Personality coverage (DR-01, DR-30/37).** Crew fixes the personalities of its two story recruits and the Friend Stray. Daifuku is Brooder (A-1). The Thorn and the flagged Captain are generated from the two personalities still uncovered, so the six slice recruits cover all six. **Default:** the Thorn is a **Braggart** (loud, comes back fast for revenge), which suits the Life 1 return. Crew confirms the final set.
-- **Styles (slice):** Scrapper, Bruiser, Yowler only. Default for the Thorn: **Yowler**, which is weak to Mikan's Claw, so a kitten can win.
-- **Fears (slice):** Water (bucket), Loud Noise (scooter horn) and Cucumbers (ledge junk). Every procedural Rival has exactly one Fear, drawn from those three. The Thorn's is Water.
+- **Personality coverage (DR-01, DR-30/37).** Crew §3.3 fixes the six slice recruitables and this doc adopts its sheet: Hige (Stalwart), Pon (Goofball) and Kinako (Fraidy, the Friend Stray) are Crew's; the **First Thorn is Togemaru** (working name), **Braggart, Scrapper, Fear Cucumbers**; the flagged Captain is **Kagi**, Schemer, Yowler; Daifuku is Brooder (A-1). The six cover all six personalities.
+- **Keepers of the slice's Patches (Territory §3.1):** Low Wall Corner = an **untracked Stray** (DR-22's tutorial escalation; Routing it gives no Verdict, so the first Verdict stays on Life 1 day 2) · Laundry Pole Yard = **Togemaru** · Persimmon Alley = Tough seat 1 · Tofu Shop Step = **Captain Kagi** · Den = **Daifuku**.
+- **Styles (slice):** Scrapper, Bruiser, Yowler only. Togemaru is a Scrapper, so it resists Mikan's Claw (×0.8); Hige's Thump does ×1.2 against it, and on Life 1 day 1 it flees at 25% Nerve (Backlog: check in the combat prototype that a kitten can still beat it).
+- **Fears (slice):** Water (bucket), Loud Noise (scooter horn) and Cucumbers (ledge junk). Every procedural Rival has exactly one Fear, drawn from those three. Togemaru's is Cucumbers. Props and Fears are taught on Life 2 day 2 (DR-22), so no Fear prop is used in Life 1.
 
 ### 3.2 Data (the `rival` block of the One Cat Schema)
 
@@ -111,12 +113,18 @@ Grudge and Regard move only through the event table below, combined per encounte
 
 ### 3.6 Nemesis is a slot; dispositions are poses
 
-- **Slots (DR-39):** **one Lane slot plus the arc-lead slot.** Each night (step 3e), the arc lead holds the arc slot if its Grudge ≥ 75. The Lane slot goes to the highest arc score (F3) among the other non-Crew tracked cats with Grudge ≥ 75. Ties go to the earlier first meeting. Everyone else at ≥ 75 is **Bitter**. An empty slot stays empty; the director never manufactures a Nemesis.
+- **Slots (DR-39, amended for Lives 1–2; A-6):** **one slot in Lives 1–2, the arc slot, filled only by the Declaration.** The Lane slot (highest F3 among other non-Crew tracked cats at Grudge ≥ 75) opens in **Life 3** (Backlog). In the slice, every other cat at Grudge ≥ 75 is **Bitter**. Nemesis status therefore stays rare: one cat, ever, per slice.
+- **The Declaration (step 3e).** On the first night the arc lead (§3.7) has **≥ 3 encounters and ≥ 1 mark**, it is **declared the Nemesis**, at any Grudge. If no cat is declared by the **night after Life 2 day 3** (the deadline: before the Den), the director declares the current lead anyway, preferring a lead Mikan has met (if the lead has 0 encounters, the highest-F3 active non-Boss cat with ≥ 1 encounter becomes the lead and is declared). The next morning's Sniff opens with the **Declaration card** (the cat's portrait, storm mark, Scars and Title, and its best memory line; `NemesisDeclared` event). Once declared, the cat:
+  - holds the slot **for the rest of the slice**, whatever its Grudge, while Seated, Roaming, Away (its empty seat shows the storm mark beside the paw prints) or Humbled; it is never retired to `Gone`;
+  - shows one of two faces, re-read each night: **Sworn Enemy** (Grudge ≥ Regard) or **Sworn Rival** (Regard > Grudge: a friendly challenger that still wants the rematch);
+  - cannot be Recruited in the slice (Recruit greyed; tell: "not until we settle it"). The other three Verdicts stay open;
+  - keeps the arc lead's daily presence placement (§3.7) for the rest of the slice. Under a Nose-Touch truce it still turns up, as a **sparring challenge** off its post (a normal fight and Verdict; the truce means it does not contest the Patch).
+- The director never manufactures a Nemesis *out of nothing*: the declared cat is always the arc lead, a cat with the most history with Mikan.
 - **Fence Line disposition** (one pose per cat; first match wins; numbers never shown, NX-14):
 
 | # | Disposition | Condition | Pose (Art) |
 |---|---|---|---|
-| 1 | **Nemesis** | holds a slot | Faces the camera, back arched, plus the **storm mark** (small at 75–89, large at 90+) |
+| 1 | **Nemesis** | holds the slot (declared) | **Sworn Enemy:** faces the camera, back arched. **Sworn Rival:** faces the camera, tail up, chin out. Both wear the **storm mark** (small below Grudge 90 or as a Sworn Rival, large at Grudge 90+) |
 | 2 | **Friend** | accepted Nose-Touch, Regard ≥ 75, Grudge < 25 | Slow blink |
 | 3 | **Bitter** | Grudge ≥ 75, no slot | Faces, tail lashing |
 | 4 | **Respectful** | Regard ≥ 50, Grudge < 50 | Sits upright facing, ears forward |
@@ -129,13 +137,15 @@ A truce shows a small leaf sprig on the cat. Humbled residents sit on their crat
 
 - **Memory:** 10 entries, **≤ 6 pinned** (NS-4). An entry is `{day, kind, patch, opener, finisher_move, damage_type, fear, verdict, by_pile_on, count}`. Kinds in the slice: `FIRST_MEETING, ROUTED, FLED, PATCH_LOST, VERDICT, AMBUSHED_BY_PLAYER, AMBUSHED_PLAYER, LICK_IN, WON, PLAYER_FLED, SCAR, TITLE, SLIPPED_AWAY, RAID`. A repeat of the same kind and patch on consecutive encounters collapses into one entry with `count` +1.
 - **Pinned:** `FIRST_MEETING`, the latest encounter, and the source entry of each displayed Scar and the displayed Title. At most 2 Scars come from Mikan in the slice and there is 1 Title, so pins ≤ 5. The invariant is pins ≤ 6. Eviction removes the oldest unpinned entry.
-- **The arc lead** is the cat the director builds the slice's story around. **The First Thorn is the arc lead from Life 1, day 1.** If it leaves the arc early (Recruited or accepted Nose-Touch with < 3 encounters), it becomes `resolved` and the director names a new lead on the next night: the highest F3 among seated cats with ≥ 1 encounter. The arc lead's Grudge **does not decay while it leads** (DR-39).
-- **Lead presence guarantee:** from Life 2, day 1, until the arc is achieved, the director places the arc lead on the player's route at least once per day. The placement is one of: Keeper of the Patch the player is heading for, waiting at a Scent Post, a Rival Ambush (§3.10), or the raid. Placement is a spawn rule, never a scripted outcome (DR-41).
-- **Arc achieved** (`NemesisArcAchieved`, DR-39): the lead has ≥ 3 encounters and ≥ 1 **mark** (a player-sourced Scar or a Title involving Mikan), and **either** holds a Nemesis slot **or** completes a **friend arc** (an accepted Nose-Touch) **or** was Recruited after its third encounter.
+- **The arc lead** is the cat the director builds the slice's story around. **The First Thorn (Togemaru) is the arc lead from Life 1, day 1.** The arc lead's Grudge **does not decay while it leads** (DR-39).
+- **(a) A Humbled lead stays the lead.** Its presence placement is a **crate-challenge Standoff** on its Patch (a normal fight and Verdict). If it is Humbled before night 3, its `uprising` is the scripted first raid (§3.12 3f).
+- **(b) Re-naming.** Before the Declaration, a lead that is **Recruited** (at any encounter count), or that accepts a Nose-Touch with < 3 encounters, becomes `resolved`, and the director names the new lead **the same night**, from all active non-Boss, non-Crew cats: the highest F3 among cats with ≥ 1 encounter, otherwise the highest-seat Tough. This is re-checked every night. After the Declaration the lead never changes in the slice.
+- **(c) Arc achieved** (`NemesisArcAchieved`, DR-39) = the lead (or a lead that resolved by Recruit) has ≥ 3 encounters + ≥ 1 **mark** (a player-sourced Scar or a Title involving Mikan) + any resolved state: the Nemesis slot, Friend, Crew or Humbled. With the rules above the arc lead is normally declared the same night the arc is achieved.
+- **Lead presence guarantee:** from Life 2, day 1, to the end of the slice, the director places the arc lead (after the Declaration, the Nemesis) on the player's route at least once per day. The placement is one of: Keeper of the Patch the player is heading for, waiting at a Scent Post, a Rival Ambush (§3.10), the raid (it counts only if the lead leads the raid), a crate challenge (a), or a sparring challenge (§3.6). Placement is a spawn rule, never a scripted outcome (DR-41).
 
 ### 3.8 Making memory visible (NX-01, NX-02, NX-03, NX-04, NX-15; DR-40)
 
-1. **The First Thorn returns inside Life 1** (DR-40.1, PP-05). On day 2 the Morning Sniff's only item is the Thorn's scent mark over Mikan's gatepost. The Thorn is placed within 30 s of the door, on the route out, whatever happened on day 1:
+1. **The First Thorn returns inside Life 1** (DR-40.1, PP-05). On day 1 the Thorn's Standoff comes **after** the Low Wall Corner claim, and it flees as normal. On day 2 the Morning Sniff's only item is the Thorn's fresh scent mark over **its own post, the Laundry Pole Yard gatepost**, and day 2 is the contest for that post (Territory §3.12, Day Loop §3.9). The Thorn is placed within 30 s of the door, on the route out, whatever happened on day 1:
 
 | Day-1 outcome | Day-2 beat (always a memory-citing line) |
 |---|---|
@@ -185,7 +195,7 @@ Slice Strengths (Nemesis chooses them, Combat values them): **Thick Fur** (resis
 - **Rival Ambush (NX-17, NS-12, DR-36):** unlocks on Life 2, day 1, where the Thorn's comeback is the first one. **≤ 1 Rival Ambush per day.** Candidate: the highest-F3 active cat with Grudge ≥ 50 that is not under truce, not Humbled and not Crew (Schemers weighted ×2). On a day with a candidate the director rolls `p_ambush_day` (0.5), then places it at a seeded moment ≥ 60 s into a seeded phase. Never on the morning after a wipe, never in Life 1. The warning is a **2.0 s directional yowl-sting**, during which the attacker's selected line shows in its balloon. The counter is **Skitter or Brace in the final 0.75 s**, which gives a **neutral start** (an icon bark, `AMBUSH_FOILED`). Otherwise Mikan starts Ruffled. There is no Standoff downgrade.
 - **Fight barks are icon-only** (Fear hit, low Nerve, Routed, ally Routed, Old Score): Sense-Icon-style pictograms, no text (NX-12).
 - **Routed tracked Rivals in a won fight** are held at the ring edge for the Verdict (DR-36, NX-C8).
-- **Loss (Posse wipe):** the victor is the cat that Routed Mikan if it is standing, otherwise the highest-ranked standing tracked Rival. It **Gloats** (≤ 3 s, inside UX's ≤ 6 s loss beat, NX-C7), gains its Glory Title and is **promoted**: Roamer → Tough seat 5 (the old seat-5 cat becomes a Roamer); Tough seat n → seat n−1, swapping; Tough seat 1 → Captain, swapping with the Captain of lower F3, who drops to seat 1 with a feud. A Captain's promotion is the Title only. Level +1 (F9 cap). **Mark Over** sprays over Mikan's nearest held post (Scent −30, Territory confirms) and requests **no** raid (NX-15). **Snatch** holds the lost field haul; Routing the cat returns it (DR-46). Nothing is lost in Life 1 (DR-19).
+- **Loss (Posse wipe):** the victor is the cat that Routed Mikan if it is standing, otherwise the highest-ranked standing tracked Rival. It **Gloats** (≤ 3 s, inside UX's ≤ 6 s loss beat, NX-C7), gains its Glory Title and is **promoted**: Roamer → Tough seat 5 (the old seat-5 cat becomes a Roamer); Tough seat n → seat n−1, swapping; Tough seat 1 → Captain, swapping with the Captain of lower F3, who drops to seat 1 with a feud. A Captain's promotion is the Title only. Level +1 (F9 cap). **Mark Over** (a Brooder's Gloat) sprays over Mikan's nearest held outer post: −30 Scent, Low Wall Corner never below 10 (Territory §3.7 owns the value), and requests **no** raid (NX-15). **Snatch** (a Schemer's Gloat): the wipe's lost 20% of the field haul becomes `loot_held` on the victor, returned in full by Routing it within 3 days (Territory §3.7, DR-46). Nothing is lost in Life 1 (DR-19).
 - An untracked cat that wins a wipe becomes a tracked Roamer if tracked < 12; otherwise it Gloats generically and is not promoted.
 
 ### 3.11 The four Verdicts (DR-42, NX-05, PP-14, PP-21)
@@ -197,11 +207,13 @@ Slice Strengths (Nemesis chooses them, Combat values them): **Thick Fur** (resis
 | Verdict | Available when | The cat | The post | Grudge / Regard | What comes back |
 |---|---|---|---|---|---|
 | **Chase Off** | Always (Daifuku: see §5) | `Away`; seat vacated | **Yours** (Spray it) | +10 / 0 | Returns after F5 nights, **changed**: 1st return with 1–2 Stray escorts plus an adaptation; 2nd return **promoted** one seat (Tough 1 → Captain); 3rd return is the **Grand Standoff** (a call-out in the Sniff, the cat plus 2 escorts at Dusk, all four Verdicts). `chased_count` 2 → Title Twice-Chased if it has no Title |
-| **Humble** | The fight's Patch will become the player's (NS-16), and its Undermark crate is empty (one per Patch, NX-C2) | `Humbled` resident on the crate; seat vacated; `former_rank` stored | **Yours**, +15% Tribute (Territory) | +10 / −5 | Simmers +2 per night **only while the Patch is Unwatched** (no Sentry). Normal decay while Watched. **Restless at 80**: a Sniff warning (scratched crate), and the next night an **uprising** raid request by the resident alone, only if still Unwatched. **Settled** after one failed uprising (no more simmer) (NS-5) |
-| **Recruit** | DR-09: Grudge < 90 **or** Regard ≥ 50; the cat is slice-recruitable (§3.1); there is room (or "make room", DR-34). Daifuku: Regard ≥ 50 | Joins the Crew with Memory, Scars, Title, Fear, personality; Strength → signature perk | **Yours** | rout items then halved / +10 | Crew sets the Bribe (Life 1: free and fixed, PP-07) and starting Loyalty from `G_pre` = Grudge before halving (NS-C2). No roll, no refusal (PP-21) |
-| **Nose-Touch** | Always | Accept (F4, seeded): Grudge 0, Regard +25, **5-day truce**. Snub: Grudge halved, Regard +5, the next offer +0.25 | **The cat keeps its post.** While the truce lasts, its Patch cannot be Sprayed by the player | see left | After the truce: Regard ≥ 75 → at the next meeting it **yields the post with a nose** (`TRUCE_YIELD`, no fight). Otherwise the next fight there adds **no Grudge**. No Clout credit (Territory, NX-C1) |
+| **Humble** | The fight's Patch will become the player's (NS-16), and its Undermark crate is empty (one per Patch, NX-C2) | `Humbled` resident on the crate; seat vacated; `former_rank` stored | **Yours**, +15% Tribute (Territory) | +10 / −5 | Simmers **+8 per night only while the Patch is Unwatched** (no Sentry). Normal decay while Watched. **Restless at 80**: a Sniff warning (scratched crate), and the next night an **uprising** raid request by the resident alone, only if still Unwatched. **Settled** after one failed uprising (no more simmer) (NS-5) |
+| **Recruit** | DR-09: Grudge < 90 **or** Regard ≥ 50; the cat is slice-recruitable (§3.1); there is room (or "make room", DR-34); it is not the declared Nemesis (§3.6). Daifuku: Regard ≥ 50 | Joins the Crew with Memory, Scars, Title, Fear, personality; Strength → signature perk | **Yours** | rout items then halved / +10 | Crew sets the Bribe (Life 1: free and fixed, PP-07) and starting Loyalty from `G_pre` = Grudge before halving (NS-C2). No roll, no refusal (PP-21) |
+| **Nose-Touch** | Always | Accept (F4, seeded): Grudge 0, Regard +25, **5-day truce**. Snub: Grudge halved, Regard +5, the next offer +0.25; the cat **bolts**, with no truce | **Accept: the cat keeps its post.** While the truce lasts, its Patch cannot be Sprayed by the player. **Snub: the Patch is Open** (Claim Spray, as after a Chase Off) | see left | After the truce: Regard ≥ 75 → at the next meeting it **yields the post with a nose** (`TRUCE_YIELD`, no fight). Otherwise the next fight there adds **no Grudge**. No Clout credit (Territory, NX-C1) |
 
-**Why no Verdict dominates (sim and playtest check, §8):** Chase Off wins the post but brings back a stronger cat in 1–3 nights. Humble wins the post and the money but costs a Sentry slot (of 2) to keep it quiet. Recruit wins the post and a Crew cat but is limited to 3 slice cats, a Bribe and the Crew cap. Nose-Touch wins a friend but **costs the Patch**: with the Den opening at 3 of 4 outer Patches, the player can afford to spare at most one Keeper and still claim the Lane on time.
+`VerdictApplied.verdict` takes `chase | humble | recruit | nose_accept | nose_snub`, so Territory can tell the two Nose-Touch outcomes apart.
+
+**Why no Verdict dominates (sim and playtest check, §8):** Chase Off wins the post but brings back a stronger cat in 1–3 nights. Humble wins the post and the money but costs a Sentry slot (of 2) to keep it quiet: at +8 simmer a resident left Unwatched reaches Restless (80) in 2–4 nights instead of 13. (Round-3 sim, all-Humble player posting the Patch half the nights: 0.01 uprisings inside the 7-day slice, because the Restless warning comes first, and 2.6 over 30 days. The slice shows the cost mostly as the scratched-crate warning; see Backlog.) Recruit wins the post and a Crew cat but is limited to 3 slice cats, a Bribe and the Crew cap. Nose-Touch wins a friend but **costs the Patch**: with the Den opening at 3 of 4 outer Patches, the player can afford to spare at most one Keeper and still claim the Lane on time.
 
 ### 3.12 Off-screen: Night Shuffle step 3 (DR-13, DR-43)
 
@@ -211,14 +223,14 @@ Slice Strengths (Nemesis chooses them, Combat values them): **Thick Fur** (resis
 | 3b Comebacks | Away cats whose F5 delay has elapsed return (seat: their old seat if empty, else the lowest empty seat, else Roaming) |
 | 3c **Wall event** | One per district every 2–3 nights (F6), starting on the night after Life 2 day 1. Kinds: **promotion** (a Tough moves up one seat, swapping), **feud scuffle** (the loser of a feud pair wears a head plaster for 2 days and, if it was the higher seat, swaps), **return** (shows a due comeback as the night's event), **Restless** (a Humbled resident at ≥ 80 turns Restless), **refill** (an empty seat, or an Open Patch's Keeper, is filled by a Roamer or a fresh cat; NS-18). Always visible on the wall |
 | 3d Refills | A seat empty ≥ 2 nights is refilled by the top Roamer, or by fresh generation while tracked < 12. An Open Patch with no Keeper gets a Roamer as Keeper with p 0.5 (NS-18) |
-| 3e Decay and slots | F2 for every non-Crew tracked cat. Stewing (below). Then Nemesis slot reassignment (§3.6) and arc-lead check (§3.7) |
-| 3f Raid requests | ≤ 1 per district. The **first raid is the arc lead's** (requested on Life 2, day 2, after the cat flap, forecast in the next Sniff). Otherwise the requester is the highest-F3 cat with Grudge ≥ 60, targeting a held Patch below Strong (Territory resolves). Motive enum: `grudge`, `comeback`, `uprising`, `squat` |
+| 3e Decay and slots | F2 for every non-Crew tracked cat. Stewing (below). Then the arc-lead check and re-naming (§3.7) and the Declaration (§3.6) |
+| 3f Raid requests | **One raid every night** from night 3, ≤ 1 per district. **Timing:** the first is the arc lead's, **requested on night 3 (the night after Life 2 day 1), forecast in the Life 2 day 2 Sniff, and fired that Night** (the cat flap's first Night; Territory §3.7, DR-13). A Humbled lead sends its `uprising` instead. **From night 4**, a raid is requested every night that an admissible target exists. **Target:** the **lowest-Scent admissible held Patch, Strong Patches included** (DR-46: worst case Scuffed; Territory declines inadmissible ones). **Requester:** the highest-F3 active, non-truce, non-Crew cat with **Grudge ≥ 40**; if there is none, Daifuku sends the lowest-seat Tough under `boss_orders`. **Motive and party** (Territory §3.7's list, the only list; escorts are untracked Strays): `grudge` (leader + 1 escort; the default), `gloat` (leader alone; a Braggart returner, or a cat that has beaten Mikan), `pretender` (leader + 1 escort; a Roamer or ex-Keeper that wants a Patch), `boss_orders` (leader + 2 escorts; the fallback, or any Captain-led raid), `uprising` (the Humbled resident alone, once Restless). **An uprising uses the night's single raid slot.** Old names map: `comeback` → `grudge` (`gloat` for a Braggart returner); `squat` → `pretender` |
 
 **Stewing (NX-10).** If the player has not raised any cat to Grudge ≥ 60 by Life 2, day 3, the director Stews one eligible cat by +5 per night, **capped at 74**, so Stewing alone never makes a Nemesis. Eligible: ≥ 1 encounter with the player; not a Friend, not under truce, not Crew, Regard < 50. The Sniff shows it ("claw marks on your post"). If no cat is eligible, the director generates a Braggart or Brooder Roamer (if tracked < 12) with a feud against the player's Friend: "Buri went soft. I didn't."
 
 ### 3.13 Morning Sniff and the Fence Line (NX-07, DR-43, DR-24)
 
-- **Sniff:** the Tribute line, plus tonight's raid forecast (always, if a raid is coming), plus **≤ 3 nemesis items**. Life 1, day 2 has exactly 1 item. **Admission:** the cat has ≥ 1 encounter with the player, **or** the item touches a player Patch or Crew cat. **Priority:** arc lead > Restless warning > comeback > wall event > other. Rank changes among strangers appear on the wall only.
+- **Sniff:** the Tribute line, plus tonight's raid forecast (always, if a raid is coming), plus **≤ 3 nemesis items**. Life 1, day 2 has exactly 1 item. **Admission:** the cat has ≥ 1 encounter with the player, **or** the item touches a player Patch or Crew cat. **Priority:** the Declaration card (once per slice, always first) > arc lead > Restless warning > comeback > wall event > other. Rank changes among strangers appear on the wall only.
 - **Fence Line** (data here; screen by UX): one continuous wall, height = rank (Daifuku's wall top, Captains, Toughs 1–5 descending). No rank labels and no numbers. Each cat shows name, Title, silhouette Scars, disposition pose, storm mark, truce sprig, and known Fear/Strength icons once revealed (a Fear is revealed when sniffed or triggered). Read-only, on the street, at the Doorstep and at the Lot; never in the house. It changes visibly overnight: wall events, comebacks, promotions.
 
 ### 3.14 Unlock ladder (DR-23, NX-06)
@@ -228,7 +240,8 @@ Slice Strengths (Nemesis chooses them, Combat values them): **Thick Fur** (resis
 | Life 1 | Standoff, Verdict, First Thorn, 1-item Sniff (day 2), Lick In, Gloat |
 | Life 2, day 1 | Fence Line (static first view), Rival Ambush (the Thorn), 3-item Sniff, wall events (from that night) |
 | First Humble | Restless warnings and uprisings |
-| Cat flap (Life 2, day 2) | Night Rivals; the first raid (the arc lead's) |
+| Arc conditions met, or the night after Life 2 day 3 at the latest | The Declaration: the one Nemesis of Lives 1–2 (§3.6) |
+| Cat flap (Life 2, day 2) | Night Rivals; the first raid (the arc lead's), forecast that morning |
 | Life 3+ | Wavering/Turncoat and the rest (Backlog) |
 
 ### 3.15 Barks: triggers, tags, grammar, volume (NX-12, NS-11, DR-44, DR-53)
@@ -257,7 +270,7 @@ personality= "braggart"|"brooder"|"schemer"|"fraidy"|"stalwart"|"goofball"|"any"
 | Family (weight) | Tag names |
 |---|---|
 | Memory (3) | `last_verdict:<chase|humble|recruit|nose_accept|nose_snub>`, `last_finisher_type:<claw|thump|yowl>`, `by_pile_on`, `fear_exploited:<water|loud_noise|cucumbers>`, `ambushed`, `lick_in`, `scar_from_mikan:<notch|kink|fold|cowlick>`, `patch_lost`, `fled`, `count_routs>=<n>`, `adapted:<strength>`, `mikan_plastered` |
-| Relationship (2) | `nemesis`, `bitter`, `friend`, `grudge>=<n>`, `regard>=<n>`, `feud_with` (binds `{other}`), `ex_crew` |
+| Relationship (2) | `nemesis`, `sworn_rival` (the Nemesis face with Regard > Grudge), `bitter`, `friend`, `grudge>=<n>`, `regard>=<n>`, `feud_with` (binds `{other}`), `ex_crew` |
 | Context (1) | `phase:<p>`, `own_patch`, `rank:<r>`, `clout:<rank>`, `life:<1|2>`, `evenings_home`, `nights_out`, `posse_size>=<n>` |
 
 **Slot binding.** `{other}` binds to the cat in the first matched `other.`-scoped or `feud_with` tag. `{when}` cites the Memory entry matched by the highest-weight memory tag (ties: the most recent), bucketed as "last night", "the other day", "ages ago". `{patch}` is that entry's patch. Slots: `{address}` 8 (§below), `{mikan}` 8, `{other}` 8, `{patch}` 16, `{title}` 16, `{when}` 14. Overflow uses `short_text`. If that also overflows, the template is dropped and logged as a content bug.
@@ -297,20 +310,22 @@ personality= "braggart"|"brooder"|"schemer"|"fraidy"|"stalwart"|"goofball"|"any"
 
 ### 3.16 Worked Rival life-story (fits inside the slice)
 
-**Kinako**, the First Thorn: Tough seat 5, Keeper of Low Wall Corner, **Yowler, Braggart** (`m_g` 1.2, `m_r` 0.7), Fear Water, Lv 2, Grudge 15, Regard 10 (fixed). The policy is a typical first-timer who chases and Humbles. Times are approximate.
+**Togemaru**, the First Thorn: Tough seat 5, **Keeper of Laundry Pole Yard**, **Scrapper, Braggart** (`m_g` 1.2, `m_r` 0.7), Fear Cucumbers, Lv 2, Grudge 15, Regard 10 (fixed). The policy is a typical first-timer who chases and Humbles. No Fear prop is used in Life 1 (props are taught on Life 2 day 2). Times are approximate.
 
 | When | What the player sees | Rules at work | After |
 |---|---|---|---|
-| L1 D1 ≈ 0:20 | Standoff: "Nice bell, Collar. Does it ring when you run?" At 25% Nerve Kinako's yellow flee windup plays; the player is busy and does not interrupt. He bolts over the wall; Mikan Sprays the post | Normal flee (DR-41). F1: (fled 8 + Patch lost 6) × 1.2 = 16.8 → 17 (cap 35) | G 32, R 10. Memory: FIRST_MEETING, FLED, PATCH_LOST. Enc 1 |
-| L1 D2 ≈ 0:33 | Sniff, 1 item: Kinako's mark over the gatepost. He is sitting on it. "You got the post. I got away. Round two, Collar." (unskippable 1 s). **First memory line, ≈ minute 33.** The player tips the bucket; Ruffled, Frazzle, a two-cat Pile-On. Tell: ears back, tail lashing. **Chase Off** | F1: (6 + 3 + 3 + 10) × 1.2 = 26.4 → 26. Regard −2 × 0.7 → −1. F7: 0.35 + 0.15 = 0.50, rolled yes → Water override → **damp cowlick**. Title **the Soggy**. F5: 2 − 1 − 1 → 1 night | G 58, R 9. Enc 2. Away |
-| Night (montage 1→2) | — | 3b comeback. Adaptation: rule 2 (Fear prop used) → **Got Over It (Water)**. Way In holds (3 types unresisted). F9: Lv 3. Arc lead: no decay | Lv 3 |
-| L2 D1 ≈ 1:05 | Fence Line opens (static): Kinako on seat 5 with his cowlick. A 2.0 s yowl-sting from the laundry poles: "Go on, tip the bucket. I like the rain now." The player Skitters late, so Mikan starts Ruffled. The bucket does nothing. Kinako flattens Mikan; the Posse wins anyway. Tell: **chin up. Chase Off** | Rival Ambush (lead placement). **Lick In** → Bell-Ringer (glory from Mikan outranks the Soggy for display). F1: (6 + 3 + 10) × 1.2 = 22.8 → 23 → **cap 20**. F7: 0.35 + 0.15 + 0.50 = 1.0; finisher Thump (Bruiser Crew cat) → **kinked tail** | **G 78**. Enc 3, 2 Scars. **Arc achieved** at the next slot pass |
-| Night 1 | Next morning's Sniff: Kinako's portrait with a storm mark, "back already" | 3e: arc slot → **Nemesis** (storm mark, small). 3b: back after 1 night, 2nd return → **promoted** seat 5 → 4 (swap). Adaptation rule 5 → Grudge Fuel | Nemesis, seat 4 |
-| L2 D2 ≈ 1:35 | The cat flap arrives. The Sniff forecast says Kinako's crew is coming for Laundry Pole Patch tonight. The player posts the old wall cat (Stalwart) as Sentry, answers the Caterwaul, wins, and this time chooses **Humble** | First raid = arc lead (3f). F1 cap 20: (6 + 3 + 10) × 1.2 → 20 | G 98, R 5 (Humble −5 × 0.7 = −3.5 → −4). Humbled on the Laundry Pole crate |
-| L2 D3 | Sniff: scratches on the crate (Restless, ≥ 80). The Sentry stays, so there is no uprising. "Your mark's on my post. I count the days." | Watched → no simmer, no uprising; arc lead → no decay | G 98 |
-| L2 D4 ≈ 2:20 | Daifuku's Den. Kinako is not there (residents do not escort). The Lane is claimed; K2.5; title card | — | Slice ends with a Nemesis on a crate, two Scars and two Titles' worth of history |
+| L1 D1 ≈ 0:20 | After the Low Wall Corner claim, Togemaru struts down from the laundry poles. Standoff: "Nice bell, Collar. Does it ring when you run?" At 25% Nerve its yellow flee windup plays; the player is busy and does not interrupt. It bolts back to its gatepost | Normal flee (DR-41). F1: fled 8 × 1.2 = 9.6 → 10 (cap 35). It loses no Patch today | G 25, R 10. Memory: FIRST_MEETING, FLED. Enc 1 |
+| L1 D2 ≈ 0:28–0:33 | Sniff, 1 item: Togemaru's fresh mark over the Laundry Pole Yard gatepost. It is sitting on it: "I ran yesterday. Not off my own post, Collar." (unskippable 1 s). **First memory line, ≈ minute 28–33.** The contest for its post: Mikan Counter-Sprays, a two-cat Pile-On Routs it. Tell: ears back, tail lashing. **Chase Off**; Claim Spray | F1: (Rout 6 + Pile-On 3 + Keeper's post Sprayed 6 + Chase 10) × 1.2 = 30 ≤ 35. Regard: clean win +8 × 0.7 → +6. F7: 0.35 + 0.15 = 0.50, rolled yes; finisher Claw → **ear notch**. F5: 2 − 1 − 1 → 1 night | G 55, R 16. Enc 2, 1 Scar. Away |
+| Night (montage 1→2) | — | 3b comeback (1st return: with escorts and an adaptation). Adaptation rule 5 (no prop used yet) → **Grudge Fuel**. F9: Lv 3. Arc lead: no decay | Lv 3 |
+| L2 D1 ≈ 1:05 | Fence Line opens (static): Togemaru on seat 5 with its notched ear. A 2.0 s yowl-sting from the laundry poles; the player Skitters late, so Mikan starts Ruffled. Togemaru flattens Mikan; the Posse wins anyway. Tell: **chin up. Chase Off** | Rival Ambush (lead placement). **Lick In** → Title **Bell-Ringer**. F1: (6 + 3 + 10) × 1.2 = 22.8 → **cap 20**. F7: 2nd Rout → guaranteed; finisher Thump (Hige) → **kinked tail**. Regard: Ambushed by it, no Fear → clean +6 | **G 75**, R 22. Enc 3, 2 Scars, 1 Title |
+| Night 3 | — | 3e: arc conditions met (3 encounters, 3 marks) → **the Declaration** (Sworn Enemy: G ≥ R; small storm mark). 3b: back after 1 night, 2nd return → **promoted** seat 5 → 4. 3f: the first raid = the arc lead's, `grudge`, Togemaru + 1 escort, on the lowest-Scent held Patch (Persimmon Alley, claimed today) | Nemesis, seat 4 |
+| L2 D2 ≈ 1:35 | Sniff opens with the **Declaration card**: Togemaru's portrait, storm mark, notched ear and kinked tail, "Your bell's mine, Collar." Then the forecast: Togemaru and one more for Persimmon Alley tonight (motive "?"). At the Lot the player learns the Turf Board and posts Hige there. The cat flap opens at Dusk; the player answers the Caterwaul, tips the cucumber junk (props are new today), wins, and chooses **Chase Off** | F1: (6 + 3 + Fear 3 + 10) × 1.2 = 26.4 → cap 20. Regard: Fear −2 × 0.7 → −1. 3rd Chase | G 95, R 21. Away |
+| Night 4 | — | 3b: 3rd return → **Grand Standoff** (the Sniff call-out). Adaptation rule 2 (Fear prop used) → **Got Over It (Cucumbers)**; Way In holds (all 3 damage types unresisted) | Large storm mark |
+| L2 D3 Dusk | Sniff: "Togemaru calls you out at the gatepost at Dusk." At the Laundry Pole Yard gatepost, Togemaru and two escorts. "Cucumbers? I sleep on them now." (`RETURNED`, `adapted:got_over_it_cucumbers`). The junk does nothing. The player wins and chooses **Humble**. (The chime and bell sound with no Call: Haru is late tonight; Late Home) | Grand Standoff (all four Verdicts; Recruit greyed: it is the declared Nemesis). F1 cap 20 → G 100 (clamped). Regard: clean +8, Humble −5 → +2 | G 100, R 23. Humbled on the Laundry Pole Yard crate |
+| L2 D4 | Sniff: scratches on the crate (Restless, ≥ 80). The player keeps a Sentry on Laundry Pole Yard, so there is no uprising. "Loud cats don't stay on crates, Collar." K2.5; Daifuku's Den | Watched → no simmer, no uprising; Humbled residents do not escort | — |
+| Slice end | The Life-end sleep after the claim | — | Slice ends with one declared Nemesis on a crate: two Scars, a Title, an adaptation, and a Grand Standoff's worth of history |
 
-**Pacifist variant** (Nose-Touch every time, no props): enc 2 offer p = 0.19 → snub (G 22, R 20). Enc 3 p = 0.56. Enc 4 p = 0.90. Enc 5 is capped at 0.95. Enc 3 is the second Rout, so the Scar is guaranteed. P(no friend arc by enc 5) ≈ 0.2% (F4 worked example). The friend arc then lands on Life 2, day 1–2: Kinako on the gatepost with a leaf sprig, keeping Low Wall Corner for 5 days.
+**Pacifist variant** (Nose-Touch every time, no props). Enc 1 (L1D1) is the flee: G 25. Enc 2 (L1D2): G_p 25 + round(1.2 × 15) = 43, R_p 16 → p = **0.19**. A snub halves Grudge (G 22) and the Thorn **bolts, leaving Laundry Pole Yard Open** (Claim Spray). Enc 3 (L2D1, the lead placement; being Ambushed by it is clean): G_p 33, R_p 25, snubs 1 → p = **0.55**. Enc 3 is the second Rout, so the Scar is guaranteed: 3 encounters + 1 mark → **the Declaration on night 3 whatever the roll**, as a **Sworn Rival** (accepted: G 0, R 42; snubbed: G 17, R 28; Regard is above Grudge either way). An accepted truce keeps Togemaru on its gatepost with a leaf sprig *and* the storm mark, and it still turns up daily for a sparring challenge. Round-3 sim: 100% of pacifist players are declared a Nemesis, 99% as a Sworn Rival.
 
 ---
 
@@ -335,7 +350,7 @@ Rounding is to the nearest integer, .5 up, at the end of each formula. Every `rn
 - **+50:** a Stalwart with a clean win and an accepted Nose-Touch: (8 + 25) × 1.5 = 49.5 → 50.
 
 Both meters are clamped to 0–100, so no value the system cannot use is reachable.
-**Worked example:** Kinako, L1 D2: Σg = 6 + 3 + 3 + 10 = 22, × 1.2 = 26.4 → 26 ≤ 35. G 32 → 58.
+**Worked example:** Togemaru, L1 D2 (Keeper of Laundry Pole Yard, no Fear prop in Life 1): Σg = 6 + 3 + 6 + 10 = 25, × 1.2 = 30 ≤ 35. G 25 → 55.
 
 ### F2. Nightly drift
 
@@ -346,10 +361,10 @@ Both meters are clamped to 0–100, so no value the system cannot use is reachab
 | `d` | int | {1, 2} | 1 for Brooder, else 2 |
 | `quiet` | bool | 0/1 | 1 if the cat had no encounter with the player today (Away nights are quiet) |
 | `lead` | bool | 0/1 | 1 while the cat is the arc lead |
-| `s_simmer` | int | {0, 2} | 2 for a Humbled resident on an Unwatched, not-Settled Patch; then `quiet` is ignored (no decay) |
+| `s_simmer` | int | {0, 8} | 8 for a Humbled resident on an Unwatched, not-Settled Patch; then `quiet` is ignored (no decay) |
 | `s_stew` | int | {0, 5} | Director Stewing; result capped at 74 |
 
-**Range:** −2 to +5 per night. **Example:** a Wary Goofball at 46, unseen for 3 nights: 46 → 40, which crosses into Indifferent (pose change, no announcement).
+**Range:** −2 to +8 per night. **Example:** a Wary Goofball at 46, unseen for 3 nights: 46 → 40, which crosses into Indifferent (pose change, no announcement).
 
 ### F3. Arc score (lead choice, Lane-slot choice, Sniff priority)
 
@@ -364,7 +379,7 @@ Both meters are clamped to 0–100, so no value the system cannot use is reachab
 | `days_unseen` | int | 0–∞ | Days since the last encounter (counted ≤ 10) |
 | `A` | float | −30 to ≈ 255 | Higher = more "the player's cat" |
 
-**Range:** minimum −30 (a stranger unseen for 10 days); slice maximum ≈ 12·15 + 30 + 30 + 15 = 255. It is only compared, never displayed, so the bounds are harmless. **Example:** Kinako after L2 D1: 12·3 + 10·3 + 0.3·78 + 15 = 104.4.
+**Range:** minimum −30 (a stranger unseen for 10 days); slice maximum ≈ 12·15 + 30 + 30 + 15 = 255. It is only compared, never displayed, so the bounds are harmless. **Example:** Togemaru after L2 D1: 12·3 + 10·3 + 0.3·75 + 15 = 103.5.
 
 ### F4. Nose-Touch acceptance (seeded per encounter)
 
@@ -379,7 +394,7 @@ Both meters are clamped to 0–100, so no value the system cannot use is reachab
 | `p` | float | 0.05–0.95 | Acceptance probability |
 
 **Range:** clamped to 0.05–0.95, so the player can never be sure, and a Nemesis is near the floor. Unclamped extremes: −0.60 (Braggart, G 100, R 0, dirty) and +2.20.
-**Worked example (pacifist Kinako):** enc 2: G_p 32 + round(9 × 1.2) = 43, R_p 10 + round(8 × 0.7) = 16 → 0.40 − 0.20 + 0.096 − 0.258 + 0.15 = **0.19**. Snub → G 22, R 20. Enc 3: G_p 33, R_p 26, snubs 1 → **0.56**. Snub → G 17, R 30. Enc 4: G_p 28, R_p 36, snubs 2 → **0.90**. Enc 5: **0.95** (clamped). P(all snub) = 0.81 × 0.44 × 0.10 × 0.05 ≈ **0.0018**. A clean-fought Stalwart Tough at enc 1 (G_p 15 + 7 = 22, R_p 10 + 12 = 22): 0.40 + 0.30 + 0.132 − 0.132 + 0.15 = **0.85**.
+**Worked example (pacifist Togemaru):** enc 2: G_p 25 + round(15 × 1.2) = 43, R_p 10 + round(8 × 0.7) = 16 → 0.40 − 0.20 + 0.096 − 0.258 + 0.15 = **0.19**. Snub → G 22, R 19. Enc 3: G_p 33, R_p 25, snubs 1 → **0.55**. Snub → G 17, R 28. Enc 4: G_p 28, R_p 34, snubs 2 → **0.89**. Enc 5: **0.95** (clamped). P(all snub) = 0.81 × 0.45 × 0.11 × 0.05 ≈ **0.0020**. (Under the Declaration, a pacifist's Nemesis no longer depends on this bound: §3.6.) A clean-fought Stalwart Tough at enc 1 (G_p 15 + 7 = 22, R_p 10 + 12 = 22): 0.40 + 0.30 + 0.132 − 0.132 + 0.15 = **0.85**.
 
 ### F5. Comeback delay
 
@@ -391,7 +406,7 @@ Both meters are clamped to 0–100, so no value the system cannot use is reachab
 | `G` | int | 0–100 | Grudge after the Verdict |
 | `nights` | int | 1–3 | Nights Away |
 
-**Range:** 1–3. The unclamped low is 0 (Braggart at G ≥ 50), which is why the clamp exists. **Example:** Kinako, G 58, Braggart → 2 − 1 − 1 = 0 → **1**.
+**Range:** 1–3. The unclamped low is 0 (Braggart at G ≥ 50), which is why the clamp exists. **Example:** Togemaru, G 55, Braggart → 2 − 1 − 1 = 0 → **1**.
 
 ### F6. Wall-event schedule and choice
 
@@ -415,7 +430,7 @@ The next event comes on night `n + 2 + b`, `b ∈ {0, 1}` seeded 50/50. The kind
 | `routs_by_player` | int | 1+ | Including this Rout |
 | `p_scar` | float | 0.35–1.0 | |
 
-**Range:** 0.35–1.0. **Example:** Kinako's first Rout, by Pile-On: 0.50. His second: 1.0.
+**Range:** 0.35–1.0. **Example:** Togemaru's first Rout, by Pile-On: 0.50. Its second: 1.0.
 
 ### F8. Bark score
 
@@ -441,7 +456,7 @@ The next event comes on night `n + 2 + b`, `b ∈ {0, 1}` seeded 50/50. The kind
 | `δ` | int | −1..0 | Seeded |
 | `L` | int | 1–8 (slice band) | |
 
-**Range:** 1–8 (Lane band). Growth stops at the cap. **Example:** Kinako, generated at L_mikan 2: 2 + 0 + 0 = 2; after a comeback, 3.
+**Range:** 1–8 (Lane band). Growth stops at the cap. **Example:** Togemaru, generated at L_mikan 2: 2 + 0 + 0 = 2; after a comeback, 3.
 
 ---
 
@@ -450,17 +465,25 @@ The next event comes on night `n + 2 + b`, `b ∈ {0, 1}` seeded 50/50. The kind
 | Situation | Rule |
 |---|---|
 | The player interrupts the Thorn's flee on Life 1, day 1 | Normal Rout and Verdict (the first Verdict lands on the cat that matters). Day 2 follows §3.8 table 1 |
-| The Thorn is Recruited or accepts Nose-Touch in Life 1 | `arc_role = resolved`; a new lead is named on the next night (§3.7). The day-2 memory line still plays (`CREW_MEMORY` / greeting) |
+| The Thorn is Recruited or accepts Nose-Touch in Life 1 | `arc_role = resolved`; a new lead is named **the same night** from all active non-Boss cats (§3.7 b). The day-2 memory line still plays (`CREW_MEMORY` / greeting) |
+| The Thorn is Humbled before night 3 | It stays the lead (§3.7 a). Its presence placement is a crate challenge, and its `uprising` is the scripted first raid |
+| Nose-Touch snubbed | The cat bolts with no truce; the Patch is **Open** (Claim Spray). `VerdictApplied.verdict = nose_snub` |
 | The player avoids the gatepost on Life 1, day 2 | The placement is on the only route out, within 30 s. If the player leaves by the High Road, the Thorn is moved to the first Scent Post the player approaches |
 | The player loses to the Thorn in Life 1 | Mikan home at Dusk, nothing lost (DR-19). The Thorn Gloats, takes Bell-Ringer and moves up a seat. Day 2: `REMATCH_I_WON` |
 | The highest-ranked Routed cat is not the arc lead | It gets the Verdict; the lead slips away (`SLIPPED_AWAY`, rout items only) and stays the lead. (A player-choice override is Backlog) |
 | The Undermark crate is occupied | Humble is greyed, with a reason icon (crate taken) |
 | The Crew is full | "Recruit — make room" (DR-34) |
 | Recruit is blocked (G ≥ 90, R < 50) | Greyed; tell: it bares its teeth at the bell |
-| Nose-Touch on a Keeper whose Patch the player needs | Allowed; the Patch stays the cat's for 5 days. The Den gate is Territory's (3 of 4 outer) |
+| Nose-Touch on a Keeper whose Patch the player needs | Allowed; if accepted, the Patch stays the cat's for 5 days. The Den gate is Territory's (3 of 4 outer) |
 | Daifuku's Verdict (end of the slice) | Routing Daifuku claims the Lane whatever the Verdict (Territory). Chase Off: he leaves the wall (his return is Backlog). Nose-Touch: he keeps his wall top on the Fence Line, but the Den is claimed. Recruit needs Regard ≥ 50. Humble is legal (the Den becomes the player's) (A-2) |
 | Two cats tie for a slot or lead | The earlier first meeting wins, then the lower `cat_id` |
-| No cat ≥ 75 | The Lane slot stays empty. A pacifist slice may end with zero Nemeses (the friend arc covers the guarantee) |
+| No cat ≥ 75 | Irrelevant to the slot in Lives 1–2: the Declaration does not need Grudge. A pacifist's Nemesis is a Sworn Rival |
+| No Declaration by the night after Life 2 day 3 | The deadline declares the current lead (a met cat preferred, §3.6). Round-3 sim: needed by 0% of chase/humble players, 18% pacifist, 37% mixed, 48% lose-40 |
+| The declared Nemesis would be Recruited | Recruit is greyed in the slice (tell: "not until we settle it"). Chase Off, Humble and Nose-Touch stay open |
+| The declared Nemesis is Chased Off, Humbled or under truce | It keeps the slot: storm mark on the empty seat, on the crate, or with the leaf sprig. A truce turns its daily placement into a sparring challenge off its post |
+| The declared Nemesis would be retired to `Gone` (F5 overflow) | Never: it is skipped, and the next-oldest exile is chosen |
+| A cat other than the declared Nemesis reaches Grudge ≥ 75 in Lives 1–2 | It is **Bitter** (no slot, no storm mark) |
+| No cat has Grudge ≥ 40 for a raid request | Daifuku sends the lowest-seat Tough under `boss_orders` (§3.12 3f) |
 | Away full on a Chase Off | F5 overflow rule |
 | A comeback finds its seat taken | The lowest empty seat, else Roaming |
 | Tracked would exceed 12 | No fresh generation; refills use Roamers only. The oldest `Gone`-eligible Roamer with no marks retires to legend |
@@ -490,7 +513,7 @@ The next event comes on night `n + 2 + b`, `b ∈ {0, 1}` seeded 50/50. The kind
 | In | `EncounterEnded` (outcome, routed_ids) | Verdict cat, `SLIPPED_AWAY`, loss and victor |
 | In | `PatchChanged`, `RaidResolved`, `DistrictClaimed` | Patch-lost item, Keeper, Humble residence, uprising result |
 | In | `HomeArrived`, `PhaseChanged`, `DayEnded`, `LifeAdvanced` | Routine tags, `mikan_plastered`, Night Shuffle |
-| Out | `VerdictApplied`, `RivalRankChanged` / `WallEvent`, `RaidRequested`, `BetrayalTriggered` (unreachable in the slice) | Territory, Crew, UX, Narrative |
+| Out | `VerdictApplied` (`verdict`: `chase` · `humble` · `recruit` · `nose_accept` · `nose_snub`), `RivalRankChanged` / `WallEvent`, `RaidRequested(attacker_ids, patch_id, motive ∈ {grudge, boss_orders, gloat, pretender, uprising}, night)`, `NemesisDeclared(cat_id, face ∈ {sworn_enemy, sworn_rival})`, `BetrayalTriggered` (unreachable in the slice) | Territory, Crew, UX (Declaration card), Narrative, Audio |
 | Query out | `RivalCombatProfile` (level, style, personality, moves, strengths, fears, title, scars, flee_threshold) | Combat |
 | Query in | `PowerRating`, `Loyalty` (Crew) | Raid targeting, the betrayal step (slice no-op) |
 
@@ -509,7 +532,9 @@ The next event comes on night `n + 2 + b`, `b ∈ {0, 1}` seeded 50/50. The kind
 
 - **A-1:** Daifuku is a Brooder (Narrative owns Boss personalities).
 - **A-2:** a Nose-Touched or Chased-Off Daifuku still yields the Lane claim, because the Rout claims it.
-- **A-3:** the Keeper of Low Wall Corner in DR-22's escalation *is* the First Thorn.
+- ~~A-3~~ deleted (iteration 3): the Keeper of Low Wall Corner is an untracked Stray; the First Thorn is Keeper of Laundry Pole Yard.
+- **A-6:** DR-39 rules "one Lane slot plus the arc-lead slot" at Grudge ≥ 75. At the user's direction (every player ends the slice with exactly one clearly declared Nemesis, and Nemesis stays rare), Lives 1–2 use **one slot, filled by the Declaration at any Grudge**, and the Lane slot opens in Life 3. Creative director to confirm.
+- **A-7:** a Nemesis can be friendly (the **Sworn Rival** face). This keeps the guarantee for pacifist players without manufacturing hate. Narrative to confirm the tone and the Declaration card's line.
 - **A-4:** DR-42 lists "Clout +2" for Chase Off while DR-14 makes Clout milestones-only. This doc emits the Verdict and lets Territory decide.
 - **A-5:** the Title "the Soggy" shares a word with Combat's Soggy status. Kept deliberately as a callback (NS-C14); Narrative may rename it.
 
@@ -532,9 +557,11 @@ The acknowledged inspiration, the Nemesis System of *Middle-earth: Shadow of Mor
 | `m_g` / `m_r` | §3.4 | 0.5–1.5 | Personality contrast |
 | Decay `d` | 2 (Brooder 1) | ruled | — |
 | Nemesis threshold | 75 | ruled | — |
-| Slots | 1 + arc lead | ruled | — |
+| Slots | Lives 1–2: 1 (the declared arc lead); Life 3+: 1 Lane + arc lead | A-6 (director) | One Nemesis per slice |
+| Declaration deadline | the night after L2 D3 | L2 D2–L2 D3 nights | Later = more players declared by history rather than by deadline; must precede the Den |
+| Raid requester Grudge | 40 | 30–60 | Below 40 more raids are led by cats with a real grudge; the `boss_orders` fallback keeps one raid a night either way |
 | Restless | 80 | ruled | — |
-| Simmer | +2/night Unwatched | 1–3 | Uprising pressure |
+| Simmer | +8/night Unwatched | 5–10 | Uprising pressure: nights from Humbled (≈ G 55) to Restless (80) |
 | Stew | +5/night, cap 74, from L2 D3 | 3–8; cap ≤ 74 | Pacifist pressure |
 | F4 base / clean / snub bonus | 0.40 / 0.15 / 0.25 | 0.3–0.5 / 0.1–0.2 / 0.15–0.35 | Friend-arc speed; pacifist guarantee needs snub ≥ 0.2 |
 | F5 base | 2 nights | 1–3 | Return cadence |
@@ -542,7 +569,7 @@ The acknowledged inspiration, the Nemesis System of *Middle-earth: Shadow of Mor
 | Wall-event gap | 2–3 nights | ruled | — |
 | F7 base / Pile-On / 2nd Rout | 0.35 / 0.15 / 0.50 | 0.2–0.5 / 0–0.25 / guarantee fixed | Scar frequency |
 | `p_ambush_day` | 0.5 | 0.3–0.7 (Life 2) | Rival Ambush frequency (≤ 1/day fixed) |
-| Lead presence | ≥ 1 encounter/day from L2 D1 | fixed for the slice | Arc guarantee |
+| Lead presence | ≥ 1 encounter/day from L2 D1 to the slice's end | fixed for the slice | Arc guarantee; the Nemesis keeps turning up |
 | Sniff nemesis items | 1 (L1) / 3 (L2) | ruled | — |
 | `STANDOFF_FIRST` retirement | 20 days | ruled | — |
 | Unskippable memory line | 1.0 s | ruled | — |
@@ -561,12 +588,12 @@ The acknowledged inspiration, the Nemesis System of *Middle-earth: Shadow of Mor
 
 **Simulation (DR-57: Monte Carlo, 7 days, one district, 1,000 seeds; policies chase, humble, mixed, pacifist, lose-40%)**
 6. Share of seated Rivals at Grudge ≥ 75, averaged over Life 2 nights: **≤ 15%** for every policy.
-7. Nemeses (slot holders) per slice: median 1, **max 2**.
-8. `NemesisArcAchieved` by the end of Life 2: **100%** for chase, humble, mixed and lose-40%; **≥ 99%** for pacifist (the F4 bound is 99.8%).
+7. **Exactly 1** Nemesis (the declared arc lead) at the end of the slice for **100%** of seeds under every policy; never more than 1 at once in Lives 1–2; no Declaration later than the night after L2 D3. (Round-3 sim: 100% for all five policies.)
+8. `NemesisArcAchieved` (§3.7 c) inside 7 days: **100%** for chase and humble players, **≥ 85%** for mixed and pacifist, **≥ 80%** for lose-40%; 100% by day 30. (Round-3 sim: 100 / 100 / 89 / 100 / 80%.)
 9. Wall events per district-night: 0.33–0.5. Rank changes visible on the wall per night: ≥ 0.3.
 10. Life 2 mornings with ≥ 1 admitted nemesis item: 60–95%. **Never > 3 items.**
-11. Uprisings per slice: 0 when the Humbled Patch is Watched; ≤ 1 under neglect.
-12. Hand-check reference values the sim must reproduce: the Kinako chase path gives G 32 → 58 → 78, Nemesis on the night of L2 D1. For non-arc cats under typical play (Pile-On, Chase, no Fear, no Ambush, start 15), two encounters give ≤ 70. Worst case (Braggart, start 20, Keeper, Fear and Ambush on both encounters) is 83. That is the only two-encounter route to Bitter, and it is intended.
+11. Uprisings per slice: 0 when the Humbled Patch is Watched; ≤ 1 under neglect. An uprising always uses the night's single raid slot.
+12. Hand-check reference values the sim must reproduce: the Togemaru chase path gives G 25 → 55 → 75 (cap), declared on the night of L2 D1. For non-arc cats under typical play (Pile-On, Chase, no Fear, no Ambush, start 15), two encounters give ≤ 70. Worst case (Braggart, start 20, Keeper, Fear and Ambush on both encounters) is 83. That is the only two-encounter route to Bitter, and it is intended.
 
 **Rules and data (automated)**
 13. Pinned Memory ≤ 6 and entries ≤ 10 for every cat over 1,000 seeded runs.
@@ -608,6 +635,14 @@ The acknowledged inspiration, the Nemesis System of *Middle-earth: Shadow of Mor
 - Botan's Verdict (DR-45: Humble or Nose-Touch only; the hand-bell).
 - Botan's "Collar" hypocrisy payoff and the Secret Collar quirk.
 - Full bark budget (≤ 700) and the `CREW_SPOTTED`, `WAVERING`, `LAST_WALK` triggers.
+- **(Iteration 3, not fixed in the slice)** The Lane slot (highest F3 at Grudge ≥ 75) returns in Life 3; re-sim per-district slots for 3 districts with more cats. One district drifts to 15–18% of seated cats at G ≥ 75 by day 30 under aggressive play (round-3 sim: chase 17%, humble 21%).
+- **(Iteration 3)** Recruiting the declared Nemesis after the slice ("the score is settled"): when and how the slot passes on.
+- **(Iteration 3)** Humble's visible cost inside 7 days: at +8 simmer the slice mostly shows Restless warnings, not uprisings (0.01 per slice, 2.6 by day 30). If playtests show Humble still dominates, raise simmer within 5–10 or start the Humbled resident's simmer on the first Unwatched night at +12.
+- **(Iteration 3)** The deadline Declaration names a lead with fewer than 3 encounters for 37–48% of mixed and lose-40 players. Playtest whether those Declarations read as earned; levers are the deadline night and a guaranteed L2D2 lead placement.
+- **(Iteration 3, Combat)** Togemaru is a Scrapper (resists Claw ×0.8): check in the combat prototype that a Life 1 kitten can beat it. Combat's round-2 ruling gives it **+15% Nerve** as its Strength, which is not on §3.9's slice list: reconcile §3.9 with Combat §3.9's Strength menu.
+- **(Iteration 3, Crew)** Crew §3.3 tags Kagi "Laundry-Pole Captain". Laundry Pole Yard is Togemaru's post; this doc makes Kagi Keeper of Tofu Shop Step. Crew to retag.
+- **(Iteration 3)** The pacifist "P(no friend arc)" bound (F4) no longer carries a guarantee; the Declaration does. Re-state it as a pacing figure only.
+- **(Iteration 3)** Rival Ambush budget: this doc's ≤ 1 per day is the slice value inside Day Loop §3.7's ceiling (≤ 2 per day). Keep them aligned when Life 3+ budgets are set.
 
 ## Revision Log
 
@@ -656,7 +691,7 @@ The acknowledged inspiration, the Nemesis System of *Middle-earth: Shadow of Mor
 | NS-11 | FIXED | EBNF, slot binding, lint, volumes (§3.15, AC 17) |
 | NS-12 | FIXED | = NX-17 |
 | NS-13 | FIXED | `scattered` cut |
-| NS-14 | BACKLOG (A.1 FIXED) | The new slice story Kinako replaces A.1 (§3.16) |
+| NS-14 | BACKLOG (A.1 FIXED) | The new slice story (Togemaru since iteration 3) replaces A.1 (§3.16) |
 | NS-15 | BACKLOG | Moot: duels and Spats cut |
 | NS-16 | FIXED | Humble legal if the Patch will become the player's |
 | NS-17 | FIXED (slice) / BACKLOG | Seated cats remain at claim; Holdouts Backlog |
@@ -680,3 +715,17 @@ The acknowledged inspiration, the Nemesis System of *Middle-earth: Shadow of Mor
 | PP-05 | FIXED | = NX-09 / NX-01 |
 | PP-14 | FIXED | One Verdict per fight; `SLIPPED_AWAY` |
 | PP-21 | FIXED | One deterministic recruit gate; Crew prices |
+
+**2026-11-24 — Iteration 3 (final fix pass; round-2 review `design/reviews/round-2/nemesis-territory-dayloop.md`, plus `presentation.md` and `combat-and-crew.md` rulings).** Sims: `design/reviews/round-3/sim/nemesis_slice_sim.py --fix3` (output `nemesis_slice_sim.fix3.out.txt`), 500 seeds per policy, 7 days, and 300 seeds over 30 days.
+
+| Item | Status | How |
+|---|---|---|
+| N1 One First Thorn | FIXED | Togemaru (Braggart, Scrapper, Fear Cucumbers; Crew §3.3), Keeper of Laundry Pole Yard. Low Wall Corner's Keeper is an untracked Stray; A-3 deleted; Keeper table in §3.1; Day 1 Standoff after the LWC claim, Day 2 contest for its own post (§3.8). §3.16 re-derived with no Fear prop in Life 1 and Got Over It (Cucumbers) in Life 2: G 25 → 55 → 75 (cap) → declared on night 3 |
+| N2 Raid requests | FIXED | §3.12 3f: one raid every night; first requested night 3, forecast in the L2D2 Sniff, fires that Night; lowest-Scent admissible target, Strong included; requester Grudge ≥ 40, else `boss_orders` |
+| N3 One motive list | FIXED | Territory's five motives in §3.12, §6.1 and the `RaidRequested` payload, with the party per motive; an uprising uses the night's raid slot |
+| N4 Arc-lead holes | FIXED | §3.7 (a)–(c); AC 7 and AC 8 restated against the sim |
+| N5 Snubbed Nose-Touch | FIXED | The cat bolts; the Patch is Open; `nose_snub` in `VerdictApplied` (§3.11, §5) |
+| N6 Humble's cost | FIXED (part) | Simmer +8 (5–10). The 7-day slice still shows mostly Restless warnings (Backlog) |
+| Design risk: no Nemesis for a typical player | FIXED | **The Declaration** (§3.6): one slot in Lives 1–2, held by the declared arc lead at any Grudge, as a Sworn Enemy or Sworn Rival; deadline the night after L2D3; Recruit greyed on it; Boss never lead. **Before** (round-2 S3, as written): median Nemeses 1 for chase, **0** for humble, mixed, pacifist and lose-40 (pacifist max 0). With the round-2 fixes alone (`--fix2`): median 0 for mixed, pacifist and lose-40. **After** (`--fix3`): **exactly 1 Nemesis at slice end for 100% of every policy**, max 1 at once. Rarity holds: seated cats at G ≥ 75 average 9.5 / 11.4 / 0.9 / 0.0 / 0.6% (chase / humble / mixed / pacifist / lose-40; AC 6 ≤ 15%), and Bitter cats at the end average ≤ 0.02. Declaration night median 3 (the L2D2 Sniff; lose-40: night 5); faces: chase and humble 100% Sworn Enemy, pacifist 99% Sworn Rival, mixed about 50/50. Arc achieved: 100 / 100 / 89 / 100 / 80%. The Life 1 callback stays 100% |
+| Presentation rulings | APPLIED | Late Home on L2D3 Dusk appears in §3.16 (Grand Standoff at Dusk with no Call); the L2D2 teaching order (props and Fears) is used for the first Fear prop |
+| Not fixed | BACKLOG | Lane slot (Life 3), Humble cost inside 7 days, deadline Declarations with < 3 encounters, Togemaru's Strength vs Combat's menu, Kagi's Crew tag |

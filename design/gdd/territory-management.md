@@ -1,6 +1,6 @@
 # Territory Management and the Food-Tax Economy
 
-*Owner: economy-designer (Territory & Economy) · Round 2 (vertical slice) · Date: 2026-11-23 · Status: draft for round-2 review*
+*Owner: economy-designer (Territory & Economy) · Round 2 (vertical slice) · Date: 2026-11-23 · Iteration 3 (final fix pass) 2026-11-24 · Status: slice spec*
 *Canon: `design/creative-brief.md` v1.2; binding rulings `design/reviews/round-1/director-rulings.md` (DR-01, DR-13, DR-14, DR-17–DR-19, DR-37, DR-42, DR-46, DR-47). First draft archived at `design/backlog/first-drafts/territory-management.md`.*
 *Scope: **the vertical slice only.** Hidamari Lane (5 Patches), Lives 1–2, about 7 in-game days. Full-game material is listed in `## Backlog (post-slice)`.*
 
@@ -10,14 +10,14 @@
 
 Territory is half of Mikan's day. Mikan takes ground by **Spraying** Scent Posts, becomes **Keeper** of a **Patch** by Routing the Rival who held it, and **posts recruited cats as Sentries** to hold that ground overnight. Every morning the cats on Mikan's turf pay a food tax, **Tribute**, which appears as a pile on Haru's **Doorstep** and goes into the **Stash**. The Stash pays for Lessons, Bribes and Share a Morsel. The management surface is deliberately small: three screens and one verb.
 
-1. The **Morning Sniff** names tonight's raid: the target Patch, the raiders, and (if a Schemer is posted) the motive.
+1. The **Morning Sniff** names tonight's raid: the target Patch, the raiders (portraits: how many, and who), and (if a Schemer is posted) the motive.
 2. The **Turf Board** at the Lot: drag a portrait onto a Patch. It is the only map-like view and the only place numbers appear.
 3. The **Doorstep pile**: how well the Lane paid.
 4. **Spray**, out in the street: offered only on your own post when it has dropped below Strong. It is a rescue.
 
-**Personality is what makes it a decision.** Each Crew cat guards in its own way: the Stalwart holds, the Braggart makes the Patch pay, the Brooder keeps Scent from fading, the Schemer reads the motive, the Fraidy raises the alarm early, and the Goofball keeps Humbled residents laughing. There are two Sentry posts and a Posse that wants three cats. So every morning in Life 2 the player chooses which cats to post, where, and who stays in the Posse, and the forecast changes the right answer each day.
+**Personality is what makes it a decision.** Each Crew cat guards in its own way: the Stalwart holds, the Braggart makes the Patch pay, the Brooder keeps Scent from fading, the Schemer reads the motive, the Fraidy raises the alarm early, and the Goofball keeps Humbled residents laughing. On top of that, **each raid motive has a counter personality** (the Stalwart against a gang under `boss_orders`, the Braggart against a show-off's `gloat`, the Goofball against a `grudge`, the Schemer against a `pretender`), and **cats posted on neighbouring Patches cover for each other if they are bonded and squabble if they clash**. There are two Sentry posts and a Posse that wants three cats. So every morning in Life 2 the player chooses which cats to post, where, beside whom, and who stays in the Posse, and the forecast changes the right answer each day. Posting well is worth about **+45% Tribute on raid nights** against posting at random, and about one Scuffed night in the slice instead of two and a half (§4.5, round-3 sim).
 
-The slice economy is modelled day by day in §4.11. Tribute rises from 6 a day (Life 1, day 1) to **64 on the morning after Hidamari Lane is claimed**, against the canon anchor of ≈ 60. There is no debt, the Stash is never at risk, the Home Ground cannot fall, and no idle, sleep-skip or wipe strategy beats playing the day.
+The slice economy is modelled day by day in §4.11. Tribute rises from 6 a day (Life 1, day 1) to **65 computed on the night of the claim** (shown on the slice's title card), against the canon anchor of ≈ 60. There is no debt, the Stash is never at risk, the Home Ground cannot fall, and no idle, sleep-skip or wipe strategy beats playing the day.
 
 ## 2. Player Fantasy
 
@@ -52,7 +52,7 @@ Total `base_yield` is 62. The Den sits uphill, so the four outer Patches surroun
 **Features (only three have rules):**
 - **Sunspot:** contains a Sunspot nap point (canon nap). No Scent effect.
 - **High Perch:** raid defence `fixed_bonus` +0.15 (§4.5); a Caterwaul from this Patch gets +30 s.
-- **Back Door:** the richest outer Patch. Nemesis's raid targeting may weight it ×1.5 (Nemesis owns targeting; Territory reports the Feature).
+- **Back Door:** the richest outer Patch. No targeting weight in the slice (Nemesis targets the lowest-Scent admissible Patch, §3.7); Territory still reports the Feature for later targeting rules.
 - **Cut-through:** no rule. It touches three Patches, so it is the Patch most often on the frontier.
 
 **Home Ground (LWC).** Once claimed, Low Wall Corner cannot be raided, Lost, or taken by a traitor. Its Scent decay is halved and never takes it below 10. The player always has one wall: this is the hard floor against a death spiral.
@@ -69,7 +69,7 @@ Total `base_yield` is 62. The Den sits uphill, so the four outer Patches surroun
 | **Strong** | 60–89 | 3 | 1.0 | **A raid cannot take it** (worst case Scuffed); no Spray offered |
 | Pungent | 90–100 | 4 | 1.0 | As Strong (no extra pay) |
 
-- Scent changes only through Spraying, contest erosion, raid outcomes and the nightly decay and refresh (Night Shuffle step 2, §4.1). It never changes in real time while roaming.
+- Scent changes only through Spraying, contest erosion, raid outcomes, **Mark Over** (a Rival's Gloat after a wipe, §3.7) and the nightly decay and refresh (Night Shuffle step 2, §4.1). It never changes in real time while roaming.
 - **Readability (DR-47):** below Strong, the wisps thin and droop. In Whisker Sense the scent compass ring points at any of your posts below Strong and at a forecast raider's sniffing trail on the target Patch.
 
 ### 3.3 Marking verbs
@@ -90,8 +90,8 @@ One number drives the contest: the rival Clowder's Scent on that Patch, `S_r` (8
 2. **Erode.** In any mix: Over-mark a Rub Mark (−10, quiet if unseen; each rival Rub Mark once per contest); Counter-Spray the post (−30, loud); Rout a rival cat inside the Patch (−15 each).
 3. **Bristle.** The first loud act puts the Patch in **Contested**. Territory asks Combat for **turf waves**: 2 if `S_r ≥ 40` at the moment of Bristling, otherwise 1; the Den adds +1. Composition is Combat's.
 4. **Standoff.** When `S_r ≤ 30` and the current wave is cleared, the Keeper arrives. If quiet erosion alone brought `S_r ≤ 30`, the Keeper comes with one wave as escort and no further wave follows, so sneaking pays by skipping a fight.
-5. **Verdict.** Rout the Keeper; Nemesis applies the Verdict (`VerdictApplied`). Chase Off, Humble and Recruit leave the Patch **Open** (`S_r = 0`). **Nose-Touch** leaves the Keeper on its post under a 5-day truce (§5).
-6. **Claim Spray** → yours at 70. A prompt offers to leave one Posse Crew cat as Sentry (the only posting outside the Lot); the Posse runs one cat short until the Lot.
+5. **Verdict.** Rout the Keeper; Nemesis applies the Verdict (`VerdictApplied`). Chase Off, Humble, Recruit and a **snubbed Nose-Touch** (`nose_snub`: the Keeper bolts, no truce) leave the Patch **Open** (`S_r = 0`). An **accepted Nose-Touch** (`nose_accept`) leaves the Keeper on its post under a 5-day truce (§5).
+6. **Claim Spray** → yours at 70. From Life 2 day 2 (once Sentries are taught, §3.12), a prompt offers to leave one Posse Crew cat as Sentry (the only posting outside the Lot); the Posse runs one cat short until the Lot.
 
 **Humble** is offered only when the fight's Patch will become yours (DR-46).
 **Interruptions:** a Posse wipe during a contest gives `S_r +30` (to its ceiling) plus the canon loss rules. Leaving a Contested Patch for 20 s, or going home, ends the contest, and the rival regains its normal +8 that night. Rival Scent regenerates +8 a night up to its ceiling.
@@ -133,7 +133,25 @@ One number drives the contest: the rival Clowder's Scent on that Patch, `S_r` (8
 | **Fraidy** | 0.75 | Weak defence, but **raises the Caterwaul early**: the live raid fires at the start of Night and its window is ×1.5. On a Scuffed it bolts instead of being Routed (`sentries_routed` excludes it) |
 | **Goofball** | 1.00 | A Humbled resident on its Patch never simmers, and pays **+25%** instead of +15% |
 
-**Social pairs** (Crew owns the Loyalty numbers): for Territory, two cats are "posted in the same district" when both hold Lane posts. Bonded posted pairs gain and clashing posted pairs lose Loyalty per DR-37. In the slice Mikan's Posse is always in the Lane too, so Posse-pair effects follow Crew's Posse rule, not this one.
+**Motive counters (iteration 3).** Every raid motive (§3.7) has a counter personality. A Sentry that counters tonight's motive defends at **`counter` = ×2.0** (`guard_mod` × 2; §4.5):
+
+| Motive | Counter | Why (what the player is told on the Turf Board) |
+|---|---|---|
+| `boss_orders` (leader + 2 escorts) | **Stalwart** | "Holds against numbers" |
+| `gloat` (leader alone, showing off) | **Braggart** | "Out-shouts a show-off" |
+| `grudge` (leader + 1, after Mikan) | **Goofball** | "Laughs it off until it forgets why it came" |
+| `pretender` (leader + 1, wants the post) | **Schemer**, **Brooder** | "Saw the plot coming" / "Never leaves the post" |
+| `uprising` (the resident alone) | **Goofball** | Already declined at intake on a Goofball's Patch |
+
+Without a Schemer posted the motive shows "?", and the player reads the forecast's portraits instead (three portraits = `boss_orders`; one = `gloat`; two = `grudge` or `pretender`, and the leader's personality hints which). The Schemer's guard perk is therefore worth real Morsels, and the Stalwart is the right answer on only one motive in four.
+
+**Neighbours on the board (iteration 3).** Two Sentries on **adjacent** Patches (§3.1 neighbours; Low Wall Corner counts) affect each other by Crew's bond/clash matrix (Crew §3.2):
+- **Bonded neighbours** cover each other's wall: each gets `pair` **+0.25** (`guard_mod × 1.25`).
+- **Clashing neighbours** spend the night hissing over the fence: each gets `pair` **−0.25** (`guard_mod × 0.75`), and **both Patches pay −10% Tribute** that night.
+- Neutral neighbours, and posts that are not adjacent, have no effect. A Sentry that is Routed-for-a-night or Unwatched gives no neighbour effect.
+- Slice pairs that matter: Hige–Kinako, Hige–Pon, Togemaru–Pon, Kinako–Kagi, Pon–Kagi are bonded; **Togemaru–Kinako** and **Hige–Kagi** clash; Hige–Daifuku bond, Daifuku–Kagi and Daifuku–Pon clash. So the counter for tonight's motive may be the cat that clashes with the guard next door, and a Fraidy that is useless on a fight can sit on Low Wall Corner beside the Stalwart and make it stronger.
+
+**Social pairs and Loyalty** (Crew owns the Loyalty numbers): for Territory, two cats are "posted in the same district" when both hold Lane posts. Bonded posted pairs gain and clashing posted pairs lose Loyalty per DR-37. That Loyalty effect covers any two Lane posts; the guard and Tribute effect above needs **adjacent** posts. In the slice Mikan's Posse is always in the Lane too, so Posse-pair effects follow Crew's Posse rule, not this one.
 
 **Upkeep** is flat: **2 Morsels per post per night** (`2 × district_index`), auto-paid from the Stash in step 2. If the Stash is short, that post is on **Short Rations** for the night (`guard_mod ×0.8`). No debt is ever recorded.
 
@@ -141,7 +159,7 @@ One number drives the contest: the rival Clowder's Scent on that Patch, `S_r` (8
 
 ### 3.7 Raids and the forecast
 
-**Who and why: Nemesis.** In step 3 of the Night Shuffle, Nemesis emits `RaidRequested(attacker_ids, patch_id, motive, night = tomorrow)`, at most **1 per district per night** (TE-X6). In the slice raids switch on with the cat flap (Life 2 day 2): the first one is **scripted from the arc lead**. It is requested on night 3, forecast in the day-4 Sniff, and fires on day 4's Night, the cat flap's first night out.
+**Who and why: Nemesis.** In step 3 of the Night Shuffle, Nemesis emits `RaidRequested(attacker_ids, patch_id, motive, night = tomorrow)`, at most **1 per district per night** (TE-X6). In the slice raids switch on with the cat flap (Life 2 day 2): the first one is **scripted from the arc lead**. It is requested on night 3, forecast in the day-4 (Life 2 day 2) Sniff, and fires on day 4's Night, the cat flap's first night out. From night 4 Nemesis requests **one raid every night** that an admissible target exists, against the **lowest-Scent admissible held Patch, Strong included** (Nemesis §3.12 3f).
 
 **Forecasts are always on** (DR-46, TE-X8). Every raid that will resolve tonight appears in this morning's Sniff as a stamp card: the target Patch's landmark, the raiders' portraits, and the motive icon, or "?" unless a Schemer is posted.
 
@@ -155,27 +173,29 @@ One number drives the contest: the rival Clowder's Scent on that Patch, `S_r` (8
 
 **Motives** (Nemesis's list, TE-X7). Territory adds the resolution effect:
 
-| Motive | `motive_mod` | Raid party | Effect at resolution |
-|---|---|---|---|
-| `grudge` | 1.15 | leader (+0–1) | If the posted Sentry has an Old Score with the leader, its term ×1.25 |
-| `boss_orders` | 1.10 | leader + 1 escort | — (two attackers: post your best) |
-| `gloat` | 1.00 | leader alone | Never Lost (worst case Scuffed): it is showing off |
-| `pretender` | 1.10 | leader (+0–1) | If Lost, the leader becomes the Patch's Keeper (Nemesis) |
-| `uprising` | 1.00 | the Humbled resident alone | `scent_term = 0` (an inside job); a posted Sentry defends as normal |
+| Motive | `motive_mod` | Raid party (escorts are untracked Strays) | Counter (§3.6) | Effect at resolution |
+|---|---|---|---|---|
+| `grudge` | 1.15 | leader + 1 escort | Goofball | If the posted Sentry has an Old Score with the leader, its term ×1.25 |
+| `boss_orders` | 1.10 | leader + 2 escorts | Stalwart | — (three attackers) |
+| `gloat` | 1.00 | leader alone | Braggart | Never Lost (worst case Scuffed): it is showing off |
+| `pretender` | 1.10 | leader + 1 escort | Schemer, Brooder | If Lost, the leader becomes the Patch's Keeper (Nemesis) |
+| `uprising` | 1.00 | the Humbled resident alone | Goofball (declined) | `scent_term = 0` (an inside job); a posted Sentry defends as normal. **It uses the night's single raid slot** |
 
-**Resolution order (step 2):** Scent decay and refresh → upkeep → resolve raids against the **post-decay** Scent and the Sentries posted tonight → uprisings. The forecast names a Patch, not a guard, so moving cats after reading the Sniff is the point.
+**Resolution order (step 2):** Scent decay and refresh → upkeep → resolve tonight's raid (an uprising is tonight's raid, not a separate sub-step) against the **post-decay** Scent and the Sentries posted tonight. The forecast names a Patch, not a guard, so moving cats after reading the Sniff is the point.
 
 **Outcomes** (formula in §4.5):
 
 | Outcome | Scent | Sentry | Patch | Tribute tonight from that Patch |
 |---|---|---|---|---|
 | **Repelled** | −5 | Unharmed; Crew logs a defence | Held | Paid |
-| **Scuffed** | −20 (Anchor −10) | Routed-for-a-night (not Brooder; Fraidy bolts) | Held | **Stolen**: carried off by the raid leader as `loot_held` |
-| **Lost** | Flips to the attacker at 40 | Returns to the Lot | Attacker's Clowder | None |
+| **Scuffed** | −20 (Anchor −10) | Routed-for-a-night (not Brooder; Fraidy bolts) | Held | **Stolen, twice over**: the raid leader carries off `loot_held` = **2 × the Patch's Tribute** (its own pay, plus the same again off the Doorstep pile) |
+| **Lost** | Flips to the attacker at 40 | Returns to the Lot | Attacker's Clowder | None, and the raiders also carry off `loot_held` = 2 × the Patch's Tribute |
 
 - **Strong rule (DR-46):** if the Patch's Scent is ≥ 60 at resolution, Lost becomes Scuffed.
 - **Den-Open rule:** while the Den is Open, Lost becomes Scuffed on outer Patches.
 - **Thief rule (DR-46):** Routing a raid leader who holds `loot_held`, in any daytime fight within 3 days, returns the Morsels in full to the field haul (the leader's trail glows in Whisker Sense). After 3 days the loot is eaten. Nothing else is lost.
+- **Mark Over** (Nemesis §3.10; a Brooder victor's Gloat after a Posse wipe; Daifuku is a Brooder): **−30 Scent** on Mikan's nearest held **outer** Patch at once (Low Wall Corner never below 10). It requests no raid. A Patch it drops below 60 gets the Spray prompt and thin wisps like any other.
+- **Snatch** (Nemesis §3.10; a Schemer victor's Gloat): the wipe's lost 20% of the field haul becomes `loot_held` on the victor, returned in full by Routing it within 3 days (the thief rule).
 - **Retake = revenge (DR-46):** a Lost Patch is in **Stale Claim**. Entering it skips erosion and waves and triggers a Standoff with the raid leader. Rout → Verdict → Claim Spray. It takes 60–90 s.
 
 ### 3.8 The Caterwaul (live raid)
@@ -223,15 +243,18 @@ Rank never drops. The slice clamps follow DR-01 (2 Sentry slots, Crew cap 6). Ra
 
 | Day | Life/day | Territory beat |
 |---|---|---|
-| 1 | L1 D1 | Low Wall Corner short escalation (PP-03), the Claim Spray, wisps. The first Tribute lands on the day-2 Doorstep |
-| 2 | L1 D2 | The Thorn at Laundry Pole Yard's gatepost; a normal contest; Doorstep and the 1-item Sniff |
-| 3 | L2 D1 | **Sentries**, first taught on **Laundry Pole Yard, the first non-Home Patch** (PP-11). The Turf Board. The rescue Spray (Low Wall Corner and Laundry Pole Yard have dropped below Strong overnight) |
-| 4 | L2 D2 | Cat flap. **First forecast raid** (scripted) and the **first Caterwaul**. Lessons open at the Lot |
-| 5+ | L2 D3+ | The full loop: forecast → post → rescue Spray → Night or home |
+| 1 | L1 D1 | Low Wall Corner short escalation (PP-03; its Keeper is an untracked Stray), the Claim Spray, wisps. The first Tribute lands on the day-2 Doorstep |
+| 2 | L1 D2 | Togemaru, the First Thorn, at Laundry Pole Yard's gatepost (its own post); a normal contest; Doorstep and the 1-item Sniff |
+| 3 | L2 D1 | Persimmon Alley take (3 outer Patches held: **the Den opens**). The rescue Spray (Low Wall Corner and Laundry Pole Yard have dropped below Strong overnight). No posting yet |
+| 4 | L2 D2 | **First forecast raid** in the Sniff (scripted from the arc lead). **Sentries and the Turf Board**, first taught as the answer to that forecast: one posting decision, on the forecast Patch (PP-11). Cat flap (K2.3 at Dusk) and the **first Caterwaul** that Night |
+| 5 | L2 D3 | **Lessons** open at the Lot. Tofu Shop Step take (Captain Kagi) |
+| 6+ | L2 D4+ | The full loop: forecast → post → rescue Spray → Night or home; the Den |
+
+UX owns the beat sheet (`ux/key-screens.md` §7.4, presentation review ruling): one headline per day, with Sentries and the Turf Board on Life 2 day 2 and Lessons on Life 2 day 3.
 
 ### 3.13 Interactions summary
 
-Territory consumes `EncounterEnded` (loot, `seen`, Routs inside a contested Patch), `VerdictApplied` (Patch → Open, truce, Humbled resident), `RaidRequested`, `WallEvent` (Keeper changes), `BetrayalTriggered` (not reachable in the slice), `PhaseChanged`/`DayEnded`. It emits `PatchChanged`, `RaidResolved`, `DistrictClaimed` and `TributeDelivered`. It queries `PowerRating(cat_id)` and `Loyalty(cat_id)` from Crew.
+Territory consumes `EncounterEnded` (loot, `seen`, Routs inside a contested Patch), `VerdictApplied` (`chase`/`humble`/`recruit`/`nose_snub` → Patch Open; `nose_accept` → truce; Humbled resident), `RaidRequested`, `WallEvent` (Keeper changes), `BetrayalTriggered` (not reachable in the slice), `PhaseChanged`/`DayEnded`. It emits `PatchChanged`, `RaidResolved`, `DistrictClaimed` and `TributeDelivered`. It queries `PowerRating(cat_id)` and `Loyalty(cat_id)` from Crew.
 
 ---
 
@@ -266,8 +289,9 @@ scent'  = clamp( scent − decay + refresh, floor, 100 )        then raid outcom
 ### 4.2 Patch Tribute (step 4)
 
 ```
-patch_tribute = base_yield × band_mult × watch_mult × (1 + min(bonus, 0.35))
+patch_tribute = base_yield × band_mult × watch_mult × (1 + min(bonus, 0.35) − clash)
 bonus         = braggart + humbled + full_house
+clash         = 0.10 per clashing Sentry posted on an adjacent Patch (§3.6), else 0
 ```
 
 | Variable | Value | Source |
@@ -278,8 +302,9 @@ bonus         = braggart + humbled + full_house
 | braggart | 0.10 | Braggart posted |
 | humbled | 0.15; 0.25 with a Goofball posted | One Undermark crate per Patch (DR-42) |
 | full_house | 0.10 | All 5 Lane Patches held |
+| clash | 0.10 per clashing posted neighbour | §3.6 (outside the clamp) |
 
-A Scuffed Patch pays 0 tonight (stolen); a Lost Patch pays nothing.
+A Scuffed Patch pays 0 tonight and loses the same again off the pile (`loot_held` = 2 × `patch_tribute`, §3.7); a Lost Patch pays nothing and also loses 2 × its `patch_tribute`. The night's total never goes below 0.
 **Range per Patch:** 3 (LWC, Faint, Unwatched) to 24 (Den: Strong, Watched, Full House + Goofball-Humbled, at the 0.35 clamp: `18 × 1.35 = 24.3`).
 **Example:** Tofu Shop Step, Strong, Braggart posted, Full House: `14 × 1.0 × 1.0 × 1.20 = 16.8`.
 
@@ -301,7 +326,7 @@ grace = 2, step = 0.20, floor 0 (DR-46, TE-3). A Patch unvisited for 2 days stil
 
 ```
 attack      = motive_mod × Σ PR(raiders)
-sentry_term = home_adv × PR(sentry) × style_mod × guard_mod × old_score × rations / attack   (0 if Unwatched)
+sentry_term = home_adv × PR(sentry) × style_mod × guard_mod × counter × pair × rations × old_score / attack   (0 if Unwatched)
 scent_term  = 0.005 × scent                         (0 for an uprising)
 R           = sentry_term + scent_term + fixed_bonus
 p_hold      = clamp( R³ / (R³ + 1), 0.05, 0.95 )
@@ -317,13 +342,16 @@ outcome     = Repelled if u < p_hold² ; Scuffed if u < p_hold ; else Lost
 | style_mod | Bruiser 1.25 · Scrapper 1.10 · Yowler 1.00 | §3.6 |
 | guard_mod | Stalwart 1.5 · Braggart 1.25 · Brooder/Schemer/Goofball 1.0 · Fraidy 0.75 | §3.6 |
 | old_score | 1.25 if `grudge` and the Sentry has an Old Score with the leader, else 1 | §3.7 |
+| counter | 2.0 if the Sentry's personality counters tonight's motive, else 1 | §3.6 |
+| pair | 1 + 0.25 × (bonded posted neighbours) − 0.25 × (clashing posted neighbours); range 0.5–1.75 | §3.6 |
+| PR(raiders) | Slice assumption, as ratios of a Sentry's PR (Crew owns PowerRating): Tough leader 1.0, Captain leader 1.5, Stray escort 0.6 | Party per motive, §3.7 |
 | rations | 1.0; 0.8 on Short Rations | §4.4 |
 | fixed_bonus | High Perch 0.15, else 0 | §3.1 |
 | motive_mod | 1.0–1.15 | §3.7 |
 
 Loyalty does not enter the formula (DR-11: Loyalty no longer affects stats).
 
-**Worked odds** (raiders at the Sentry's PR; post-decay Scent 50, Clear, so Lost is possible):
+**Worked odds, base case** (no counter, no neighbours; raiders at the Sentry's PR; post-decay Scent 50, Clear, so Lost is possible):
 
 | Sentry | vs 1 raider, `grudge` (attack 1.15) | vs 2 raiders, `boss_orders` (attack 2.2) |
 |---|---|---|
@@ -335,6 +363,23 @@ Loyalty does not enter the formula (DR-11: Loyalty no longer affects stats).
 
 Arithmetic (Stalwart Bruiser, single raider): `1.5 × 1.25 × 1.5 / 1.15 = 2.445`; `+ 0.25 = 2.695`; `R³ = 19.57`; `p = 0.951 → 0.95`; Repelled `0.95² = 0.9025`.
 **If the same Patch had been Sprayed that morning** (Scent 80 after decay), every Lost becomes Scuffed. The rescue Spray removes the risk of losing the Patch. Only a good Sentry turns Scuffed (stolen Tribute, a Routed cat) into Repelled. **That split is the daily decision:** Spray decides whether you can lose the Patch; the cat decides whether you lose the night.
+
+**Worked odds with counters (iteration 3).** An illustrative Life 2 night after Kagi has joined: a Strong Patch at 64 after decay is forecast. `grudge`, a Tough + 1 escort: `attack = 1.15 × 1.6 = 1.84`.
+- Hige (Stalwart Bruiser): `1.5 × 1.25 × 1.5 / 1.84 = 1.53`, `+ 0.32 = 1.85` → p 0.86, **Repelled 75%**.
+- Pon (Goofball Yowler, the counter): `1.5 × 1.0 × 1.0 × 2.0 / 1.84 = 1.63`, `+ 0.32 = 1.95` → p 0.88, **Repelled 78%**, and Hige is free for the Posse.
+- Under `boss_orders` (a Tough + 2 escorts, `attack = 1.1 × 2.2 = 2.42`) the order flips back: Hige (counter) `2.32 + 0.32` → p 0.95, Repelled 90%; Pon `0.62 + 0.32` → p 0.45, Repelled 21%.
+- Put Togemaru on Persimmon Alley next door to Pon (bonded, `pair` 1.25 each) and Pon's grudge defence rises to `2.04 + 0.32` → p 0.93.
+
+**What the decision is worth** (round-3 sim `design/reviews/round-3/sim/posting_stakes_sim.py`, 2,000 seeds; engaged reference player; one raid every night from night 4; posts from night 4):
+
+| Posting policy | Tribute, days 1–7 | Tribute, raid nights 4–7 | Scuffed nights | Lost nights | Night-6 Tribute |
+|---|---|---|---|---|---|
+| Best: reads the forecast, counters the motive, minds the neighbours | 225 | **184** | **0.53** | 0 | 60.8 |
+| Habit: Stalwart on the forecast, Braggart on the richest | 218 | 177 | 0.83 | 0 | 58.2 |
+| Random: 2 cats on 2 Patches | 169 | **128** | **2.50** | 0.26 | 41.3 |
+| No posts | 129 | 88 | 3.99 | 0 | 32.1 |
+
+Posting well beats posting at random by **+34% over the slice and +45% on raid nights** (round-2 rules: +15% / +19%; the round-2 review measured ≈ 11%), and beats not posting by +109% on raid nights. The habit answer is no longer always right: it trails the best posting by 4% and takes 57% more Scuffed nights, because the best guard changes with the motive (sim: `grudge` → Pon, `boss_orders` → Hige, `gloat` → Hige or Togemaru, `pretender` → Kagi).
 
 ### 4.6 Caterwaul window
 
@@ -371,14 +416,14 @@ Examples: a Lv 6 Captain costs 96 fair / 192 feast; Daifuku at Lv 8 costs 256 / 
 
 ### 4.11 The slice economy, day by day (reference player)
 
-**Reference player.** Plays every day to the clock, goes home by Dusk except on the cat-flap night, Shares a Morsel daily, buys 3 Lessons, Bribes the Captain at fair, Humbles Daifuku and recruits the First Thorn on day 2 (free).
+**Reference player.** Plays every day to the clock, goes home by Dusk except on the cat-flap night, Shares a Morsel daily, buys 3 Lessons, Bribes the Captain (Kagi) at fair, Humbles Daifuku and recruits the First Thorn (Togemaru) on day 2 (free). Claim path (Day Loop §3.9, Nemesis §3.1): Low Wall Corner (day 1), Laundry Pole Yard by Routing Togemaru (day 2), Persimmon Alley (day 3, the Den opens), Tofu Shop Step from Kagi (day 5), the Den (day 6).
 
 **Assumptions** (flagged to the owners):
 - Crew levels (Crew owns): Posse level at Daifuku is 7–9.
 - Daytime Routs: 8 on day 1, 10 a day after that.
 - One cache a day on days 2–5.
-- The Den falls on day 6, and K2.5's day gate is Life 2 day 5 (day 7) (Narrative owns).
-- Two personalities are named only for the worked example: S1, a Stalwart Bruiser, and S2, a Braggart Scrapper (Nemesis assigns the real ones).
+- The Den falls on day 6 (Life 2 day 4, the fast path). K2.5 plays that morning (Narrative §3.3), so the Life ends at that night's sleep and the night-6 pile is computed for the title card. **Day 7 below is an extra day** for a player whose Den falls a day later (Day Loop's reference wins it on Life 2 day 5 after one wipe); it also shows the post-claim shape of the full game.
+- The Sentries are Crew §3.3's cats: **S1 = Hige** (Stalwart Bruiser) and **S2 = Togemaru** (Braggart Scrapper). Sentries are taught on day 4 (§3.12), so nothing is posted on night 3.
 
 **Scent and posting, night by night** (the Scent shown is after decay and raids):
 
@@ -386,22 +431,22 @@ Examples: a Lv 6 Captain costs 96 fair / 192 feast; Daifuku at Lv 8 costs 256 / 
 |---|---|---|---|---|---|---|---|---|---|
 | 1 | LWC | — | — | 63 | r | r | r | r | **6** |
 | 2 | +LPY | — | — | 57 | 56 | r | r | r | **12** |
-| 3 | +PA (Den opens) | S1 @LPY | — | 85 (Sprayed) | 88 (Sprayed) | 58 | r | r | **25** |
-| 4 | 3 | S1 @PA | Arc lead + 1, `grudge` → PA (Sprayed to 90) → Repelled | 80 | 76 | 83 | r | r | **26** |
-| 5 | +TSS | S1 @LPY, S2 @TSS | 2 raiders, `boss_orders` → LPY → Repelled | 75 | 69 | 73 | 68 | r | **41** |
-| 6 | +DEN (claimed) | S1 Warden @DEN, S2 @TSS | none (wall event night) | 70 | 59 | 63 | 68 | 70 | **64** |
+| 3 | +PA (Den opens) | — (taught tomorrow) | — | 85 (Sprayed) | 78 (Sprayed) | 58 | r | r | **23** |
+| 4 | 3 | Hige @PA | Arc lead + 1, `grudge` → PA (Sprayed to 90) → Repelled | 80 | 66 | 83 | r | r | **26** |
+| 5 | +TSS | Hige @LPY, Togemaru @TSS | Tough + 2, `boss_orders` → LPY → Repelled | 75 | 59 | 73 | 68 | r | **40** |
+| 6 | +DEN (claimed) | Hige Warden @DEN, Togemaru @TSS | Tough alone, `gloat` → TSS → Repelled (Togemaru, a Braggart, counters a gloat: p 0.95) | 70 | 80 (Sprayed) | 63 | 63 | 70 | **65** |
 
 Tribute arithmetic:
 - **Night 1:** `8 × 1.0 × 0.8 = 6.4` → 6.
 - **Night 2:** LWC `8 × .9 × .8 = 5.76`; LPY `10 × .9 × .8 = 7.2` → 12.96 → 12.
-- **Night 3:** LWC 6.4; LPY 10 (Watched); PA `12 × .9 × .8 = 8.64` → 25.
+- **Night 3:** LWC 6.4; LPY `10 × 1.0 × .8 = 8` (Strong, Unwatched); PA `12 × .9 × .8 = 8.64` → 23.04 → 23.
 - **Night 4:** LWC 6.4; LPY 8; PA 12 → 26.
-- **Night 5:** LWC 6.4; LPY 10; PA 9.6; TSS `14 × 1.1 = 15.4` → 41.4 → 41.
-- **Night 6 (Full House):** LWC `8 × .8 × 1.1 = 7.04`; LPY `10 × .9 × .8 × 1.1 = 7.92`; PA `12 × .8 × 1.1 = 10.56`; TSS `14 × 1.2 = 16.8`; DEN `18 × 1.25 = 22.5` (Humbled Daifuku) → 64.82 → **64**. That is the end-of-Life-2 anchor: canon ≈ 60, +7%.
+- **Night 5:** LWC 6.4; LPY `10 × .9 = 9` (Watched, Clear after the Repelled −5); PA 9.6; TSS `14 × 1.1 = 15.4` → 40.4 → 40. (Hige and Togemaru are not neighbours, so no pair effect.)
+- **Night 6 (Full House):** LWC `8 × .8 × 1.1 = 7.04`; LPY `10 × .8 × 1.1 = 8.8` (rescue-Sprayed that morning); PA `12 × .8 × 1.1 = 10.56`; TSS `14 × 1.2 = 16.8`; DEN `18 × 1.25 = 22.5` (Humbled Daifuku; Hige and Togemaru on the adjacent Den and TSS are neutral) → 65.7 → **65**. (LPY, raided last night, and the Den, claimed today, are not admissible, so tonight's raid goes to TSS.) That is the end-of-Life-2 anchor: canon ≈ 60, +8%, inside 54–66.
 
 Raid odds:
-- **Night 4:** `attack = 1.15 × 2 = 2.3`; `sentry_term = 1.5 × 1.25 × 1.5 / 2.3 = 1.223`; `+ 0.005 × 88 = 1.663`; `p = 0.821`. Repelled 67%, otherwise Scuffed (PA is Strong and the Den is Open).
-- **Night 5:** `attack = 2.2`; `1.278 + 0.37 = 1.648`; `p = 0.817`. Repelled 67%.
+- **Night 4:** `grudge`, the arc lead + 1 escort: `attack = 1.15 × 1.6 = 1.84`; `sentry_term = 1.5 × 1.25 × 1.5 / 1.84 = 1.528`; `+ 0.005 × 88 = 1.968`; `p = 0.884`. Repelled 78%, otherwise Scuffed (PA is Strong and the Den is Open). The motive shows "?" (no Schemer yet); Pon, the counter, would have given Repelled 81%.
+- **Night 5:** `boss_orders`, a Tough + 2 escorts: `attack = 1.1 × 2.2 = 2.42`; Hige counters it: `1.5 × 1.25 × 1.5 × 2.0 / 2.42 = 2.324`, `+ 0.005 × 64 + 0.15` (High Perch) `= 2.794`; `p = 0.95` (clamped). Repelled 90%.
 
 **Stash, day by day.** Tribute arrives at the morning Doorstep; Share and Lessons are bought at the Lot; the Bribe is paid at the day's Verdict; the field haul and caches arrive at the garden; upkeep is taken that night.
 
@@ -409,17 +454,17 @@ Raid odds:
 |---|---|---|---|---|---|---|---|---|
 | 1 | L1 D1 | 0 | — | — | 14 | — | 0 | **14** |
 | 2 | L1 D2 | 6 | −3 (3) | Thorn: free (Life 1) | 25 | 10 | 0 | **52** |
-| 3 | L2 D1 | 12 | −10 (4+3+3) | Friend Stray: free | 30 | 10 | −2 | **92** |
-| 4 | L2 D2 | 25 | −17 | Lesson I −40 | 35 | 10 | −2 | **103** |
+| 3 | L2 D1 | 12 | −10 (4+3+3) | Friend Stray: free | 30 | 10 | 0 | **94** |
+| 4 | L2 D2 | 23 | −17 | Lesson I −40 | 35 | 10 | −2 | **103** |
 | 5 | L2 D3 | 26 | −21 | Captain fair −96 (Stash 108 at the Verdict ≥ 96 ✓) | 56 | 10 | −4 | **74** |
-| 6 | L2 D4 | 41 | −32 | Lesson I −40; Daifuku Humbled (free) | 90 | — | −4 | **129** |
-| 7 | L2 D5 | 64 | −37 | Lesson II −120 | 50 | — | −4 | **82** |
+| 6 | L2 D4 | 40 | −32 | Lesson I −40; Daifuku Humbled (free) | 90 | — | −4 | **128** |
+| 7 | L2 D5 (extra day) | 65 | −37 | Lesson II −120 | 50 | — | −4 | **82** |
 
 Field haul: day 1 is 2 crows (1 each) + 6 × 2 = 14. Days 2–4 are 10 Routs at 2.5 / 3 / 3.5 average. Day 5 is 40 + the Captain's 16. Day 6 is `5 × 4 + 4 × 5 = 40` + Daifuku's 50 = 90. Day 7 is 10 × 5.
 
-**Totals:** income = Tribute 174 + field 300 + caches 40 = **514**. Sinks = Share 120 + Lessons 200 + Bribe 96 + upkeep 16 = **432**. 514 − 432 = **82** ✓.
+**Totals (to the end of day 7):** income = Tribute 172 + field 300 + caches 40 = **512**. Sinks = Share 120 + Lessons 200 + Bribe 96 + upkeep 14 = **430**. 512 − 430 = **82** ✓. For the fast path the slice ends after day 6 with a Stash of **128**.
 
-Night 7 (computed, not delivered: the slice ends at that sleep) is illustrated in §4.12.
+Night 7 (computed, not delivered) is illustrated in §4.12.
 
 **What this does to pacing.**
 - A Rank I Lesson costs 1.6 days of Tribute on day 4. A Rank II costs 1.9 days on day 7.
@@ -431,22 +476,26 @@ Night 7 (computed, not delivered: the slice ends at that sleep) is illustrated i
 | Player | Policy | End Stash | What it shows |
 |---|---|---|---|
 | Reference | above | 82 | Every sink used; the anchor is met |
-| Hoarder | no Share, no Lessons, Bribes "none" | **400 (cap) on day 7; ≈ 100 rots** (cumulative 388 by the end of day 6; day 7 adds 64 + 50) | The cap binds only on pure hoarding, and the pile rots visibly |
+| Hoarder | no Share, no Lessons, Bribes "none" | **400 (cap) on day 7; ≈ 100 rots** (cumulative ≈ 386 by the end of day 6; day 7 adds 65 + 50) | The cap binds only on pure hoarding, and the pile rots visibly |
 | Casual | home by Dusk, field ×0.75, one post, no rescue Sprays (Tribute ×≈ 0.85) | ≈ 160 after Share on alternate days, 2 Lessons, Captain "none" | Slower, never stuck |
 | Struggler | wipes every Life 2 day (field ×0.8 on fewer fights ≈ ×0.6), never posts | ≥ 0 always; Tribute ≥ Home Ground floor (`8 × .6 × .8 = 3.8`/day) | No death spiral (§4.13) |
 
 ### 4.12 Night 7: the daily decision in numbers
 
-Morning of day 7: the forecast says a Captain (PR 1.5× a Sentry's), motive `pretender`, is coming for **Laundry Pole Yard**, which is at 59 (Clear) and Unwatched. The Den is claimed, so **Lost is possible again**.
+*An extra day (§4.11): the fast-path Life ends on night 6, so this is the shape of every post-claim morning in the full game, and of day 7 for a player whose Den falls on day 7.*
 
-| Option | LPY outcome | Night-7 Tribute (expected) | Other stakes |
+Morning of day 7: the forecast says a Captain alone (PR 1.5× a Sentry's) is coming for **Persimmon Alley**, which is at 63 and Unwatched; tonight's decay takes it to 53 (Clear). Kagi is posted nowhere, so the motive shows "?". One portrait, a Captain who was a Keeper: the player guesses `pretender` (it is). The Den is claimed, so **Lost is possible again**. PA is at 63, so no rescue Spray is offered: the answer is a cat. `attack = 1.1 × 1.5 = 1.65`.
+
+| Option | PA outcome | Night-7 Tribute (expected) | Other stakes |
 |---|---|---|---|
-| A: do nothing | Lost 95% (the pretender becomes its Keeper; Full House ends) | ≈ 39 | Revenge Standoff tomorrow |
-| B: rescue Spray only | Strong (80) → Scuffed ~100%; LPY's 8.8 stolen | 55 | The thief to hunt |
-| C: Spray + move S2 (Braggart Scrapper) from TSS to LPY | `1.5 × 1.1 × 1.25 / 1.65 = 1.25 + 0.40 = 1.65` → p 0.818: Repelled 67% (63.4), else Scuffed (51.4) | **≈ 59.4** | TSS goes Unwatched |
-| D: C + go out at Night and answer the Caterwaul | Repelled in person (+10 Scent), Verdict on the Captain | ≈ 63 + a Verdict | Gives up the evening at home (no penalty) |
+| A: do nothing | Unwatched at 53: **Lost 95%** (the pretender becomes Keeper; Full House ends; `loot_held` 2 × 9.5) | ≈ 32 | Revenge Standoff tomorrow |
+| B: move Togemaru (Braggart Scrapper) from TSS to PA | Watched, 63 at resolution, so never Lost. `1.5 × 1.1 × 1.25 / 1.65 + 0.32 = 1.56` → p 0.79: Repelled 63%, Scuffed 37% | ≈ 53 | TSS goes Unwatched and Clear |
+| C: Kagi (Schemer, counters `pretender`) on PA in Togemaru's place | `1.5 × 1.0 × 2.0 / 1.65 + 0.005 × 67 = 2.15` → p 0.91: **Repelled 83%** | **≈ 58** | Kagi out of the Posse; the motive is shown from now on |
+| C′: Kagi on PA, Togemaru stays on TSS, Hige leaves the Den | As C; the Den goes Unwatched (Kagi, at Loyalty 40–45, cannot be Warden) | ≈ 59 | Daifuku's old wall unguarded; Hige back in the Posse |
+| D: Kinako (Fraidy) on PA beside Togemaru | Clashing neighbours: `pair` 0.75 each and both Patches −10%. p 0.40: Repelled 16% | ≈ 46 | The tempting "spare cat" is the worst post |
+| E: C + go out at Night and answer the Caterwaul | Repelled in person (+10 Scent), a Verdict on the Captain | ≈ 66 + a Verdict | Gives up the evening at home (no penalty) |
 
-That is a decision with a correct-ish answer that changes every day, which a player can read from the Sniff and the cats' personalities in under a minute at the Lot.
+The spread from the worst sensible post (D) to the best (C′) is ≈ 13 Morsels on a ≈ 60 night, and doing nothing costs ≈ 27 plus a Patch. The right cat depends on the motive, on who is next door and on who the Posse needs, and the player can read all three from the Sniff and the Turf Board in under a minute at the Lot.
 
 ### 4.13 Exploit and death-spiral checks (DR-57)
 
@@ -486,17 +535,23 @@ That is a decision with a correct-ish answer that changes every day, which a pla
 | Low Wall Corner | Never below 10, never admissible, never Lost, never taken by a traitor |
 | Patches claimed in another order | Allowed. Any 3 outer Patches open the Den |
 | Den held, then outer holdings drop below 3 | The Den becomes admissible to raids; the Life goal stays met |
-| Nose-Touch on a Keeper | The Patch stays rival for a 5-day truce: no erosion, no border pressure, not counted toward the Den. Afterwards Regard ≥ 75 → the Keeper yields with a nose (Patch Open, Claim Spray); otherwise a normal contest that adds no Grudge (DR-42) |
+| Nose-Touch **snubbed** (`nose_snub`) | The Keeper bolts with no truce. The Patch is **Open** (`S_r = 0`): Claim Spray it, as after a Chase Off |
+| Nose-Touch accepted on a Keeper | The Patch stays rival for a 5-day truce: no erosion, no border pressure, not counted toward the Den. Afterwards Regard ≥ 75 → the Keeper yields with a nose (Patch Open, Claim Spray); otherwise a normal contest that adds no Grudge (DR-42) |
 | Humble offered where the Patch would not become the player's | Not offered (DR-46) |
 | `uprising` on a Goofball's Patch | Declined at intake |
-| `uprising` resolution | `scent_term = 0`; a posted Sentry defends. Lost hands the Patch to the resident's old Clowder |
+| `uprising` resolution | `scent_term = 0`; a posted Sentry defends. Lost hands the Patch to the resident's old Clowder. The uprising is that night's single raid; no other raid resolves |
+| Mark Over after a wipe | −30 Scent at once on the nearest held outer Patch (ties: lower Scent first); Low Wall Corner never below 10; a Patch it drops to 0 lapses to Open. No raid is requested |
+| Snatch after a wipe | The lost 20% of the field haul is `loot_held` on the victor for 3 days (thief rule). Nothing is lost in Life 1, so there is nothing to Snatch |
+| A counter cat is also a clashing neighbour | Both apply: `counter` 2.0 × `pair` 0.75 (and −10% Tribute on both Patches). The Turf Board preview shows the combined odds |
+| Bonded neighbour Routed-for-a-night, or a post left empty | No neighbour effect from that Patch tonight |
+| Raid-night total would go below 0 (2× loot on a small night) | Floored at 0; nothing is taken from the Stash (the Stash is always safe) |
 | Thief's `loot_held` and the thief is recruited | The loot returns to the Stash at the Verdict |
 | A Sentry is Routed-for-a-night | The Patch is Unwatched next night; the cat resumes the night after |
 | The Warden's Loyalty falls below 60 | It stays; it simply cannot be re-posted to the Den until True again |
 | Only one Crew cat, and the player posts it | Allowed, with a Turf Board warning: "Mikan fights alone" (no Pile-On) |
 | A Brooder is moved off a post | Allowed; Territory raises `dismissed_from_post` (Crew applies the dislike) |
 | `BetrayalTriggered` (unreachable in the slice, DR-10) | The post is vacated; if that leaves the Patch Unwatched, it flips to the traitor's Clowder at 40 (not LWC) |
-| Night 7 Tribute | Computed in step 4; the slice ends at the Life-end check (step 5). The title card shows the pile |
+| Tribute on the night of the claim | Computed in step 4; the slice ends at the Life-end check (step 5). The title card shows the pile |
 | Reload during the day | Raid and outcome rolls are counter-seeded (DR-13), so a reload reproduces them |
 
 ---
@@ -505,18 +560,18 @@ That is a decision with a correct-ish answer that changes every day, which a pla
 
 | System (doc) | Territory needs | Territory provides |
 |---|---|---|
-| **Nemesis** (`nemesis-system.md`) | `RaidRequested` (≤ 1 per district per night; scripted first raid on night 3 from the arc lead); motives; Keepers per Patch; `VerdictApplied`; Humble simmer and Restless; truce state; wall events; personality per cat | `RaidResolved`, `PatchChanged`, `DistrictClaimed`; admissibility rules; Back Door Feature for targeting; `loot_held` |
-| **Crew & Progression** (`crew-and-progression.md`) | `PowerRating`, `Loyalty`, personality; Loyalty formula; Bribe tiers and starting Loyalty; Sentry XP; bonded/clashing effects | Per-cat night report (`posted`, `nights_posted`, `district_seen`, `raid_outcome`, `routed`, `dismissed_from_post`); price sheet; `patch_level` = 4; slot and cap clamps |
+| **Nemesis** (`nemesis-system.md`) | `RaidRequested` (one every night from night 3 when admissible, ≤ 1 per district; scripted first raid requested on night 3 from the arc lead; motive and party per §3.7); Keepers per Patch (LWC an untracked Stray, LPY Togemaru, PA Tough seat 1, TSS Kagi, Den Daifuku); `VerdictApplied` (incl. `nose_snub`); Mark Over and Snatch triggers; Humble simmer and Restless; truce state; wall events; personality per cat | `RaidResolved`, `PatchChanged`, `DistrictClaimed`; admissibility rules; Back Door Feature for targeting; `loot_held` |
+| **Crew & Progression** (`crew-and-progression.md`) | `PowerRating`, `Loyalty`, personality; the bond/clash matrix (§3.2, read for the neighbour rule); Loyalty formula; Bribe tiers and starting Loyalty; Sentry XP; bonded/clashing effects | Per-cat night report (`posted`, `nights_posted`, `district_seen`, `raid_outcome`, `routed`, `dismissed_from_post`); price sheet; `patch_level` = 4; slot and cap clamps |
 | **Combat** (`combat-system.md`) | Turf-wave encounters; `raid_defence` opener; a posted Sentry as an AI guest (proposal); `EncounterEnded` | Encounter requests (patch_id, waves, Den flag) |
 | **Day loop** (`day-loop.md`) | Clock pauses; Night from the cat flap; Head Home; Caterwaul reach = current district; daily-reset audit | This doc's resets: Tribute pick-up and Share a Morsel only |
-| **Narrative** (`dual-story-progression.md`) | K2.5 day gate (assumed Life 2 day 5); the Life-end check; no food in the house before Life 8 | Doorstep pile states; the "Haru sweeps the Leftovers" hook; `TributeDelivered` |
+| **Narrative** (`dual-story-progression.md`) | K2.5 day gate (Life 2 day 4 morning, §3.3); the Life-end check; no food in the house before Life 8 | Doorstep pile states; the "Haru sweeps the Leftovers" hook; `TributeDelivered` |
 | **UX** (`ux/key-screens.md`, `ux/hud.md`) | Turf Board, Sniff forecast card, Doorstep, Caterwaul HUD marker | The data on them (§3, §4) |
 | **Art / Audio** | Scent wisps 1–4 in Clowder colours; landmark posts; pile dressing; Caterwaul yowl in the Sentry's voice body; Spray pop | Band thresholds, events |
 
 **Turf Board spec (for UX):**
 - A painted map of the Lane with 5 Patch blobs. Each shows Scent (number and wisps), Watched or Unwatched, last night's Tribute, any Humbled resident, and the forecast stamp (raiders plus motive or "?").
 - A Crew strip shows each cat's portrait, personality pose and icon, Loyalty tier, bonded/clashing marks, and greyed eligibility.
-- Dragging a portrait onto a Patch previews tonight's **Repelled / Scuffed / Lost bar with percentages** and the Patch's Tribute.
+- Dragging a portrait onto a Patch previews tonight's **Repelled / Scuffed / Lost bar with percentages** and the Patch's Tribute, including the motive counter (a counter icon when the motive is known) and the ♥/✗ link to any posted neighbour.
 - Target: ≤ 1 min at the Lot (DR-16).
 
 **Cross-doc notes:**
@@ -524,8 +579,8 @@ That is a decision with a correct-ish answer that changes every day, which a pla
 2. DR-01's 2 Sentry slots against DR-14's Clout table: the slice clamps (§3.10).
 3. Crew should confirm that a posted cat counts as **not benched** for the Braggart's dislike.
 4. Crew should confirm that "same district" for posted pairs means both posted (§3.6).
-5. UX's beat sheet should confirm Lessons open on day 4 and Sentries on day 3 (§3.12).
-6. Round-1 sim `territory_economy_model.py` encodes the retired formulas. The §4.11–4.13 figures are hand-computed and must be confirmed by an updated Lives 1–2 model (DR-57).
+5. UX's beat sheet (`ux/key-screens.md` §7.4) owns the teaching order: Sentries and the Turf Board on Life 2 day 2 (day 4), Lessons on Life 2 day 3 (day 5). §3.12 follows it.
+6. The round-2 review's `territory_slice_sim.py` and the round-3 `posting_stakes_sim.py` (`design/reviews/round-3/sim/`) encode these formulas; §4.5 and §4.11 cite them. The Turf Board's preview bar must use the same `counter` and `pair` terms.
 
 ---
 
@@ -546,10 +601,15 @@ That is a decision with a correct-ish answer that changes every day, which a pla
 | seen grace / step / floor | 2 / .20 / 0 | canon (DR-46) | Idle bound |
 | home_adv, scent coefficient | 1.5, 0.005 | 1.2–1.8, .003–.007 | Raid odds overall |
 | style_mod, guard_mod | §3.6 | Stalwart 1.3–1.7; Fraidy .6–.9 | Personality on guard |
+| motive `counter` | 2.0 | 1.5–2.5 | Whether reading the motive changes the right cat. At 1.5 the Stalwart is the best guard for every motive again (round-3 sweep) |
+| neighbour `pair` (bonded / clashing) | +0.25 / −0.25 | 0.15–0.35 | Weight of the board's adjacency puzzle |
+| clashing-neighbour Tribute | −10% per Patch | 5–15% | Pay cost of a bad pairing |
+| `loot_held` multiple (Scuffed, Lost) | 2 × Patch Tribute | 1–3 | Money stake of a raid night: at 1 the slice gap is ≈ 15%, at 2 it is ≈ 34% |
+| raider PR ratios (Tough / Captain / escort) | 1.0 / 1.5 / 0.6 | Captain 1.3–1.8; escort 0.4–0.8 | Whether a Stalwart is automatically safe (Crew owns PowerRating; these are assumptions) |
 | p_hold clamp | .05–.95 | — | No certainties |
 | Repelled / Scuffed / in-person Scent | −5 / −20 (Anchor −10) / +10 | — | Raid stakes |
 | Caterwaul window / multipliers / cap | 120 s / ×1.5 / 240 s | 90–150 s | Live-defence reachability |
-| raids per night (slice) | 1, from night 4 | 0–1 | Pressure |
+| raids per night (slice) | 1 every night, from night 4 (Nemesis §3.12) | 0–1 | Pressure; the daily posting decision exists only on raid nights |
 | Stale Claim cap / nights | 60 / 3 | — | Retake ease |
 | thief loot life | 3 days | 2–5 | Hunt window |
 | upkeep per post | 2 | 0–4 | Trivial drain |
@@ -565,7 +625,7 @@ That is a decision with a correct-ish answer that changes every day, which a pla
 **Model (an updated Lives 1–2 sim must reproduce these; DR-57):**
 1. The reference player's Doorstep on the morning after the claim delivers **54–66 Morsels** (≈ 60 ± 10%).
 2. A sleep-skipper receives ≤ 4.0 × one day's Tribute after the last visit, and **0** Tribute in steady state (Low Wall Corner included, once its seen decays).
-3. A Rub-skipper's Tribute is ≤ 5/day by the 7th consecutive skip day.
+3. A Rub-skipper's Tribute is ≤ 7/day by the 7th consecutive skip day (one who also Sprays Low Wall Corner keeps it Strong: 6.4/day, round-2 sim).
 4. For every policy, ending the day by a wipe yields Tribute identical to walking home, and a lower field haul.
 5. Under the struggler policy, the Stash never goes below 0 and Tribute never falls below the Home Ground floor; every Lost Patch can be retaken by one Standoff.
 6. The reference player can afford the day-5 Captain at fair or a day-5 Lesson, but **not both**.
@@ -580,6 +640,13 @@ That is a decision with a correct-ish answer that changes every day, which a pla
 13. Raid outcomes are identical across reloads and replays with the same seed.
 14. Tribute is invariant to roaming minutes, time of return home, and wipes.
 15. A `gloat` raid is never Lost; an `uprising` on a Goofball's Patch is declined.
+15a. `counter` is 2.0 exactly when the Sentry's personality is in §3.6's counter list for tonight's motive; `pair` follows Crew's matrix for adjacent posted Sentries only; a clashing neighbour cuts both Patches' Tribute by 10%; Scuffed and Lost set `loot_held` = 2 × the Patch's Tribute.
+15b. A snubbed Nose-Touch leaves the Patch Open; Mark Over takes −30 from the nearest held outer Patch and never takes Low Wall Corner below 10.
+
+**Posting stakes (round-3 sim, `posting_stakes_sim.py`):**
+15c. The best posting beats random posting by **≥ 30% Tribute on raid nights 4–7** (sim: +45%) and has **≤ half** the random policy's Scuffed nights (sim: 0.53 vs 2.50).
+15d. Across the four raid motives, the best guard on the forecast Patch is **at least three different cats** (sim: Pon, Hige, Togemaru, Kagi), and the habit policy (Stalwart on the forecast) trails the best by ≥ 3% (sim: 4%).
+15e. With the reference posting, the night-6 Tribute stays inside 54–66 (sim 60.8; hand reference 65).
 
 **Slice playtest (UX and QA assemble):**
 16. The scripted first raid is forecast on day 4 and offers a Caterwaul on the cat-flap night for 100% of testers who go out.
@@ -614,6 +681,12 @@ That is a decision with a correct-ish answer that changes every day, which a pla
 - Arcade, Shiosai and Summit Patch tables (the first draft's 30-Patch table is the content source, to be re-cut to 20).
 - Food-pile dressing per district; the Leftover-sweeping vignette variants.
 - Full Clout table effects (Crew cap 7–12, Sentry slots 3–8).
+- **(Iteration 3)** Raid stakes before the claim: Lost is still impossible while the Den is Open (DR-46), so pre-claim stakes are Repelled vs Scuffed. Iteration 3 raised them with the 2× `loot_held` and motive counters instead; a Routed Sentry costing −3 Loyalty (Crew) remains an unused lever.
+- **(Iteration 3)** The Brooder's guard perk (and its `pretender` counter) never comes into play in the slice: Daifuku can join only at the very end. Acceptable: all six personalities still appear (DR-01).
+- **(Iteration 3)** §4.13 "wiping is strictly dominated" is true for Morsels. In real time, a wipe before clock 240 skips the day sooner than Settle In can; the costs (Loyalty, promotion, the plaster) are real, so this is accepted.
+- **(Iteration 3)** Daifuku's level: this doc uses Lv 8 (Bribe 256); Crew uses ≈ 9 (288). Combat's leader-level rule decides (combat review C-8).
+- **(Iteration 3)** The adjacency rule is spatial on a 5-Patch board; with 3 districts it needs a per-district board and a cap on stacked neighbour bonuses (Turf Board across districts, UX).
+- **(Iteration 3)** The Turf Board's first use moves to Life 2 day 2, the heaviest pre-Den day (Day Loop budget 22.4 typical / 28.9 heavy). Measure Lot time on that day first.
 
 ## Revision Log
 
@@ -653,3 +726,16 @@ That is a decision with a correct-ish answer that changes every day, which a pla
 | PP-13 | FIXED | Territory contributes only Tribute pick-up and Share a Morsel to the 3-reset budget; no Rub limits, feeders, scraps or reseeding caches (§3.3, §3.9) |
 | PP-34 | REJECTED | Crew-cap curve: DR-14 |
 | PP-35, PP-36 | BACKLOG | Multi-district |
+
+**2026-11-24 — Iteration 3 (final fix pass; round-2 review `design/reviews/round-2/nemesis-territory-dayloop.md`, plus the `presentation.md` teaching-order ruling).** Sim: `design/reviews/round-3/sim/posting_stakes_sim.py` (output `posting_stakes_sim.out.txt`, 2,000 seeds).
+
+| Item | Status | How |
+|---|---|---|
+| T1 Mark Over and Snatch | FIXED | §3.7 (values), §3.2 (Mark Over added to the Scent list), §5 |
+| T2 Snubbed Nose-Touch | FIXED | §3.4 step 5 and §5: the Patch is Open (mirrors Nemesis §3.11) |
+| T3 Teaching order | FIXED | §3.12 follows UX's ruled sheet (key-screens §7.4): Sentries and the Turf Board move to **Life 2 day 2** (taught as the answer to the first forecast), Lessons to **Life 2 day 3**. The separate "uprisings" sub-step is deleted from step 2; an uprising is the night's raid. *Note:* the round-2 territory review asked for Sentries on L2D1; the presentation review rules that UX's sheet keeps them on L2D2. This doc follows the presentation ruling |
+| Motive list and parties | FIXED | One list shared with Nemesis §3.12: `grudge` +1, `boss_orders` +2, `gloat` alone, `pretender` +1, `uprising` alone |
+| §4.11 reference | UPDATED | S1/S2 named Hige and Togemaru (Crew §3.3); no posts on night 3; claim path per Day Loop. Night-6 anchor **65** (54–66 ✓); Stash 128 at the fast-path end, 82 after the extra day |
+| AC 3 | FIXED | ≤ 7/day (round-2 sim 6.4) |
+| Design risk: low territory stakes | FIXED | **Motive counters** (×2.0), **neighbour pairs** (bond +0.25 / clash −0.25 and −10% Tribute), **2× `loot_held`** on Scuffed and Lost, and real raid parties. **Before** (round-2 S7): best vs random posting ≈ +11% Tribute (234 vs 209); round-3 re-run of the round-2 rules: +15% over the slice, +19% on raid nights; "Stalwart on the forecast" equal to the best posting. **After:** **+34% over the slice, +45% on raid nights 4–7** (184 vs 128); Scuffed nights 0.53 vs 2.50; +109% vs no posts on raid nights; the habit answer trails the best by 4% and takes 57% more Scuffed nights; the best guard is Pon / Hige / Togemaru / Kagi by motive. Night-6 Tribute 60.8, Stash never below 0, sleep-skip steady state 0 |
+| Not fixed | BACKLOG | Pre-claim Lost (DR-46 holds), Brooder perk unused, wipe real-time note, Daifuku level, multi-district adjacency |

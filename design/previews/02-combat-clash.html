@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Cat RPG — Frame 02: Combat Clash (mock screenshot)</title>
+<link rel="stylesheet" href="kit/kit.css">
+<style>
+  body { margin: 0; background: #111; }
+  /* ---- combat HUD (component looks from kit.css; layout local to this frame) ---- */
+  #plates { left: 34px; bottom: 30px; display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+  .pl { display: flex; align-items: center; gap: 10px; background: var(--cream); border: var(--frame) solid var(--cocoa); border-radius: var(--bean-sm); box-shadow: var(--drop); padding: 6px 18px 6px 8px; height: 76px; box-sizing: border-box; position: relative; }
+  .pl--ctrl { height: 100px; padding: 8px 22px 8px 10px; border-width: 4px; border-color: var(--ink); }
+  .pl svg { display: block; }
+  .pl-dpad { position: relative; border-radius: 50%; }
+  .pl--tag .pl-dpad { transform: scale(1.15); box-shadow: 0 0 0 4px var(--gold), 0 0 0 6.5px var(--ink); }
+  .pl-mid { display: flex; flex-direction: column; gap: 5px; }
+  .pl-name { font: 800 28px/1 var(--font); color: var(--cocoa); }
+  .pl--ctrl .pl-name { font-size: 32px; color: var(--ink); }
+  .pl .k-gauge { width: 168px; height: 20px; }
+  .pl--ctrl .k-gauge { width: 210px; height: 24px; }
+  .pip { position: relative; display: inline-block; width: 34px; height: 34px; }
+  .pip > span { position: absolute; inset: 0; }
+  .pl--ctrl .pip { width: 40px; height: 40px; }
+  .pads { display: flex; gap: 4px; }
+  .bell { margin-left: 2px; }
+  .bell--off { opacity: .28; filter: grayscale(1); }
+  .hisspom { position: absolute; right: -30px; top: -20px; }
+  #zoomies { right: 40px; bottom: 34px; }
+  #ribbon { left: 50%; top: 22px; transform: translateX(-50%); }
+  .idr { display: flex; align-items: center; gap: 16px; height: 74px; padding: 0 74px 0 30px; background: var(--sage); border: 4px solid var(--ink); border-right: 0;
+         clip-path: polygon(22px 0, 100% 0, calc(100% - 40px) 100%, 0 100%); font: 800 40px/1 var(--font); color: var(--ink); position: relative; }
+  .idr small { font: 700 26px/1 var(--font); color: var(--ink); opacity: .9; }
+  .idr-wrap { position: relative; filter: drop-shadow(3px 4px 0 rgba(110,106,168,.55)); }
+  .idr-edge { position: absolute; inset: 0; pointer-events: none; }
+  .stamps { display: flex; gap: 10px; justify-content: center; margin-top: 8px; }
+  .stamp { width: 46px; height: 46px; border-radius: 50%; background: var(--cream); border: 3px solid var(--cocoa); display: flex; align-items: center; justify-content: center; font: 800 26px/1 var(--font); color: var(--cocoa); }
+  .ebar { position: absolute; display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
+  .ebar .k-gauge { width: 150px; height: 16px; border-width: 2.5px; }
+  .ebar .k-gauge--frazzle { width: 170px; height: 24px; }
+  .ebar-row { display: flex; align-items: center; gap: 6px; }
+</style>
+</head>
+<body>
+<div class="k-stage" id="stage"></div>
+<script src="kit/kit.js"></script>
+<script>
+/* FRAME 02 — COMBAT CLASH. The Lot, late Day. Combat rig: ~7 m back, 2.2 m up, pitched down (horizon high).
+ * The beat: Mikan's Pounce lands on Togemaru as the FRAZZLING hit (T4: global hit-stop, radial lines on 40% of
+ * the edge, one lettered word, dust ring + crack) and, because it is a Pounce, it opens the Tag-In window:
+ * the bell-gold spark ring on Mikan and the Crew plates' D-pad glyphs popped to 115% with a gold rim (HUD §4.3).
+ * Screenshot = the hit-stop hold: +1 px line, a 6% punch-in, and a stepped shake offset on the world camera.
+ * Perspective: horizon y=HZ, focal F, camera height CH.  ground y at distance d: HZ + CH*F/d */
+const K = Kit, C = K.C, W = 1920, H = 1080, HZ = 196, F = 1350, CH = 2.2, CX = 960;
+const P = (X, Y, d) => [CX + X * F / d, HZ + (CH - Y) * F / d];
+const cs = (d) => 1.62 * 6.4 / d;                 // cat scale at depth d (cats are drawn ~2x life for read; kit units)
+const s = [];
+const pt = (p) => p[0].toFixed(1) + ' ' + p[1].toFixed(1);
+
+/* ================= painted world: the Lot ================= */
+s.push(K.sky({ w: W, h: 460, phase: 'day', zenith: '#4A9FE4', horizon: '#CFE6F0' }));
+s.push(K.glow(260, 40, 900, 420, '#FFF2CF', 0.55));
+s.push(K.cloud({ x: 1250, y: 300, w: 900, h: 470, seed: 3 }));
+s.push(K.cloud({ x: 380, y: 270, w: 560, h: 230, seed: 12, opacity: 0.95 }));
+// trees and a neighbour's roof beyond the plank fence
+s.push(K.foliage({ x: 260, y: 150, w: 720, h: 300, seed: 51, far: true, tones: { dark: '#3F8463', mid: '#5E9F6A', light: '#93C77A' } }));
+s.push(K.roof({ quad: [[640, 120], [1120, 106], [1210, 214], [560, 230]], rows: 6, cols: 20, color: '#7A8DA3' }));
+s.push(K.surface({ pts: [[590, 228], [1190, 212], [1190, 280], [590, 290]], color: '#EFDDBB', grime: 0.15 }));
+s.push(K.foliage({ x: 1660, y: 150, w: 640, h: 330, seed: 43, tones: { dark: '#2F6E4A', mid: '#4F964C', light: '#86C25A', hi: '#C4E07E' } }));
+s.push(K.foliage({ x: 70, y: 120, w: 420, h: 320, seed: 52, tones: { dark: '#2F6E4A', mid: '#4F964C', light: '#86C25A', hi: '#C4E07E' } }));
+s.push(K.foliage({ x: 1180, y: 230, w: 300, h: 140, seed: 44, far: true, tones: { dark: '#3F8463', mid: '#5E9F6A', light: '#93C77A' } }));
+
+// the plank fence closing the Lot (slightly angled: left end nearer)
+const fq = [P(-11, 1.9, 13.5), P(12.5, 1.9, 17.5), P(12.5, 0, 17.5), P(-11, 0, 13.5)];
+s.push(K.fence({ quad: fq, n: 44, seed: 7, color: '#B98A5E' }));
+s.push(K.pole({ x: P(-4.6, 0, 14.4)[0], y: P(-4.6, 0, 14.4)[1], h: 560, w: 34 }));
+s.push(K.wires({ pts: [[-20, 70], [P(-4.6, 0, 14.4)[0], P(-4.6, 0, 14.4)[1] - 520], [1940, 40]], sag: 40, width: 2.5 }));
+s.push(K.wires({ pts: [[-20, 110], [P(-4.6, 0, 14.4)[0], P(-4.6, 0, 14.4)[1] - 470], [1940, 95]], sag: 55, width: 2 }));
+
+// the dirt lot
+const gTop = Math.min(fq[2][1], fq[3][1]) - 4;
+s.push(K.ground({ pts: [[-60, gTop], [W + 60, gTop], [W + 60, H + 60], [-60, H + 60]], color: '#BCA27C', seed: 9 }));
+// weedy patches + sunlit worn arena in the middle
+s.push(`<ellipse cx="1000" cy="640" rx="760" ry="230" fill="#FFF0CC" opacity="0.32" filter="url(#k-soft3)"/>`);
+const weeds = (x, y, rx, ry, seed) => { const R = K.rng(seed); let g = ''; for (let i = 0; i < 26; i++) { const a = R() * 6.28, q = Math.sqrt(R()); g += `<ellipse cx="${(x + Math.cos(a) * rx * q).toFixed(1)}" cy="${(y + Math.sin(a) * ry * q).toFixed(1)}" rx="${(rx * (0.12 + R() * 0.14)).toFixed(1)}" ry="${(ry * (0.1 + R() * 0.12)).toFixed(1)}" fill="${['#7FA552', '#93B862', '#6C9548', '#A9C470'][i % 4]}" opacity="0.75"/>`; } return `<g filter="url(#k-leaf-fine)">${g}</g>`; };
+s.push(weeds(220, 520, 260, 70, 3), weeds(1700, 470, 260, 60, 5), weeds(140, 900, 300, 150, 8), weeds(1820, 860, 260, 160, 11), weeds(820, 430, 160, 26, 13));
+// tyre ruts from the truck
+s.push(`<g fill="none" stroke="#9C8462" stroke-width="16" opacity="0.28" filter="url(#k-rough)"><path d="M1380 420Q1200 600 1060 1100"/><path d="M1500 420Q1400 620 1330 1100"/></g>`);
+
+// kei truck (painted: it's the Lot's throne, not an actor)
+{
+  const d = 13.8, x0 = P(2.4, 0, d)[0], x1 = P(6.3, 0, d)[0], gy = P(0, 0, d)[1], k = F / d;
+  const wheel = (x) => `<circle cx="${x}" cy="${gy - 0.28 * k}" r="${0.3 * k}" fill="#3E3946"/><circle cx="${x}" cy="${gy - 0.28 * k}" r="${0.13 * k}" fill="#B8B4AE"/>`;
+  s.push(K.castShadow(`M${x0 - 20} ${gy - 6}L${x1 + 10} ${gy - 6}L${x1 + 140} ${gy + 26}L${x0 + 90} ${gy + 30}Z`, 0.4));
+  s.push(K.surface({ pts: [[x0, gy - 1.05 * k], [x1 - 1.25 * k, gy - 1.05 * k], [x1 - 1.25 * k, gy - 0.42 * k], [x0, gy - 0.42 * k]], color: '#E9E4DA', grime: 0.3 })); // bed side
+  s.push(K.surface({ pts: [[x0, gy - 0.42 * k], [x1, gy - 0.42 * k], [x1, gy - 0.2 * k], [x0, gy - 0.2 * k]], color: '#8E8A90', grime: 0 }));
+  s.push(K.surface({ pts: [[x1 - 1.3 * k, gy - 1.85 * k], [x1 - 0.18 * k, gy - 1.82 * k], [x1, gy - 1.1 * k], [x1, gy - 0.42 * k], [x1 - 1.3 * k, gy - 0.42 * k]], color: '#F1ECE2', grime: 0.25 })); // cab
+  s.push(`<g filter="url(#k-rough)"><path d="M${x1 - 1.18 * k} ${gy - 1.72 * k}L${x1 - 0.3 * k} ${gy - 1.7 * k}L${x1 - 0.12 * k} ${gy - 1.2 * k}L${x1 - 1.18 * k} ${gy - 1.2 * k}Z" fill="#7F98AE"/><path d="M${x1 - 1.1 * k} ${gy - 1.66 * k}L${x1 - 0.7 * k} ${gy - 1.66 * k}L${x1 - 1.0 * k} ${gy - 1.26 * k}Z" fill="#CFE3EE" opacity="0.6"/>
+    <path d="M${x0} ${gy - 1.05 * k}L${x1 - 1.25 * k} ${gy - 1.05 * k}" stroke="#CFC8BC" stroke-width="6"/><rect x="${x1 - 0.12 * k}" y="${gy - 0.9 * k}" width="10" height="16" fill="#F2B451"/>
+    <path d="M${x0 + 30} ${gy - 0.95 * k}l26 8l-10 14l30 6" stroke="#B07A4E" stroke-width="5" fill="none" opacity="0.6"/></g>`);
+  s.push(wheel(x0 + 0.6 * k) + wheel(x1 - 0.7 * k));
+  // rust and a tarp corner hanging over the bed
+  s.push(`<path d="M${x0 + 10} ${gy - 1.12 * k}Q${x0 + 120} ${gy - 1.5 * k} ${x0 + 210} ${gy - 1.1 * k}L${x0 + 200} ${gy - 0.7 * k}Q${x0 + 110} ${gy - 0.8 * k} ${x0 + 20} ${gy - 0.6 * k}Z" fill="#3E86C8" filter="url(#k-rough)"/><path d="M${x0 + 60} ${gy - 1.3 * k}Q${x0 + 90} ${gy - 1.0 * k} ${x0 + 80} ${gy - 0.72 * k}" stroke="#2C6AA6" stroke-width="10" fill="none" filter="url(#k-rough)"/>`);
+}
+// left: crates under a blue tarp + a broken bench
+{
+  const a = P(-6.6, 0, 12.2), b = P(-3.6, 0, 12.2), k = F / 12.2;
+  s.push(K.castShadow(`M${a[0]} ${a[1] - 4}L${b[0]} ${b[1] - 4}L${b[0] + 160} ${b[1] + 30}L${a[0] + 120} ${a[1] + 30}Z`, 0.36));
+  s.push(K.surface({ pts: [[a[0] + 10, a[1] - 1.0 * k], [a[0] + 1.3 * k, a[1] - 1.0 * k], [a[0] + 1.3 * k, a[1]], [a[0] + 10, a[1]]], color: '#C99A62', tex: 'brush-v', texOpacity: 0.35 }));
+  s.push(K.surface({ pts: [[a[0] + 1.35 * k, a[1] - 0.62 * k], [b[0], b[1] - 0.62 * k], [b[0], b[1]], [a[0] + 1.35 * k, a[1]]], color: '#B88A58', tex: 'brush-v', texOpacity: 0.35 }));
+  s.push(`<path d="M${a[0] - 14} ${a[1] - 0.2 * k}Q${a[0] - 4} ${a[1] - 1.25 * k} ${a[0] + 0.7 * k} ${a[1] - 1.3 * k}Q${a[0] + 1.6 * k} ${a[1] - 1.26 * k} ${a[0] + 1.75 * k} ${a[1] - 0.6 * k}L${a[0] + 1.5 * k} ${a[1] - 0.12 * k}Q${a[0] + 0.8 * k} ${a[1] - 0.5 * k} ${a[0] - 14} ${a[1] - 0.2 * k}Z" fill="#3F8ACB" filter="url(#k-rough)"/>
+    <path d="M${a[0] + 0.2 * k} ${a[1] - 1.2 * k}Q${a[0] + 0.5 * k} ${a[1] - 0.8 * k} ${a[0] + 0.35 * k} ${a[1] - 0.35 * k}M${a[0] + 1.0 * k} ${a[1] - 1.25 * k}Q${a[0] + 1.2 * k} ${a[1] - 0.9 * k} ${a[0] + 1.3 * k} ${a[1] - 0.45 * k}" stroke="#2D69A8" stroke-width="9" fill="none" filter="url(#k-rough)"/>
+    <path d="M${a[0] + 0.1 * k} ${a[1] - 1.22 * k}Q${a[0] + 0.7 * k} ${a[1] - 1.34 * k} ${a[0] + 1.3 * k} ${a[1] - 1.2 * k}" stroke="#8CC2EC" stroke-width="7" fill="none" opacity="0.8" filter="url(#k-rough)"/>`);
+}
+// tall grass along the fence foot
+s.push(K.grass({ x1: fq[3][0], y1: fq[3][1] + 2, x2: fq[2][0], y2: fq[2][1] + 2, n: 70, h: 30, seed: 4 }));
+s.push(K.foliage({ x: 1870, y: 420, w: 200, h: 120, seed: 61, tones: { dark: '#2F6E4A', mid: '#4C8F4A', light: '#7DB857', hi: '#B5D873' } }));
+s.push(K.foliage({ x: 40, y: 440, w: 220, h: 140, seed: 62, tones: { dark: '#2F6E4A', mid: '#4C8F4A', light: '#7DB857', hi: '#B5D873' } }));
+
+/* ---------- inked props (a cat can act on them) ---------- */
+{ // water bucket (Fear prop)
+  const p = P(5.1, 0, 8.4);
+  s.push(K.castShadow(`M${p[0] - 30} ${p[1] - 2}L${p[0] + 34} ${p[1] - 2}L${p[0] + 130} ${p[1] + 20}L${p[0] + 40} ${p[1] + 24}Z`, 0.34));
+  s.push(K.prop({ kind: 'bucket', x: p[0], y: p[1], scale: 1.25 }));
+}
+
+/* ---------- light: warm sun from the left, wisteria shadows to the right ---------- */
+s.push(K.glow(700, 560, 900, 260, '#FFF0C8', 0.22));
+
+/* ================= the brawl ================= */
+const ink = C.ink, gold = C.gold;
+const chevron = (x, y, sc) => `<g transform="translate(${x} ${y}) scale(${sc || 1})"><path d="M-15 -4L0 8L15 -4L15 6L0 18L-15 6Z" fill="${gold}" stroke="${ink}" stroke-width="3" stroke-linejoin="round"/></g>`;
+const bellTick = (x, y, sc) => `<g transform="translate(${x} ${y}) scale(${sc || 1})"><path d="M0 -26C-14 -26 -18 -12 -18 0C-18 8 -22 10 -24 14H24C22 10 18 8 18 0C18 -12 14 -26 0 -26Z" fill="${gold}" stroke="${ink}" stroke-width="3.5" stroke-linejoin="round"/><circle cy="18" r="6" fill="${gold}" stroke="${ink}" stroke-width="3"/><path d="M-9 -12Q-8 -20 -2 -21" stroke="${C.cream}" stroke-width="4" fill="none" stroke-linecap="round"/></g>`;
+const dustRing = (x, y, r, n, seed) => { const R = K.rng(seed); let g = ''; for (let i = 0; i < n; i++) { const a = Math.PI * (0.95 + i / (n - 1) * 1.1) + (R() - 0.5) * 0.2; g += K.dustCloud({ x: x + Math.cos(a) * r, y: y + Math.sin(a) * r * 0.32 - 10, r: 26 + R() * 18, puffs: 4, seed: seed + i, lw: 2.5 }); } return g; };
+const sparkTiny = (x, y, r, rot) => `<g transform="translate(${x} ${y}) rotate(${rot || 0})"><path d="M0 ${-r}L${r * 0.22} ${-r * 0.22}L${r} 0L${r * 0.22} ${r * 0.22}L0 ${r}L${-r * 0.22} ${r * 0.22}L${-r} 0L${-r * 0.22} ${-r * 0.22}Z" fill="${C.cream}" stroke="${ink}" stroke-width="2.5" stroke-linejoin="round"/></g>`;
+const nicks = (x, y, sc, rot) => `<g transform="translate(${x} ${y}) rotate(${rot}) scale(${sc})">${[-12, 0, 12].map((o) => `<path d="M${o - 4} -22L${o + 4} -22L${o + 1} 22Z" fill="${C.clawCore}" stroke="${C.claw}" stroke-width="2.5" stroke-linejoin="round"/>`).join('')}<path d="M-30 -26L30 -26" stroke="${ink}" stroke-width="0"/></g>`;
+
+/* ---- 1. back-left: Goofball (Crew, Left) belly-flops onto a Wall Sitter brooder; Fraidy hisses from the far side ---- */
+const br = { x: P(-3.4, 0, 10.2)[0], y: P(-3.4, 0, 10.2)[1] };
+s.push(K.cat({ ...K.CAST.brooder, pose: 'hiss', outline: 'sage', expr: 'hiss', x: br.x, y: br.y, scale: cs(10.2) }));
+// goofball, nose-down dive (side-pounce rotated), local streak behind
+s.push(K.speedLines({ mode: 'parallel', x: br.x + 380, y: br.y - 330, w: 200, h: 80, angle: 128, count: 9, seed: 4 }));
+s.push(`<g transform="translate(${br.x + 90} ${br.y - 128}) rotate(-38)">${K.cat({ ...K.CAST.goofball, pose: 'side-pounce', outline: 'gold', flip: true, expr: 'happy', x: 0, y: 64, scale: cs(9.8), shadow: false })}</g>`);
+s.push(K.impactBurst({ x: br.x + 18, y: br.y - 88, r: 30, points: 8, seed: 3 }));
+s.push(chevron(br.x + 96, br.y - 252, 0.9));
+// fraidy: at the brooder's back, tail tucked, mid-Skitter
+const fr = { x: P(-5.9, 0, 11.6)[0], y: P(-5.9, 0, 11.6)[1] };
+s.push(K.speedLines({ mode: 'parallel', x: fr.x - 170, y: fr.y - 70, w: 130, h: 50, angle: 0, count: 6, seed: 8 }));
+s.push(K.cat({ ...K.CAST.fraidy, pose: 'hiss', outline: 'gold', flip: false, x: fr.x, y: fr.y, scale: cs(11.2) * 0.98 }));
+s.push(chevron(fr.x - 4, fr.y - 132, 0.8));
+s.push(dustRing(br.x + 10, br.y + 4, 92, 4, 21));
+
+/* ---- 2. right: Stalwart (Crew, Down) trades blows with a tuxedo Schemer ---- */
+const sch = { x: P(4.6, 0, 9.6)[0], y: P(4.6, 0, 9.6)[1] };
+const stw = { x: P(3.1, 0, 8.6)[0], y: P(3.1, 0, 8.6)[1] };
+s.push(K.cat({ ...K.CAST.schemer, pose: 'hiss', outline: 'sage', flip: true, x: sch.x, y: sch.y, scale: cs(9.6) }));
+s.push(K.cat({ ...K.CAST.stalwart, pose: 'hiss', outline: 'gold', expr: 'angry', x: stw.x, y: stw.y, scale: cs(8.6) }));
+s.push(K.impactBurst({ x: (sch.x + stw.x) / 2 + 40, y: sch.y - 34, r: 30, points: 9, star: true, seed: 6 }));
+s.push(chevron(stw.x + 20, stw.y - 150, 0.85));
+s.push(dustRing((sch.x + stw.x) / 2, sch.y + 8, 100, 3, 33));
+
+/* ---- 3. the hero hit: Mikan's Pounce lands on Togemaru ---- */
+const tg = { x: 1150, y: 646 };          // Togemaru's ground point (d ~ 7.2)
+const hit = { x: 1010, y: 520 };          // contact point (Togemaru's cheek)
+const mk = { x: 842, y: 735 };            // Mikan's origin (airborne; ground ring + shadow below at d ~ 6)
+
+// radial focus lines: 40% of the screen edge (T4), centre third clear, Ink wedges
+s.push(K.speedLines({ mode: 'radial', x: hit.x - 1250, y: hit.y - 760, w: 2500, h: 1520, count: 96, inner: 0.5, seed: 12 }));
+// ground: crack decal + three pale claw scratches + dust ring
+s.push(`<g transform="translate(${tg.x - 30} ${tg.y + 4})"><path d="M-120 0L-60 -6L-40 8L10 -4L40 10L110 2L150 14" fill="none" stroke="${ink}" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/><path d="M-40 8L-56 24M40 10L30 30M10 -4L22 -16" stroke="${ink}" stroke-width="4" stroke-linecap="round"/></g>`);
+// Mikan's ground ring (controlled cat) + her shadow far below the leap
+const ring = { x: mk.x + 40, y: 770 };
+s.push(K.shadow({ x: ring.x + 30, y: ring.y, rx: 96, ry: 18, opacity: 0.5 }));
+s.push(`<ellipse cx="${ring.x}" cy="${ring.y}" rx="122" ry="30" fill="none" stroke="${ink}" stroke-width="10"/><ellipse cx="${ring.x}" cy="${ring.y}" rx="122" ry="30" fill="none" stroke="${gold}" stroke-width="5.5"/>`
+  + [0, 1, 2, 3].map((i) => { const a = i * Math.PI / 2 + 0.4; return `<path d="M${ring.x + Math.cos(a) * 122} ${ring.y + Math.sin(a) * 30}l${Math.cos(a) * 18} ${Math.sin(a) * 6}" stroke="${ink}" stroke-width="9" stroke-linecap="round"/><path d="M${ring.x + Math.cos(a) * 122} ${ring.y + Math.sin(a) * 30}l${Math.cos(a) * 18} ${Math.sin(a) * 6}" stroke="${gold}" stroke-width="4.5" stroke-linecap="round"/>`; }).join(''));
+
+// slash arc: the Pounce's paw path, three thin crescents sweeping up-right through the cheek, Ink keystroke; finisher thickness
+s.push(K.slashArc({ x: hit.x - 40, y: hit.y + 210, r: 300, a0: -168, a1: -38, thick: 26, count: 3 }));
+s.push(`<g opacity="1">${K.slashArc({ x: hit.x - 60, y: hit.y + 240, r: 318, a0: -160, a1: -52, thick: 9, count: 1, color: ink, core: ink })}</g>`);
+s.push(dustRing(tg.x + 20, tg.y + 22, 150, 5, 41));
+// Togemaru takes the hit: the Frazzling hit puffs him on contact (zigzag silhouette, spiral eyes, Magenta line), knocked back and up
+s.push(K.shadow({ x: tg.x + 20, y: tg.y, rx: 80, ry: 15, opacity: 0.45 }));
+s.push(`<g transform="translate(${tg.x} ${tg.y - 30}) rotate(19)">${K.cat({ ...K.CAST.braggart, pose: 'frazzled', x: 0, y: 0, scale: cs(7.2) * 1.3, shadow: false, lw: 3.5 })}</g>`);
+s.push(K.frazzleOrbit({ x: tg.x + 40, y: tg.y - 222, r: 78 }));
+s.push(K.ticks({ x: tg.x + 40, y: tg.y - 150, r: 120, n: 4, a0: -70, a1: 0, len: 22, lw: 4 }));
+[[1250, 430, 30], [1290, 520, 70], [1210, 380, -20], [1300, 460, 40]].forEach(([x, y, r], i) => s.push(`<path d="M${x} ${y}l${16 + i * 3} -6l-6 ${12 + i}z" transform="rotate(${r} ${x} ${y})" fill="#F4DDAA" stroke="${ink}" stroke-width="2.5" stroke-linejoin="round"/>`));
+// impact burst at the contact point (T4: largest type drawing)
+s.push(K.impactBurst({ x: hit.x, y: hit.y, r: 78, points: 12, color: C.claw, seed: 9, inner: 0.5 }));
+s.push(nicks(hit.x + 2, hit.y + 2, 1.25, 28));
+s.push(sparkTiny(hit.x - 108, hit.y - 70, 18, 10) + sparkTiny(hit.x + 120, hit.y + 70, 14, 0) + sparkTiny(hit.x + 30, hit.y - 132, 12, 20));
+// dust ring + trail under the hit
+
+// Mikan: local streak behind her, then the cat (gold keyline + cream rim), bell tick overhead
+s.push(K.speedLines({ mode: 'parallel', x: mk.x - 500, y: mk.y + 40, w: 330, h: 150, angle: -30, count: 13, seed: 5 }));
+// Tag-In window: bell-gold spark ring popping around the controlled cat's shoulders (outward wedges, Ink line)
+{ const c = { x: mk.x + 96, y: mk.y - 196 }; let g = ''; for (let i = 0; i < 9; i++) { const a = i / 9 * Math.PI * 2 + 0.3, r0 = 118, r1 = r0 + 34 + (i % 2) * 12, w = 0.1; const P0 = [c.x + Math.cos(a - w) * r0, c.y + Math.sin(a - w) * r0 * 0.85], P1 = [c.x + Math.cos(a) * r1, c.y + Math.sin(a) * r1 * 0.85], P2 = [c.x + Math.cos(a + w) * r0, c.y + Math.sin(a + w) * r0 * 0.85]; g += `<path d="M${pt(P0)}L${pt(P1)}L${pt(P2)}Z" fill="${gold}" stroke="${ink}" stroke-width="3" stroke-linejoin="round"/>`; } s.push(`<g>${g}</g>`); }
+s.push(`<g transform="translate(${mk.x} ${mk.y}) rotate(-8)">${K.cat({ ...K.CAST.mikan, pose: 'side-pounce', outline: 'gold', expr: 'angry', x: 0, y: 0, scale: 1.98, shadow: false, lw: 3.5 })}</g>`);
+s.push(bellTick(mk.x - 6, mk.y - 300, 1.15));
+
+// the ONE lettered word (T4 ≈ 12% of height): Frazzling hit -> pop/burst family. Offset away from Mikan, tilted along the hit.
+s.push(sfx({ text: 'FWOOMP!', x: 1470, y: 300, size: 118, rot: -11, color: C.claw, grow: 1.4, seed: 3 }));
+
+/* local lettering: the kit's sfx() with real advance widths, so wide letters (W, M) don't collide into a misread */
+function sfx(o) {
+  o = Object.assign({ text: 'WHAM', x: 0, y: 0, size: 130, rot: -10, color: C.ink, grow: 1.4, seed: 1 }, o); const R = K.rng(o.seed * 37 + 11);
+  const adv = { W: 1.06, M: 0.98, O: 0.86, I: 0.42, '!': 0.42, '-': 0.5 }; const n = o.text.length; let x = 0; const gl = [];
+  for (let i = 0; i < n; i++) { const k = 1 + (o.grow - 1) * (n > 1 ? i / (n - 1) : 0), fs = o.size * k / ((1 + o.grow) / 2), dy = (R() - 0.5) * o.size * 0.12, rot = (R() - 0.5) * 12; gl.push({ ch: o.text[i], x, fs, dy, rot }); x += fs * (adv[o.text[i]] || 0.8) * 0.9; }
+  const layer = (fill, sw, dx, dy) => gl.map((g) => `<text x="${(g.x + dx).toFixed(1)}" y="${(g.dy + dy).toFixed(1)}" font-size="${g.fs.toFixed(1)}" transform="rotate(${g.rot.toFixed(1)} ${(g.x + dx + g.fs * 0.35).toFixed(1)} ${(g.dy + dy - g.fs * 0.3).toFixed(1)})" fill="${fill}" stroke="${C.ink}" stroke-width="${sw}" stroke-linejoin="round" paint-order="stroke">${g.ch}</text>`).join('');
+  const off = o.size * 0.05;
+  return `<g class="k-vfx k-sfx" transform="translate(${o.x} ${o.y}) rotate(${o.rot}) translate(${-x / 2} 0)" font-family="'Dela Gothic One',sans-serif" filter="url(#k-dry)">${layer(o.color, o.size * 0.07, off, off)}${layer(C.cream, o.size * 0.09, 0, 0)}</g>`;
+}
+
+/* ---------- foreground: pebbles flung toward the camera from the hit (depth) ---------- */
+{ const R = K.rng(71); let g = ''; for (let i = 0; i < 6; i++) { const t = (i + R()) / 6, x = tg.x + 120 + t * 420 + R() * 40, y = tg.y + 30 + t * 250 + (R() - 0.5) * 60, r = 9 + t * 16; g += `<path d="M${x - r * 3.2} ${y - r * 1.6}L${x - r * 1.5} ${y - r * 0.75}" stroke="${ink}" stroke-width="3.5" stroke-linecap="round"/>` + K.inked(K.blob(K.pomPts(x, y, r, 5, 0.08, R() * 3)), i % 2 ? '#CDBC9C' : '#A9967A', 2.5) + `<path d="${K.blob(K.pomPts(x - r * 0.25, y - r * 0.3, r * 0.45, 5, 0.1, 1))}" fill="#E9DFC6"/>`; } s.push(g); }
+s.push(K.grass({ x1: 1480, y1: 1090, x2: 1720, y2: 1086, n: 10, h: 120, seed: 21 }));
+s.push(K.grass({ x1: 560, y1: 1094, x2: 760, y2: 1090, n: 7, h: 80, seed: 23 }));
+
+/* ================= camera: hit-stop hold, 6% punch-in, stepped shake offset, slight dutch ================= */
+const CAM = { rot: -2.2, s: 1.075, dx: -16, dy: 9 };
+const camT = `translate(${CX + CAM.dx} ${540 + CAM.dy}) rotate(${CAM.rot}) scale(${CAM.s}) translate(${-CX} -540)`;
+const toScreen = (x, y) => { const a = CAM.rot * Math.PI / 180, X = (x - CX) * CAM.s, Y = (y - 540) * CAM.s; return [CX + CAM.dx + X * Math.cos(a) - Y * Math.sin(a), 540 + CAM.dy + X * Math.sin(a) + Y * Math.cos(a)]; };
+
+/* ================= HUD (screen-anchored: does not shake) ================= */
+const pip = (v, sz) => `<span class="pip"><span>${K.ui.paw({ size: sz, fill: C.recessed, stroke: C.cocoa })}</span><span style="clip-path: inset(${100 - v}% 0 0 0)">${K.ui.paw({ size: sz, fill: C.pad })}</span></span>`;
+const hissPom = `<svg class="hisspom" width="58" height="58" viewBox="-29 -29 58 58"><circle r="25" fill="${C.cream}" stroke="${ink}" stroke-width="3.5"/><circle r="19" fill="none" stroke="${gold}" stroke-width="5"/><path d="M-11 -4Q0 -9 11 -4Q9 9 0 11Q-9 9 -11 -4Z" fill="#B8344E" stroke="${ink}" stroke-width="2.5" stroke-linejoin="round"/><path d="M-7 -5l2 6l2 -6M7 -5l-2 6l-2 -6" fill="#fff" stroke="${ink}" stroke-width="1.5" stroke-linejoin="round"/></svg>`;
+const plate = (o) => `<div class="pl${o.ctrl ? ' pl--ctrl' : ''}${o.tag ? ' pl--tag' : ''}">
+  <div class="pl-dpad">${K.ui.dpad({ size: o.ctrl ? 56 : 46, lit: o.dir })}</div>
+  ${K.ui.portrait({ cat: Object.assign({ expr: 'neutral' }, o.cat, { outline: 'ink' }), size: o.ctrl ? 84 : 64, ring: o.ctrl ? C.gold : C.cocoa })}
+  <div class="pl-mid"><div class="pl-name">${o.name}</div><div class="k-gauge" style="--v:${o.nerve}%"><i></i></div></div>
+  <div class="pads">${pip(o.paws[0], o.ctrl ? 40 : 34)}${pip(o.paws[1], o.ctrl ? 40 : 34)}</div>
+  ${o.ctrl ? hissPom : `<span class="bell${o.bell ? '' : ' bell--off'}">${K.ui.icon({ name: 'bell', size: 34 })}</span>`}
+</div>`;
+const zoom = (v) => { const a = v * Math.PI * 2, x = Math.sin(a) * 58, y = -Math.cos(a) * 58; return `<svg width="150" height="150" viewBox="-75 -75 150 150"><circle r="70" fill="${C.wisteria}" opacity=".5" transform="translate(3 4)"/><circle r="68" fill="${C.cream}" stroke="${C.cocoa}" stroke-width="5"/><path d="M0 0L0 -58A58 58 0 ${v > 0.5 ? 1 : 0} 1 ${x.toFixed(1)} ${y.toFixed(1)}Z" fill="${gold}"/><circle r="58" fill="none" stroke="${ink}" stroke-width="3"/><circle r="34" fill="${C.cream}" stroke="${ink}" stroke-width="3"/>${[-11, 0, 11].map((o) => `<path d="M${o - 7} -18L${o + 1} -20L${o + 5} 18L${o - 1} 18Z" fill="${C.cocoa}"/>`).join('')}</svg>`; };
+const brick = `<svg width="46" height="34" viewBox="-24 -17 48 34"><path d="M-21 -14h42v28h-42z" fill="${C.cream}" stroke="${ink}" stroke-width="3"/><path d="M-21 0h42M0 -14v14M-10 0v14M11 0v14" stroke="${ink}" stroke-width="3" fill="none"/></svg>`;
+const claw = `<svg width="40" height="34" viewBox="-20 -17 40 34">${[-9, 0, 9].map((o) => `<path d="M${o - 5} -14L${o + 1} -15L${o + 4} 14L${o - 1} 14Z" fill="${ink}"/>`).join('')}</svg>`;
+const cuke = `<svg width="34" height="34" viewBox="-17 -17 34 34"><path d="M-12 8Q-14 -2 -4 -10Q6 -16 12 -10Q8 4 -2 10Q-8 13 -12 8Z" fill="#5FA048" stroke="${ink}" stroke-width="2.5"/></svg>`;
+
+const eb = toScreen(tg.x - 92, tg.y - 236);
+const hud = `
+  <div class="k-abs" id="ribbon"><div class="idr-wrap"><div class="idr">${brick}TOGEMARU <small>the First Thorn</small>${claw}${claw}</div></div>
+    <div class="stamps"><span class="stamp">${cuke}</span><span class="stamp">?</span></div></div>
+  <div class="k-abs ebar" style="left:${eb[0].toFixed(0)}px; top:${eb[1].toFixed(0)}px">
+    <div class="ebar-row"><svg width="22" height="18" viewBox="-12 -9 24 18"><path d="M-10 -7h20v14h-20z" fill="${C.sage}" stroke="${ink}" stroke-width="2.5"/><path d="M-10 0h20M0 -7v7" stroke="${ink}" stroke-width="2"/></svg><div class="k-gauge" style="--v:58%"><i></i></div></div>
+    <div class="k-gauge k-gauge--frazzle" style="--v:100%"><i></i></div>
+  </div>
+  <div class="k-abs" id="plates">
+    ${plate({ ctrl: true, dir: 'n', name: 'Mikan', cat: K.CAST.mikan, nerve: 82, paws: [100, 64] })}
+    ${plate({ tag: true, dir: 'w', name: 'Mochi', cat: K.CAST.goofball, nerve: 70, paws: [100, 20], bell: true })}
+    ${plate({ tag: true, dir: 's', name: 'Gin', cat: K.CAST.stalwart, nerve: 91, paws: [45, 0], bell: false })}
+    ${plate({ tag: true, dir: 'e', name: 'Kinako', cat: K.CAST.fraidy, nerve: 48, paws: [100, 0], bell: true })}
+  </div>
+  <div class="k-abs" id="zoomies">${zoom(0.62)}</div>`;
+
+document.getElementById('stage').innerHTML = K.svg(W, H, `<g transform="${camT}">${s.join('')}</g>`, 'class="k-world"') + hud;
+</script>
+</body>
+</html>
