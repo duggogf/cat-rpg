@@ -8,7 +8,7 @@ const D = Math.PI / 180;
 /** Per-bone [pitch, yaw] in degrees for tail1..tail6 (pitch + = up, yaw + = to the cat's right). */
 export const CARRIAGES = {
   // Braggart: straight up, tip hooked forward like a flag
-  flag: { bones: [[78, 4], [12, 3], [4, 2], [0, 0], [-22, 0], [-46, 0]], sway: 5, speed: 1.1, tip: 0.6 },
+  flag: { bones: [[74, 4], [10, 3], [4, 2], [6, 0], [34, 0], [52, 0]], sway: 5, speed: 1.1, tip: 0.6 },
   // Brooder: low, level with the hocks, dead still apart from one slow tip flick
   anchor: { bones: [[-52, 0], [16, 0], [16, 0], [12, 0], [8, 0], [6, 0]], sway: 1.5, speed: 0.35, tip: 1 },
   // Schemer: horizontal, tip twitching fast
@@ -18,7 +18,7 @@ export const CARRIAGES = {
   // Stalwart: upright and straight, steady, no sway
   post: { bones: [[86, 0], [2, 0], [0, 0], [0, 0], [0, 0], [-2, 0]], sway: 0, speed: 0, tip: 0 },
   // Goofball: up with a loose wobbling curl, never still
-  spring: { bones: [[62, -10], [14, -14], [16, -10], [30, -6], [44, 0], [52, 0]], sway: 9, speed: 2.4, tip: 0.3 },
+  spring: { bones: [[58, -12], [16, -14], [10, -10], [-34, -8], [-52, 0], [-58, 0]], sway: 9, speed: 2.4, tip: 0.3 },
   // Mikan's pom: a perky stub
   pom: { bones: [[30, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]], sway: 6, speed: 1.6, tip: 0 },
 };

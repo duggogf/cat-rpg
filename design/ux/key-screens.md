@@ -285,35 +285,48 @@ Every discovered cat stands in **one disposition pose** (Nemesis owns the mappin
 
 ### 2.7 Relationship tags (hover or focus)
 
-The owner's rule (C1, OR-04): **hover one discovered cat (mouse) or focus it (pad / keys), and a small tag appears on every other discovered cat it relates to**, worded from the hovered cat's point of view. If either cat is undiscovered, nothing shows. Tags are words with an icon, never numbers. They are a **different object from the role tag**: a paper tag clipped to the cat's ribbon, in cream with an Ink border, that appears only while hovering.
+The owner's rule (C1, OR-04): **hover one discovered cat (mouse) or focus it (pad / keys), and the other discovered cats it relates to are shown**, worded from the hovered cat's point of view. After the declutter pass (2026-11-24) the common ties (Gang / Boss) are shown by the **arrows**, and only the rare ties get a **paper tag**. If either cat is undiscovered, nothing shows. Tags are words with an icon, never numbers. They are a **different object from the role tag** (which is on the card only): a paper tag clipped to the cat's ribbon, in cream with an Ink border, that appears only while hovering.
 
-| Hovered cat | Tag on the other cat | Icon |
+| Hovered cat | Shown on the other cat | Icon |
 |---|---|---|
-| A gang member | **Boss** on its Boss | Crown |
-| A Boss | **Gang** on each discovered member | Row of three paws |
+| A gang member | Its arrow to its Boss brightens; the Boss stays full colour (**no tag**) | — |
+| A Boss | Every member's arrow brightens (**no tag**) | — |
 | Either of a Rival pair | **Rival** | Crossed claws |
 | Either of a Kin pair | **Kin** | Two touching ears |
 | A Crew cat with `OLD_GANG` in its own Memory | **Old Boss** on that Boss | Crown with a nick |
 | That Boss | **Old Gang** on that Crew cat (read from the recruit's own data) | Paw row with a bell |
 
 **How it looks:**
-1. On hover/focus (after 120 ms with the mouse, at once with pad/keys), every **unrelated** cat and every arrow not touching the hovered cat drop to a 40% halftone; related cats keep full colour and the hovered cat's own arrow brightens.
-2. Each related cat in the scene gets its **paper tag** (icon + word, 28 px floor), popping in over 3 drawings (instant under Reduce Motion).
-3. Related cats **in other scenes** hang their tag on that scene's tab in the strip, with a mini chip (§2.2).
-4. The same ties are listed on the card's **Ties** line, so nothing depends on hover.
-5. A cat with no ties among discovered cats: the Ties line reads "No ties to cats you've met."
+1. **Dim, don't label.** On hover/focus (after 120 ms with the mouse, at once with pad/keys), every **unrelated** discovered cat, silhouette and arrow drops to **45% toward the Wisteria shade** (flat colour, not halftone: art bible §7.7, menus use flat colour). The focused cat, its related cats and its own arrow stay full colour.
+2. **Gang and Boss are shown by arrows, never by tags.** Focusing a gang cat brightens its arrow to the perch and keeps the Boss at full colour. Focusing the Boss brightens every member's arrow.
+3. **Tags only for the rare ties:** Rival, Kin, Old Boss / Old Gang. One paper tag per related cat, clipped to the right end of its ribbon (icon + word, 28 px floor), popping in over 3 drawings (instant under Reduce Motion). **At most 3 in the scene**, in priority order Rival > Kin > Old Boss / Old Gang, nearest first.
+4. **Overflow:** a 4th or later tie is not drawn; the card shows a small "+n ties" pom that opens the full Rival card at its Ties row (§3.2).
+5. **Other scenes:** one chip under the tab (§2.2); West / R or a click on it jumps there.
+6. **Never** shown: a tie with an undiscovered cat, Mikan's own relationship as a tag (that stays the pose, sprig and storm mark), any number.
+
+The card has **no Ties line**: the tags and the tab chips carry the ties on focus, and the full Rival card lists them all, so nothing depends on hover.
 
 **Not tags:** Mikan's own relationship with a cat (Grudge, Regard, truce, Sworn) stays the pose, sprig and storm mark. Tags never change because of what Mikan did to another cat; they are generation facts or the recruit's own memory (OR-04), and showing them changes nothing.
 
-**Slice seeds you can see** (Narrative confirms names): every Wall Sitter → Daifuku **Boss**; Togemaru ↔ Goma **Rival**; Kagi ↔ the second Captain **Rival**; Kinako ↔ Sasa **Kin** (cousins, across the Bell and Lane scenes); Hige → Daifuku **Old Boss** (authored, from the start; across scenes).
+**Slice seeds you can see** (Narrative confirms names): every Wall Sitter → Daifuku **Boss** (by arrow); Togemaru ↔ Goma **Rival**; Kagi ↔ the second Captain **Rival**; Kinako ↔ Sasa **Kin** (cousins, across the Bell and Lane scenes); Hige → Daifuku **Old Boss** (authored, from the start; across scenes).
 
 ### 2.8 The card, and the Boss anger readout
 
-The **name-card** (bottom-left) is the focused cat's short card; South opens the full Rival card (§3). It holds: Clowder ribbon, chestnut portrait, name and Title, **role tag**, personality icon and word, Grudge and Regard moods, **Ties** line, anger (Bosses), and its **latest own-history line** (from its own Memory only). Undiscovered: the silhouette and "Not met yet. Sniff it out: hold Whisker Sense near it." Outsider silhouette: "A stranger's scent. Staking Laundry Pole Yard."
+The **name-card** (bottom-left card zone) is the focused cat's short card; South opens the full Rival card (§3). It slides up in 3 drawings on focus (instant under Reduce Motion) and is **gone at rest**. Content, top to bottom:
+
+1. Chestnut portrait · name ribbon (Clowder colour) + Title.
+2. **Role tag** (word + Style icon, §2.4), personality icon + word. *(The role tag lives here only, not on the cat in the scene.)*
+3. Grudge and Regard pictograms (hackles, ears); storm mark + *Sworn Enemy* / grumble cloud / sprig if any.
+4. **One** own-history line (its latest, from its own Memory, with the day).
+5. **One** context line, only if it applies: Boss: puffs + stage word + "Angry at your marks in his Lane. Spent in his next fight." (roaming: "Roaming: Tofu Shop's back wall" with a crown paw-mark); raider: moon + "Tonight: raids Persimmon Alley."; Outsider: stake stamp + "Staking Laundry Pole Yard · leaves after 2 repels" (as pips).
+6. "+n ties" pom only on overflow (§2.7).
+
+No Ties line (the tags and the tab chips carry it, and the full card lists them all), no "Boss of …" repeated on the cat, no Objective line except on the Boss's full card (§3.2). Undiscovered: the silhouette and "Not met yet. Sniff it out: hold Whisker Sense near it." Outsider silhouette: "A stranger's scent. Staking Laundry Pole Yard."
 
 **Boss anger** (C1, OR-07): what the owner asked to see "every time you do something bad on its territory".
-- **In the scene:** 0–3 **steam puffs** rising over the perch: none = Calm, 1 = Riled, 2 = Seething, 3 = Furious. At Furious the puffs are bigger and the perch's crown notch glows Collar Crimson (zigzag edge as its shape twin). The fact column repeats the stage word.
-- **On the card and Rival card:** the puffs, the **stage word**, and two fixed lines of system text: "Rises when you over-mark or counter-spray in the Lane. Cools each night." and "Next fight with him: Fired Up for a while / for a long while / all fight. Spent after his next fight."
+- **In the scene:** 0–3 **steam puffs** rising over the perch: none = Calm, 1 = Riled, 2 = Seething, 3 = Furious. At Furious the puffs are bigger and the perch's crown notch glows Collar Crimson (zigzag edge as its shape twin). At rest the puffs are the only anger readout.
+- **On the card:** the puffs, the **stage word** and one line: "Angry at your marks in his Lane. Spent in his next fight."
+- **On the Rival card (§3.2):** the puffs, the **stage word**, and two fixed lines of system text: "Rises when you over-mark or counter-spray in the Lane. Cools each night." and "Next fight with him: Fired Up for a while / for a long while / all fight. Spent after his next fight."
 - **Never shown:** a number, a cause that is a fight, or any effect on another cat (G2).
 - **On the street** the act gets a one-beat answer (a steam puff on the Patch tag; `hud.md` §3.1) and the Sniff gets a card at Seething or Furious (`hud.md` §5.3).
 
@@ -323,20 +336,29 @@ The **name-card** (bottom-left) is the focused cat's short card; South opens the
 |---|---|
 | Stick, D-pad / arrows, WASD / hover | Spatial focus between cats in the scene, including silhouettes, legend cards, knots and the perch. Up the stick walks focus toward the perch, down toward the camera |
 | L1 / R1 · Q / E · click a tab · wheel | Previous / next scene. The scene slides sideways like turning a corner (a cut under Reduce Motion) |
-| Focus | The cat lifts 4 px with a Bell-Gold rim; relationship tags appear (§2.7); the card updates |
+| Focus | The cat lifts 4 px with a Bell-Gold rim; its arrow brightens and unrelated cats dim; ≤ 3 relationship tags appear (§2.7); the card slides up (§2.8); the buttons switch to the focus set (below) |
 | South / Enter / LMB | Full Rival card (§3); Crew card for a Crew cat (§6.2, read-only); legend card for a Gone cat; nothing on a silhouette (a soft bump) |
-| West / R / click a tag | **Go to tie**: jump to the related cat's scene and focus it |
+| West / R / click a tab chip | **Go to tie**: jump to the related cat's scene and focus it |
 | North / F | The **Last night** replay (§2.10), when there is one |
 | View hold / Tab hold / "?" pom | Legend: role tag words, pose meanings, marks, tag words, anger puffs, the arrows |
 | East / Esc / RMB | Close; back to where it was opened |
 
-**Initial focus:** the cat it was opened for; otherwise none (the card shows the Boss), so the first frame is the clean screenshot (§2.12).
+**Initial focus:** the cat it was opened for; otherwise none, and **the card is hidden** (no default Boss card), so the first frame is the clean rest screenshot (§2.12).
+
+**Button bar** (bottom-right, ≤ 3 pom buttons with binding glyphs, right-aligned):
+
+| State | Buttons |
+|---|---|
+| Rest | (N) Last night *(only when there is one)* · (E) Back |
+| Focus | (S) Card · (W) Go to *(only with a cross-scene tie)* · (E) Back |
+
+The legend stays on View hold / Tab hold / "?" and is not a button.
 
 **The Rivals chip.** The board never opens itself during play. After a key event, a small chip sits under the phase dial for 4 s (`hud.md` §3.1); pressing View opens the board on that cat's scene and its change plays once as a ≤ 1.5 s pin beat:
 
 | Event | Pin beat |
 |---|---|
-| `CatDiscovered` | The silhouette steps out of the shade onto its spot and inks in from the feet up; its ribbon and role tag drop in; tape star |
+| `CatDiscovered` | The silhouette steps out of the shade onto its spot and inks in from the feet up; its ribbon drops in; tape star sticker |
 | `VerdictApplied` · Recruit | The cat walks down the path past the camera, leaving a bell-cord knot; the Bell scene tab's dot fills |
 | `VerdictApplied` · Chase Off | Its figure fades to a legend card; paw prints run off the frame edge |
 | `VerdictApplied` · Nose-Touch | A sprig is pinned on it (a Boss: he steps down off the perch and sits beside it) |
