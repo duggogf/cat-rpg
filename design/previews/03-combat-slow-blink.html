@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Cat RPG — Frame 03: Slow Blink (mock screenshot)</title>
+<link rel="stylesheet" href="kit/kit.css">
+<style>
+  body { margin: 0; background: #111; }
+  /* ---- Slow Blink HUD: plates stay at the left edge, the command menu opens beside them (HUD §4.4) ---- */
+  #plates { left: 30px; bottom: 30px; display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+  .pl { display: flex; align-items: center; gap: 8px; background: var(--cream); border: var(--frame) solid var(--cocoa); border-radius: var(--bean-sm); box-shadow: var(--drop); padding: 6px 14px 6px 8px; height: 76px; box-sizing: border-box; position: relative; }
+  .pl--ctrl { height: 96px; border-width: 4px; border-color: var(--ink); }
+  .pl--sel { outline: 5px solid var(--gold); outline-offset: 3px; }
+  .pl svg { display: block; }
+  .pl-mid { display: flex; flex-direction: column; gap: 5px; }
+  .pl-name { font: 800 28px/1 var(--font); color: var(--cocoa); }
+  .pl--ctrl .pl-name { color: var(--ink); }
+  .pl .k-gauge { width: 132px; height: 20px; }
+  .pip { position: relative; display: inline-block; width: 34px; height: 34px; }
+  .pip > span { position: absolute; inset: 0; }
+  .pads { display: flex; gap: 3px; }
+  .bell--off { opacity: .28; filter: grayscale(1); }
+  .qpom { position: absolute; right: -26px; top: -18px; width: 50px; height: 50px; border-radius: 50%; background: var(--cocoa); border: 3px solid var(--ink); display: flex; align-items: center; justify-content: center; }
+  #menu { left: 452px; bottom: 30px; width: 560px; padding: 0; overflow: hidden; }
+  .m-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; background: var(--cocoa); color: var(--cream); padding: 10px 18px; font: 800 32px/1 var(--font); }
+  .m-head .who { display: flex; align-items: center; gap: 12px; }
+  .m-sh { display: inline-flex; align-items: center; justify-content: center; min-width: 50px; height: 38px; border-radius: 12px 14px 12px 15px; background: var(--cream); color: var(--cocoa); font: 800 24px/1 var(--font); padding: 0 8px; }
+  .m-row { display: flex; align-items: center; gap: 14px; padding: 0 22px; height: 64px; font: 700 32px/1 var(--font); color: var(--ink); border-bottom: 2px dashed rgba(107,74,53,.25); position: relative; }
+  .m-row svg { display: block; flex: none; }
+  .m-row .nm { flex: 1; }
+  .m-row .cost { display: flex; gap: 2px; width: 76px; }
+  .m-pin { background: var(--recessed); font-weight: 800; color: var(--cocoa); height: 68px; }
+  .m-pin .nm { font-size: 34px; letter-spacing: .02em; }
+  .m-foc { background: var(--gold); box-shadow: inset 0 0 0 4px var(--ink); border-radius: 18px 22px 18px 22px; margin: 4px 8px; padding: 0 14px; border-bottom: 0; height: 64px; }
+  .m-foc::before { content: ''; position: absolute; left: -2px; top: 50%; transform: translate(-100%, -50%); }
+  .m-foot { display: flex; align-items: center; justify-content: space-between; padding: 10px 22px 14px; font: 700 28px/1 var(--font); color: var(--cocoa); }
+  .hints { display: flex; gap: 16px; align-items: center; }
+  .hint { display: flex; gap: 6px; align-items: center; font: 800 26px/1 var(--font); color: var(--ink); }
+  #ribbon { left: 50%; top: 22px; transform: translateX(-50%); }
+  .idr { display: flex; align-items: center; gap: 16px; height: 74px; padding: 0 74px 0 30px; background: var(--sage); border: 4px solid var(--ink); border-right: 0;
+         clip-path: polygon(22px 0, 100% 0, calc(100% - 40px) 100%, 0 100%); font: 800 40px/1 var(--font); color: var(--ink); }
+  .idr small { font: 700 26px/1 var(--font); }
+  .idr-wrap { filter: drop-shadow(3px 4px 0 rgba(110,106,168,.55)); }
+  .stamps { display: flex; gap: 10px; justify-content: center; margin-top: 8px; }
+  .stamp { width: 46px; height: 46px; border-radius: 50%; background: var(--cream); border: 3px solid var(--cocoa); display: flex; align-items: center; justify-content: center; font: 800 26px/1 var(--font); color: var(--cocoa); }
+  .stamp--lit { background: var(--gold); border-color: var(--ink); }
+  .ebar { position: absolute; display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
+  .ebar .k-gauge { width: 150px; height: 16px; border-width: 2.5px; }
+  .ebar .k-gauge--frazzle { width: 170px; height: 24px; --k-fill: var(--magenta); }
+  .ebar-row { display: flex; align-items: center; gap: 6px; }
+  .ftag { position: absolute; display: flex; align-items: center; gap: 4px; padding: 4px 10px 4px 6px; background: var(--cream); border: 3px solid var(--ink); border-radius: 26px 22px 26px 24px; box-shadow: var(--drop); }
+  .ftag svg { display: block; }
+  .ftag::after { content: ''; position: absolute; left: 50%; bottom: -14px; width: 16px; height: 14px; margin-left: -8px; background: var(--ink); clip-path: polygon(0 0, 100% 0, 50% 100%); }
+  /* the Slow Blink grade: world saturation -30%, value -10%, cool lavender cast; HUD and the targeted things untouched */
+  .grade { filter: saturate(.62) brightness(.9) hue-rotate(-6deg); }
+</style>
+</head>
+<body>
+<div class="k-stage" id="stage"></div>
+<script src="kit/kit.js"></script>
+<script>
+/* FRAME 03 — SLOW BLINK. The same brawl one beat after Frame 02: Togemaru is Frazzled. R2 drops time to 5%; the camera
+ * lifts to the tactical three-quarter view (camera-system.md §3.5, 0.2 s blend); Art's grade (sat -30%, value -10%) cools
+ * the world; motion streaks, dust and a mid-air Goofball hold still. The HUD rearranges into the command menu (BL, beside
+ * the plates). Mikan is selected; the cursor sits on SHRED, whose Pay-off (Frazzled) is met on the hovered target, so its
+ * diamond is lit Bell-Gold. Known Fears and props are highlighted in the world (this replaces Whisker Sense in combat).
+ * Perspective: tactical rig, camera 4.5 m up, horizon high. ground y at distance d: HZ + CH*F/d */
+const K = Kit, C = K.C, W = 1920, H = 1080, HZ = 60, F = 1350, CH = 4.5, CX = 1100;
+const P = (X, Y, d) => [CX + X * F / d, HZ + (CH - Y) * F / d];
+const cs = (d) => 16 / d;
+const s = [];
+const pt = (p) => p[0].toFixed(1) + ' ' + p[1].toFixed(1);
+const ink = C.ink, gold = C.gold;
+
+/* ================= painted world: the Lot (seen from the tactical lift) ================= */
+s.push(`<g transform="translate(0 -96)">`);
+s.push(K.sky({ w: W, h: 460, phase: 'day', zenith: '#4A9FE4', horizon: '#CFE6F0' }));
+s.push(K.glow(260, 40, 900, 420, '#FFF2CF', 0.55));
+s.push(K.cloud({ x: 1250, y: 300, w: 900, h: 470, seed: 3 }));
+s.push(K.cloud({ x: 380, y: 270, w: 560, h: 230, seed: 12, opacity: 0.95 }));
+// trees and a neighbour's roof beyond the plank fence
+s.push(K.foliage({ x: 260, y: 150, w: 720, h: 300, seed: 51, far: true, tones: { dark: '#3F8463', mid: '#5E9F6A', light: '#93C77A' } }));
+s.push(K.roof({ quad: [[640, 120], [1120, 106], [1210, 214], [560, 230]], rows: 6, cols: 20, color: '#7A8DA3' }));
+s.push(K.surface({ pts: [[590, 228], [1190, 212], [1190, 280], [590, 290]], color: '#EFDDBB', grime: 0.15 }));
+s.push(K.foliage({ x: 1660, y: 150, w: 640, h: 330, seed: 43, tones: { dark: '#2F6E4A', mid: '#4F964C', light: '#86C25A', hi: '#C4E07E' } }));
+s.push(K.foliage({ x: 70, y: 120, w: 420, h: 320, seed: 52, tones: { dark: '#2F6E4A', mid: '#4F964C', light: '#86C25A', hi: '#C4E07E' } }));
+s.push(K.foliage({ x: 1180, y: 230, w: 300, h: 140, seed: 44, far: true, tones: { dark: '#3F8463', mid: '#5E9F6A', light: '#93C77A' } }));
+s.push(`</g>`);
+
+// the plank fence closing the Lot (slightly angled: left end nearer)
+const fq = [P(-11, 1.9, 13.5), P(12.5, 1.9, 17.5), P(12.5, 0, 17.5), P(-11, 0, 13.5)];
+s.push(K.fence({ quad: fq, n: 44, seed: 7, color: '#B98A5E' }));
+s.push(K.pole({ x: P(-4.6, 0, 14.4)[0], y: P(-4.6, 0, 14.4)[1], h: 560, w: 34 }));
+s.push(K.wires({ pts: [[-20, 70], [P(-4.6, 0, 14.4)[0], P(-4.6, 0, 14.4)[1] - 520], [1940, 40]], sag: 40, width: 2.5 }));
+s.push(K.wires({ pts: [[-20, 110], [P(-4.6, 0, 14.4)[0], P(-4.6, 0, 14.4)[1] - 470], [1940, 95]], sag: 55, width: 2 }));
+
+// the dirt lot
+const gTop = Math.min(fq[2][1], fq[3][1]) - 4;
+s.push(K.ground({ pts: [[-60, gTop], [W + 60, gTop], [W + 60, H + 60], [-60, H + 60]], color: '#BCA27C', seed: 9 }));
+// weedy patches + sunlit worn arena in the middle
+s.push(`<ellipse cx="1000" cy="640" rx="760" ry="230" fill="#FFF0CC" opacity="0.32" filter="url(#k-soft3)"/>`);
+const weeds = (x, y, rx, ry, seed) => { const R = K.rng(seed); let g = ''; for (let i = 0; i < 26; i++) { const a = R() * 6.28, q = Math.sqrt(R()); g += `<ellipse cx="${(x + Math.cos(a) * rx * q).toFixed(1)}" cy="${(y + Math.sin(a) * ry * q).toFixed(1)}" rx="${(rx * (0.12 + R() * 0.14)).toFixed(1)}" ry="${(ry * (0.1 + R() * 0.12)).toFixed(1)}" fill="${['#7FA552', '#93B862', '#6C9548', '#A9C470'][i % 4]}" opacity="0.75"/>`; } return `<g filter="url(#k-leaf-fine)">${g}</g>`; };
+s.push(weeds(220, 520, 260, 70, 3), weeds(1700, 470, 260, 60, 5), weeds(140, 900, 300, 150, 8), weeds(1820, 860, 260, 160, 11), weeds(820, 430, 160, 26, 13));
+// tyre ruts from the truck
+s.push(`<g fill="none" stroke="#9C8462" stroke-width="16" opacity="0.28" filter="url(#k-rough)"><path d="M1380 420Q1200 600 1060 1100"/><path d="M1500 420Q1400 620 1330 1100"/></g>`);
+
+// kei truck (painted: it's the Lot's throne, not an actor)
+{
+  const d = 13.8, x0 = P(2.4, 0, d)[0], x1 = P(6.3, 0, d)[0], gy = P(0, 0, d)[1], k = F / d;
+  const wheel = (x) => `<circle cx="${x}" cy="${gy - 0.28 * k}" r="${0.3 * k}" fill="#3E3946"/><circle cx="${x}" cy="${gy - 0.28 * k}" r="${0.13 * k}" fill="#B8B4AE"/>`;
+  s.push(K.castShadow(`M${x0 - 20} ${gy - 6}L${x1 + 10} ${gy - 6}L${x1 + 140} ${gy + 26}L${x0 + 90} ${gy + 30}Z`, 0.4));
+  s.push(K.surface({ pts: [[x0, gy - 1.05 * k], [x1 - 1.25 * k, gy - 1.05 * k], [x1 - 1.25 * k, gy - 0.42 * k], [x0, gy - 0.42 * k]], color: '#E9E4DA', grime: 0.3 })); // bed side
+  s.push(K.surface({ pts: [[x0, gy - 0.42 * k], [x1, gy - 0.42 * k], [x1, gy - 0.2 * k], [x0, gy - 0.2 * k]], color: '#8E8A90', grime: 0 }));
+  s.push(K.surface({ pts: [[x1 - 1.3 * k, gy - 1.85 * k], [x1 - 0.18 * k, gy - 1.82 * k], [x1, gy - 1.1 * k], [x1, gy - 0.42 * k], [x1 - 1.3 * k, gy - 0.42 * k]], color: '#F1ECE2', grime: 0.25 })); // cab
+  s.push(`<g filter="url(#k-rough)"><path d="M${x1 - 1.18 * k} ${gy - 1.72 * k}L${x1 - 0.3 * k} ${gy - 1.7 * k}L${x1 - 0.12 * k} ${gy - 1.2 * k}L${x1 - 1.18 * k} ${gy - 1.2 * k}Z" fill="#7F98AE"/><path d="M${x1 - 1.1 * k} ${gy - 1.66 * k}L${x1 - 0.7 * k} ${gy - 1.66 * k}L${x1 - 1.0 * k} ${gy - 1.26 * k}Z" fill="#CFE3EE" opacity="0.6"/>
+    <path d="M${x0} ${gy - 1.05 * k}L${x1 - 1.25 * k} ${gy - 1.05 * k}" stroke="#CFC8BC" stroke-width="6"/><rect x="${x1 - 0.12 * k}" y="${gy - 0.9 * k}" width="10" height="16" fill="#F2B451"/>
+    <path d="M${x0 + 30} ${gy - 0.95 * k}l26 8l-10 14l30 6" stroke="#B07A4E" stroke-width="5" fill="none" opacity="0.6"/></g>`);
+  s.push(wheel(x0 + 0.6 * k) + wheel(x1 - 0.7 * k));
+  // rust and a tarp corner hanging over the bed
+  s.push(`<path d="M${x0 + 10} ${gy - 1.12 * k}Q${x0 + 120} ${gy - 1.5 * k} ${x0 + 210} ${gy - 1.1 * k}L${x0 + 200} ${gy - 0.7 * k}Q${x0 + 110} ${gy - 0.8 * k} ${x0 + 20} ${gy - 0.6 * k}Z" fill="#3E86C8" filter="url(#k-rough)"/><path d="M${x0 + 60} ${gy - 1.3 * k}Q${x0 + 90} ${gy - 1.0 * k} ${x0 + 80} ${gy - 0.72 * k}" stroke="#2C6AA6" stroke-width="10" fill="none" filter="url(#k-rough)"/>`);
+}
+// left: crates under a blue tarp + a broken bench
+{
+  const a = P(-6.6, 0, 12.2), b = P(-3.6, 0, 12.2), k = F / 12.2;
+  s.push(K.castShadow(`M${a[0]} ${a[1] - 4}L${b[0]} ${b[1] - 4}L${b[0] + 160} ${b[1] + 30}L${a[0] + 120} ${a[1] + 30}Z`, 0.36));
+  s.push(K.surface({ pts: [[a[0] + 10, a[1] - 1.0 * k], [a[0] + 1.3 * k, a[1] - 1.0 * k], [a[0] + 1.3 * k, a[1]], [a[0] + 10, a[1]]], color: '#C99A62', tex: 'brush-v', texOpacity: 0.35 }));
+  s.push(K.surface({ pts: [[a[0] + 1.35 * k, a[1] - 0.62 * k], [b[0], b[1] - 0.62 * k], [b[0], b[1]], [a[0] + 1.35 * k, a[1]]], color: '#B88A58', tex: 'brush-v', texOpacity: 0.35 }));
+  s.push(`<path d="M${a[0] - 14} ${a[1] - 0.2 * k}Q${a[0] - 4} ${a[1] - 1.25 * k} ${a[0] + 0.7 * k} ${a[1] - 1.3 * k}Q${a[0] + 1.6 * k} ${a[1] - 1.26 * k} ${a[0] + 1.75 * k} ${a[1] - 0.6 * k}L${a[0] + 1.5 * k} ${a[1] - 0.12 * k}Q${a[0] + 0.8 * k} ${a[1] - 0.5 * k} ${a[0] - 14} ${a[1] - 0.2 * k}Z" fill="#3F8ACB" filter="url(#k-rough)"/>
+    <path d="M${a[0] + 0.2 * k} ${a[1] - 1.2 * k}Q${a[0] + 0.5 * k} ${a[1] - 0.8 * k} ${a[0] + 0.35 * k} ${a[1] - 0.35 * k}M${a[0] + 1.0 * k} ${a[1] - 1.25 * k}Q${a[0] + 1.2 * k} ${a[1] - 0.9 * k} ${a[0] + 1.3 * k} ${a[1] - 0.45 * k}" stroke="#2D69A8" stroke-width="9" fill="none" filter="url(#k-rough)"/>
+    <path d="M${a[0] + 0.1 * k} ${a[1] - 1.22 * k}Q${a[0] + 0.7 * k} ${a[1] - 1.34 * k} ${a[0] + 1.3 * k} ${a[1] - 1.2 * k}" stroke="#8CC2EC" stroke-width="7" fill="none" opacity="0.8" filter="url(#k-rough)"/>`);
+}
+// tall grass along the fence foot
+s.push(K.grass({ x1: fq[3][0], y1: fq[3][1] + 2, x2: fq[2][0], y2: fq[2][1] + 2, n: 70, h: 30, seed: 4 }));
+s.push(K.foliage({ x: 1870, y: 420, w: 200, h: 120, seed: 61, tones: { dark: '#2F6E4A', mid: '#4C8F4A', light: '#7DB857', hi: '#B5D873' } }));
+s.push(K.foliage({ x: 40, y: 440, w: 220, h: 140, seed: 62, tones: { dark: '#2F6E4A', mid: '#4C8F4A', light: '#7DB857', hi: '#B5D873' } }));
+
+/* ---------- inked props (a cat can act on them) ---------- */
+/* ---------- light: warm sun from the left, wisteria shadows to the right ---------- */
+s.push(K.glow(700, 560, 900, 260, '#FFF0C8', 0.22));
+{ // ledge junk: a crate with a cucumber on it (Togemaru's KNOWN Fear prop)
+  const p = P(-0.9, 0, 16.5);
+  s.push(K.castShadow(`M${p[0] - 50} ${p[1] - 4}L${p[0] + 50} ${p[1] - 4}L${p[0] + 150} ${p[1] + 22}L${p[0] + 40} ${p[1] + 26}Z`, 0.36));
+  s.push(`<g id="crate" transform="translate(${p[0]} ${p[1]}) scale(1.0)">` + K.celGroup({ parts: [{ d: 'M-52 0V-66H52V0Z', fill: '#D4A66C' }, { d: 'M-52 -66L-38 -80H64L52 -66Z', fill: '#E8C48E' }, { d: 'M52 0V-66L64 -80V-12Z', fill: '#B5854F' }], shade: 'M52 -90H80V10H52Z', lines: ['M-52 -44H52', 'M-52 -22H52', 'M-30 -66V0', 'M30 -66V0'] }, { lw: 2.5, ol: K.OUTLINES.ink })
+    + K.inked(K.blob([[-30, -84], [-24, -92], [20, -94], [32, -88], [24, -80], [-22, -78]]), '#5FA048') + `<path d="M-14 -88l3 2M0 -90l3 2M14 -89l3 2" stroke="#3D7A33" stroke-width="2.5"/></g>`);
+}
+
+/* ================= the brawl, held at 5% ================= */
+const chevron = (x, y, sc) => `<g transform="translate(${x} ${y}) scale(${sc || 1})"><path d="M-15 -4L0 8L15 -4L15 6L0 18L-15 6Z" fill="${gold}" stroke="${ink}" stroke-width="3" stroke-linejoin="round"/></g>`;
+const bellTick = (x, y, sc) => `<g transform="translate(${x} ${y}) scale(${sc || 1})"><path d="M0 -26C-14 -26 -18 -12 -18 0C-18 8 -22 10 -24 14H24C22 10 18 8 18 0C18 -12 14 -26 0 -26Z" fill="${gold}" stroke="${ink}" stroke-width="3.5" stroke-linejoin="round"/><circle cy="18" r="6" fill="${gold}" stroke="${ink}" stroke-width="3"/><path d="M-9 -12Q-8 -20 -2 -21" stroke="${C.cream}" stroke-width="4" fill="none" stroke-linecap="round"/></g>`;
+const dustRing = (x, y, r, n, seed, sz) => { const R = K.rng(seed); let g = ''; for (let i = 0; i < n; i++) { const a = Math.PI * (0.95 + i / (n - 1) * 1.1) + (R() - 0.5) * 0.2; g += K.dustCloud({ x: x + Math.cos(a) * r, y: y + Math.sin(a) * r * 0.32 - 10, r: (sz || 24) + R() * 14, puffs: 4, seed: seed + i, lw: 2.5 }); } return g; };
+
+// positions
+const br = { x: P(-3.1, 0, 14.6)[0], y: P(-3.1, 0, 14.6)[1] };
+const fr = { x: P(-5.2, 0, 16.2)[0], y: P(-5.2, 0, 16.2)[1] };
+const stw = { x: P(3.0, 0, 12.6)[0], y: P(3.0, 0, 12.6)[1] };
+const sch = { x: P(4.5, 0, 13.6)[0], y: P(4.5, 0, 13.6)[1] };
+const tg = { x: P(1.15, 0, 11.6)[0], y: P(1.15, 0, 11.6)[1] };
+const mk = { x: P(-0.35, 0, 8.9)[0], y: P(-0.35, 0, 8.9)[1] };
+const bk = P(5.4, 0, 10.4);
+
+// --- left: brooder held under a frozen, mid-air Goofball; Fraidy flanking
+s.push(K.cat({ ...K.CAST.brooder, pose: 'hiss', outline: 'sage', x: br.x, y: br.y, scale: cs(14.6) }));
+s.push(K.speedLines({ mode: 'parallel', x: br.x + 300, y: br.y - 300, w: 170, h: 70, angle: 132, count: 8, seed: 4 }));
+s.push(`<g transform="translate(${br.x + 70} ${br.y - 120}) rotate(-30)">${K.cat({ ...K.CAST.goofball, pose: 'side-pounce', outline: 'gold', flip: true, expr: 'happy', x: 0, y: 64, scale: cs(14) * 1.05, shadow: false })}</g>`);
+s.push(K.shadow({ x: br.x + 40, y: br.y + 4, rx: 70, ry: 12 }));
+s.push(chevron(br.x + 70, br.y - 236, 0.8));
+s.push(K.cat({ ...K.CAST.fraidy, pose: 'hiss', outline: 'gold', x: fr.x, y: fr.y, scale: cs(16.2) }));
+s.push(chevron(fr.x, fr.y - 118, 0.75));
+s.push(dustRing(br.x + 10, br.y + 4, 80, 3, 21, 20));
+
+// --- right: Stalwart vs Schemer
+s.push(K.cat({ ...K.CAST.schemer, pose: 'hiss', outline: 'sage', flip: true, x: sch.x, y: sch.y, scale: cs(13.6) }));
+s.push(K.cat({ ...K.CAST.stalwart, pose: 'hiss', outline: 'gold', expr: 'angry', x: stw.x, y: stw.y, scale: cs(12.6) }));
+s.push(K.impactBurst({ x: (sch.x + stw.x) / 2 + 36, y: sch.y - 30, r: 26, points: 9, star: true, seed: 6 }));
+s.push(chevron(stw.x + 16, stw.y - 128, 0.8));
+// Schemer's yellow telegraph, frozen mid-windup (Hiss it): decal grows from the attacker toward Gin
+s.push(K.telegraph({ kind: 'yellow', x: stw.x + 40, y: stw.y + 6, rx: 110, ry: 30 }));
+
+// --- Togemaru, Frazzled and held: dust and fur wedges frozen in the air from Frame 02's hit
+s.push(dustRing(tg.x + 10, tg.y + 14, 130, 5, 41, 22));
+s.push(K.speedLines({ mode: 'parallel', x: tg.x - 420, y: tg.y - 170, w: 300, h: 120, angle: -24, count: 11, seed: 5 }));
+s.push(K.cat({ ...K.CAST.braggart, pose: 'frazzled', x: tg.x, y: tg.y, scale: cs(11.6) * 1.32, lw: 3 }));
+s.push(K.frazzleOrbit({ x: tg.x + 2, y: tg.y - 186, r: 80 }));
+[[tg.x + 110, tg.y - 150, 30], [tg.x + 150, tg.y - 70, 70], [tg.x - 120, tg.y - 190, -20], [tg.x + 80, tg.y - 220, 40]].forEach(([x, y, r], i) => s.push(`<path d="M${x} ${y}l${16 + i * 3} -6l-6 ${12 + i}z" transform="rotate(${r} ${x} ${y})" fill="#F4DDAA" stroke="${ink}" stroke-width="2.5" stroke-linejoin="round"/>`));
+
+// --- props + bucket
+s.push(K.castShadow(`M${bk[0] - 30} ${bk[1] - 2}L${bk[0] + 34} ${bk[1] - 2}L${bk[0] + 120} ${bk[1] + 18}L${bk[0] + 40} ${bk[1] + 22}Z`, 0.34));
+
+// --- Mikan, landed from the Pounce, seen from behind (the tactical rig keeps her in the lower third)
+s.push(`<ellipse cx="${mk.x}" cy="${mk.y - 4}" rx="104" ry="30" fill="none" stroke="${ink}" stroke-width="10"/><ellipse cx="${mk.x}" cy="${mk.y - 4}" rx="104" ry="30" fill="none" stroke="${gold}" stroke-width="5.5"/>`);
+s.push(K.cat({ ...K.CAST.mikan, pose: 'back', outline: 'gold', x: mk.x, y: mk.y, scale: cs(8.9) }));
+s.push(K.dustCloud({ x: mk.x - 90, y: mk.y - 10, r: 22, puffs: 4, seed: 3, lw: 2.5 }) + K.dustCloud({ x: mk.x + 96, y: mk.y - 14, r: 18, puffs: 4, seed: 4, lw: 2.5 }));
+
+const WORLD = s.join('');
+
+/* ================= un-graded overlays: highlighted props, target cursor, Frazzled ring, Pile-On prompt ================= */
+const o = [];
+// prop highlight: a Cream rim + Bell-Gold dashed halo hugging the prop (shape, not glow)
+const halo = (x, y, rx, ry) => `<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="none" stroke="${ink}" stroke-width="9" stroke-dasharray="18 12"/><ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="none" stroke="${C.cream}" stroke-width="5" stroke-dasharray="18 12"/>`;
+const cr = P(-0.9, 0, 16.5);
+o.push(halo(cr[0] + 4, cr[1] - 2, 80, 22));
+o.push(K.prop({ kind: 'bucket', x: bk[0], y: bk[1], scale: 1.15 }));
+o.push(halo(bk[0], bk[1] - 2, 56, 16));
+
+// Frazzled ring: countdown over the 6 s window (held at 5%), 5 pips on a Captain; 3 still lit = an early, big Pile-On
+{ const x = tg.x, y = tg.y + 2, rx = 150, ry = 44, v = 0.72, a0 = -Math.PI / 2, a1 = a0 + v * Math.PI * 2;
+  const arc = (r1, r2, A0, A1) => { let d = ''; const n = 48; for (let i = 0; i <= n; i++) { const a = A0 + (A1 - A0) * i / n; d += (i ? 'L' : 'M') + (x + Math.cos(a) * r1).toFixed(1) + ' ' + (y + Math.sin(a) * r2).toFixed(1); } return d; };
+  o.push(`<path d="${arc(rx, ry, 0, Math.PI * 2)}" fill="none" stroke="${ink}" stroke-width="12"/><path d="${arc(rx, ry, 0, Math.PI * 2)}" fill="none" stroke="${C.recessed}" stroke-width="6"/>`);
+  o.push(`<path d="${arc(rx, ry, a0, a1)}" fill="none" stroke="${C.magenta}" stroke-width="7" stroke-linecap="round"/>`);
+  for (let i = 0; i < 5; i++) { const a = Math.PI * (0.15 + i * 0.175), px = x + Math.cos(a) * (rx + 2), py = y + Math.sin(a) * (ry + 2); o.push(`<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="11" fill="${i < 3 ? C.magenta : C.recessed}" stroke="${ink}" stroke-width="3"/>`); }
+}
+// target cursor: four Bell-Gold corner brackets snapping around the Frazzled cat + a paw pip
+{ const x = tg.x, y = tg.y - 92, w = 128, h = 130, L = 46; let g = '';
+  [[-1, -1], [1, -1], [1, 1], [-1, 1]].forEach(([sx, sy]) => { const cx = x + sx * w, cy = y + sy * h; const d = `M${cx} ${cy - sy * L}L${cx} ${cy}L${cx - sx * L} ${cy}`; g += `<path d="${d}" fill="none" stroke="${ink}" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="${gold}" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>`; });
+  o.push(g);
+}
+// Pile-On prompt (legal: Frazzled + 2+ standing Posse): North glyph inside a dust-cloud pom; no world text
+{ const x = tg.x - 210, y = tg.y - 300; o.push(`<g>${K.dustCloud({ x, y, r: 46, puffs: 6, seed: 9, lw: 3.5 })}<g transform="translate(${x - 28} ${y - 30})">${K.ui.faceButtons({ size: 58, lit: 'n' }).replace('<svg ', '<svg x="0" y="0" ')}</g></g>`); }
+// Mikan's bell tick and a dashed command line from Mikan to the target (the plan being drawn)
+o.push(`<path d="M${mk.x + 30} ${mk.y - 140}Q${mk.x + 140} ${mk.y - 290} ${tg.x - 120} ${tg.y - 110}" fill="none" stroke="${ink}" stroke-width="10" stroke-dasharray="4 20" stroke-linecap="round"/><path d="M${mk.x + 30} ${mk.y - 140}Q${mk.x + 140} ${mk.y - 290} ${tg.x - 120} ${tg.y - 110}" fill="none" stroke="${gold}" stroke-width="5" stroke-dasharray="4 20" stroke-linecap="round"/>`);
+o.push(bellTick(mk.x, mk.y - 210, 1.05));
+
+/* ================= HUD ================= */
+const pip = (v, sz) => `<span class="pip" style="width:${sz}px;height:${sz}px"><span>${K.ui.paw({ size: sz, fill: C.recessed, stroke: C.cocoa })}</span><span style="clip-path: inset(${100 - v}% 0 0 0)">${K.ui.paw({ size: sz, fill: C.pad })}</span></span>`;
+const moveIcon = (k, c) => { const st = `stroke="${ink}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"`; let g = '';
+  if (k === 'swat') g = `<path d="M-12 8Q-14 -6 -4 -10Q8 -12 12 -2Q14 8 4 12Q-8 14 -12 8Z" fill="${C.pad}" ${st}/><path d="M10 -12l6 -4M13 -6l7 -1M12 1l7 2" ${st} fill="none"/>`;
+  if (k === 'toss') g = `<path d="M-14 10Q-2 -16 14 -4" fill="none" ${st} stroke-dasharray="4 4"/><path d="M8 -10l7 6l-9 3z" fill="${ink}"/><circle cx="-12" cy="10" r="5" fill="${C.cream}" ${st}/>`;
+  if (k === 'kick') g = `<path d="M-14 6h10M-14 0h14M-14 -6h10" ${st} fill="none"/><path d="${K.blob(K.pomPts(8, 0, 9, 5, 0.12))}" fill="${C.pad}" ${st}/>`;
+  if (k === 'shred') g = [-8, 0, 8].map((x) => `<path d="M${x - 4} -14L${x + 2} -15L${x + 4} 14L${x - 1} 14Z" fill="${C.claw}" ${st} stroke-width="2"/>`).join('');
+  return `<svg width="44" height="44" viewBox="-22 -22 44 44"><circle r="20" fill="${c || C.cream}" stroke="${C.cocoa}" stroke-width="2.5"/>${g}</svg>`; };
+const diamond = (filled, lit) => `<svg width="34" height="34" viewBox="-17 -17 34 34"><path d="M0 -13L13 0L0 13L-13 0Z" fill="${filled ? (lit ? gold : ink) : 'none'}" stroke="${ink}" stroke-width="3.5" stroke-linejoin="round"/>${lit ? '<path d="M0 -21V-16M21 0H16M0 21V16M-21 0H-16" stroke="' + ink + '" stroke-width="3" stroke-linecap="round"/>' : ''}</svg>`;
+const stateIcon = (k) => { const st = `stroke="${ink}" stroke-width="2.5" stroke-linejoin="round"`;
+  if (k === 'ruffled') return `<svg width="36" height="36" viewBox="-18 -18 36 36"><path d="M-14 8L-10 -4L-5 4L0 -8L5 4L10 -4L14 8Z" fill="${C.cream}" ${st}/><path d="M9 -14q-4 5 -4 8a4 4 0 0 0 8 0q0 -3 -4 -8z" fill="${C.cream}" ${st}/></svg>`;
+  if (k === 'splat') return `<svg width="36" height="36" viewBox="-18 -18 36 36"><path d="M-15 6Q-14 -2 -6 -1Q-2 -8 4 -3Q12 -6 15 3Q14 10 0 10Q-14 11 -15 6Z" fill="${C.cream}" ${st}/><path d="M-8 -12l2 5M0 -15v6M8 -12l-2 5" ${st} fill="none"/></svg>`;
+  if (k === 'frazzled') return `<svg width="36" height="36" viewBox="-18 -18 36 36"><circle r="13" fill="#fff" ${st}/><path d="M0 0q3 -3 5 0q1 5 -5 5q-7 0 -6 -7q2 -7 10 -6" fill="none" stroke="${ink}" stroke-width="2"/></svg>`;
+  return ''; };
+const row = (o) => `<div class="m-row${o.foc ? ' m-foc' : ''}">${moveIcon(o.icon)}<span class="nm">${o.name}</span><span class="cost">${Array.from({ length: o.cost }, () => K.ui.paw({ size: 32, fill: C.pad })).join('')}</span>${diamond(o.payoff, o.lit)}${stateIcon(o.state)}</div>`;
+const fb = (lit) => K.ui.faceButtons({ size: 40, lit });
+const qpom = `<span class="qpom"><svg width="30" height="30" viewBox="-15 -15 30 30"><path d="M-10 4Q-12 -6 0 -8Q12 -6 10 4Q0 10 -10 4Z" fill="${C.cream}" stroke="${ink}" stroke-width="2"/><path d="M-6 -11v-3M0 -12v-3M6 -11v-3" stroke="${C.cream}" stroke-width="2.5" stroke-linecap="round"/></svg></span>`;
+const plate = (o) => `<div class="pl${o.ctrl ? ' pl--ctrl' : ''}${o.sel ? ' pl--sel' : ''}">
+  ${K.ui.dpad({ size: 42, lit: o.dir })}
+  ${K.ui.portrait({ cat: Object.assign({ expr: 'neutral' }, o.cat, { outline: 'ink' }), size: o.ctrl ? 76 : 62, ring: o.ctrl ? gold : C.cocoa })}
+  <div class="pl-mid"><div class="pl-name">${o.name}</div><div class="k-gauge" style="--v:${o.nerve}%"><i></i></div></div>
+  <div class="pads">${pip(o.paws[0], 32)}${pip(o.paws[1], 32)}</div>
+  <span class="${o.bell ? '' : 'bell--off'}">${K.ui.icon({ name: 'bell', size: 32 })}</span>${o.q ? qpom : ''}
+</div>`;
+const brick = `<svg width="46" height="34" viewBox="-24 -17 48 34"><path d="M-21 -14h42v28h-42z" fill="${C.cream}" stroke="${ink}" stroke-width="3"/><path d="M-21 0h42M0 -14v14M-10 0v14M11 0v14" stroke="${ink}" stroke-width="3" fill="none"/></svg>`;
+const claw = `<svg width="40" height="34" viewBox="-20 -17 40 34">${[-9, 0, 9].map((x) => `<path d="M${x - 5} -14L${x + 1} -15L${x + 4} 14L${x - 1} 14Z" fill="${ink}"/>`).join('')}</svg>`;
+const cuke = (sz) => `<svg width="${sz}" height="${sz}" viewBox="-17 -17 34 34"><path d="M-12 8Q-14 -2 -4 -10Q6 -16 12 -10Q8 4 -2 10Q-8 13 -12 8Z" fill="#5FA048" stroke="${ink}" stroke-width="2.5"/></svg>`;
+const drop = `<svg width="30" height="30" viewBox="-15 -15 30 30"><path d="M0 -12Q-10 2 -9 5A9 9 0 0 0 9 5Q10 2 0 -12Z" fill="${C.sky}" stroke="${ink}" stroke-width="2.5"/></svg>`;
+const pileGlyph = `<svg width="54" height="46" viewBox="-30 -25 60 50"><path d="${K.blob(K.pomPts(0, 0, 21, 8, 0.14))}" fill="${C.cream}" stroke="${ink}" stroke-width="3"/><circle cx="0" cy="-2" r="9" fill="${gold}" stroke="${ink}" stroke-width="2.5"/></svg>`;
+
+const eb = [tg.x - 86, tg.y - 290];
+const hud = `
+  <div class="k-abs" id="ribbon"><div class="idr-wrap"><div class="idr">${brick}TOGEMARU <small>the First Thorn</small>${claw}${claw}</div></div>
+    <div class="stamps"><span class="stamp stamp--lit">${cuke(34)}</span><span class="stamp">?</span></div></div>
+  <div class="k-abs ebar" style="left:${eb[0]}px; top:${eb[1]}px">
+    <div class="ebar-row"><svg width="22" height="18" viewBox="-12 -9 24 18"><path d="M-10 -7h20v14h-20z" fill="${C.sage}" stroke="${ink}" stroke-width="2.5"/><path d="M-10 0h20M0 -7v7" stroke="${ink}" stroke-width="2"/></svg><div class="k-gauge" style="--v:52%"><i></i></div></div>
+    <div class="k-gauge k-gauge--frazzle" style="--v:100%"><i></i></div>
+  </div>
+  <div class="ftag" style="left:${cr[0] - 30}px; top:${cr[1] - 150}px">${cuke(30)}</div>
+  <div class="ftag" style="left:${bk[0] - 22}px; top:${bk[1] - 132}px">${drop}</div>
+  <div class="k-abs" id="plates">
+    ${plate({ ctrl: true, sel: true, dir: 'n', name: 'Mikan', cat: K.CAST.mikan, nerve: 82, paws: [100, 100], bell: true })}
+    ${plate({ dir: 'w', name: 'Mochi', cat: K.CAST.goofball, nerve: 70, paws: [100, 45], bell: true, q: true })}
+    ${plate({ dir: 's', name: 'Gin', cat: K.CAST.stalwart, nerve: 91, paws: [60, 0], bell: false })}
+    ${plate({ dir: 'e', name: 'Kinako', cat: K.CAST.fraidy, nerve: 48, paws: [100, 0], bell: true })}
+  </div>
+  <div class="k-abs k-panel" id="menu">
+    <div class="m-head"><span class="m-sh">L1</span><span class="who">${K.ui.portrait({ cat: Object.assign({}, K.CAST.mikan, { expr: 'angry' }), size: 52, ring: gold })}Mikan</span><span class="m-sh">R1</span></div>
+    <div class="m-row m-pin">${pileGlyph}<span class="nm">PILE-ON</span>${K.ui.faceButtons({ size: 40, lit: 'n' })}</div>
+    ${row({ icon: 'swat', name: 'Face Swat', cost: 1, payoff: false, state: 'ruffled' })}
+    ${row({ icon: 'toss', name: 'Scruff Toss', cost: 1, payoff: false, state: 'splat' })}
+    ${row({ icon: 'kick', name: 'Bunny-Kick', cost: 1, payoff: true, state: 'splat' })}
+    ${row({ icon: 'shred', name: 'Shred', cost: 2, payoff: true, lit: true, state: 'frazzled', foc: true })}
+    <div class="m-foot"><span>Scram</span><span class="hints"><span class="hint">${fb('s')}OK</span><span class="hint">${fb('e')}Back</span><span class="hint"><span class="m-sh" style="background:var(--cocoa);color:var(--cream)">R2</span></span></span></div>
+  </div>`;
+
+document.getElementById('stage').innerHTML = K.svg(W, H, `<g class="grade">${WORLD}</g>`
+  + `<rect width="${W}" height="${H}" fill="#B9B4E6" opacity="0.2" style="mix-blend-mode:multiply"/>`
+  + `<rect width="${W}" height="${H}" fill="url(#vig)"/><radialGradient id="vig" cx="50%" cy="50%" r="75%"><stop offset="0.6" stop-color="#DCD8F2" stop-opacity="0"/><stop offset="1" stop-color="#DCD8F2" stop-opacity="0.55"/></radialGradient>`
+  + o.join(''), 'class="k-world"') + hud;
+</script>
+</body>
+</html>
