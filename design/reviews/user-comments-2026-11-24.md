@@ -119,3 +119,26 @@ Follow-up:
 
 Final bindings, owner's last word: "Do F for special on staggered enemies, R for skill bar". Ruled into
 `design/reviews/owner-feedback/combat-m1.1-spec.md`.
+
+## C11 — combat after playing M1.1 (chat)
+
+> * The combat still doesn't feel so responsive. Research on how the combat works in Nier Automata, where dash move can cancel the action. I mentioned before to make the player regain movement faster, not having to wait until the attack animation is done. Right now it's still there. Please make it so player can already start moving at 60% of the animation length. Make light attack much faster, so it's more snappy and more like it happen instantly when you click, while making the heavy attack slower, with the anticipation before the attack, to create some impact to it.
+> * Add damage numbers too, so i know when someone's taking damage.
+> * Make the flash when a character takes damage slightly longer, both on you, your team, and the enemies.
+> * Make it so you can slightly move your character, and slowly, while the attack is happen. Not locking the player in place.
+> * Make it clearer who's enemies who's ally. ... yellow outline on your team and red outline on enemies?
+> * The camera control needs some work. The camera following needs to be smoother, with better lerp. Right now it's very blurry and ghostly when I move. ... Rotation of my mouse when I don't lock on any enemies are super slow. ... Vertical speed is fine, but horizontal doesn't work.
+> * The combat is still too fast. Lower the movement speed down to make it equal to when you do fast walk in Lane mode.
+> * Dash is too far. And there's no cooldown to dash, make some.
+> * Special (F) can be used at any time, doesn't need to be while the enemy is staggered.
+> * Special can only be used after the previous character finishes its animation, similar to Grandblue Fantasy Relink. ... the full burst is the extra damage on top.
+> * Daifuku shouldn't be fighting on the wall anymore. Fight down there like any other cats.
+> * Right now, you hide objects and cats that are too close to the camera, don't do that. ... do a dither fade instead.
+> * When the last opponent is defeated, do the zoom-in camera, frame freeze, with a background, then slow motion, similar to ... Street Fighter.
+> * When enemy is surrounded (1 vs 4) they rarely attack. ...
+> * Change the Tab action. Tab to lock, again to unlock. While locking, moving your mouse through a certain threshold to the left/right side, it will select the next enemies that are on the left/right side of your screen.
+> * Daifuku fight stuck after phase 1 end.
+>
+> Decisions: "Do a ground version for Daifuku, but no need the wash tub anymore. Make it universal. The rest, however you suggest. Go"
+
+Ruled into `design/reviews/owner-feedback/combat-m1.2-spec.md`.
