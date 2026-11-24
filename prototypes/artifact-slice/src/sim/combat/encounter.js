@@ -792,7 +792,7 @@ export class Encounter {
     t.routed = true; t.nerve = 0; this._removeTeleOf(t); this._releaseToken(t); t.orders = []; t.reserved = 0;
     t.status = null; t.anger = t.anger ? { ...t.anger, left: 0 } : null; t.frazzledT = 0; t.splatT = 0; t.bracing = false;
     if (t.side === 'enemy') { const [dx, dz] = norm(t.x - this.ringC.x, t.z - this.ringC.z); t.act = { kind: 'routed', t: 0, dur: 1.2, vx: (dx || 1) * 6, vz: dz * 6 }; t.onHR = null; t.y = 0; }
-    else t.act = { kind: 'routed', t: 0, dur: INF };
+    else t.act = { kind: 'routed', t: 0, dur: INF, vx: 0, vz: 0 }; // a Routed Posse cat lies where it fell
     const kind = t.side !== 'enemy' ? 'string' : t.rankRow.leader ? 'leader_rout' : 'tough_rout';
     const authored = by && by.id === this.controlledId ? 'player' : how === 'by_pile_on' || how === 'by_back_down' ? 'player' : by?.side === 'enemy' ? 'enemy' : 'ai';
     this._emitFeel({ type: 'CatRouted', cat: t.id, by: by?.id ?? null, how, side: t.side }, { tier: t.side === 'enemy' ? BASE_TIER[kind] : 0, authored, victim: this._victimKind(t), kind }, null, null);
@@ -1068,7 +1068,7 @@ export class Encounter {
         case 'windup': if (a.t >= a.dur - 1e-9) this._resolveWindup(e); break;
         case 'skitter': case 'enter': case 'knockback': case 'routed': {
           if (e.onHR && a.kind === 'skitter') { const hr = this.hr(e.onHR), ax = norm(hr.b[0] - hr.a[0], hr.b[1] - hr.a[1]); const al = a.vx * ax[0] + a.vz * ax[1]; e.x += ax[0] * al * d; e.z += ax[1] * al * d; const p = closestOnSeg(hr.a, hr.b, e); e.x = p.x; e.z = p.z; }
-          else { e.x += a.vx * d; e.z += a.vz * d; }
+          else { e.x += (a.vx || 0) * d; e.z += (a.vz || 0) * d; }
           if (a.kind === 'knockback') this._knockCollide(e, a);
           if (a.t >= a.dur - 1e-9) { if (a.kind === 'routed' && e.side === 'enemy') { e.gone = true; } if (e.act === a) e.act = a.kind === 'routed' ? (e.side === 'enemy' ? null : a) : null; }
           break;

@@ -356,3 +356,18 @@ test('the snapshot exports the ring bounds and nobody fights on the far side of 
     }
   }
 });
+
+test('every entity\'s position, velocity and facing stay finite on every tick, across 50 seeds of every fight', () => {
+  // Regression: a Routed Posse cat's act had no velocity and integrated to NaN (daifuku_bout seed 5, the FinalKO bout).
+  const fields = ['x', 'y', 'z', 'vx', 'vz', 'fx', 'fz', 'nerve'];
+  const bots = [() => withCommandQueue(skilledBot()), () => withCommandQueue(daifukuBot()), () => () => ({})];
+  for (const name of Object.keys(DATA.encounters)) for (let seed = 1; seed <= 50; seed++) {
+    const enc = createEncounter(name, { seed, showcase: seed % 2 === 0 });
+    const bot = bots[seed % bots.length]();
+    for (let i = 0; i < T * 150 && enc.mode !== 'ended'; i++) {
+      enc.step(bot(enc, i));
+      for (const e of enc.entities) for (const f of fields) if (!Number.isFinite(e[f])) assert.fail(`${name} seed ${seed} tick ${i}: ${e.id}.${f} = ${e[f]}`);
+      for (const h of enc.hazards) assert.ok(Number.isFinite(h.r) && h.center.every(Number.isFinite));
+    }
+  }
+});
