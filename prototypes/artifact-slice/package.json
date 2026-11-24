@@ -1,0 +1,16 @@
+{
+  "name": "cat-rpg-artifact-slice",
+  "private": true,
+  "type": "module",
+  "description": "Throwaway browser showcase slice for Cat RPG (see production/artifact-slice/IMPLEMENTATION-PLAN.md)",
+  "scripts": {
+    "serve": "node tools/serve.mjs",
+    "build": "node tools/build.mjs",
+    "shot": "node tools/shot.mjs"
+  },
+  "dependencies": {
+    "esbuild": "^0.24.0",
+    "pngjs": "^7.0.0",
+    "three": "^0.160.1"
+  }
+}

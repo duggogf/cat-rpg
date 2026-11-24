@@ -422,10 +422,10 @@ An **agent-session** is one focused session by one specialist agent (≈ 2–4 h
 | # | Question | Default |
 |---|---|---|
 | Q1 | ~~Reference closeness~~ | **Settled by the user (2026-11-24): reference-close.** 3D cel-shaded characters over painted-2D-looking environments, free third-person camera, §3.5 originality rules apply. No print-stylised comparison frame is needed |
-| Q2 | **Phone support** | Full touch play in landscape, simplified (Moves only through Slow Blink); portrait shows a rotate prompt |
-| Q3 | **Budget**: 42–50 agent-sessions (≈ 6–8 weeks with parallel agents)? | Yes. If not, cut from the top of the §5 cut order; M0 still runs first |
-| Q4 | **Audience** | A private link to named internal stakeholders until the legal review and the style call are done |
+| Q2 | ~~Phone support~~ | **Settled by the user (2026-11-24): not needed.** Desktop only (keyboard+mouse, gamepad). Show a "best on desktop" card on small or touch screens. Touch controls and the phone tier are cut from M7 |
+| Q3 | ~~Budget~~ | **Settled (2026-11-24): default accepted** — 42–50 sessions, minus the phone work |
+| Q4 | ~~Audience~~ | **Settled (2026-11-24): default accepted** — private link only |
 | Q5 | ~~Name on the page~~ | **Settled by the user (2026-11-24): "Cat RPG"** is the final title |
-| Q6 | **Code location** `prototypes/artifact-slice/` | Yes; each milestone asks before writing there |
-| Q7 | **Togemaru's Recruit branch**: support both Life 2 states? | Yes (≈ +1 session); it makes the Verdict honest |
-| Q8 | **JP onomatopoeia toggle** | Include it; it is the first cut if time is short |
+| Q6 | ~~Code location~~ | **Settled (2026-11-24): default accepted** — `prototypes/artifact-slice/` |
+| Q7 | ~~Togemaru Recruit branch~~ | **Settled (2026-11-24): default accepted** — support both Life 2 outcomes |
+| Q8 | ~~JP sound-word toggle~~ | **Settled (2026-11-24): default accepted** — include it |
