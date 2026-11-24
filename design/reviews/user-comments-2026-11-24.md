@@ -117,5 +117,5 @@ Follow-up:
 >
 > Decision: Crew specials in the chain: Automatic. Zoomies: fold it into the special.
 
-Ruled into `design/reviews/owner-feedback/combat-m1.1-spec.md` (Special on **R** as a stagger prompt, since F is now
-the skill bar — orchestrator's default).
+Final bindings, owner's last word: "Do F for special on staggered enemies, R for skill bar". Ruled into
+`design/reviews/owner-feedback/combat-m1.1-spec.md`.

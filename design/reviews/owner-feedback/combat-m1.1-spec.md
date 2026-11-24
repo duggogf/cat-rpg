@@ -1,5 +1,7 @@
 # Combat M1.1 — owner direction (2026-11-24)
 
+> **Final bindings (owner, last word):** F = Special on a staggered enemy; R = skill bar; Tab = lock-on cycle.
+
 Binding change spec for the combat sim, presentation and docs. Source: the owner's two chat messages after playing
 the M1 grey box (quoted in `design/reviews/user-comments-2026-11-24.md`, C10). Supersedes the GDD and the M1 build
 where they differ. Docs are updated to match (combat-system, camera-system, hud, crew where touched).
@@ -14,8 +16,8 @@ where they differ. Docs are updated to match (combat-system, camera-system, hud,
 | Dodge | Space | Cancels recovery |
 | Dash | Shift | Dash → attack is a string starter |
 | **Lock-on** | **Tab** | Not locked by default. Press: lock the nearest enemy. Press again: if the nearest enemy is now a *different* enemy, lock that one; otherwise **unlock** (free camera) |
-| **Skill bar** | **F** | Opens the skill bar (time slows). Commands Mikan's Moves **and forces crew skills** |
-| **Special** | **R** (prompt) | Only on a **staggered** enemy; shown as a context prompt |
+| **Special** | **F** (prompt) | Only on a **staggered** enemy; shown as a context prompt |
+| **Skill bar** | **R** | Opens the skill bar (time slows). Commands Mikan's Moves **and forces crew skills** |
 | Pause | Esc / P | |
 
 Removed: switching control to other cats (Z X C V, Tag-In, Relay). **The player controls Mikan only.** Crew are
@@ -61,7 +63,7 @@ Like cats, and in the spirit of Assassin's Creed group fights (not a strict copy
 ## 6. Special and the team finisher (Zoomies folded in)
 
 - **Zoomies is folded into the Special** (no separate limit break). Each cat has a Zoomies/Special meter.
-- **R on a staggered enemy** = Mikan's **Special**: camera punches in on Mikan, **time stops**, only Mikan renders over
+- **F on a staggered enemy** = Mikan's **Special**: camera punches in on Mikan, **time stops**, only Mikan renders over
   an impact-frame background (shonen-ultimate cut-in, ≈ 1 s), then the hit.
 - **Crew specials chain automatically** (owner's decision): crew in range with a ready meter follow with their own
   specials and cut-ins, in sequence.
@@ -80,5 +82,5 @@ distinct VFX, and a highlight on that cat's plate. (Audio comes in M6.)
 
 - Cowed status: cleared by a skill-bar command to that cat (Tag-In no longer exists).
 - Pillar "Conduct the brawl" becomes "Command the brawl" (skill bar + specials chain).
-- HUD: crew plates without control keys; Special prompt on stagger; skill bar on F; lock-on indicator on Tab.
+- HUD: crew plates without control keys; Special prompt (F) on stagger; skill bar on R; lock-on indicator on Tab.
 - Tests: F1–F11 worked examples that depended on Tag-In/Relay/Pile-On inputs are updated to the new chain.
