@@ -34,7 +34,8 @@ gameplay and the art direction.
 | Showcase-slice plan v2 (owner feedback + desktop only) | **Done** |
 | Prototype scaffold (`prototypes/artifact-slice/`) | **Done** — build, dev server, headless WebGL screenshots verified |
 | Showcase M0 look-dev | **Done on the studio side** — GO WITH FIXES after 3 iterations; published at https://claude.ai/artifact/MBsJLyudNiAdVyUu9BhpD6 ; **owner: GO** (2026-11-24) |
-| Showcase M1–M7 | Not started. M1 (combat grey box) starts after the owner's go, carrying the M0 fix list in `production/qa/evidence/artifact-slice/M0/review-final.md` |
+| Showcase M1 combat grey box | **Done** — 3 review rounds, final GO WITH FIXES (overall 5 → 7/10); published on the same showcase link (chapter menu → Combat). Carry-overs: `production/qa/evidence/artifact-slice/M1/review-final.md` |
+| Showcase M2–M7 | Not started. Next: M2 lane and territory, carrying the M1 list |
 
 Nothing has been played or built. Every balance number is a paper value checked
 by small Python simulations, not by a prototype.

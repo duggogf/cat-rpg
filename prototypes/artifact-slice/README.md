@@ -60,6 +60,8 @@ against the GDD's F9 figures and exits non-zero if a bot misses its expectation 
   (`production/qa/evidence/artifact-slice/M0/review-final.md`). Published as the Cat RPG Showcase artifact
   (https://claude.ai/artifact/MBsJLyudNiAdVyUu9BhpD6). **Awaiting the owner's go/no-go before M1.**
 
+- **M1 combat grey box:** done — final review GO WITH FIXES (overall 7/10); deterministic sim (58 tests), personality AI, Slow Blink, Pile-On, Daifuku phase 1; reachable via `?chapter=combat&fight=toughs3|captain|daifuku` or the chapter menu.
+
 ## Findings
 
 - M0 (provisional): the "ink what acts, paint what stays" split works in three.js — SDF-built skinned cats
