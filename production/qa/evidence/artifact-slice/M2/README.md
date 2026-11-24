@@ -8,9 +8,10 @@ SwiftShader WebGL, `?test=1` deterministic frames). The territory rules, numbers
 
 | Check | Result | Bar | |
 |---|---|---|---|
-| 5-min bot walk, seed 7 (9000 frames at 30 Hz; 6 High Road hops; 18 waypoints over the ≈ 120 m lane) | camera inside geometry: **0** frames; cat in frame **99.97%** (out of frustum 3, behind camera-solid 0) | 0 frames; ≥ 98% | within |
-| 5-min bot walk, seed 11 (9000 frames at 30 Hz; 8 High Road hops; 17 waypoints over the ≈ 120 m lane) | camera inside geometry: **2** frames; cat in frame **99.5%** (out of frustum 34, behind camera-solid 11) | 0 frames; ≥ 98% | **outside** |
-| 5-min bot walk, seed 23 (9000 frames at 30 Hz; 5 High Road hops; 18 waypoints over the ≈ 120 m lane) | camera inside geometry: **46** frames; cat in frame **98.62%** (out of frustum 120, behind camera-solid 4) | 0 frames; ≥ 98% | **outside** |
+| 5-min bot walk, seed 7 (9000 frames at 30 Hz; 2 High Road hops; 17 waypoints over the ≈ 120 m lane) | camera inside geometry: **0** frames; cat in frame **99.91%** (out of frustum 3, behind camera-solid 5) | 0 frames; ≥ 98% | within |
+| 5-min bot walk, seed 11 (9000 frames at 30 Hz; 7 High Road hops; 17 waypoints over the ≈ 120 m lane) | camera inside geometry: **0** frames; cat in frame **99.91%** (out of frustum 8, behind camera-solid 0) | 0 frames; ≥ 98% | within |
+| 5-min bot walk, seed 23 (9000 frames at 30 Hz; 16 High Road hops; 15 waypoints over the ≈ 120 m lane) | camera inside geometry: **0** frames; cat in frame **99.06%** (out of frustum 57, behind camera-solid 28) | 0 frames; ≥ 98% | within |
+| 5-min bot walk, seed 41 (9000 frames at 30 Hz; 5 High Road hops; 18 waypoints over the ≈ 120 m lane) | camera inside geometry: **0** frames; cat in frame **99.36%** (out of frustum 41, behind camera-solid 17) | 0 frames; ≥ 98% | within |
 | 6 vantage shots × 2 phases | `vantages-day-sheet.png`, `vantages-dusk-sheet.png`; singles `vantage-<k>-<phase>.png` | 12 shots | within |
 | Real-laptop frame log | **Not captured here** (headless SwiftShader cannot measure GPU time). Open the page with `?fps=1` on the laptop, walk the lane, then run `__frameLog()` in the console | manual | pending |
 | Scent and influence unit tests (Territory §4.14 worked example 95 -> 100) | owned by the territory simulation (`node --test 'tests/unit/territory/*.test.mjs'`); reproduced live by the `rescue` flow below | — | see flow |
