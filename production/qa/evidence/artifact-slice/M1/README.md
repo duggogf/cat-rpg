@@ -123,7 +123,9 @@ P Pause.
 
 **M1.1 numbers:** flash screening on the 10 s Special-chain capture (stagger, four cut-ins, Team finisher): 0 flashes/s, 2 per 5 s, red-change area 0.7% — all pass. The first M1.1 capture FAILED the red rule: the ginger cut-in panel was double colour-managed and showed as a saturated orange-red field (76% of the screen); the panel is now raw-sRGB and red-leaning colours are pulled toward Cream. Latency: a light's first active frame lands 2 ticks after the press (≤ 3 required); clicks 2 and 3 (4 ticks apart) were dropped by the one-slot buffer. 10-cat brawl: 0.23–0.49 M triangles (median 0.36 M).
 
-**M1.1 weak spots:** the staggered cat can still sit behind Mikan in the zoom (the ≈ 30° swing helps but does not always clear her); forced crew skills need the target in range, so `skillbar-cast.png` may show the queued pom rather than the cast; gamepad untested; no audio.
+**Stagger, round 2 (coordinator fix):** the cinematic now owns the screen for its ~0.5 s. The camera cuts to a side-on two-shot (±65° off the target→Mikan line) with the staggered cat clear and large and Mikan to one side; any other cat between lens and target is hidden. The shattered-glass blink is the one effect: slash arcs, sparks, swirls, the hit word, lines, the impact frame, the HP bar, the Frazzle ring and orbit, barks and the lock reticle are cleared and held back. The F SPECIAL prompt stays (`stagger-05-prompt.png`). **Special names** come from each cat's data (`combatants.json` `special_name`, a display-only field proposed for the Combat owner: Mikan Midnight Laps, Hige Landslide, Pon Midnight Aria, Kinako Scaredy Streak, Togemaru Thorn Crown Rush, Kagi Keyhole Serenade; mechanics stay per Style). `skillbar-cast.png` now waits for the commanded cat's own cast (Hige's Shoulder Check banner). Move banners stack instead of overlapping.
+
+**M1.1 weak spots:** gamepad untested; no audio.
 
 ## Known gaps / deviations (for the art + creative directors)
 

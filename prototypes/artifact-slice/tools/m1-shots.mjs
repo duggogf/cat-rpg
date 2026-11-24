@@ -89,11 +89,14 @@ if (want('chain')) {
   const p = await open('fight=toughs3&seed=3&script=demo');
   const st = []; 
   await ev(p, `__cat.until('Staggered')`);
-  for (const [n, label] of [[1, 'zoom-in + shattered-glass blink, drawing 1 (Cream shard tints <= 0.16 alpha)'], [3, 'blink off (cracks only)'], [6, 'shards drift apart, time slowed'], [24, 'back to play: the F Special prompt over the staggered cat']]) {
+  for (const [n, label] of [[1, 'zoom-in + shattered-glass blink, drawing 1 (Cream shard tints <= 0.16 alpha)'], [3, 'blink off (cracks only)'], [6, 'shards drift apart, time slowed'], [24, 'the cinematic settling (bars, barks and hit effects held back until it ends)']]) {
     await ev(p, `__cat.frames(${n - (st.lastN || 0)})`); st.lastN = n;
     st.push(await shot(p, `stagger-${String(st.length + 1).padStart(2, '0')}.png`, `stagger cinematic +${n} frames: ${label}`));
   }
-  sheet(st, 4, 4, 'stagger-sheet.png');
+  // a later stagger with Mikan's meter full: the F SPECIAL prompt, clear over the staggered cat
+  const pr = (await ev(p, `__cat.untilWhere((s) => !!(s.special_prompt && s.special_prompt.ready), 3000)`)).ok;
+  if (pr) { st.push(await shot(p, 'stagger-05-prompt.png', 'staggered enemy + Mikan ready: the F SPECIAL prompt')); }
+  sheet(st, 5, 4, 'stagger-sheet.png');
   const ch = [];
   await ev(p, `__cat.until('SpecialChainStart')`);
   const info = await ev(p, `JSON.stringify(__cat.events('SpecialChainStart'))`);
@@ -125,8 +128,13 @@ if (want('skillbar')) {
   await shot(p, 'skillbar-crew.png', 'skill bar on a crew cat: forcing its skill');
   await ev(p, `__cat.menu('confirm')`); await ev(p, '__cat.frames(2)');
   await shot(p, 'skillbar-target.png', 'target step: brackets on the target cat');
-  await ev(p, `__cat.menu('confirm')`); await ev(p, '__cat.frames(2)'); await ev(p, '__cat.inject({ skillBar: true })'); await ev(p, '__cat.frames(40)');
-  await shot(p, 'skillbar-cast.png', 'the forced skill: name banner in the cat colour, wind-up, plate highlight');
+  await ev(p, `__cat.menu('confirm')`); await ev(p, '__cat.frames(2)'); await ev(p, '__cat.inject({ skillBar: true })');
+  // wait for the COMMANDED cat's cast (not any AI cast): the crew cat picked with E is the second plate
+  const who = await ev(p, `__cat.snapshot().entities.filter(e => e.side === 'posse' && !e.routed).sort((a, b) => b.controlled - a.controlled || a.slot - b.slot)[1].id`);
+  const n0 = await ev(p, `__cat.events('MoveUsed').length`);
+  const cast = await ev(p, `__cat.untilWhere((s, log) => log.filter(e => e.type === 'MoveUsed').slice(${n0}).some(e => e.user === '${who}'), 1500)`);
+  await ev(p, '__cat.frames(4)');
+  await shot(p, 'skillbar-cast.png', `the forced skill CAST by ${who} (${cast.ok ? 'cast seen' : 'cast NOT seen'}): name banner in the cat colour, its Move VFX, plate highlight`);
   await p.ctx.close();
 }
 

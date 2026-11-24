@@ -160,10 +160,13 @@ export class WorldFX {
     this.items.push({ ground: true, mesh: m, t: 0, life, list });
   }
 
+  /** Kill every billboard drawing within r metres of `at` (the stagger cinematic clears the stage). */
+  clearNear(at, r) { for (const it of this.items) if (!it.ground && !it.keep && it.mesh.position.distanceTo(at) < r) it.dead = true; }
+
   tagRing(at, col) { const d = decal(5, { R: 0.4, colA: col || '#F2B01E' }); d.scale.setScalar(1.4); d.position.set(at.x, at.y + 0.02, at.z); this.decals.add(d); this.tagRings.push({ d, t: 0 }); }
 
   /** Per-frame: telegraphs from the snapshot, Frazzle rings, orbits; advance drawings on twos. */
-  update(dt, tw, s, fighters, controlledId) {
+  update(dt, tw, s, fighters, controlledId, quietId = null) {
     // telegraph decals (stateless: drawn from the snapshot)
     const seen = new Set();
     for (const tl of s.telegraphs) {
@@ -195,7 +198,7 @@ export class WorldFX {
     // Frazzled rings and orbits
     for (const e of s.entities) {
       const f = fighters.get(e.id); if (!f) continue;
-      const fz = e.frazzled_s > 0 && f.root.visible && s.mode !== 'pileon';
+      const fz = e.frazzled_s > 0 && f.root.visible && s.mode !== 'pileon' && e.id !== quietId;
       let r = this.fzRings.get(e.id);
       if (fz) {
         if (!r) { r = { ring: decal(4, { R: 0.9 }), orbit: null }; this.decals.add(r.ring); this.fzRings.set(e.id, r); }

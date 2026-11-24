@@ -328,7 +328,7 @@ export class CombatHUD {
       const f = fighters.get(e.id); if (!f || !f.root.visible || s.mode === 'pileon') continue;
       const head = ctx.project(f.head);
       if (e.side === 'enemy' && !e.routed) {
-        const show = s.lock === e.id || (t - (this.lastHit.get(e.id) || -9) < 3) || e.frazzled_s > 0;
+        const show = e.id !== ctx.quietId && (s.lock === e.id || (t - (this.lastHit.get(e.id) || -9) < 3) || e.frazzled_s > 0);
         if (show && e.id !== this.boss || (show && e.id === this.boss)) {
           const nv = e.nerve / e.nerve_max, fz = e.frazzled_s > 0 ? 100 : (e.frazzle || 0);
           const el = this.wEl('bar:' + e.id, 'ch-ebar', `<div class="row"><span class="emb">${svgIcon.brick}</span><div class="k-gauge nerve"><i style="--v:${(nv * 100).toFixed(0)}%"></i></div></div><div class="row"><div class="k-gauge k-gauge--frazzle fz" style="--k-fill:${e.frazzled_s > 0 ? C.magenta : C.staticYellow}"><i style="--v:${fz.toFixed(0)}%"></i></div></div>`);
@@ -345,7 +345,7 @@ export class CombatHUD {
       }
     }
     // the one bark balloon
-    if (this.barkMsg && t < this.barkMsg.until && s.mode !== 'pileon') {
+    if (this.barkMsg && t < this.barkMsg.until && s.mode !== 'pileon' && !ctx.quietId) {
       const f = fighters.get(this.barkMsg.id);
       if (f && f.root.visible) { const el = this.wEl('bark', 'k-bubble ch-bark', BARK_ICON[this.barkMsg.icon] || this.barkMsg.icon); el.style.transform = `translate(-30%,-100%) scale(${sc * 0.9})`; this.place(el, ctx.project(f.head), -60 * sc); }
     }
@@ -360,7 +360,7 @@ export class CombatHUD {
       }
     }
     // lock-on indicator (Tab): four Bell-Gold corner ticks around the locked enemy's body, stepping on twos
-    if (ctx.lockId && !s.slow_blink && s.mode !== 'pileon') {
+    if (ctx.lockId && !s.slow_blink && s.mode !== 'pileon' && ctx.lockId !== ctx.quietId) {
       const f = fighters.get(ctx.lockId);
       if (f && f.root.visible) {
         const feet = ctx.project(f.pos), head = ctx.project(f.head), hpx = Math.max(40, feet.y - head.y) * 1.7;

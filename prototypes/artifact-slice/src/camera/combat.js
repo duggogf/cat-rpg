@@ -153,6 +153,23 @@ export class CombatCamera {
       const right = new THREE.Vector3().setFromMatrixColumn(cam.matrixWorld, 0), up = new THREE.Vector3().setFromMatrixColumn(cam.matrixWorld, 1);
       cam.position.addScaledVector(right, (ux / l) * amt / 100 * hWorld).addScaledVector(up, (uy / l) * amt / 100 * hWorld);
     }
+    // stagger framing (M1.1 §5): a side-on two-shot that puts the STAGGERED cat clear and large and Mikan off to
+    // one side, never between camera and target; in over 0.08 s, held, out over 0.15 s
+    if (this.stagger && t < this.stagger.until) {
+      const G = this.stagger, u = t - G.from, total = G.until - G.from;
+      const kk = u < 0.08 ? ss(u / 0.08) : u > total - 0.15 ? ss((total - u) / 0.15) : 1;
+      if (!G.pose) {
+        const T = G.T.pos, C = G.C ? G.C.pos : T.clone().add(new THREE.Vector3(0, 0, 1));
+        const u0 = new THREE.Vector3(C.x - T.x, 0, C.z - T.z); if (u0.lengthSq() < 1e-4) u0.set(0, 0, 1); u0.normalize();
+        // the side (±65° off the target->Mikan line) whose view direction is closer to the current camera
+        const cur = new THREE.Vector3(cam.position.x - T.x, 0, cam.position.z - T.z).normalize();
+        const a = [1, -1].map((sg) => u0.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), sg * 1.13)).sort((p, q) => q.dot(cur) - p.dot(cur))[0];
+        const hgt = G.T.head.y - T.y, d = (G.full ? 2.1 : 2.6) * Math.max(1, G.T.scaleK * 0.9);
+        G.pose = { pos: new THREE.Vector3(T.x, T.y + hgt * 0.95, T.z).addScaledVector(a, d), look: new THREE.Vector3(T.x, T.y + hgt * 0.55, T.z) };
+      }
+      const look = new THREE.Vector3(); cam.getWorldDirection(look); look.multiplyScalar(4).add(cam.position);
+      cam.position.lerp(G.pose.pos, kk); look.lerp(G.pose.look, kk); cam.lookAt(look);
+    } else this.stagger = null;
     cam.updateMatrixWorld();
   }
 }

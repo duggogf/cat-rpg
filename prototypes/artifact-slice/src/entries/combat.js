@@ -71,7 +71,7 @@ let world, shadow, post, enc, snap, prevSnap, fighters = new Map(), fx, scr, cca
 let realT = 0, acc = 0, paused = false, script = null, cmdQueue = [], injectQ = [], pile = null, impact = null, dip = null, midTone = new THREE.Color('#8C88B8');
 const DT = 1 / 60, TWO = 1 / 30, evLog = [], counts = {};
 let lastTagWindow = null, routedTrail = new Map(), crackedUntil = new Map(), standoffFocus = null, fightStartT = null, endShown = false, lastStats = {};
-let hudBackAt = null, chainMean = 0.4, staggerSeen = false, latencyLog = [], cin = null, chainPending = false, chainFired = false; const banners = new Set();
+let quiet = null, hudBackAt = null, chainMean = 0.4, staggerSeen = false, latencyLog = [], cin = null, chainPending = false, chainFired = false; const banners = new Set();
 let pendingCard = null, seedCounter = 1, skipDraw = false; const pendingMenu = [];
 
 function setPhase(name) {
@@ -122,7 +122,7 @@ function applyFeel(feel, at, o = {}) {
   if (feel.lines === 'local_streak' && o.from) scr.add({ kind: 'streak', from: o.from.clone(), to: at.clone(), dur: feel.lines_ms / 1000, seed: seedCounter++ % 3, delay: feel.delay_ms / 1000 });
   else if (feel.lines === 'radial_20' || feel.lines === 'radial_40') scr.add({ kind: 'radial', share: feel.lines === 'radial_20' ? 0.2 : 0.4, at: at.clone(), dur: feel.lines_ms / 1000, seed: seedCounter++ % 3, delay: feel.delay_ms / 1000 });
   else if (feel.lines === 'full_field' && !o.noFull) scr.add({ kind: 'radial', share: 0.62, at: at.clone(), dur: feel.lines_ms / 1000, seed: seedCounter++ % 3, color: Kit.C.ink });
-  if (feel.word && !(cin && cin.holding)) scr.letter({ cls: feel.word.cls, ms: feel.word.ms, tier: feel.tier, hitType: o.hitType, at: at.clone(), seed: seedCounter++, dir: o.dir, text: o.text });
+  if (feel.word && !(cin && cin.holding) && !(quiet && realT < quiet.until)) scr.letter({ cls: feel.word.cls, ms: feel.word.ms, tier: feel.tier, hitType: o.hitType, at: at.clone(), seed: seedCounter++, dir: o.dir, text: o.text });
   if (feel.edge_pulse) scr.add({ kind: 'edge', dur: Math.max(2 / 60, feel.edge_pulse.ms / 1000) });
   if (feel.time_dip && (!feel.time_dip.final_rout_only || o.finalRout)) dip = { from: start + hs + impactDur, to: start + hs + impactDur + feel.time_dip.ms / 1000, scale: feel.time_dip.scale };
 }
@@ -175,6 +175,7 @@ function onEvent(ev) {
       ft.impulse('hurt', tw, { mag: ev.blocked ? 0.4 : Math.min(1.6, 0.6 + (ev.feel?.tier || 0) * 0.25) });
       if (!ev.blocked && (ev.feel?.tier ?? 0) >= 1) ft.flash(tw, 2);
       const facingRot = Math.atan2(cp.dir[1], cp.dir[0]) * 0.5;
+      if (quiet && realT < quiet.until) { ft.flash(tw, 2); break; }   // the stagger cinematic owns the screen
       fx.hit(cp.p, ht, ev.feel || { tier: 0, dust: '2 puffs' }, cp.dir, { blocked: ev.blocked, stringIdx: ea ? ea.string_idx : 0, finisher: ev.kind === 'finisher' || ev.kind === 'tag_in', player: ev.authored === 'player', seed: seedCounter++, facingRot });
       applyFeel(ev.feel, cp.p, { dir: screenDir(fa ? fa.pos : cp.p, ft.pos), from: fa ? fa.pos.clone().add(new THREE.Vector3(0, 0.3, 0)) : null, hitType: ht });
       // the player's own swipes get a short speed smear behind the lunge even on T1 (no flash: Ink wedges, 2 drawings)
@@ -187,11 +188,19 @@ function onEvent(ev) {
     case 'Pounce': { const f = F(ev.cat); if (f) scr.add({ kind: 'streak', from: f.pos.clone().add(new THREE.Vector3(0, 0.3, 0)), to: f.pos.clone().add(new THREE.Vector3(0, 0, 0)), dur: 0.2, seed: 2 }); break; }
     case 'Staggered': case 'Frazzled': {
       // M1.1 §5 stagger cinematic (the sim's 'Staggered' when published; the M1 Frazzle until then)
+      // ONE dominant effect: the shattered-glass blink over the target, framed clear and large. Everything else
+      // that piled onto it (slash arcs, sparks, swirls, the hit word, lines, the impact frame, bars, barks) is
+      // cleared now and held back for the cinematic's ~0.5 s.
       { const f = F(ev.cat), e = ent(ev.cat);
-        if (f && e && e.side === 'enemy') { const full = e.rank === 'captain' || e.rank === 'boss' || !staggerSeen; staggerSeen = true;
-          const r = cin.stagger(f, ev.treatment ? ev.treatment === 'full' : full, realT); if (!ev.slow) dip = r.dip; ccam.focus = r.focus; } }
+        if (f && e && e.side === 'enemy') { const full = ev.treatment ? ev.treatment === 'full' : (e.rank === 'captain' || e.rank === 'boss' || !staggerSeen); staggerSeen = true;
+          const r = cin.stagger(f, full, realT); if (!ev.slow) dip = r.dip;
+          const C = F(snap.controlled);
+          ccam.stagger = { T: f, C, from: realT, until: realT + (full ? 0.55 : 0.36), full };
+          quiet = { id: ev.cat, until: realT + (full ? 0.55 : 0.36) };
+          fx.clearNear(f.pos, 3.0); scr.word = null; scr.fx = scr.fx.filter((x) => x.kind === 'shatter'); impact = null; ccam.holdUntil = 0; ccam.punch = null;
+          hud.barkMsg = null; } }
+      break;
     }
-    // falls through for the M1 Frazzle's own drawing
     case 'FrazzledLegacy': { { const by = ent(ev.by); if (by && by.side !== 'enemy') hud.bark(ev.by, 'bang', realT); } const f = F(ev.cat); if (f) { f.impulse('take', tw, { dur: 0.25 }); fx.spawn('burstMagenta', f.head.clone(), { size: 0.9, drawings: 4, cycle: false }); } break; }
     case 'FrazzleEnded': { const f = F(ev.cat); if (f) for (let i = 0; i < 3; i++) fx.spawn('wedge', f.head.clone().add(new THREE.Vector3((i - 1) * 0.2, 0, 0)), { size: 0.22, drawings: 4, vel: new THREE.Vector3((i - 1) * 0.8, 0.6, 0) }); break; }
     case 'Ruffled': { const f = F(ev.cat); if (f) { f.impulse('take', tw); fx.spawn('sweat', null, { size: 0.26, drawings: 30, cycle: true, follow: () => f.head.clone().add(new THREE.Vector3(0.22 * f.scaleK, 0.08, 0)), breakAt: 0.85 }); } break; }
@@ -211,7 +220,7 @@ function onEvent(ev) {
       const fu = F(ev.user), eu = ent(ev.user); if (!fu || !eu) break;
       fu.impulse('strike', tw, { mag: 1.5, dur: 0.28 });
       hud.moveUsed(ev.user, ev.move, realT);
-      if (eu.side !== 'enemy') hud.bark(ev.user, eu.personality, realT, true);
+      hud.barkMsg = hud.barkMsg && hud.barkMsg.id === ev.user ? null : hud.barkMsg;   // the banner is the flourish: no balloon over it
       const mv = DATA.moves[ev.move] || {}, col = styleOf(eu.cat).col;
       fx.tagRing(fu.pos, eu.side === 'enemy' ? '#A8C878' : col);
       if (!banners.has(ev.user + ev.move + Math.floor(realT))) scr.add({ kind: 'banner', at: fu.head.clone(), text: (mv.name || ev.move).toUpperCase(), col: eu.side === 'enemy' ? '#A8C878' : col, who: eu.name, dur: 1.3 });
@@ -272,7 +281,7 @@ function onEvent(ev) {
     case 'SpecialChainStart': chainMean = measureMean(); hud.showChrome(false); break;
     case 'SpecialCutIn': {
       const e = ent(ev.cat), f = F(ev.cat); if (!e || !f) break;
-      cin.cutIn({ id: e.id, catId: e.cat, name: e.name, f, special: (ev.special || '').toUpperCase(), idx: (ev.index || 1) - 1, of: ev.of || 1 }, ev.duration_s || 1, chainMean, realT, ev.index === 1);
+      cin.cutIn({ id: e.id, catId: e.cat, name: e.name, f, special: ((DATA.cats[e.cat] && DATA.cats[e.cat].special_name) || ev.special || '').toUpperCase(), idx: (ev.index || 1) - 1, of: ev.of || 1 }, ev.duration_s || 1, chainMean, realT, ev.index === 1);
       break;
     }
     case 'SpecialUsed': { const fu = F(ev.cat); for (const id of ev.targets_hit || []) { const ft = F(id); if (ft) { ft.impulse('hurt', tw, { mag: 1.5 }); fx.spawn('burstGold', ft.head.clone(), { size: 1.2, drawings: 4, cycle: false }); fx.dust('5-puff ring', ft.pos); } } if (fu) fu.impulse('strike', tw, { mag: 1.6 }); break; }
@@ -362,7 +371,7 @@ function startSpecialChain() {
   const offer = snap.pile_on_offer, tgt = offer ? ent(offer.targetId) : null;
   const order = snap.entities.filter((e) => e.side === 'posse' && e.present && !e.routed).sort((a, b) => (b.controlled - a.controlled) || a.slot - b.slot)
     .filter((e) => !tgt || e.controlled || Math.hypot(e.pos[0] - tgt.pos[0], e.pos[2] - tgt.pos[2]) < 7.5);
-  const cats = order.map((e) => ({ id: e.id, catId: e.cat, name: e.name, f: F(e.id), special: styleOf(e.cat).special || SPECIAL_BY_STYLE[e.style] })).filter((c) => c.f);
+  const cats = order.map((e) => ({ id: e.id, catId: e.cat, name: e.name, f: F(e.id), special: ((DATA.cats[e.cat] && DATA.cats[e.cat].special_name) || SPECIAL_BY_STYLE[e.style] || '').toUpperCase() })).filter((c) => c.f);
   if (!cats.length) return;
   chainPending = true; hud.showChrome(false);
   cin.startChain(cats, measureMean(), realT, () => { chainPending = false; chainFired = true; ccam.blend(0.2); });
@@ -441,7 +450,14 @@ function present(dt, alpha, menu = [], cut = null) {
     const want = !e.controlled && C0d != null && (f.crowd ? dc < 3.3 && dc < C0d : dc < 2.8 && dc < C0d - 0.3);
     if (want !== !!f.crowd && realT - (f.crowdT || -9) > 0.6) { f.crowd = want; f.crowdT = realT; }
     const crowd = !!f.crowd && !e.controlled;
-    f.hidden = hidden || crowd;
+    // stagger framing: any other cat between the lens and the staggered cat is hidden for the moment
+    let blocker = false;
+    if (ccam.stagger && realT < ccam.stagger.until && e.id !== ccam.stagger.T.id && !e.controlled) {
+      const T = ccam.stagger.T.pos, cp = cam.position, dT = Math.hypot(T.x - cp.x, T.z - cp.z);
+      const ux = (T.x - cp.x) / dT, uz = (T.z - cp.z) / dT, vx = f.pos.x - cp.x, vz = f.pos.z - cp.z, along = vx * ux + vz * uz;
+      blocker = along > 0 && along < dT + 0.3 && Math.abs(vx * uz - vz * ux) < 0.9 * Math.max(1, f.scaleK);
+    }
+    f.hidden = hidden || crowd || blocker;
     // nearest standing opponent (for intent reading and squaring off)
     const le = lerpEnt(e, e.controlled ? 1 : alpha);   // the controlled cat renders the newest tick: no presentation lag
     if (!e.controlled && !e.routed && e.present) {
@@ -501,7 +517,7 @@ function present(dt, alpha, menu = [], cut = null) {
     else if (u >= impact.inv + 2) impact = null;
   }
   // world FX
-  fx.update(dt, tw, s, fighters, s.controlled);
+  fx.update(dt, tw, s, fighters, s.controlled, quiet && realT < quiet.until ? quiet.id : null);
   // Pile-On set-piece clock
   if (pile) {
     pile.t += dt; if (pile.beatT != null) pile.beatT += dt;
@@ -541,7 +557,7 @@ function present(dt, alpha, menu = [], cut = null) {
   // HUD
   if (skipDraw) pendingMenu.push(...menu);
   else if (opt.hud) {
-    hud.update({ device: input.lastDevice, lockId: camLock, cinematic: cin.holding || !!pile, specialTarget: specialTarget(s), s, t: realT, project, fighters, menuEvents: pendingMenu.splice(0).concat(menu), send: (c) => cmdQueue.push(c) });
+    hud.update({ device: input.lastDevice, quietId: quiet && realT < quiet.until ? quiet.id : null, lockId: camLock, cinematic: cin.holding || !!pile, specialTarget: specialTarget(s), s, t: realT, project, fighters, menuEvents: pendingMenu.splice(0).concat(menu), send: (c) => cmdQueue.push(c) });
     if (pendingCard && realT >= pendingCard.at) { hud.card(pendingCard.text, pendingCard.sub, 1e6, realT, pendingCard.clowder); pendingCard = null; }
     hud.tickCard(realT);
   }
@@ -672,10 +688,12 @@ async function boot() {
     frames: (n = 1, every = false) => { for (let i = 0; i < n; i++) { skipDraw = !every && i < n - 1; frame(DT); } skipDraw = false; return window.__cat.state(); },
     /** Run until an event of `type` (count index `nth`, 0-based over the whole run) has been emitted, or max frames. */
     until: (type, max = 6000, nth = 0) => { skipDraw = true; for (let i = 0; i < max; i++) { if ((counts[type] || 0) > nth) { skipDraw = false; present(0, 1); return { ok: true, ...window.__cat.state() }; } if (snap.mode === 'ended' && i > 0 && prevSnap === snap) break; frame(DT); } skipDraw = false; return { ok: (counts[type] || 0) > nth, ...window.__cat.state() }; },
+    /** Advance (undrawn) until pred(snapshot, events) is true or max frames; then draw once. */
+    untilWhere: (pred, max = 3000) => { skipDraw = true; let ok = false; for (let i = 0; i < max; i++) { if (pred(snap, evLog)) { ok = true; break; } frame(DT); } skipDraw = false; present(0, 1); return { ok, ...window.__cat.state() }; },
     inject: (inp) => { injectQ.push(inp); },
     scriptOn: (on) => { if (!on) { window.__cat._script = script; script = null; } else if (window.__cat._script) script = window.__cat._script; },
     menu: (m) => { input.menu.push(m); },
-    events: (type) => evLog.filter((e) => !type || e.type === type).map((e) => ({ type: e.type, tick: e.tick, t: e.t, tier: e.feel ? e.feel.tier : null, impact: e.feel ? e.feel.impact : null })),
+    events: (type) => evLog.filter((e) => !type || e.type === type).map((e) => ({ type: e.type, user: e.user || e.cat, move: e.move, tick: e.tick, t: e.t, tier: e.feel ? e.feel.tier : null, impact: e.feel ? e.feel.impact : null })),
   };
   if (Q.get('sheet') === '1') {
     const d = document.createElement('div'); d.style.cssText = 'position:fixed;inset:0;background:#B9AC93;display:flex;flex-wrap:wrap;gap:6px;padding:8px;z-index:9;overflow:auto';

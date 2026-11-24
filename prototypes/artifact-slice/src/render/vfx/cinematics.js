@@ -47,7 +47,7 @@ export class Cinematics {
   /** Stagger on fighter f. full: the Captain / Boss / first-stagger version. Returns {dip, focus} for the entry. */
   stagger(f, full, t) {
     this.staggers++;
-    this.scr.add({ kind: 'shatter', at: f.head.clone().add(new THREE.Vector3(0, -0.12, 0)), dur: full ? 0.5 : 0.3, full, seed: this.staggers });
+    this.scr.add({ kind: 'shatter', at: f.head.clone().add(new THREE.Vector3(0, -0.12, 0)), follow: f, dur: full ? 0.5 : 0.3, full, seed: this.staggers });
     return { dip: { from: t, to: t + (full ? 0.42 : 0.22), scale: full ? 0.2 : 0.45 }, focus: { pt: f.head.clone(), from: t, until: t + (full ? 0.5 : 0.28), k: full ? 0.45 : 0.2 } };
   }
 

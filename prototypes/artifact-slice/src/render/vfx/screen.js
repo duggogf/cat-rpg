@@ -8,6 +8,7 @@
 import { Kit } from './sprites.js';
 
 const C = Kit.C, TWO = 1 / 30;
+class THREE_V { constructor(x, y, z) { this.x = x; this.y = y; this.z = z; } }
 const r1 = (v) => Math.round(v * 10) / 10;
 export const WORDS = {
   scratch: ['SKRITCH!', 'SHNK!', 'SWISH!'], thud: ['WHAM!', 'THOOM!', 'BOFF!', 'KRAK!'], yowl: ['YOWWL!', 'MRRAOW!'],
@@ -100,6 +101,7 @@ export class ScreenFX {
     const seed = di % 3 + 1;
     // Pile-On set-piece owns the screen
     if (ctx.pile) s += this.drawPile(ctx, di);
+    let placed = null;
     for (const f of this.fx) {
       if (f.t < 0) continue;
       const k = f.t / f.dur;
@@ -140,15 +142,20 @@ export class ScreenFX {
       } else if (f.kind === 'banner') {
         // ability name banner (M1.1 §7): a ribbon in the caster's colour over its head, pops in at 115% for one drawing
         const p = ctx.project(f.at); if (!p.on) continue;
-        const fs = Math.round(h * 0.03), tw2 = f.text.length * fs * 0.68 + 40, sc = f.t < TWO ? 1.15 : 1, y = p.y - h * 0.09;
+        const fs = Math.round(h * 0.03), tw2 = f.text.length * fs * 0.68 + 40, sc = f.t < TWO ? 1.15 : 1;
+        let y = p.y - h * 0.09;
+        // banners never overlap: a later one steps up above any it would cover
+        placed = placed || [];
+        for (let k = 0; k < 4 && placed.some((r) => Math.abs(r.x - p.x) < (r.w + tw2) / 2 && Math.abs(r.y - y) < fs * 3.4); k++) y -= fs * 3.5;
+        placed.push({ x: p.x, y, w: tw2 });
         s += `<g transform="translate(${r1(p.x)} ${r1(y)}) scale(${sc})"><path d="M${r1(-tw2 / 2)} ${-fs}H${r1(tw2 / 2)}L${r1(tw2 / 2 - 14)} 0L${r1(tw2 / 2)} ${fs}H${r1(-tw2 / 2)}L${r1(-tw2 / 2 + 14)} 0Z" fill="${f.col}" stroke="${C.ink}" stroke-width="4" stroke-linejoin="round"/>`
           + `<text x="0" y="${r1(fs * 0.36)}" text-anchor="middle" font-family="'M PLUS Rounded 1c',sans-serif" font-weight="800" font-size="${fs}" fill="${C.ink}">${f.text}</text>`
           + `<text x="0" y="${r1(-fs * 1.25)}" text-anchor="middle" font-family="'M PLUS Rounded 1c',sans-serif" font-weight="800" font-size="${r1(fs * 0.62)}" fill="${C.cream}" stroke="${C.ink}" stroke-width="4" paint-order="stroke">${f.who}</text></g>`;
       } else if (f.kind === 'shatter') {
         // stagger: a shattered-glass blink (M1.1 §5). Ink + Cream cracks and shard tints at <= 0.16 alpha, so the
         // luminance change stays under the 0.10 flash threshold: soft pulses, never a strobe
-        if (!f.anchor) f.anchor = ctx.project(f.at);
-        const R = Math.min(w, h) * (f.full ? 0.42 : 0.2), cx = f.anchor.x, cy = f.anchor.y, Rg = rng(f.seed * 71 + 3);
+        f.anchor = ctx.project(f.follow ? f.follow.head.clone().add(new THREE_V(0, -0.12 * f.follow.scaleK, 0)) : f.at);   // tracks the target through the camera move
+        const R = Math.min(w, h) * (f.full ? 0.34 : 0.2), cx = f.anchor.x, cy = f.anchor.y, Rg = rng(f.seed * 71 + 3);
         if (!f.geo) {
           const n = f.full ? 11 : 7, rays = [];
           for (let i = 0; i < n; i++) { const a = (i + Rg() * 0.8) / n * Math.PI * 2; rays.push([0.18 + Rg() * 0.25, 0.5 + Rg() * 0.3, 0.9 + Rg() * 0.35].map((rr) => { const j = a + (Rg() - 0.5) * 0.45; return [Math.cos(j) * rr, Math.sin(j) * rr]; })); }
