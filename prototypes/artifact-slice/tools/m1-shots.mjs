@@ -111,13 +111,13 @@ if (want('pile')) {
 
 /* ---------------------------------------------------------------- 3. Slow Blink */
 if (want('slowblink')) {
-  const p = await open('fight=sandbox&seed=3&script=bot');
-  // run until Mikan banks a Paw, then take the controls
-  for (let i = 0; i < 60; i++) {
+  // nobody drives Mikan (the Posse AI fights); run until she banks a Paw, then open Slow Blink
+  const p = await open('fight=captain&seed=3');
+  for (let i = 0; i < 80; i++) {
     const ok = await ev(p, `(() => { __cat.frames(30); const s = __cat.snapshot(); const m = s.entities.find(e => e.id === 'mikan'); return s.mode === 'fight' && m && !m.routed && m.paws - m.paws_reserved >= 1 && !s.pile_on; })()`);
     if (ok) break;
   }
-  await ev(p, '__cat.scriptOn(false)'); await ev(p, '__cat.inject({ slowBlink: true })'); await ev(p, '__cat.frames(16)');
+  await ev(p, '__cat.inject({ slowBlink: true })'); await ev(p, '__cat.frames(16)');
   await shot(p, 'slowblink-menu.png', 'Slow Blink: time x5%, lifted three-quarter view, grade -30% sat / -10% value, the command menu with Move costs, Set-up / Pay-off diamonds, props highlighted');
   await ev(p, `__cat.menu('confirm')`); await ev(p, '__cat.frames(2)');
   await shot(p, 'slowblink-target.png', 'Slow Blink target step: bell-gold brackets on the target; a Pay-off whose condition the target meets lights in the menu');
