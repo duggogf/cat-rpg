@@ -133,6 +133,14 @@ def challenge_raid(tgt):
 
 
 # ---------------------------------------------------------------- posting policies
+WARDEN_OK = {"Hige"}   # True+ Loyalty (>= 60) at the slice's fixed/starting values (Crew §3.3: Hige 60, Pon 55, Kinako 50, Kagi 40, Togemaru 36)
+
+
+def warden_ok(posts): return "DEN" not in posts or posts["DEN"] in WARDEN_OK
+
+
+def drop_bad_warden(posts): return {p: c for p, c in posts.items() if p != "DEN" or c in WARDEN_OK}
+
 def expected_night(held, other, posts, raid, ch, window, dsv):
     full_house = len(held) == 5
     tot = -2.0 * len(posts)
@@ -155,6 +163,7 @@ def post_best(held, other, raid, ch, window, crew, dsv, rng):
         for ps in itertools.permutations(list(held), k):
             for cs in itertools.permutations(crew, k):
                 posts = dict(zip(ps, cs))
+                if not warden_ok(posts): continue
                 v = expected_night(held, other, posts, raid, ch, window, dsv)
                 if v > bv + 1e-9: best, bv = posts, v
     return best
@@ -168,13 +177,13 @@ def post_habit(held, other, raid, ch, window, crew, dsv, rng):
     posts = {first: order[0]}
     rest = [p for p in cand if p not in posts]
     if rest and len(order) > 1: posts[max(rest, key=lambda q: YIELD[q])] = order[1]
-    return posts
+    return drop_bad_warden(posts)
 
 
 def post_random(held, other, raid, ch, window, crew, dsv, rng):
     if not held or not crew: return {}
     ps = rng.sample(list(held), min(2, len(held))); cs = rng.sample(crew, min(2, len(crew)))
-    return dict(zip(ps, cs))
+    return drop_bad_warden(dict(zip(ps, cs)))
 
 
 def post_none(*a): return {}
@@ -271,6 +280,7 @@ def run(pol, seed, days=7):
                 del held[p]; other[p] = dict(kind="open", scent=0, stale=0, was_ours=True)
         stash -= min(2 * len(posts), stash)
         outcome, scuffed, lost_pay, new_routed = None, set(), 0.0, set()
+        raid_was = raid
         if raid and raid["patch"] in held and raid["patch"] not in claimed_today:
             p = raid["patch"]
             pres = pol["presence"](d) and prng.random() < 0.8
@@ -338,7 +348,8 @@ def run(pol, seed, days=7):
             pay = patch_pay(q, s, posts, full_house, dsv)
             t += pay * (1 - STEAL) if q in scuffed else pay
         t -= lost_pay
-        row.update(tribute=max(0, int(t)), stash=stash, held=len(held), infl=I, window=window,
+        row.update(tribute=max(0, int(t)), stash=stash, scent=dict(held), postmap=dict(posts),
+                   raid_info=(dict(raid_was) if raid_was else None), tribute_raw=t, held=len(held), infl=I, window=window,
                    den=den_claimed, raid=outcome or "-", ch_active=ch is not None, posts=len(posts))
         log.append(row)
     return log, dict(window_day=window_day, claim_day=claim_day, ch_seen_day=ch_seen_day, ch=ch_log,
@@ -476,7 +487,24 @@ def wipe_vs_settle():
               f"a wipe keeps {haul * 0.8:.1f}, no Well-Fed, -3 Loyalty per Routed Posse cat, clock to Night; Tribute identical")
 
 
+def trace():
+    """One engaged run in which every raid is Repelled and the challenger is beaten on L2D4: the §4.11 hand path."""
+    for seed in range(5000):
+        log, meta = run(ENGAGED, seed, 7)
+        if all(r["raid"] in ("-", "Repelled") for r in log) and meta["ch"]["beaten_by_day"] == 1:
+            break
+    print(f"\n### Reference trace (seed {seed}: every raid Repelled, challenger beaten on day 6)")
+    print("| Night | Posts | Raid (motive -> Patch) | LWC | LPY | PA | TSS | DEN | Influence | Tribute | Stash end of day |")
+    print("|---|---|---|---|---|---|---|---|---|---|---|")
+    for r in log:
+        ri = r["raid_info"]
+        rs = f"{ri['motive']} -> {ri['patch']}: {r['raid']}" if ri and r["raid"] != "-" else "-"
+        sc = " | ".join(str(r["scent"].get(p, "r")) for p in ("LWC", "LPY", "PA", "TSS", "DEN"))
+        print(f"| {r['day']} | {r['postmap'] or '-'} | {rs} | {sc} | {r['infl']} | {r['tribute_raw']:.1f} | {r['stash']} |")
+
+
 if __name__ == "__main__":
+    trace()
     day_table("Engaged reference (Day Loop path: L2D4 Daifuku lost, L2D5 claim; best posting)", runs(ENGAGED, 2000, 7), 7)
     day_table("Engaged reference, extra days 8-10 (post-claim shape)", runs(ENGAGED, 2000, 10), 10)
     day_table("Casual (slower claims, 60% visits, half the rescue Sprays, random posts)", runs(CASUAL, 2000, 10), 10)

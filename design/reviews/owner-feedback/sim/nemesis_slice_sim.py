@@ -536,7 +536,8 @@ class World:
                         target = ch.old_patch if ch.old_patch in s.held() and ch.old_patch not in ("LWC", "DEN") else s.ch_target()
                     else:
                         target = s.ch_target(); ch = None; origin = "calendar"
-                        if target:
+                        tracked = sum(1 for c in s.cats if c.state in ("Seated", "Roaming", "Truce", "Challenging", "Friend"))
+                        if target and tracked < 12:
                             ch = s.mk(f"Challenger{s.fresh}", R.pick(WEIGHTS, d, 3, "ch", "pers"), "Tough",
                                       clowder="outsider", origin="challenger", g=10 + int(R.u(d, 3, "ch", "g") * 11))
                             if R.u(d, 3, "ch", "rival") < 0.5:

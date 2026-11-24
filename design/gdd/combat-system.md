@@ -858,4 +858,5 @@ Cowed on a recruit:  D_out = D × cowed_dmg ; AI target set excludes old_boss_id
 | OR-21 Delete list | IMPLEMENTED | "Daifuku never leaves his wall" → "never comes down off the walls" (§3.13); "his garden wall" → the stop's wall; the Den approach composition and the "Life 2 day 4+, Den" teaching row replaced; Revision-log history left as history |
 | OR-03, 04, 08, 10–12, 15, 17–19 | NOT COMBAT'S | No Combat rule depends on them beyond the above; the Verdict stays "one full Verdict per fight" (three options, Nemesis) |
 | Showcase bout (doc change list) | IMPLEMENTED | `boss_phase_cap` knob; phase 1 only → `rival_fled` at the break (§3.13) |
+| Owner answers (rulings §5) | NOTED | Every answer matched the default (the recruit-side flinch pending counsel; 10-day truce; Chase Off final; full influence = four Strong posts; betrayal on). Nothing here changed because of them |
 | Sim deliverables | DONE | Daifuku per anger stage, with an ally, rematch, Cowed cost (F9 table). **Not done:** a wipe *rate* needs a variance model (B-29); the EV model wipes only under very poor dodging |

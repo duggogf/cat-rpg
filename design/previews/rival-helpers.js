@@ -43,7 +43,7 @@
     // Toughs (procedural look; Wall Sitters lean white / cream / silver).
     goma: { coat: { base: '#514D60', white: '#FFF8EC' }, pattern: 'bicolour', tail: 'ringed', ears: 'round', build: 'round', eye: 'copper', carry: 'anchor', expr: 'angry' },        // Brooder, Bitter
     sasa: { coat: { base: '#FFF8EC', patch: '#C98A4A', patch2: '#514D60' }, pattern: 'patched', tail: 'plume', ears: 'round', build: 'standard', eye: 'green', carry: 'spring', expr: 'happy' }, // Goofball
-    kuri: { coat: { base: '#E3C39A', patch: '#5E4636' }, pattern: 'pointed', tail: 'whip', ears: 'tall', build: 'long', eye: 'blue', carry: 'comma', expr: 'shock' },               // Fraidy
+    kuri: { coat: { base: '#F4DDAA', patch: '#C99A5E' }, pattern: 'tabby', tail: 'whip', ears: 'tall', build: 'long', eye: 'green', carry: 'comma', expr: 'shock' },               // Fraidy (cream tabby; the pointed fawn look is Kinako's)
     hanpen: { coat: { base: '#FFF8EC', patch: '#CDD1DC' }, pattern: 'saddle', tail: 'stub', ears: 'standard', build: 'standard', eye: 'blue', carry: 'level', expr: 'sleepy' },       // Indifferent
     // A Roamer on the wire.
     nori: { coat: { base: '#37323F', white: '#FFF8EC' }, pattern: 'bicolour', tail: 'whip', ears: 'tall', build: 'long', eye: 'yellowgreen', carry: 'blade', expr: 'smug' },
