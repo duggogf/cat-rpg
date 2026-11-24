@@ -5,7 +5,7 @@
 import * as THREE from 'three';
 import { CASTS, INK } from './casts.js';
 import { fillVert, fillFrag, hullVert, hullFrag, blobVert, blobFrag } from './shaders.js';
-import { makeFaceTexture, faceRect, FACE_FRAMES } from './face.js';
+import { makeFaceTexture, makeEyesTexture, eyeHalf, faceRect, FACE_FRAMES } from './face.js';
 import { createAnimator } from '../../anim/catAnim.js';
 
 const assets = {}; // mesh name -> { json, geometry }
@@ -72,6 +72,8 @@ export function createCatInternal({ cast = 'mikan', scale = 1.25, carry, silhoue
   const colorNames = Object.keys(style.colors);
   const fr = faceRect(hs);
   const faceTex = silhouette ? null : makeFaceTexture(style, hs);
+  const eyesTex = silhouette ? null : makeEyesTexture(style, hs);
+  const eyeC0 = (meta.eyes || [[-0.04, meta.headC[1], meta.headC[2] + 0.08], [0.04, meta.headC[1], meta.headC[2] + 0.08]]).map((e) => new THREE.Vector3(...e));
   const U = {
     uKeyDir: { value: DAY_LIGHT.keyDir.clone() }, uLitMul: { value: new THREE.Vector3(1, 1, 1) }, uShadeMul: { value: new THREE.Vector3(0.8, 0.8, 0.88) },
     uTerm: { value: -0.06 },
@@ -81,6 +83,8 @@ export function createCatInternal({ cast = 'mikan', scale = 1.25, carry, silhoue
     uChin: { value: new THREE.Vector4(0, meta.headC[1] - 0.085 * hs, meta.headC[2] - 0.035 * hs, 0.07 * hs) },
     uFace: { value: faceTex }, uFaceRect: { value: new THREE.Vector4(meta.headC[0] + fr.x, meta.headC[1] + fr.y, fr.hw, fr.hh) },
     uFaceFrame: { value: 0 }, uFaceFrames: { value: FACE_FRAMES }, uFaceOn: { value: silhouette ? 0 : 1 },
+    uEyes: { value: eyesTex }, uEyeHalf: { value: eyeHalf(hs) },
+    uEyeC: { value: eyeC0.map((v) => v.clone()) }, uEyeAx: { value: [new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 0, 1)] }, uEyeT: { value: [new THREE.Vector3(1, 0, 0), new THREE.Vector3(1, 0, 0)] },
     uSil: { value: silhouette ? 1 : 0 }, uSilCol: { value: hexV(silColor) }, uInkF: { value: hexV(INK) },
     uPaws: { value: meta.paws ? new THREE.Vector4(meta.paws.xF, meta.paws.xH, meta.paws.zF, meta.paws.zH) : new THREE.Vector4(9, 9, 0, 0) },
   };
@@ -138,6 +142,8 @@ export function createCatInternal({ cast = 'mikan', scale = 1.25, carry, silhoue
   // One face decal at every angle (owner, M0 sign-off): the lifted muzzle mesh carries the profile.
   let outlineK = 1;
   const v2 = new THREE.Vector2(), p0 = new THREE.Vector3(), p1 = new THREE.Vector3();
+  const camRest = new THREE.Vector3(), invHead = new THREE.Matrix4();
+  const headRest = new THREE.Vector3(...json.bones.find((b) => b.name === 'head').pos);
   mesh.onBeforeRender = (renderer, scene, camera) => {
     const rt = renderer.getRenderTarget();
     if (rt) v2.set(rt.width, rt.height); else renderer.getDrawingBufferSize(v2);
@@ -152,6 +158,20 @@ export function createCatInternal({ cast = 'mikan', scale = 1.25, carry, silhoue
     const outPx = (far ? 1 : 2.5) * outlineK * outH / 1080 + (1 - k) * 2.2;
     HU.uLinePx.value = outPx * k;
     U.uFaceOn.value = silhouette || far ? 0 : 1;
+    // eyes: the camera's yaw around the head, in rest (bind) space. The eye on the camera's side turns
+    // its projection axis toward the camera (up to 68°) and slides its anchor round the skull (up to
+    // 38°, so it never sits on the silhouette), continuously, so it reads as a round eye side-on; front-on both axes are +Z (the kit face).
+    camRest.copy(camera.position); invHead.copy(bones.head.matrixWorld).invert(); camRest.applyMatrix4(invHead).add(headRest);
+    const psi = Math.atan2(camRest.x - meta.headC[0], camRest.z - meta.headC[2]);
+    for (let e = 0; e < 2; e++) {
+      const sd = e === 0 ? -1 : 1;
+      let gw = Math.min(1, Math.max(0, sd * psi / (Math.PI / 2))); gw = gw * gw * (3 - 2 * gw);
+      const a = sd * gw * 68 * Math.PI / 180, ac = sd * gw * 38 * Math.PI / 180, grow = 1 + 0.12 * gw;
+      U.uEyeAx.value[e].set(Math.sin(a), 0, Math.cos(a));
+      U.uEyeT.value[e].set(Math.cos(a), 0, -Math.sin(a)).multiplyScalar(1 / grow); // |T| < 1: the eye grows a little side-on
+      const c0 = eyeC0[e], dx = c0.x - meta.headC[0], dz = c0.z - meta.headC[2];
+      U.uEyeC.value[e].set(meta.headC[0] + dx * Math.cos(ac) + dz * Math.sin(ac), c0.y, meta.headC[2] - dx * Math.sin(ac) + dz * Math.cos(ac));
+    }
   };
 
   const lookWorld0 = null; let lookWorld = lookWorld0; const lookLocal = new THREE.Vector3();
@@ -183,6 +203,7 @@ export function createCatInternal({ cast = 'mikan', scale = 1.25, carry, silhoue
     dispose() {
       fill.dispose(); hull.dispose(); blobMat.dispose(); blob.geometry.dispose();
       if (faceTex) faceTex.dispose();
+      if (eyesTex) eyesTex.dispose();
       if (whiskers) { whiskers.geometry.dispose(); whiskers.material.dispose(); }
       skeleton.dispose(); group.clear();
     },

@@ -53,3 +53,18 @@ point, crown), the gang arranged down the stone steps and path toward the camera
 and a role tag (e.g. Lieutenant, Enforcer, Sentry, Brawler, Scout, Patrol), dashed arrows between cats showing who
 answers to whom, a header bar with the place name and influence, a left column of facts (Raid, Scent, Objective), a
 boss card bottom-left (personality, anger, ties) and a button bar bottom-right.
+
+## C7 — Mikan's 3D shape (chat, after reshape pass 1)
+
+> Maybe you'd want to have an art director looking over this instead of just map the model with the reference
+> image 1:1. Because, from your latest version, the cat back thighs are too fat to the side and it spread out too
+> much on the side. Check this new reference again to clean it up (1st image)
+>
+> and the front legs (2nd image) is too deep into the back. Push it a little further front, on the upper chest.
+> Check cat anatomy (3rd image)
+
+References: `design/reviews/refs/mikan-turnaround-ref-v2.webp` (turnaround, shape target), `mikan-legs-feedback.png`
+(owner's red circles: reference front leg under the chest vs our front leg set too far back),
+`cat-anatomy-wireframe.png` (real cat anatomy: front legs descend from the shoulder at the front of the chest, under
+the neck base; hind legs under the hip, narrow from behind). Process note from the owner: every cat shape pass gets
+an art-director review on anatomy and appeal, not a literal match to the reference.

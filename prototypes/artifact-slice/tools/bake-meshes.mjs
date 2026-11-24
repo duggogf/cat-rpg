@@ -70,6 +70,11 @@ for (const [name, opts] of Object.entries(CASTS)) {
       AX.push(...ax);
     }
     for (const t of tris) IDX.push(t + base);
+    if (S.name === 'head') {
+      // eye anchors: where the front face card's eye centres (kit x = ±12 units, 0.00335 m each) meet the skull
+      const hs = M.meta.hs, ey = M.meta.headC[1] - 0.004 * hs;
+      M.meta.eyes = [-1, 1].map((sd) => { const x = sd * 12 * 0.00335 * hs; let z = M.meta.headC[2] + 0.2; while (z > M.meta.headC[2] && f([x, ey, z]) > 0) z -= 0.0005; return [x, ey, z]; });
+    }
     console.log(`  ${name}.${S.name}: ${pos.length} verts, ${tris.length / 3} tris`);
   }
   // pack

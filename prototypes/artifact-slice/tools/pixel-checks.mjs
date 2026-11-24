@@ -161,7 +161,7 @@ export function e5Ink(img, maskImg, topImg, blobImg, inkHex = '#33273B') {
     }
     if (cov < 1.5 && gy > 0.6 && at(bl, x + gx * 4, y + gy * 4)) { ex.contact++; continue; }
     widths.push(cov); if (core != null) cores.push(core);
-    if (cov < 1.5) gaps.push([x, y]);
+    if (cov < 1.5) gaps.push([x, y, +cov.toFixed(2), +Lbg.toFixed(0)]);
   }
   // ring of ground around the figure (outside the over-everything mask), un-blurred
   const outer = dilate(top, w, h, 24), near = dilate(top, w, h, 6); let rs = 0, rn = 0;
@@ -182,7 +182,7 @@ export function e5Ink(img, maskImg, topImg, blobImg, inkHex = '#33273B') {
   });
   const ge = widths.filter((v) => v >= 1.5).length;
   return { samples: widths.length, fracGe15: +(ge / Math.max(1, widths.length)).toFixed(3), widthMedian: +median(widths).toFixed(2), widthP10: +pct(widths, 0.1).toFixed(2),
-    lineL: +lineL.toFixed(1), ringL: +ringL.toFixed(1), diff: +(ringL - lineL).toFixed(1), excluded: ex, gaps: gaps.length, figures: figs };
+    lineL: +lineL.toFixed(1), ringL: +ringL.toFixed(1), diff: +(ringL - lineL).toFixed(1), excluded: ex, gaps: gaps.length, gapList: gaps, figures: figs };
 }
 
 /** Median L* of lit, non-figure pixels in a region (lit = the shade mask's red channel low). */

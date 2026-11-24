@@ -17,7 +17,7 @@ import { desktopCard, isSmallOrTouch } from '../ui/desktopcard.js';
 const Q = new URLSearchParams(location.search);
 const opt = {
   phase: PHASES[Q.get('phase')] ? Q.get('phase') : 'day', view: Q.get('view'), orbit: Q.has('orbit') ? (+Q.get('orbit') | 0) % 8 : null,
-  test: Q.get('test') === '1', mask: Q.get('mask'), post: Q.get('post') !== '0' && !Q.get('mask'), res: +(Q.get('res') || 1),
+  test: Q.get('test') === '1', mask: Q.get('mask'), post: Q.get('post') !== '0' && !['shade', 'albedo'].includes(Q.get('mask')), res: +(Q.get('res') || 1),
 };
 const app = document.getElementById('app');
 const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: opt.test, powerPreference: 'high-performance' });
@@ -159,8 +159,10 @@ function render() {
     return;
   }
   if (opt.mask === 'cats') {
-    const black = new THREE.MeshBasicMaterial({ color: 0x000000 }); envScene.overrideMaterial = black;
-    renderer.setClearColor(0x000000, 1); renderer.setRenderTarget(null); renderer.clear(); renderer.render(envScene, cam); envScene.overrideMaterial = null;
+    // environment as black depth, through the same paint post as the real frame (its edge wobble displaces depth too)
+    const black = new THREE.MeshBasicMaterial({ color: 0x000000 }); envScene.overrideMaterial = black; renderer.setClearColor(0x000000, 1);
+    if (opt.post) { renderer.setRenderTarget(post.rt); renderer.clear(); renderer.render(envScene, cam); envScene.overrideMaterial = null; post.render(renderer); }
+    else { renderer.setRenderTarget(null); renderer.clear(); renderer.render(envScene, cam); envScene.overrideMaterial = null; }
     const hidden = []; lateScene.traverse((o) => { if (o.isMesh && (o.material.transparent || !isCat(o))) { hidden.push(o); o.visible = false; } });
     lateScene.overrideMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff }); renderer.autoClear = false; renderer.render(lateScene, cam); renderer.autoClear = true;
     lateScene.overrideMaterial = null; hidden.forEach((o) => { o.visible = true; });
@@ -210,12 +212,13 @@ async function boot() {
     step: (n = 1) => { for (let i = 0; i < n; i++) step(1 / 60); render(); },
     setPhase: (p) => { setPhase(p); render(); },
     lensCheck: () => {
-      const c = cam.position, f = new THREE.Vector3(); cam.getWorldDirection(f); const t = Math.tan(cam.fov * Math.PI / 360); let worst = { frac: 0 };
+      const c = cam.position, t = Math.tan(cam.fov * Math.PI / 360); let worst = { frac: 0 };
+      cam.updateMatrixWorld(); const fr = new THREE.Frustum().setFromProjectionMatrix(new THREE.Matrix4().multiplyMatrices(cam.projectionMatrix, cam.matrixWorldInverse));
       for (const k of world.cards) {
         const p = new THREE.Vector3(...k.p), dl = p.distanceTo(c);
         if (dl < k.s * 0.55 + 0.35 || (dl < k.s * 1.5 + 0.2 && k.p[1] < c.y + 0.6)) continue;  // culled by the card shader
-        const ahead = p.clone().sub(c).dot(f); if (ahead <= 0.05) continue;
-        const frac = k.s / (2 * ahead * t); if (k.p[1] < c.y + 0.6 && frac > worst.frac) worst = { frac: +frac.toFixed(2), what: 'low foliage card', at: k.p };
+        if (!fr.intersectsSphere(new THREE.Sphere(p, k.s * 0.5))) continue;                      // off screen
+        const frac = k.s / (2 * dl * t); if (k.p[1] < c.y + 0.6 && frac > worst.frac) worst = { frac: +frac.toFixed(2), what: 'low foliage card', at: k.p };
       }
       for (const sft of world.soft) if (sft.obj.visible) { const dl = Math.hypot(sft.x - c.x, sft.z - c.z); if (dl < 0.8) worst = { frac: 1, what: 'prop ' + sft.obj.name, at: [sft.x, sft.z] }; }
       return worst;

@@ -5,9 +5,9 @@
 import { frame, v3 } from './sdf.js';
 
 const BUILD = {
-  round: { bx: 1.2, by: 1.12, leg: 0.84, head: 1.06, len: 1.0 },
-  standard: { bx: 1, by: 1, leg: 1, head: 1, len: 1 },
-  long: { bx: 0.88, by: 0.94, leg: 1.2, head: 0.93, len: 1.12 },
+  round: { bx: 1.2, by: 1.12, leg: 0.84, head: 1.27, len: 1.0 },
+  standard: { bx: 1, by: 1, leg: 1, head: 1.22, len: 1 },  // head ≈ 45–50% of height (owner turnaround)
+  long: { bx: 0.88, by: 0.94, leg: 1.2, head: 1.12, len: 1.12 },
 };
 export const BONES = ['root', 'hips', 'chest', 'neck', 'head', 'earL', 'earR',
   'tail1', 'tail2', 'tail3', 'tail4', 'tail5', 'tail6',
@@ -36,14 +36,14 @@ export function buildCast(o) {
   pos.hips = [0, spineY, -0.04 * ln];
   pos.chest = [0, spineY + 0.008, 0.035 * ln];
   pos.neck = [0, spineY + 0.035, zF + 0.012];
-  const headC = [0, spineY + 0.122 * hs + 0.006, zF + 0.078 * hs]; // chestnut centre
+  const headC = [0, spineY + 0.118 * hs + 0.006, zF + 0.074 * hs]; // chestnut centre
   pos.head = [0, headC[1] - 0.06 * hs, headC[2] - 0.025 * hs];   // pivot low and behind: nods read well
   const rump = [0, spineY + 0.014, -0.112 * ln * (0.85 + 0.15 * bx)];
   const tailLen = { pom: 0.06, stub: 0.1, whip: 0.34, ringed: 0.31, plume: 0.33 }[o.tail || 'whip'];
   const seg = tailLen / 6;
   for (let i = 0; i < 6; i++) pos['tail' + (i + 1)] = [0, rump[1], rump[2] + 0.02 - i * seg];
-  pos.fUL = [xF, legTop + 0.005, zF]; pos.fLL = [xF, knee, zF + 0.004];
-  pos.fUR = [-xF, legTop + 0.005, zF]; pos.fLR = [-xF, knee, zF + 0.004];
+  pos.fUL = [xF, legTop + 0.005, zF]; pos.fLL = [xF, knee, zF];
+  pos.fUR = [-xF, legTop + 0.005, zF]; pos.fLR = [-xF, knee, zF];
   pos.hUL = [xH, legTop + 0.01, zH + 0.008]; pos.hLL = [xH, 0.062 * lg, zH - 0.05]; // hLL = the hock (a heel point behind the thigh)
   pos.hUR = [-xH, legTop + 0.01, zH + 0.008]; pos.hLR = [-xH, 0.062 * lg, zH - 0.05];
 
@@ -81,15 +81,15 @@ export function buildCast(o) {
     const L = front ? (s > 0 ? 'fLL' : 'fLR') : (s > 0 ? 'hLL' : 'hLR');
     const top = pos[U], kn = pos[L];
     if (front) { // sturdy column, big round paw
-      const r0 = 0.034 * Math.sqrt(bx), r1 = 0.03 * Math.sqrt(bx), pawZ = kn[2] + 0.008;
+      const r0 = 0.037 * Math.sqrt(bx), r1 = 0.034 * Math.sqrt(bx), pawZ = kn[2] + 0.006;
       legsP.push({ t: 'cap', a: [top[0], top[1] + 0.012, top[2]], b: kn, ra: r0, rb: r1, bone: U, k: 0.02 });
-      legsP.push({ t: 'cap', a: kn, b: [kn[0], 0.026, pawZ - 0.004], ra: r1, rb: r1, bone: L, k: 0.008 });
-      legsP.push({ t: 'ell', c: [kn[0] * 1.03, 0.02, pawZ + 0.01], r: [r1 * 1.25, 0.02, r1 * 1.45], bone: L, k: 0.012 });
+      legsP.push({ t: 'cap', a: kn, b: [kn[0], 0.026, kn[2]], ra: r1, rb: r1, bone: L, k: 0.008 });
+      legsP.push({ t: 'ell', c: [kn[0] * 1.03, 0.02, pawZ + 0.008], r: [r1 * 1.18, 0.02, r1 * 1.36], bone: L, k: 0.012 });
     } else {   // round thigh -> shin angled back to a visible hock -> upright foot -> big paw
       const x = s * xH, kb = Math.sqrt(bx);
       legsP.push({ t: 'ell', c: [s * (xH + 0.013), legTop + 0.0, zH + 0.022], r: [0.049 * bx, 0.064 * by, 0.064 * by], bone: U, k: 0 });
-      legsP.push({ t: 'cap', a: [x, legTop - 0.03, zH + 0.02], b: kn, ra: 0.03 * kb, rb: 0.016 * kb, bone: U, k: 0.022 });
-      legsP.push({ t: 'cap', a: kn, b: [x, 0.026, zH - 0.022], ra: 0.017 * kb, rb: 0.022 * kb, bone: L, k: 0.006 });
+      legsP.push({ t: 'cap', a: [x * 1.06, legTop - 0.012, zH + 0.022], b: kn, ra: 0.034 * kb, rb: 0.018 * kb, bone: U, k: 0.03 });
+      legsP.push({ t: 'cap', a: kn, b: [x, 0.026, zH - 0.022], ra: 0.019 * kb, rb: 0.023 * kb, bone: L, k: 0.006 });
       legsP.push({ t: 'ell', c: [x * 1.03, 0.02, zH - 0.01], r: [0.033 * kb, 0.02, 0.04 * kb], bone: L, k: 0.012 });
     }
   };
@@ -99,12 +99,12 @@ export function buildCast(o) {
   const head = [];
   const H = (x) => head.push(x);
   const hc = headC;
-  H({ t: 'ell', c: hc, r: [0.094 * hs, 0.076 * hs, 0.086 * hs], bone: 'head', k: 0 }); // round from the side too
-  for (const s of [1, -1]) H({ t: 'ell', c: [hc[0] + s * 0.052 * hs, hc[1] - 0.024 * hs, hc[2] + 0.012], r: [0.06 * hs * (o.build === 'round' ? 1.08 : 1), 0.047 * hs, 0.064 * hs], bone: 'head', k: 0.03 });
+  H({ t: 'ell', c: hc, r: [0.094 * hs, 0.082 * hs, 0.09 * hs], bone: 'head', k: 0 }); // round cranium, round from the side too
+  for (const s of [1, -1]) H({ t: 'ell', c: [hc[0] + s * 0.052 * hs, hc[1] - 0.019 * hs, hc[2] + 0.02 * hs], r: [0.062 * hs * (o.build === 'round' ? 1.08 : 1), 0.05 * hs, 0.064 * hs], bone: 'head', k: 0.034 });
   // lifted muzzle: a small stop under the brow (low blend), the nose tip the most forward point, chin tucked back
   H({ t: 'ell', c: [hc[0], hc[1] - 0.04 * hs, hc[2] + 0.06 * hs], r: [0.037 * hs, 0.026 * hs, 0.034 * hs], bone: 'head', k: 0.016 });
   H({ t: 'ell', c: [hc[0], hc[1] - 0.029 * hs, hc[2] + 0.092 * hs], r: [0.014 * hs, 0.01 * hs, 0.011 * hs], bone: 'head', k: 0.012 }); // small upturned nose tip
-  H({ t: 'ell', c: [hc[0], hc[1] - 0.062 * hs, hc[2] + 0.054 * hs], r: [0.022 * hs, 0.013 * hs, 0.018 * hs], bone: 'head', k: 0.012 });
+  H({ t: 'ell', c: [hc[0], hc[1] - 0.058 * hs, hc[2] + 0.056 * hs], r: [0.02 * hs, 0.012 * hs, 0.016 * hs], bone: 'head', k: 0.012 });
   for (const e of ears) H(e);
 
   // ---- tail shell

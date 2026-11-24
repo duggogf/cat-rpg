@@ -8,7 +8,7 @@
     2.954
    ],
    "dist": 3,
-   "calls": 117
+   "calls": 118
   },
   "day-1": {
    "camera": [
@@ -17,7 +17,7 @@
     1.421
    ],
    "dist": 2.041,
-   "calls": 68
+   "calls": 69
   },
   "day-2": {
    "camera": [
@@ -26,7 +26,7 @@
     0
    ],
    "dist": 1.456,
-   "calls": 65
+   "calls": 66
   },
   "day-3": {
    "camera": [
@@ -35,7 +35,7 @@
     -1.421
    ],
    "dist": 2.041,
-   "calls": 71
+   "calls": 72
   },
   "day-4": {
    "camera": [
@@ -44,7 +44,7 @@
     -2.954
    ],
    "dist": 3,
-   "calls": 91
+   "calls": 92
   },
   "day-5": {
    "camera": [
@@ -53,7 +53,7 @@
     -1.386
    ],
    "dist": 1.991,
-   "calls": 46
+   "calls": 47
   },
   "day-6": {
    "camera": [
@@ -62,7 +62,7 @@
     0
    ],
    "dist": 1.421,
-   "calls": 62
+   "calls": 63
   },
   "day-7": {
    "camera": [
@@ -71,7 +71,7 @@
     1.386
    ],
    "dist": 1.991,
-   "calls": 91
+   "calls": 92
   },
   "dusk-0": {
    "camera": [
@@ -80,7 +80,7 @@
     2.954
    ],
    "dist": 3,
-   "calls": 117
+   "calls": 118
   },
   "dusk-1": {
    "camera": [
@@ -89,7 +89,7 @@
     1.421
    ],
    "dist": 2.041,
-   "calls": 68
+   "calls": 69
   },
   "dusk-2": {
    "camera": [
@@ -98,7 +98,7 @@
     0
    ],
    "dist": 1.456,
-   "calls": 65
+   "calls": 66
   },
   "dusk-3": {
    "camera": [
@@ -107,7 +107,7 @@
     -1.421
    ],
    "dist": 2.041,
-   "calls": 71
+   "calls": 72
   },
   "dusk-4": {
    "camera": [
@@ -116,7 +116,7 @@
     -2.954
    ],
    "dist": 3,
-   "calls": 91
+   "calls": 92
   },
   "dusk-5": {
    "camera": [
@@ -125,7 +125,7 @@
     -1.386
    ],
    "dist": 1.991,
-   "calls": 46
+   "calls": 47
   },
   "dusk-6": {
    "camera": [
@@ -134,7 +134,7 @@
     0
    ],
    "dist": 1.421,
-   "calls": 62
+   "calls": 63
   },
   "dusk-7": {
    "camera": [
@@ -143,144 +143,827 @@
     1.386
    ],
    "dist": 1.991,
-   "calls": 91
+   "calls": 92
   }
  },
  "line": {
-  "day-100": {
-   "samples": 357,
-   "widthMedian": 2.45,
+  "day-view01": {
+   "samples": 373,
+   "widthMedian": 2.34,
    "widthP10": 0,
-   "widthP90": 2.92,
-   "inkSamples": 267,
+   "widthP90": 2.79,
+   "inkSamples": 276,
    "inkDEMedian": 0,
    "inkDEP90": 0
   },
   "day-orbit0": {
-   "samples": 218,
-   "widthMedian": 2.36,
+   "samples": 324,
+   "widthMedian": 2.32,
    "widthP10": 0,
-   "widthP90": 3.02,
-   "inkSamples": 147,
+   "widthP90": 2.89,
+   "inkSamples": 227,
    "inkDEMedian": 0,
    "inkDEP90": 0
   },
-  "dusk-100": {
-   "samples": 338,
-   "widthMedian": 2.41,
+  "dusk-view01": {
+   "samples": 420,
+   "widthMedian": 1.55,
    "widthP10": 0,
-   "widthP90": 2.92,
-   "inkSamples": 247,
+   "widthP90": 2.6,
+   "inkSamples": 214,
    "inkDEMedian": 0,
    "inkDEP90": 0
   },
   "dusk-orbit0": {
-   "samples": 207,
-   "widthMedian": 2.26,
+   "samples": 309,
+   "widthMedian": 2.29,
    "widthP10": 0,
-   "widthP90": 2.86,
-   "inkSamples": 136,
+   "widthP90": 2.8,
+   "inkSamples": 211,
+   "inkDEMedian": 0,
+   "inkDEP90": 0
+  },
+  "day-view01-85": {
+   "samples": 453,
+   "widthMedian": 2.53,
+   "widthP10": 0,
+   "widthP90": 3.02,
+   "inkSamples": 280,
+   "inkDEMedian": 0,
+   "inkDEP90": 3.3
+  },
+  "day-orbit0-85": {
+   "samples": 327,
+   "widthMedian": 2.5,
+   "widthP10": 0,
+   "widthP90": 3.11,
+   "inkSamples": 187,
+   "inkDEMedian": 0,
+   "inkDEP90": 3.51
+  },
+  "day-orbit0-390w": {
+   "samples": 187,
+   "widthMedian": 1.78,
+   "widthP10": 0,
+   "widthP90": 2.26,
+   "inkSamples": 126,
    "inkDEMedian": 0,
    "inkDEP90": 0
   },
   "day-85": {
-   "samples": 354,
-   "widthMedian": 2.48,
+   "samples": 453,
+   "widthMedian": 2.53,
    "widthP10": 0,
-   "widthP90": 2.89,
-   "inkSamples": 232,
+   "widthP90": 3.02,
+   "inkSamples": 280,
    "inkDEMedian": 0,
-   "inkDEP90": 2.75
+   "inkDEP90": 3.3
   }
  },
  "sep": {
   "day-view01": {
-   "catL": 78.1,
-   "ringL": 63.6,
-   "diff": 14.5,
-   "catPx": 29670
+   "catL": 79.8,
+   "ringL": 65.8,
+   "diff": 14,
+   "catPx": 32674
   },
   "day-orbit0": {
-   "catL": 75.7,
-   "ringL": 62.5,
-   "diff": 13.3,
-   "catPx": 15655
+   "catL": 76.1,
+   "ringL": 65.1,
+   "diff": 11,
+   "catPx": 19218
   },
   "dusk-view01": {
-   "catL": 72.8,
-   "ringL": 55.3,
-   "diff": 17.5,
-   "catPx": 29670
+   "catL": 72,
+   "ringL": 58.4,
+   "diff": 13.6,
+   "catPx": 37026
   },
   "dusk-orbit0": {
-   "catL": 70.6,
-   "ringL": 54.7,
-   "diff": 15.9,
-   "catPx": 15655
+   "catL": 70.9,
+   "ringL": 57.7,
+   "diff": 13.3,
+   "catPx": 19218
+  },
+  "day-view01-85": {
+   "catL": 78.4,
+   "ringL": 66.2,
+   "diff": 12.1,
+   "catPx": 37217
+  },
+  "day-orbit0-85": {
+   "catL": 75.6,
+   "ringL": 64.8,
+   "diff": 10.8,
+   "catPx": 19478
+  },
+  "day-orbit0-390w": {
+   "catL": 80.3,
+   "ringL": 73.2,
+   "diff": 7.1,
+   "catPx": 6251
+  }
+ },
+ "e5": {
+  "day-view01": {
+   "samples": 222,
+   "fracGe15": 0.977,
+   "widthMedian": 2.45,
+   "widthP10": 2.03,
+   "lineL": 17.8,
+   "ringL": 68.3,
+   "diff": 50.5,
+   "excluded": {
+    "occluded": 226,
+    "hole": 3,
+    "contact": 0
+   },
+   "gaps": 5,
+   "figures": [
+    {
+     "box": [
+      368,
+      6,
+      504,
+      171
+     ],
+     "px": 13294,
+     "blobPx": 414,
+     "blob": true
+    },
+    {
+     "box": [
+      811,
+      584,
+      988,
+      974
+     ],
+     "px": 50041,
+     "blobPx": 14343,
+     "blob": true
+    }
+   ]
+  },
+  "day-orbit0": {
+   "samples": 289,
+   "fracGe15": 0.99,
+   "widthMedian": 2.49,
+   "widthP10": 2,
+   "lineL": 17.8,
+   "ringL": 67.1,
+   "diff": 49.3,
+   "excluded": {
+    "occluded": 110,
+    "hole": 1,
+    "contact": 4
+   },
+   "gaps": 3,
+   "figures": [
+    {
+     "box": [
+      489,
+      8,
+      607,
+      160
+     ],
+     "px": 10795,
+     "blobPx": 306,
+     "blob": true
+    },
+    {
+     "box": [
+      895,
+      487,
+      1024,
+      744
+     ],
+     "px": 23845,
+     "blobPx": 4747,
+     "blob": true
+    }
+   ]
+  },
+  "dusk-view01": {
+   "samples": 371,
+   "fracGe15": 0.695,
+   "widthMedian": 2.23,
+   "widthP10": 0,
+   "lineL": 17.8,
+   "ringL": 58.8,
+   "diff": 41,
+   "excluded": {
+    "occluded": 145,
+    "hole": 2,
+    "contact": 0
+   },
+   "gaps": 113,
+   "figures": [
+    {
+     "box": [
+      368,
+      6,
+      504,
+      171
+     ],
+     "px": 13294,
+     "blobPx": 414,
+     "blob": true
+    },
+    {
+     "box": [
+      811,
+      584,
+      988,
+      974
+     ],
+     "px": 50041,
+     "blobPx": 14343,
+     "blob": true
+    }
+   ]
+  },
+  "dusk-orbit0": {
+   "samples": 289,
+   "fracGe15": 0.986,
+   "widthMedian": 2.49,
+   "widthP10": 2,
+   "lineL": 17.8,
+   "ringL": 58.5,
+   "diff": 40.7,
+   "excluded": {
+    "occluded": 110,
+    "hole": 1,
+    "contact": 4
+   },
+   "gaps": 4,
+   "figures": [
+    {
+     "box": [
+      489,
+      8,
+      607,
+      160
+     ],
+     "px": 10795,
+     "blobPx": 306,
+     "blob": true
+    },
+    {
+     "box": [
+      895,
+      487,
+      1024,
+      744
+     ],
+     "px": 23845,
+     "blobPx": 4747,
+     "blob": true
+    }
+   ]
+  },
+  "day-view01-85": {
+   "samples": 386,
+   "fracGe15": 0.984,
+   "widthMedian": 2.64,
+   "widthP10": 2.06,
+   "lineL": 17.8,
+   "ringL": 68,
+   "diff": 50.2,
+   "excluded": {
+    "occluded": 145,
+    "hole": 2,
+    "contact": 0
+   },
+   "gaps": 6,
+   "figures": [
+    {
+     "box": [
+      368,
+      6,
+      505,
+      171
+     ],
+     "px": 13377,
+     "blobPx": 413,
+     "blob": true
+    },
+    {
+     "box": [
+      811,
+      583,
+      988,
+      974
+     ],
+     "px": 50185,
+     "blobPx": 14352,
+     "blob": true
+    }
+   ]
+  },
+  "day-orbit0-85": {
+   "samples": 279,
+   "fracGe15": 0.982,
+   "widthMedian": 2.63,
+   "widthP10": 2.06,
+   "lineL": 17.8,
+   "ringL": 67,
+   "diff": 49.2,
+   "excluded": {
+    "occluded": 111,
+    "hole": 2,
+    "contact": 7
+   },
+   "gaps": 5,
+   "figures": [
+    {
+     "box": [
+      488,
+      8,
+      607,
+      160
+     ],
+     "px": 10881,
+     "blobPx": 305,
+     "blob": true
+    },
+    {
+     "box": [
+      895,
+      487,
+      1024,
+      744
+     ],
+     "px": 23980,
+     "blobPx": 4751,
+     "blob": true
+    }
+   ]
+  },
+  "day-orbit0-390w": {
+   "samples": 114,
+   "fracGe15": 0.965,
+   "widthMedian": 1.96,
+   "widthP10": 1.61,
+   "lineL": 17.8,
+   "ringL": 76.1,
+   "diff": 58.3,
+   "excluded": {
+    "occluded": 70,
+    "hole": 3,
+    "contact": 4
+   },
+   "gaps": 4,
+   "figures": [
+    {
+     "box": [
+      144,
+      380,
+      245,
+      581
+     ],
+     "px": 14540,
+     "blobPx": 2934,
+     "blob": true
+    }
+   ]
+  }
+ },
+ "ground": {
+  "day-view01": {
+   "px": 170226,
+   "Lmedian": 79.4,
+   "Lp25": 76.5
+  },
+  "dusk-view01": {
+   "px": 101048,
+   "Lmedian": 66.4,
+   "Lp25": 64.3
+  }
+ },
+ "lens": {
+  "walk-day-00": {
+   "frac": 3.48,
+   "what": "low foliage card",
+   "at": [
+    -1.8331191444903916,
+    1.2249661981062714,
+    2.6042240702402273
+   ]
+  },
+  "walk-day-01": {
+   "frac": 3.07,
+   "what": "low foliage card",
+   "at": [
+    -1.8331191444903916,
+    1.2249661981062714,
+    2.6042240702402273
+   ]
+  },
+  "walk-day-02": {
+   "frac": 1.96,
+   "what": "low foliage card",
+   "at": [
+    -1.5372096495919494,
+    1.1761577809126185,
+    2.4847397949314525
+   ]
+  },
+  "walk-day-03": {
+   "frac": 37.78,
+   "what": "low foliage card",
+   "at": [
+    27.441899221328335,
+    -0.2150810629334845,
+    -20.514796868533104
+   ]
+  },
+  "walk-day-04": {
+   "frac": 13.55,
+   "what": "low foliage card",
+   "at": [
+    7.9667386260008985,
+    0.7192329703242671,
+    -9.224093788160884
+   ]
+  },
+  "walk-day-05": {
+   "frac": 21.61,
+   "what": "low foliage card",
+   "at": [
+    14.100144394046854,
+    -2.988190859561845,
+    -27.440241186504625
+   ]
+  },
+  "walk-day-06": {
+   "frac": 16.43,
+   "what": "low foliage card",
+   "at": [
+    17.336707692803046,
+    -7.243900706306071,
+    -71.1879894789472
+   ]
+  },
+  "walk-day-07": {
+   "frac": 11.51,
+   "what": "low foliage card",
+   "at": [
+    1.6493485280130002,
+    -7.721566691815226,
+    -62.19348238357695
+   ]
+  },
+  "walk-day-08": {
+   "frac": 10.48,
+   "what": "low foliage card",
+   "at": [
+    -15.140884612931398,
+    -8.290553694406304,
+    -75.86748097987284
+   ]
+  },
+  "walk-day-09": {
+   "frac": 20.62,
+   "what": "low foliage card",
+   "at": [
+    -15.716479915000404,
+    -8.574136790291856,
+    -41.49370752146682
+   ]
+  },
+  "walk-day-10": {
+   "frac": 25.79,
+   "what": "low foliage card",
+   "at": [
+    -29.05014228054749,
+    -8.329867887630193,
+    -44.02907432153451
+   ]
+  },
+  "walk-day-11": {
+   "frac": 1.36,
+   "what": "low foliage card",
+   "at": [
+    -2.645003245017154,
+    1.3137114088437343,
+    -7.756128235857968
+   ]
+  },
+  "walk-dusk-00": {
+   "frac": 3.48,
+   "what": "low foliage card",
+   "at": [
+    -1.8331191444903916,
+    1.2249661981062714,
+    2.6042240702402273
+   ]
+  },
+  "walk-dusk-01": {
+   "frac": 3.07,
+   "what": "low foliage card",
+   "at": [
+    -1.8331191444903916,
+    1.2249661981062714,
+    2.6042240702402273
+   ]
+  },
+  "walk-dusk-02": {
+   "frac": 1.96,
+   "what": "low foliage card",
+   "at": [
+    -1.5372096495919494,
+    1.1761577809126185,
+    2.4847397949314525
+   ]
+  },
+  "walk-dusk-03": {
+   "frac": 37.78,
+   "what": "low foliage card",
+   "at": [
+    27.441899221328335,
+    -0.2150810629334845,
+    -20.514796868533104
+   ]
+  },
+  "walk-dusk-04": {
+   "frac": 13.55,
+   "what": "low foliage card",
+   "at": [
+    7.9667386260008985,
+    0.7192329703242671,
+    -9.224093788160884
+   ]
+  },
+  "walk-dusk-05": {
+   "frac": 21.61,
+   "what": "low foliage card",
+   "at": [
+    14.100144394046854,
+    -2.988190859561845,
+    -27.440241186504625
+   ]
+  },
+  "walk-dusk-06": {
+   "frac": 16.43,
+   "what": "low foliage card",
+   "at": [
+    17.336707692803046,
+    -7.243900706306071,
+    -71.1879894789472
+   ]
+  },
+  "walk-dusk-07": {
+   "frac": 11.51,
+   "what": "low foliage card",
+   "at": [
+    1.6493485280130002,
+    -7.721566691815226,
+    -62.19348238357695
+   ]
+  },
+  "walk-dusk-08": {
+   "frac": 10.48,
+   "what": "low foliage card",
+   "at": [
+    -15.140884612931398,
+    -8.290553694406304,
+    -75.86748097987284
+   ]
+  },
+  "walk-dusk-09": {
+   "frac": 20.62,
+   "what": "low foliage card",
+   "at": [
+    -15.716479915000404,
+    -8.574136790291856,
+    -41.49370752146682
+   ]
+  },
+  "walk-dusk-10": {
+   "frac": 25.79,
+   "what": "low foliage card",
+   "at": [
+    -29.05014228054749,
+    -8.329867887630193,
+    -44.02907432153451
+   ]
+  },
+  "walk-dusk-11": {
+   "frac": 1.36,
+   "what": "low foliage card",
+   "at": [
+    -2.645003245017154,
+    1.3137114088437343,
+    -7.756128235857968
+   ]
+  },
+  "orbit-day-0": {
+   "frac": 3.48,
+   "what": "low foliage card",
+   "at": [
+    -1.8331191444903916,
+    1.2249661981062714,
+    2.6042240702402273
+   ]
+  },
+  "orbit-day-1": {
+   "frac": 1.19,
+   "what": "low foliage card",
+   "at": [
+    9.64700231953752,
+    0.5345921272155287,
+    -8.785832478575648
+   ]
+  },
+  "orbit-day-2": {
+   "frac": 10.49,
+   "what": "low foliage card",
+   "at": [
+    1.38,
+    0.38,
+    -3.05
+   ]
+  },
+  "orbit-day-3": {
+   "frac": 2.83,
+   "what": "low foliage card",
+   "at": [
+    -1.455235951236529,
+    1.257017074544681,
+    -3.721284806168041
+   ]
+  },
+  "orbit-day-4": {
+   "frac": 0.42,
+   "what": "low foliage card",
+   "at": [
+    -3.276604618907864,
+    1.5228009306562558,
+    1.4121686147047336
+   ]
+  },
+  "orbit-day-5": {
+   "frac": 1.68,
+   "what": "low foliage card",
+   "at": [
+    8.463952955532012,
+    0.7598575153354031,
+    -10.031859320180402
+   ]
+  },
+  "orbit-day-6": {
+   "frac": 5.32,
+   "what": "low foliage card",
+   "at": [
+    -1.38558988092054,
+    0.458354926120284,
+    -0.8134372139116554
+   ]
+  },
+  "orbit-day-7": {
+   "frac": 0.71,
+   "what": "low foliage card",
+   "at": [
+    1.4,
+    0.27999999999999997,
+    2.6
+   ]
+  },
+  "orbit-dusk-0": {
+   "frac": 3.48,
+   "what": "low foliage card",
+   "at": [
+    -1.8331191444903916,
+    1.2249661981062714,
+    2.6042240702402273
+   ]
+  },
+  "orbit-dusk-1": {
+   "frac": 1.19,
+   "what": "low foliage card",
+   "at": [
+    9.64700231953752,
+    0.5345921272155287,
+    -8.785832478575648
+   ]
+  },
+  "orbit-dusk-2": {
+   "frac": 10.49,
+   "what": "low foliage card",
+   "at": [
+    1.38,
+    0.38,
+    -3.05
+   ]
+  },
+  "orbit-dusk-3": {
+   "frac": 2.83,
+   "what": "low foliage card",
+   "at": [
+    -1.455235951236529,
+    1.257017074544681,
+    -3.721284806168041
+   ]
+  },
+  "orbit-dusk-4": {
+   "frac": 0.42,
+   "what": "low foliage card",
+   "at": [
+    -3.276604618907864,
+    1.5228009306562558,
+    1.4121686147047336
+   ]
+  },
+  "orbit-dusk-5": {
+   "frac": 1.68,
+   "what": "low foliage card",
+   "at": [
+    8.463952955532012,
+    0.7598575153354031,
+    -10.031859320180402
+   ]
+  },
+  "orbit-dusk-6": {
+   "frac": 5.32,
+   "what": "low foliage card",
+   "at": [
+    -1.38558988092054,
+    0.458354926120284,
+    -0.8134372139116554
+   ]
+  },
+  "orbit-dusk-7": {
+   "frac": 0.71,
+   "what": "low foliage card",
+   "at": [
+    1.4,
+    0.27999999999999997,
+    2.6
+   ]
   }
  },
  "shadow": {
   "day-view=01": {
-   "shadedPx": 549074,
-   "skippedHazed": 217361,
+   "shadedPx": 384758,
+   "skippedHazed": 27596,
    "neutralPct": 0,
    "meanTint": [
-    0.734,
-    0.721,
-    0.889
+    0.692,
+    0.68,
+    0.869
    ],
    "hueCos": 1,
-   "chromaMedian": 14.5
+   "chromaMedian": 17.6
   },
   "dusk-view=01": {
-   "shadedPx": 728344,
-   "skippedHazed": 199082,
-   "neutralPct": 0.06,
+   "shadedPx": 280990,
+   "skippedHazed": 57879,
+   "neutralPct": 0.27,
    "meanTint": [
-    0.786,
-    0.693,
-    0.79
+    0.705,
+    0.597,
+    0.715
    ],
-   "hueCos": 0.97,
+   "hueCos": 0.98,
    "chromaMedian": 17.6
   },
   "day-orbit=2": {
-   "shadedPx": 766004,
-   "skippedHazed": 688938,
-   "neutralPct": 0.01,
-   "meanTint": [
-    0.794,
-    0.761,
-    0.881
-   ],
-   "hueCos": 0.98,
-   "chromaMedian": 8.5
-  },
-  "dusk-orbit=5": {
-   "shadedPx": 954407,
-   "skippedHazed": 22396,
+   "shadedPx": 320877,
+   "skippedHazed": 73296,
    "neutralPct": 0,
    "meanTint": [
-    0.858,
-    0.745,
+    0.706,
+    0.665,
     0.828
    ],
-   "hueCos": 0.85,
-   "chromaMedian": 27.6
+   "hueCos": 0.98,
+   "chromaMedian": 15.4
+  },
+  "dusk-orbit=5": {
+   "shadedPx": 197736,
+   "skippedHazed": 12003,
+   "neutralPct": 0,
+   "meanTint": [
+    0.728,
+    0.6,
+    0.705
+   ],
+   "hueCos": 0.9,
+   "chromaMedian": 16.1
   }
  },
  "perf": {
   "day": {
    "shadowCalls": 66,
-   "calls": 98,
-   "triangles": 137108,
-   "texMB": 119.6
+   "calls": 99,
+   "triangles": 137208,
+   "texMB": 124.9
   },
   "dusk": {
    "shadowCalls": 66,
-   "calls": 98,
-   "triangles": 137108,
-   "texMB": 119.6
+   "calls": 99,
+   "triangles": 137208,
+   "texMB": 124.9
   }
  },
  "card": {
@@ -299,13 +982,13 @@
   "day": {
    "frames": 12,
    "webm": "orbit-walk-day.webm",
-   "bytes": 5801124,
+   "bytes": 7967797,
    "errors": []
   },
   "dusk": {
    "frames": 12,
    "webm": "orbit-walk-dusk.webm",
-   "bytes": 6264527,
+   "bytes": 6741226,
    "errors": []
   }
  }
