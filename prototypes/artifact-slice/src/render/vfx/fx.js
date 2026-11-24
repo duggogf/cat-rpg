@@ -105,9 +105,17 @@ export class WorldFX {
     this.fzRings = new Map(); this.tagRings = [];
   }
 
+  /** World size (m) of a drawing that spans `frac` of the screen height at `at` (flash rule: a local disc <= 15% of the screen). */
+  fit(at, frac) {
+    if (!this.cam) return 99;
+    const d = this.cam.position.distanceTo(at);
+    return frac * 2 * d * Math.tan(this.cam.fov * Math.PI / 360);
+  }
+
   /** Spawn a billboard drawing sequence. o: {name, pos, size (m), frames (drawings shown), hold (drawings), rot, vel, grow, dissolve, delay} */
   spawn(name, pos, o = {}) {
     const list = this.tex[name]; if (!list) return null;
+    if (name.startsWith('burst') && pos) o = { ...o, size: Math.min(o.size || 0.5, this.fit(pos, 0.42)) };   // DR-50: Cream shapes stay local
     const dust = name.startsWith('puff');
     const nDust = this.items.filter((i) => i.dust).length, nGlyph = this.items.filter((i) => i.glyph).length;
     if (dust && nDust >= 60) return null;
@@ -118,7 +126,7 @@ export class WorldFX {
     mesh.position.copy(pos || (o.follow ? o.follow() : new THREE.Vector3())); mesh.scale.setScalar(o.size || 0.5); mesh.renderOrder = o.order || (dust ? 1 : 3);
     this.scene.add(mesh);
     const it = { mesh, list, name, t: -(o.delay || 0), drawings: o.drawings || 4, size: o.size || 0.5, rot: o.rot || 0, spin: o.spin || 0, vel: o.vel ? o.vel.clone() : null, grow: o.grow || 0,
-      cycle: o.cycle !== false, dust, glyph: !!o.glyph, follow: o.follow || null, flat: o.flat || null, breakAt: o.breakAt ?? Math.max(0.5, 1 - 2 / (o.drawings || 4)), start: 0 };
+      cycle: o.cycle !== false, dust, glyph: !!o.glyph, grav: o.grav || 0, follow: o.follow || null, flat: o.flat || null, breakAt: o.breakAt ?? Math.max(0.5, 1 - 2 / (o.drawings || 4)), start: 0 };
     mesh.visible = it.t >= 0;
     mesh.material.uniforms.rot.value = it.rot;
     this.items.push(it);
@@ -223,7 +231,7 @@ export class WorldFX {
       }
       const tq = di * TWO;  // stepped motion
       if (it.follow) m.position.copy(it.follow());
-      else if (it.vel) { m.position.copy(it.base || (it.base = m.position.clone())).addScaledVector(it.vel, tq); }
+      else if (it.vel) { m.position.copy(it.base || (it.base = m.position.clone())).addScaledVector(it.vel, tq); if (it.grav) m.position.y = Math.max(0.03, m.position.y - 0.5 * it.grav * tq * tq); }
       m.scale.setScalar(it.size * (1 + it.grow * Math.min(1, tq * 3)));
       m.material.uniforms.rot.value = it.rot + it.spin * tq;
       if (it.flat) m.material.uniforms.flatCol.value.copy(it.flat);
@@ -245,12 +253,13 @@ export class WorldFX {
     const yaw2d = Math.atan2(-dir[1], dir[0]);
     if (o.blocked) { this.spawn('wedge', at, { size: 0.35, drawings: 3, glyph: true }); this.dust('2 puffs', at); return; }
     // spark (T1 0.3 m, 4 drawings; T2 x1.5) or burst (T3+)
-    if (tier <= 2) this.spawn(SPARK[type], at, { size: tier === 2 ? 0.55 : 0.4, drawings: 4, rot: yaw2d * 0.3, cycle: false, glyph: true });
-    if (tier >= 2) this.spawn(BURST[type], at, { size: tier >= 4 ? 1.25 : tier === 3 ? 0.95 : 0.6, drawings: tier >= 3 ? 5 : 3, rot: (o.seed || 0) * 0.7, cycle: false, order: 2 });
+    if (tier <= 2) this.spawn(SPARK[type], at, { size: tier === 2 ? 0.75 : 0.55, drawings: 4, rot: yaw2d * 0.3, cycle: false, glyph: true });
+    // starburst: head-sized on string hits the player authors (preview 02), bigger by tier
+    if (tier >= 2 || (o.player && tier >= 1)) this.spawn(BURST[type], at, { size: Math.min(this.fit(at, 0.42), tier >= 4 ? 1.5 : tier === 3 ? 1.2 : tier === 2 ? 0.9 : 0.6), drawings: tier >= 3 ? 5 : 3, rot: (o.seed || 0) * 0.7, cycle: false, order: 2 });
     // the Move's type drawing: slash arc / shockwave / sound arcs
     if (type === 'claw' && (tier >= 1 || o.player)) {
       const arc = o.finisher || tier >= 3 ? 'slashFlurry' : (o.stringIdx === 1 ? 'slashHigh' : 'slashLow');
-      this.spawn(arc, at.clone().add(new THREE.Vector3(0, 0.05, 0)), { size: tier >= 3 ? 1.3 : o.finisher ? 1.05 : 0.8, drawings: 4, cycle: false, rot: o.facingRot || 0, breakAt: 0.5, order: 2 });
+      this.spawn(arc, at.clone().add(new THREE.Vector3(0, 0.05, 0)), { size: tier >= 3 ? 1.6 : o.finisher ? 1.4 : 1.1, drawings: 4, cycle: false, rot: o.facingRot || 0, breakAt: 0.5, order: 2 });
       if (tier >= 2) this.groundMark('scratch', at, 0.9, 0.5, -Math.atan2(dir[0], dir[1]));
     }
     if (type === 'thump' && tier >= 2) this.spawn('puff', new THREE.Vector3(at.x, 0.1, at.z), { size: 0.8, drawings: 5, grow: 1.2 });
@@ -263,7 +272,11 @@ export class WorldFX {
       this.spawn(gnames[i % 3], at.clone().add(new THREE.Vector3(Math.cos(a) * 0.35, 0.25 + Math.sin(a) * 0.2, Math.sin(a) * 0.2)), { size: tier >= 3 ? 0.3 : 0.24, drawings: 6, vel: new THREE.Vector3(Math.cos(a) * 0.8, 0.9, 0), glyph: true, delay: i * TWO });
     }
     this.dust(feel.dust, new THREE.Vector3(at.x, 0, at.z), dir);
+    // ground crack under T2+ and player-authored hits; pebble debris kicked out along the hit
+    if (tier >= 2 || (o.player && tier >= 1)) this.groundMark('crack', new THREE.Vector3(at.x, 0, at.z), tier >= 3 ? 1.3 : 0.9, 0.7, (o.seed || 0) * 1.3);
+    const np = tier >= 3 ? 5 : tier >= 1 && o.player ? 3 : tier >= 2 ? 3 : 0;
+    for (let i = 0; i < np; i++) { const a = (i / np - 0.5) * 1.6 + Math.atan2(dir[1], dir[0]); this.spawn('pebble', new THREE.Vector3(at.x, 0.08, at.z), { size: 0.07 + (i % 2) * 0.03, drawings: 8, vel: new THREE.Vector3(Math.cos(a) * 1.6, 2.4 + (i % 3) * 0.5, Math.sin(a) * 1.6), grav: 9, cycle: true, spin: 9, breakAt: 0.85 }); }
     // T3 local impact disc: a Cream burst flash masked to <= 15% of the screen, 2 frames
-    if (feel.impact === 'local_disc' && tier >= 3) this.spawn('burstPlain', at, { size: 1.5, drawings: 1, cycle: false, flat: new THREE.Vector4(1, 0.965, 0.89, 1), order: 2, breakAt: 9 });
+    if (feel.impact === 'local_disc' && tier >= 3) this.spawn('burstPlain', at, { size: Math.min(1.5, this.fit(at, 0.4)), drawings: 1, cycle: false, flat: new THREE.Vector4(1, 0.965, 0.89, 1), order: 2, breakAt: 9 });
   }
 }

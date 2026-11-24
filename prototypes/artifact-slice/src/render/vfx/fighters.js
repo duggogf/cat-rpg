@@ -10,19 +10,47 @@ import * as THREE from 'three';
 import { createCat } from '../cats/index.js';
 
 /**
- * THE cast mapping table: sim catalogue id -> render cast. Only 'mikan' and 'wallSitter' exist today;
- * when the slice's other cats land, change the `cast` here (nothing else keys off cat ids).
- * `scale` multiplies the art-bible 1.25x (Daifuku's sim radius is 0.6 m vs 0.35 m).
+ * THE cast mapping table: sim catalogue id -> render cast (src/render/cats/index.js contract) and the matching
+ * kit portrait, so the 3D coat and the HUD plate are one design. Named cats use their own casts; gang members
+ * use the generic 'tough' with coat/pattern/tail/ears/build/personality/rank, and repeated ids (Strays) take
+ * the next variant, so no two gang members share a coat and none shares a Posse coat
+ * (Posse: Mikan white+ginger, Hige grey, Pon calico, Kinako fawn point, Togemaru black-and-tan, Kagi silver tabby).
+ * `rank` is the cast's own scale on top of the 1.25x art-bible scale (Captain 1.15, Daifuku 1.6, Pon 0.9).
  */
 export const CAST_MAP = {
-  mikan: { cast: 'mikan', scale: 1.0 },
-  hige: { cast: 'wallSitter', scale: 1.08 }, pon: { cast: 'wallSitter', scale: 0.96 }, kinako: { cast: 'wallSitter', scale: 0.92 },
-  togemaru: { cast: 'wallSitter', scale: 1.0 }, kagi: { cast: 'wallSitter', scale: 0.98 },
-  goma: { cast: 'wallSitter', scale: 1.12 }, sasa: { cast: 'wallSitter', scale: 1.0 }, stray: { cast: 'wallSitter', scale: 0.94 },
-  challenger: { cast: 'wallSitter', scale: 1.05 }, captain: { cast: 'wallSitter', scale: 1.15 },
-  daifuku: { cast: 'wallSitter', scale: 1.7 },
+  mikan: { cast: 'mikan', rank: 1, kit: { coat: { base: '#FFF8EC', patch: '#F28C28' }, pattern: 'mikan', tail: 'pom', ears: 'standard', build: 'standard', collar: 'bell', eye: 'amber' } },
+  hige: { cast: 'hige', rank: 1, kit: { coat: { base: '#8E93A8', patch: '#514D60' }, pattern: 'solid', tail: 'whip', ears: 'tall', build: 'long', carry: 'post', eye: 'yellowgreen', expr: 'sleepy', scars: ['notch'] } },
+  pon: { cast: 'pon', rank: 0.9, kit: { coat: { base: '#FFF8EC', patch: '#C98A4A', patch2: '#514D60' }, pattern: 'patched', tail: 'plume', ears: 'round', build: 'round', carry: 'spring', eye: 'green', expr: 'happy', scars: ['fold'] } },
+  kinako: { cast: 'kinako', rank: 1, kit: { coat: { base: '#E3C39A', patch: '#5E4636' }, pattern: 'pointed', tail: 'whip', ears: 'tall', build: 'long', carry: 'comma', eye: 'blue', expr: 'shock' } },
+  togemaru: { cast: 'togemaru', rank: 1, kit: { coat: { base: '#37323F', white: '#D9A060', patch: '#D9A060' }, pattern: 'tuxedo', tail: 'plume', ears: 'standard', build: 'long', carry: 'flag', eye: 'yellowgreen', expr: 'smug', scars: ['notch'] } },
+  kagi: { cast: 'kagi', rank: 1.15, kit: { coat: { base: '#CDD1DC', patch: '#7D8397' }, pattern: 'tabby', tail: 'whip', ears: 'tall', build: 'long', carry: 'blade', eye: 'yellowgreen', expr: 'smug' } },
+  daifuku: { cast: 'daifuku', rank: 1.6, kit: { coat: { base: '#FFF8EC', patch: '#A9AEC0' }, pattern: 'saddle', tail: 'stub', ears: 'round', build: 'round', carry: 'anchor', eye: 'copper', expr: 'smug' } },
+  goma: { cast: 'tough', opts: { coat: 'chocolate', pattern: 'tabby', tail: 'ringed', ears: 'round', build: 'round', personality: 'brooder', rank: 1.08, eye: 'copper', seed: 11 } },
+  sasa: { cast: 'tough', opts: { coat: { base: 'cream', patch: '#C99A55' }, pattern: 'tabby', tail: 'plume', ears: 'tall', build: 'long', personality: 'schemer', eye: 'yellowgreen', seed: 12 } },
+  stray: [
+    { cast: 'tough', opts: { coat: { base: 'charcoal', white: 'white' }, pattern: 'bicolour', tail: 'stub', ears: 'standard', build: 'standard', personality: 'stalwart', seed: 21 } },
+    { cast: 'tough', opts: { coat: 'marmalade', pattern: 'solid', tail: 'whip', ears: 'standard', build: 'standard', personality: 'fraidy', eye: 'green', seed: 22 } },
+    { cast: 'tough', opts: { coat: { base: 'seal', patch: 'black' }, pattern: 'tabby', tail: 'whip', ears: 'tall', build: 'long', personality: 'goofball', seed: 23 } },
+    { cast: 'tough', opts: { coat: { base: 'black', white: 'white' }, pattern: 'bicolour', tail: 'plume', ears: 'round', build: 'round', personality: 'brooder', seed: 24 } },
+  ],
+  challenger: { cast: 'tough', opts: { coat: { base: 'marmalade', patch: '#8C5A2E' }, pattern: 'tabby', tail: 'plume', ears: 'standard', build: 'long', personality: 'braggart', eye: 'amber', rank: 1.05, seed: 31 } },
+  captain: { cast: 'tough', opts: { coat: { base: 'chocolate', white: 'white', patch: 'chocolate' }, pattern: 'saddle', tail: 'plume', ears: 'tall', build: 'long', personality: 'braggart', rank: 1.15, seed: 41 } },
 };
-const DEFAULT = { cast: 'wallSitter', scale: 1.0 };
+const KITCOAT = { white: '#FFF8EC', cream: '#F4DDAA', silver: '#CDD1DC', grey: '#8E93A8', charcoal: '#514D60', black: '#37323F', marmalade: '#C98A4A', chocolate: '#7C5438', fawn: '#E3C39A', seal: '#5E4636' };
+const PERS_CARRY = { braggart: 'flag', stalwart: 'post', goofball: 'spring', schemer: 'blade', brooder: 'anchor', fraidy: 'comma' };
+const used = new Map();
+/** Resolve the cast entry for a sim entity (variants for repeated catalogue ids, in creation order). */
+export function castFor(catId, entId) {
+  let m = CAST_MAP[catId] || { cast: 'tough', opts: { coat: 'grey', pattern: 'tabby', seed: 99 } };
+  if (Array.isArray(m)) { const k = `${catId}`; const list = used.get(k) || []; let i = list.indexOf(entId); if (i < 0) { list.push(entId); used.set(k, list); i = list.length - 1; } m = m[i % m.length]; }
+  if (!m.kit && m.opts) {
+    const o = m.opts, coat = typeof o.coat === 'string' ? { base: KITCOAT[o.coat] || o.coat } : Object.fromEntries(Object.entries(o.coat).map(([k, v]) => [k, KITCOAT[v] || v]));
+    m = { ...m, rank: o.rank || 1, kit: { coat, pattern: o.pattern, tail: o.tail, ears: o.ears, build: o.build, carry: PERS_CARRY[o.personality] || 'anchor', eye: o.eye || 'copper', expr: 'angry' } };
+  }
+  return m;
+}
+/** Kit portrait options for an entity (same table as the 3D cast). */
+export function portraitFor(catId, entId) { return castFor(catId, entId).kit; }
 
 const hexV = (h) => { const n = parseInt(h.slice(1), 16); return new THREE.Vector3(((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255); };
 export const COL = { ink: '#33273B', cream: '#FFF6E3', gold: '#F2B01E', sage: '#A8C878', magenta: '#FF3D8B' };
@@ -58,9 +86,9 @@ const lerpAngle = (a, b, k) => a + Math.atan2(Math.sin(b - a), Math.cos(b - a)) 
 export class Fighter {
   constructor(ent, o = {}) {
     this.id = ent.id; this.side = ent.side; this.catId = ent.cat;
-    const m = CAST_MAP[ent.cat] || DEFAULT;
-    this.cat = createCat({ cast: m.cast, scale: 1.25 * m.scale });
-    this.scaleK = m.scale;
+    const m = castFor(ent.cat, ent.id);
+    this.cat = createCat({ cast: m.cast, scale: 1.25, ...(m.opts || {}), lod: 'auto' });
+    this.scaleK = m.rank || 1; this.lodMode = 'auto';
     this.root = new THREE.Group(); this.pose = new THREE.Group();
     this.root.add(this.pose); this.pose.add(this.cat.object3D);
     this.root.name = 'fighter:' + ent.id;
@@ -106,7 +134,7 @@ export class Fighter {
     this.root.rotation.y = this.yaw;
 
     // base pose by sim anim
-    const P = this.pose; let lean = 0, fwd = 0, sy = 1, sxz = 1, up = 0, roll = 0;
+    const P = this.pose; let lean = 0, fwd = 0, sy = 1, sxz = 1, up = 0, roll = 0, sz = 1;
     const a = e.anim || 'idle', at = e.anim_t || 0;
     const speed = Math.hypot(this.vel.x, this.vel.z);
     if (a === 'run' || (speed > 0.4 && (a === 'idle' || a === 'skitter'))) this.cat.setGait('walk', Math.min(3.2, Math.max(1.2, speed)));
@@ -137,8 +165,9 @@ export class Fighter {
     for (const im of this.impulses) {
       const k = (tw - im.t0) / im.dur;
       if (k < 0) continue;
-      if (im.kind === 'strike') { const s = k < 0.35 ? ss(k / 0.35) : 1 - ss((k - 0.35) / 0.65); fwd += 0.28 * im.mag * s; lean += 0.22 * s; sxz *= 1 + 0.12 * s; sy *= 1 - 0.08 * s; }
-      if (im.kind === 'hurt') { const s = 1 - ss(k); fwd -= 0.16 * im.mag * s; lean -= 0.3 * im.mag * s; sy *= 1 - 0.1 * s; }
+      if (im.kind === 'strike') { // stretched lunge (>= 1.4x along the strike on the key drawing), then settle
+        const s = k < 0.3 ? ss(k / 0.3) : 1 - ss((k - 0.3) / 0.7); fwd += 0.34 * im.mag * s; lean += 0.28 * s; sz *= 1 + 0.42 * im.mag * s; sxz *= 1 - 0.1 * s; sy *= 1 - 0.14 * s; }
+      if (im.kind === 'hurt') { const s = 1 - ss(k); fwd -= 0.2 * im.mag * s; lean -= 0.36 * im.mag * s; sy *= 1 - 0.16 * im.mag * s; sxz *= 1 + 0.1 * im.mag * s; roll += (Math.floor(tw * 30) % 2 ? 0.08 : -0.08) * s * im.mag; }
       if (im.kind === 'take') { const s = k < 0.5 ? 1 : 1 - ss((k - 0.5) * 2); sy *= 1 + 0.14 * s; sxz *= 1 - 0.05 * s; }
       if (im.kind === 'hiss') { const s = Math.sin(Math.PI * k); sy *= 1 + 0.12 * s; lean -= 0.2 * s; }
       if (im.kind === 'land') { const s = 1 - ss(k); sy *= 1 - 0.2 * s; sxz *= 1 + 0.12 * s; }
@@ -146,7 +175,7 @@ export class Fighter {
     if (e.ruffled_s > 0 || e.ruffled_s === -1) { sy *= 1.04; }
     P.position.set(0, up, fwd);
     P.rotation.set(lean, 0, roll);
-    P.scale.set(sxz, sy, sxz);
+    P.scale.set(sxz, sy, sxz * sz);
     // keyline: Frazzle Magenta while Frazzled; the Ruffled rim pulses in two steps (≤ 3 Hz)
     if (this.kl) {
       const want = e.frazzled_s > 0 ? 'magenta' : (this.side === 'enemy' ? 'sage' : 'gold');
@@ -156,6 +185,8 @@ export class Fighter {
       this.kl.key.mesh.userData.w = e.controlled ? 1.25 : 1.0;
     }
     if (this.look !== 'ink') this.setLook(t < this.flashUntil ? 'flash' : 'normal');
+    const want = e.controlled ? 'full' : 'auto';
+    if (want !== this.lodMode && this.cat.setLod) { this.cat.setLod(want); this.lodMode = want; }
     this.cat.update(dtAnim);
     // head point for overhead marks (world)
     const h = 0.62 * this.scaleK * sy;

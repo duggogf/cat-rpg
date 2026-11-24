@@ -69,6 +69,7 @@ function recipes() {
   R.paw = [G.pawGlyph()];
   R.pawDisc = [`<g transform="scale(2.2)">${G.pawDisc()}</g>`];
   R.wedge = n3((s) => `<g transform="scale(2.6)">${G.wedge(s)}</g>`);
+  R.pebble = n3((s) => { const R = Kit.rng(s * 7 + 3), pts = []; for (let i = 0; i < 6; i++) { const a = i / 6 * 6.283 + R() * 0.5, r = 90 + R() * 50; pts.push([Math.cos(a) * r, Math.sin(a) * r * 0.8]); } return `<path d="M${pts.map((p) => p.map((v) => v.toFixed(0)).join(' ')).join('L')}Z" fill="${s === 2 ? '#B9AC93' : '#D8CDB6'}" stroke="${C.ink}" stroke-width="12" stroke-linejoin="round"/>`; });
   R.claws = n3((s) => `<g transform="rotate(${-30 + s * 8}) scale(1.6)">${G.clawSpark(s + 3)}</g>`);
   return R;
 }

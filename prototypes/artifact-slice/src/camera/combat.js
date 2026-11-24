@@ -1,17 +1,19 @@
 // PROTOTYPE - NOT FOR PRODUCTION (Cat RPG artifact showcase slice; throwaway, see README.md)
-// Combat camera (camera-system.md §3.5–§3.7, §4.2, §4.4, §4.5; plan §4.5).
-//  - Combat: framing point P = lerp(C, T, 0.35); frame width W = clamp(1.4|C-T| + 3, 8.8, 10.6) m;
-//    D = W / (2 tan(hFOV/2)) with the aspect capped at 16:9, clamped 4.5–7.2 m; pitch +25° (up to +40°
-//    when one of the pair is on a High Road); vFOV 45°. Soft lock: yaw re-aims (≤ 120°/s) only when the
-//    target leaves the central 60% of width or the cat leaves the safe frame; free orbit, soft lock pulls
-//    back after 1.0 s without camera input. Pivot follows with smootherstep blends (§4.4).
-//  - Switch / Tag-In: 0.3 s retarget blend that keeps yaw; during a Relay distance holds at the larger
-//    of current and solved.  - Slow Blink: 8.5 m, +50° over the controlled cat, 0.2 s blends.
-//  - Standoff: a push-in toward the opponents.  - Pile-On: wide +40° over the cloud.
+// Combat camera (camera-system.md §3.5–§3.7, §4.2, §4.4, §4.5; plan §4.5), round 2 per owner direction
+// (2026-11-24): a THIRD-PERSON rig BEHIND the controlled cat, FF7 Remake style.
+//  - Combat: camera on the target->cat line behind the controlled cat, 3.8 m from a pivot at the cat's head
+//    height (biased 20% toward the lock target), +12° pitch, a 0.45 m shoulder offset so the cat sits
+//    left of centre and the target reads ahead of it; the cat is >= 20% of screen height. It pulls out
+//    (to <= 6 m, +16°) only while the target is far (> 4.5 m) and eases back. Soft lock recentres behind
+//    the cat (60°/s; 120°/s when the target leaves the frame); free orbit wins for 1 s after input.
+//    Never through camera-solid geometry: distance pulls in, and if a wall still hides the cat or target the
+//    yaw turns the minimum needed (<= 90°).
+//  - Switch / Tag-In: 0.3 s smootherstep blend to the new cat's pose; during a Relay distance holds.
+//  - Slow Blink: pushes IN, low behind the cat (4.6 m, +18°, pivot 40% toward the target), 0.2 s blends.
+//  - Standoff: a push-in toward the opponents.  - Pile-On: wide +40° over the cloud (behind the panel).
 //  - Overlays: stepped shake from Combat's tier table via sampleShake (screen-space translation, no
-//    roll, no FOV change, held ≥ 2 frames, 1.8% clamp), punch-in dolly (in over the hit-stop, out over
-//    150 ms, never stacks, skipped if it would push the controlled cat out of the safe frame).
-//    The camera runs on unscaled (real) time; during global hit-stop the pivot is frozen.
+//    roll, no FOV change, held >= 2 frames, 1.8% clamp), punch-in dolly (in over the hit-stop, out over
+//    150 ms, never stacks). The camera runs on unscaled (real) time; during global hit-stop the pivot is frozen.
 import * as THREE from 'three';
 import { sampleShake } from '../sim/combat/index.js';
 
@@ -22,13 +24,13 @@ const wrap = (a) => ((a + 540) % 360) - 180;
 // fixed unit-vector pattern for stepped shake (deterministic; camera-system §4.5)
 const PATTERN = [[0.2, 1], [-0.35, -0.94], [0.8, 0.6], [-0.9, 0.42], [0.55, -0.83], [-0.15, 0.99], [0.98, -0.2], [-0.7, -0.71]];
 
-export const COMBAT_CAM = { fov: 45, pitch: 25, pitchHigh: 40, k: 1.4, m: 3.0, wMin: 8.8, wMax: 10.6, dMin: 4.5, dMax: 7.2,
-  sbDist: 8.5, sbPitch: 50, sbBlend: 0.2, tagBlend: 0.3, enterBlend: 0.6, yawRate: 120, softLockDelay: 1.0, punchOut: 0.15, shakeClamp: 1.8 };
+export const COMBAT_CAM = { fov: 45, dist: 3.8, distFar: 6.0, farFrom: 4.5, pitch: 12, pitchFar: 16, pitchHigh: 20, shoulder: 0.45, lead: 0.2, pivotH: 0.42,
+  sbDist: 4.6, sbPitch: 20, sbLead: 0.3, sbShoulder: -1.15, sbPivotH: -0.05, sbBlend: 0.2, tagBlend: 0.3, enterBlend: 0.6, yawRate: 120, yawFollow: 60, softLockDelay: 1.0, punchOut: 0.15, shakeClamp: 1.8, minDist: 1.6 };
 
 export class CombatCamera {
   constructor(cam) {
     this.cam = cam; cam.fov = COMBAT_CAM.fov;
-    this.pose = { px: 0, py: 0.5, pz: 0, yaw: 0, pitch: 34, dist: 9 };
+    this.pose = { px: 0, py: 0.5, pz: 0, yaw: 0, pitch: 14, dist: 5, shoulder: 0.45 };
     this.from = null; this.blendT = 0; this.blendDur = 0;
     this.shakes = []; this.shakeDir = [0, 1]; this.punch = null; this.holdUntil = -1;
     this.lastUserT = -99; this.userYaw = 0; this.state = 'combat'; this.relayHold = 0;
@@ -43,56 +45,48 @@ export class CombatCamera {
   hold(untilT) { this.holdUntil = Math.max(this.holdUntil, untilT); }
   userOrbit(dYaw, dPitch, t) { if (!dYaw && !dPitch) return; this.userYaw += dYaw; this.lastUserT = t; }
 
-  /** Solve the state's target pose. ctx: {C, T (Vector3|null), mode, slowBlink, highRoad, enemiesCentroid, aspect, pileCenter, standoffFocus} */
+  /** Solve the state's target pose. ctx: {C, T (Vector3|null), mode, slowBlink, highRoad, enemiesCentroid, aspect, pileCenter, standoffFocus, occluded, clearance} */
   solve(ctx, dt, t) {
     const c = COMBAT_CAM, s = this.solved;
     if (ctx.mode === 'pileon' && ctx.pileCenter) {
-      s.px = ctx.pileCenter.x; s.py = 0.5; s.pz = ctx.pileCenter.z; s.pitch = 40; s.dist = 6.4; return s;
+      s.px = ctx.pileCenter.x; s.py = 0.5; s.pz = ctx.pileCenter.z; s.pitch = 40; s.dist = 6.4; s.shoulder = 0; return s;
     }
+    const C = ctx.C, T = ctx.T || ctx.enemiesCentroid || null;
+    const behind = T && Math.hypot(C.x - T.x, C.z - T.z) > 0.15 ? Math.atan2(C.x - T.x, C.z - T.z) / D2R : null;
     if (ctx.mode === 'standoff' && ctx.standoffFocus) {
-      // push-in: from wide over the Posse toward the opponents over the standoff (≈ 3 s)
+      // push-in from wide over the Posse toward the opponents (≈ 3 s), ending on the behind-the-cat pose
       const k = ss(ctx.standoffK);
-      const P = ctx.C.clone().lerp(ctx.standoffFocus, 0.35 + 0.4 * k);
-      s.px = P.x; s.py = 0.45 + 0.2 * k; s.pz = P.z; s.pitch = 22 - 8 * k; s.dist = 7.2 - 3.4 * k;
-      const want = Math.atan2(ctx.C.x - ctx.standoffFocus.x, ctx.C.z - ctx.standoffFocus.z) / D2R;
-      s.yaw = want; return s;
+      const P = C.clone().lerp(ctx.standoffFocus, 0.5 - 0.3 * k);
+      s.px = P.x; s.py = 0.5; s.pz = P.z; s.pitch = 18 - 6 * k; s.dist = 6.5 - 2.7 * k; s.shoulder = c.shoulder * k;
+      s.yaw = Math.atan2(C.x - ctx.standoffFocus.x, C.z - ctx.standoffFocus.z) / D2R; return s;
     }
-    if (ctx.slowBlink) {
-      s.px = ctx.C.x; s.py = ctx.C.y + 0.3; s.pz = ctx.C.z; s.pitch = c.sbPitch; s.dist = c.sbDist; return s;
-    }
-    const C = ctx.C, T = ctx.T || ctx.enemiesCentroid || C;
-    // safe frame (central 80% x 75%): if the target rides too high (a High Road / boss wall), lean the
-    // framing point toward it until it sits back inside; relax to the canon 0.35 otherwise
-    this.bias = this.bias ?? 0.35;
-    if (ctx.targetNY != null && ctx.targetNY > 0.5) this.bias = Math.min(0.6, this.bias + dt * 0.6);
-    else if (ctx.targetNY == null || ctx.targetNY < 0.25) this.bias = Math.max(0.35, this.bias - dt * 0.3);
-    const P = C.clone().lerp(T, this.bias);
-    const sep = Math.hypot(C.x - T.x, C.z - T.z);
-    const W = THREE.MathUtils.clamp(c.k * sep + c.m, c.wMin, c.wMax);
-    const aspect = Math.min(16 / 9, ctx.aspect);
-    const hf = 2 * Math.atan(Math.tan(c.fov * D2R / 2) * aspect);
-    let D = THREE.MathUtils.clamp(W / (2 * Math.tan(hf / 2)), c.dMin, c.dMax);
-    if (this.relayHold > t) D = Math.max(D, this.pose.dist);
-    s.px = P.x; s.pz = P.z; s.py = Math.max(C.y, T.y) * 0.65 + 0.35;
-    s.pitch = ctx.highRoad ? c.pitchHigh : c.pitch; s.dist = D;
-    // soft lock: re-aim yaw only when needed; free orbit wins for 1 s after input
-    const ideal = Math.atan2(C.x - T.x, C.z - T.z) / D2R;   // camera behind C, looking past it at T
-    if (t - this.lastUserT < c.softLockDelay) { s.yaw = this.pose.yaw + this.userYaw; this.userYaw = 0; }
+    const sep = T ? Math.hypot(C.x - T.x, C.z - T.z) : 0;
+    let lead = ctx.slowBlink ? c.sbLead : c.lead;
+    const P = T ? C.clone().lerp(T, lead) : C.clone();
+    s.px = P.x; s.pz = P.z;
+    s.py = C.y + c.pivotH + (T ? Math.max(0, T.y - C.y) * 0.45 : 0);
+    if (ctx.slowBlink) { s.pitch = c.sbPitch; s.dist = c.sbDist; s.shoulder = c.sbShoulder; s.py = C.y + c.sbPivotH; }
     else {
-      this.userYaw = 0;
-      const need = ctx.offFrame || sep < 0.2 ? 1 : 0;
-      const diff = wrap(ideal - s.yaw);
-      const rate = need ? c.yawRate : (Math.abs(diff) > 70 ? 40 : 12);   // gentle drift toward the over-shoulder line
-      s.yaw += Math.sign(diff) * Math.min(Math.abs(diff), rate * dt);
+      const far = Math.max(0, Math.min(1, (sep - c.farFrom) / 3));
+      s.dist = c.dist + (c.distFar - c.dist) * far;
+      s.pitch = ctx.highRoad ? c.pitchHigh : c.pitch + (c.pitchFar - c.pitch) * far;
+      s.shoulder = c.shoulder;
+      if (this.relayHold > t) s.dist = Math.max(s.dist, this.pose.dist);
     }
-    // never through camera-solid geometry: if a wall hides the controlled cat or the target, turn the
-    // minimum needed (≤ 90°) to a yaw that sees both (free-standing High Road walls in the sandbox lot)
+    // yaw: behind the cat on the target->cat line; free orbit wins for 1 s after input
+    if (t - this.lastUserT < c.softLockDelay) { s.yaw = this.pose.yaw + this.userYaw; this.userYaw = 0; }
+    else if (behind != null) {
+      this.userYaw = 0;
+      const diff = wrap(behind - s.yaw), rate = ctx.slowBlink ? 400 : ctx.offFrame ? c.yawRate : c.yawFollow;
+      s.yaw += Math.sign(diff) * Math.min(Math.abs(diff), rate * dt * (Math.abs(diff) > 20 ? 1 : 0.6));
+    }
+    // never through camera-solid geometry: if a wall hides the cat or the target, turn the minimum needed
     if (ctx.occluded && ctx.occluded(s)) {
       const y0 = s.yaw; let best = null;
       for (let k = 10; k <= 90 && best == null; k += 10) for (const sg of [1, -1]) { s.yaw = y0 + sg * k; if (!ctx.occluded(s)) { best = y0 + sg * k; break; } }
       s.yaw = y0;
-      if (best != null) { const d = wrap(best - y0); s.yaw = y0 + Math.sign(d) * Math.min(Math.abs(d), c.yawRate * 1.5 * dt); this.lastUserT = -99; }
-      else s.pitch = c.pitchHigh;
+      if (best != null) { const d = wrap(best - y0); s.yaw = y0 + Math.sign(d) * Math.min(Math.abs(d), c.yawRate * 1.5 * dt); }
+      else s.pitch = Math.max(s.pitch, 28);
     }
     return s;
   }
@@ -105,19 +99,22 @@ export class CombatCamera {
       if (this.from) {
         this.blendT += dtReal; const k = ss(this.blendT / this.blendDur), f = this.from;
         p.px = f.px + (s.px - f.px) * k; p.py = f.py + (s.py - f.py) * k; p.pz = f.pz + (s.pz - f.pz) * k;
-        p.yaw = f.yaw + wrap(s.yaw - f.yaw) * k; p.pitch = f.pitch + (s.pitch - f.pitch) * k; p.dist = f.dist + (s.dist - f.dist) * k;
+        p.yaw = f.yaw + wrap(s.yaw - f.yaw) * k; p.pitch = f.pitch + (s.pitch - f.pitch) * k; p.dist = f.dist + (s.dist - f.dist) * k; p.shoulder = f.shoulder + (s.shoulder - f.shoulder) * k;
         if (this.blendT >= this.blendDur) this.from = null;
       } else {
         const a = hl(dtReal, 0.12), b = hl(dtReal, 0.25);
         p.px += (s.px - p.px) * a; p.py += (s.py - p.py) * a; p.pz += (s.pz - p.pz) * a;
-        p.yaw += wrap(s.yaw - p.yaw) * b; p.pitch += (s.pitch - p.pitch) * b; p.dist += (s.dist - p.dist) * b;
+        p.yaw += wrap(s.yaw - p.yaw) * b; p.pitch += (s.pitch - p.pitch) * b; p.dist += (s.dist - p.dist) * b; p.shoulder += (s.shoulder - p.shoulder) * b;
       }
     }
     // place
     const cam = this.cam, y = p.yaw * D2R, pi = p.pitch * D2R;
     const dir = new THREE.Vector3(Math.sin(y) * Math.cos(pi), Math.sin(pi), Math.cos(y) * Math.cos(pi));
     const pivot = new THREE.Vector3(p.px, p.py, p.pz);
+    // shoulder offset: slide the pivot along the camera's right so the cat sits left of centre
+    pivot.x += Math.cos(y) * p.shoulder; pivot.z += -Math.sin(y) * p.shoulder;
     let dist = p.dist;
+    if (ctx.clearance) dist = Math.max(COMBAT_CAM.minDist, Math.min(dist, ctx.clearance(pivot, dir, dist)));
     // punch-in: dolly toward the impact point by a share of distance
     if (this.punch) {
       const q = this.punch, u = t - q.t0;

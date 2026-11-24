@@ -12,11 +12,11 @@
 // the M1 evidence README if kit.css changes).
 import { KIT_CSS } from './kit-assets.js';
 import { Kit } from '../../render/vfx/sprites.js';
+import { portraitFor } from '../../render/vfx/fighters.js';
 
 const C = Kit.C;
-const DPAD = ['n', 'w', 's', 'e'];
-/** Portrait designs (kit CAST) for the HUD; the 3D stand-ins are placeholders until the cast lands. */
-const PORTRAIT = { mikan: 'mikan', hige: 'stalwart', pon: 'goofball', kinako: 'fraidy', togemaru: 'braggart', kagi: 'schemer', daifuku: 'daifuku', goma: 'brooder', sasa: 'schemer', stray: 'oldWallCat', captain: 'braggart', challenger: 'brooder' };
+const DPAD = ['n', 'w', 's', 'e'], KEYS = ['Z', 'X', 'C', 'V'];
+const kc = (k, big) => `<span class="ch-kc${big ? ' big' : ''}">${k}</span>`;
 const TITLES = { daifuku: ['DAIFUKU', 'Boss of the Wall'], captain: ['CAPTAIN', 'of the Wall Sitters'], challenger: ['THE CHALLENGER', 'at the Gatepost'] };
 
 const CSS = `
@@ -100,6 +100,13 @@ const CSS = `
 .ch-sb .tstep { padding:8px 18px; font:700 26px/1.2 var(--font); color:var(--cocoa); background:var(--recessed); }
 .ch-bracket { width:150px; height:150px; transform:translate(-50%,-70%) !important; }
 .ch-card { position:absolute; left:50%; top:30%; transform:translate(-50%,-50%); }
+.ch-kc { display:inline-flex; align-items:center; justify-content:center; min-width:40px; height:40px; padding:0 8px; border-radius:10px 12px 11px 13px; background:var(--cream); border:3px solid var(--cocoa); box-shadow:0 3px 0 var(--cocoa); font:800 24px/1 var(--font); color:var(--cocoa); box-sizing:border-box; }
+.ch-kc.big { min-width:52px; height:52px; font-size:30px; border-radius:14px 16px 15px 17px; }
+.ch-plate .glyph .ch-kc { width:52px; height:52px; font-size:30px; }
+.ch-hiss .kc { position:absolute; right:-14px; bottom:-14px; }
+.ch-bark { padding:8px 14px 6px; border-radius:26px 30px 28px 32px; }
+.ch-bark::before, .ch-bark::after { left:30px; }
+.ch-keys { position:absolute; right:22px; top:18px; display:flex; gap:8px; align-items:center; font:700 22px/1 var(--font); color:var(--cocoa); background:var(--cream); border:3px solid var(--cocoa); border-radius:22px; padding:6px 12px 6px 8px; box-shadow:var(--drop); transform-origin:100% 0; }
 .ch-hint { position:absolute; right:24px; bottom:18px; max-width:560px; padding:8px 16px; border-radius:22px; background:var(--cream); border:3px solid var(--cocoa); font:700 18px/1.35 var(--font); color:var(--cocoa); }
 `;
 
@@ -122,6 +129,18 @@ const svgIcon = {
   queued: `<svg viewBox="-20 -20 40 40" width="30" height="30"><path d="M-12 -12h24v18h-14l-8 8v-8h-2z" fill="${C.gold}" stroke="${C.ink}" stroke-width="3" stroke-linejoin="round"/><circle cx="-4" cy="-3" r="2.5" fill="${C.ink}"/><circle cx="5" cy="-3" r="2.5" fill="${C.ink}"/></svg>`,
   steam: (n) => `<svg viewBox="0 0 ${n * 26 + 4} 26" width="${n * 26 + 4}" height="26">${Array.from({ length: n }, (_, i) => `<path d="${Kit.blob(Kit.pomPts(15 + i * 26, 13, 10, 6, 0.18, i))}" fill="${C.cream}" stroke="${C.ink}" stroke-width="2.5"/>`).join('')}</svg>`,
 };
+/** Bark pictograms by personality (icon-only in fights). */
+const BARK_ICON = {
+  Mikan: svgIcon.bell, Stalwart: `<svg viewBox="-20 -20 40 40" width="36" height="36"><path d="M0 -16L14 -10V2Q14 12 0 17Q-14 12 -14 2V-10Z" fill="${C.gold}" stroke="${C.ink}" stroke-width="3" stroke-linejoin="round"/></svg>`,
+  Goofball: `<svg viewBox="-20 -20 40 40" width="36" height="36"><circle r="15" fill="${C.cream}" stroke="${C.ink}" stroke-width="3"/><path d="M-7 -3l3 -3l3 3M2 -3l3 -3l3 3" fill="none" stroke="${C.ink}" stroke-width="2.5" stroke-linecap="round"/><path d="M-6 5Q0 11 6 5" fill="${C.pad}" stroke="${C.ink}" stroke-width="2.5"/></svg>`,
+  Fraidy: `<svg viewBox="-20 -20 40 40" width="36" height="36"><path d="M0 -15Q12 2 9 9Q5 15 0 15Q-5 15 -9 9Q-12 2 0 -15Z" fill="${C.claw}" stroke="${C.ink}" stroke-width="3" stroke-linejoin="round"/></svg>`,
+  Braggart: `<svg viewBox="-20 -20 40 40" width="36" height="36">${Kit.sparkle({ r: 15, fill: C.staticYellow, lw: 3 })}</svg>`,
+  Schemer: `<svg viewBox="-20 -20 40 40" width="36" height="36"><path d="M-14 0Q0 -12 14 0Q0 12 -14 0Z" fill="${C.cream}" stroke="${C.ink}" stroke-width="3"/><circle r="5" fill="${C.ink}"/></svg>`,
+  Brooder: Kit.ui.icon({ name: 'storm', size: 36 }),
+  bang: `<svg viewBox="-20 -20 40 40" width="36" height="36"><path d="M-4 -16h8l-2 20h-4z" fill="${C.ink}"/><circle cy="11" r="4" fill="${C.ink}"/></svg>`,
+  heart: Kit.ui.icon({ name: 'heart', size: 34 }),
+};
+
 const diamond = (filled, lit) => `<svg class="dia" viewBox="-16 -16 32 32" width="34" height="34"><path d="M0 -13L13 0L0 13L-13 0Z" fill="${filled ? (lit ? C.gold : C.ink) : 'none'}" stroke="${lit && !filled ? C.gold : C.ink}" stroke-width="${lit ? 4.5 : 3.5}" stroke-linejoin="round"/></svg>`;
 const STATE_ICON = { ruffled: 'ruffled', splat: 'splat', soggy: 'soggy', frazzled: 'frazzled', clumped: 'clumped', cowed: 'cowed' };
 
@@ -141,12 +160,10 @@ export class CombatHUD {
     this.lastHit = new Map(); this.flash = new Map(); this.scale = 1; this.hint = null;
   }
 
-  portrait(catId, size) {
-    const k = catId + size;
-    if (!this.portraits[k]) {
-      const cast = Kit.CAST[PORTRAIT[catId] || 'oldWallCat'] || Kit.CAST.mikan;
-      this.portraits[k] = Kit.ui.portrait({ cat: { ...cast, scale: 1.02 * (cast.scale ? 0.75 : 1) }, size, ring: catId === 'mikan' ? C.gold : C.cocoa });
-    }
+  /** Chestnut portrait from the same table as the 3D cast (fighters.js CAST_MAP), so plate and cat match. */
+  portrait(catId, size, entId = catId) {
+    const k = entId + ':' + size;
+    if (!this.portraits[k]) this.portraits[k] = Kit.ui.portrait({ cat: { ...portraitFor(catId, entId), scale: 1.02 }, size, ring: catId === 'mikan' ? C.gold : C.cocoa });
     return this.portraits[k];
   }
 
@@ -158,7 +175,7 @@ export class CombatHUD {
     const posse = s.entities.filter((e) => e.side === 'posse').sort((a, b) => a.slot - b.slot);
     for (const e of posse) {
       const d = document.createElement('div'); d.className = 'ch-plate';
-      d.innerHTML = `<div class="glyph">${Kit.ui.dpad({ size: 56, lit: DPAD[e.slot] })}</div><div class="por">${this.portrait(e.cat, 72)}</div>
+      d.innerHTML = `<div class="glyph" data-slot="${e.slot}">${Kit.ui.dpad({ size: 56, lit: DPAD[e.slot] })}</div><div class="por">${this.portrait(e.cat, 72, e.id)}</div>
         <div class="mid"><div class="nm">${e.name}</div><div class="k-gauge"><i></i></div></div>
         <div class="pads">${[0, 1].map(() => `<div class="ch-pad"><div>${padSVG(C.recessed)}</div><div class="fill">${padSVG(C.pad)}</div></div>`).join('')}</div>
         <div class="poms"></div>`;
@@ -199,9 +216,20 @@ export class CombatHUD {
     if (ev.type === 'FightStarted' && this.boss) this.tc.style.visibility = 'visible';
   }
 
-  /** Per-frame update. ctx: {s, t, project(v3)->{x,y,on}, fighters, menuEvents[], sendCommand(cmd)} */
+  /** Swap every input glyph to the device in use: keycaps on keyboard + mouse, pad glyphs on a gamepad. */
+  setDevice(dev) {
+    if (dev === this.device) return; this.device = dev;
+    for (const p of this.plates.values()) { const g = p.querySelector('.glyph'), sl = +g.dataset.slot; g.innerHTML = dev === 'pad' ? Kit.ui.dpad({ size: 56, lit: DPAD[sl] }) : kc(KEYS[sl], true); }
+    if (!this.keysEl) { this.keysEl = document.createElement('div'); this.keysEl.className = 'ch-keys'; this.el.appendChild(this.keysEl); }
+    this.keysEl.innerHTML = dev === 'pad' ? `<span class="ch-kc">☰</span>Pause` : `${kc('P')}Pause ${kc('Tab')}Slow Blink`;
+    this.keysEl.style.transform = `scale(${this.scale})`;
+    if (this.sbEl) this.sbEl._h = null;
+  }
+
+  /** Per-frame update. ctx: {s, t, project(v3)->{x,y,on}, fighters, menuEvents[], sendCommand(cmd), device} */
   update(ctx) {
     const { s, t } = ctx;
+    this.setDevice(ctx.device || 'kbm');
     const byId = new Map(s.entities.map((e) => [e.id, e]));
     // plates
     for (const id of this.posseIds) {
@@ -232,23 +260,24 @@ export class CombatHUD {
       const pe = p.querySelector('.poms'); if (pe._h !== poms) { pe.innerHTML = poms; pe._h = poms; }
       let hs = p.querySelector('.ch-hiss');
       if (ctl && !e.routed) {
-        if (!hs) { hs = document.createElement('div'); hs.className = 'ch-hiss'; hs.innerHTML = `<div class="ring"></div>${svgIcon.hiss}`; p.appendChild(hs); }
+        if (!hs) { hs = document.createElement('div'); hs.className = 'ch-hiss'; hs.innerHTML = `<div class="ring"></div>${svgIcon.hiss}<span class="kc"></span>`; p.appendChild(hs); }
         const a = e.hiss_cd_s > 0 ? Math.round(360 * (1 - e.hiss_cd_s / 8)) : 360;
         hs.querySelector('.ring').style.setProperty('--a', a + 'deg');
         hs.classList.toggle('ready', e.hiss_cd_s <= 0);
+        const hk = hs.querySelector('.kc'); const want = this.device === 'pad' ? Kit.ui.faceButtons({ size: 34, lit: 'n' }) : kc('F'); if (hk._h !== want) { hk.innerHTML = want; hk._h = want; }
         hs.classList.toggle('alert', s.telegraphs.some((tl) => tl.cls === 'yellow' && tl.aimed_at === e.id));
       } else if (hs) hs.remove();
     }
     // Relay chain
     if (s.relay && s.relay.count > 0) {
       this.relayEl.style.visibility = 'visible';
-      const faces = s.relay.members.map((id) => `<div class="f on">${this.portrait(byId.get(id)?.cat || id, 44)}</div>`).join('') + Array.from({ length: Math.max(0, 4 - s.relay.members.length) }, () => '<div class="f"></div>').join('');
+      const faces = s.relay.members.map((id) => `<div class="f on">${this.portrait(byId.get(id)?.cat || id, 44, id)}</div>`).join('') + Array.from({ length: Math.max(0, 4 - s.relay.members.length) }, () => '<div class="f"></div>').join('');
       if (this.relayEl._h !== faces) { this.relayEl.innerHTML = faces; this.relayEl._h = faces; }
     } else this.relayEl.style.visibility = 'hidden';
     // guest plate
     const guest = s.entities.find((e) => e.side === 'guest');
     if (guest && guest.guest && guest.guest.state !== 'waiting' && guest.present !== false) {
-      if (!this.guestEl.firstChild) this.guestEl.innerHTML = `<div class="ch-plate guest"><div class="por">${this.portrait(guest.cat, 60)}</div><div class="mid"><div class="nm">${svgIcon.sprig} ${guest.name}</div><div class="k-gauge"><i></i></div></div></div>`;
+      if (!this.guestEl.firstChild) this.guestEl.innerHTML = `<div class="ch-plate guest"><div class="por">${this.portrait(guest.cat, 60, guest.id)}</div><div class="mid"><div class="nm">${svgIcon.sprig} ${guest.name}</div><div class="k-gauge"><i></i></div></div></div>`;
       this.guestEl.querySelector('.k-gauge i').style.width = (100 * guest.nerve / guest.nerve_max).toFixed(1) + '%';
       this.guestEl.firstChild.classList.toggle('routed', guest.routed);
     }
@@ -301,11 +330,16 @@ export class CombatHUD {
         this.place(el, head, -8 * sc);
       }
     }
+    // the one bark balloon
+    if (this.barkMsg && t < this.barkMsg.until && s.mode !== 'pileon') {
+      const f = fighters.get(this.barkMsg.id);
+      if (f && f.root.visible) { const el = this.wEl('bark', 'k-bubble ch-bark', BARK_ICON[this.barkMsg.icon] || this.barkMsg.icon); el.style.transform = `translate(-30%,-100%) scale(${sc * 0.9})`; this.place(el, ctx.project(f.head), -60 * sc); }
+    }
     // Pile-On prompt over the Frazzled target (North / F glyph inside a dust-cloud pom; no world text)
     if (s.pile_on_offer && s.mode !== 'pileon') {
       const f = fighters.get(s.pile_on_offer.targetId);
       if (f) {
-        const el = this.wEl('pile', 'k-prompt ch-prompt', `${Kit.ui.faceButtons({ size: 50, lit: 'n' })}<span class="k-key k-btn" style="height:40px;min-width:40px;font-size:24px;box-shadow:none">F</span>${svgIcon.pileon}`);
+        const el = this.wEl('pile', 'k-prompt ch-prompt', `${this.device === 'pad' ? Kit.ui.faceButtons({ size: 50, lit: 'n' }) : kc('F', true)}${svgIcon.pileon}`);
         el.style.transform = `translate(-50%,-100%) scale(${sc})`;
         const p = ctx.project(f.head); this.place(el, p, -110 * sc);
       }
@@ -376,10 +410,11 @@ export class CombatHUD {
     const tgt = sb.step === 'target' ? byId.get(sb.targets[sb.target]) : lock;
     const tc = conds(tgt);
     const costPips = (n) => Array.from({ length: n }, () => Kit.ui.paw({ size: 30 })).join('');
-    let html = `<div class="ch-sb"><div class="hd"><span class="key">L1</span><span class="who">${this.portrait(cat.cat, 46)}${cat.name}</span><span class="key">R1</span></div>`;
+    const pad = this.device === 'pad';
+    let html = `<div class="ch-sb"><div class="hd"><span class="key">${pad ? 'L1' : 'Q'}</span><span class="who">${this.portrait(cat.cat, 46, cat.id)}${cat.name}</span><span class="key">${pad ? 'R1' : 'E'}</span></div>`;
     rows.forEach((r, i) => {
       const focus = i === sb.row && sb.step === 'rows' ? ' focus' : '';
-      if (r.kind === 'pile') html += `<div class="row pin${focus}"><span class="ic">${svgIcon.pileon}</span><span class="nm">PILE-ON</span>${Kit.ui.faceButtons({ size: 40, lit: 'n' })}</div>`;
+      if (r.kind === 'pile') html += `<div class="row pin${focus}"><span class="ic">${svgIcon.pileon}</span><span class="nm">PILE-ON</span>${pad ? Kit.ui.faceButtons({ size: 40, lit: 'n' }) : kc('F')}</div>`;
       else if (r.kind === 'scram') html += `<div class="row${focus}" style="border-bottom:0"><span class="nm" style="font-weight:700;color:var(--cocoa)">Scram</span></div>`;
       else {
         const mv = r.row || { name: r.id, cost: 1, role: 'setup' }, poor = free < mv.cost;
@@ -388,10 +423,13 @@ export class CombatHUD {
         html += `<div class="row${focus}${poor ? ' poor' : ''}${lit ? ' lit' : ''}"><span class="ic">${svgIcon[mv.type === 'thump' ? 'splat' : mv.type === 'yowl' ? 'cowed' : 'ruffled'] || ''}</span><span class="nm">${mv.name}</span><span class="cost">${costPips(mv.cost)}</span>${diamond(payoff, lit)}<span class="st">${svgIcon[STATE_ICON[st]] || ''}</span></div>`;
       }
     });
-    if (sb.step === 'target') html += `<div class="tstep">Target: <b>${tgt ? tgt.name : '-'}</b> · ◀ ▶ pick</div>`;
-    html += `<div class="ft"><span>${sb.step === 'target' ? '' : ''}</span><span class="k">${Kit.ui.faceButtons({ size: 40, lit: 's' })}OK</span><span class="k">${Kit.ui.faceButtons({ size: 40, lit: 'e' })}Back</span><span class="key" style="background:var(--cocoa);color:var(--cream)">R2</span></div></div>`;
+    if (sb.step === 'target') html += `<div class="tstep">Target: <b>${tgt ? tgt.name : '-'}</b> · ${pad ? '◀ ▶' : kc('A') + ' ' + kc('D')} pick</div>`;
+    html += `<div class="ft"><span>${sb.step === 'target' ? '' : ''}</span><span class="k">${pad ? Kit.ui.faceButtons({ size: 40, lit: 's' }) : kc('Space')}OK</span><span class="k">${pad ? Kit.ui.faceButtons({ size: 40, lit: 'e' }) : kc('Esc')}Back</span><span class="key" style="background:var(--cocoa);color:var(--cream)">${pad ? 'R2' : 'Tab'}</span></div></div>`;
     if (this.sbEl._h !== html) { this.sbEl.innerHTML = html; this.sbEl._h = html; }
   }
+
+  /** Icon-only fight bark (DR-44): one balloon at a time over a cat, ~0.9 s. */
+  bark(id, icon, t) { if (this.barkMsg && t < this.barkMsg.until - 0.3) return; this.barkMsg = { id, icon, until: t + 0.9 }; }
 
   /** Centre card (Standoff name-card / outcome): a wedge-ended band slamming into the upper third. */
   card(text, sub, ms, t, clowder = 'ink', y = 0.3) {

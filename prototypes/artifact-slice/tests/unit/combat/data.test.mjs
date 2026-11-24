@@ -38,3 +38,10 @@ test('showcase-only values live only in showcase_overrides.json', () => {
   assert.equal(DATA.showcase.boss_phase_cap, 1);
   assert.equal(DATA.showcase.anger_stage.daifuku, 'Furious');
 });
+
+test('a personality self-casts only Set-ups from its list, and a showcase override never edits canon rows', () => {
+  for (const p of Object.values(DATA.personalities)) for (const r of p.self_setup || []) assert.equal(DATA.moves[r.move].role, 'setup', `${p.Name} ${r.move}`);
+  assert.equal(DATA.cats.challenger.rank, 'tough');
+  assert.equal(DATA.showcase.combatant_overrides.challenger.rank, 'captain');
+  assert.equal(DATA.k.ai_fill, 0.5, 'canon ai_fill unchanged');
+});

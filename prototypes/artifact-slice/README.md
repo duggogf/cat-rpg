@@ -41,6 +41,9 @@ No browser and no `npm install` beyond Node 22 are needed:
 node --test 'tests/unit/combat/*.test.mjs' 'tests/smoke/combat/*.test.mjs'
 ```
 
+Keep the quotes and the `*.test.mjs` globs: Node 22 expands them itself, and a bare directory
+(`node --test tests/unit/combat/`) fails with MODULE_NOT_FOUND.
+
 ```bash
 node tools/sim-run.mjs --seeds 30
 ```

@@ -1,7 +1,9 @@
 [
-  { "Name": "_comment", "value": "PROTOTYPE - NOT FOR PRODUCTION. THROWAWAY, NEVER TRANSFERS (plan §4.4 / §7). Applied on top of the canon tables only when createEncounter is called with { showcase: true }.", "_src": "plan §4.4 showcase_overrides.json" },
-  { "Name": "boss_phase_cap", "value": 1, "_src": "plan §2.4 / Combat §3.13 showcase: the optional bout plays phase 1 alone" },
-  { "Name": "anger_stage", "value": { "daifuku": "Furious" }, "_src": "plan §2.4 Life 2 snapshot: Daifuku Furious" },
-  { "Name": "guest_join_p", "value": 1.0, "_src": "plan §2.4 join-in probability 1.0 in branch A (canon 0.35-0.65; Nemesis rolls it, so the sim only consumes the result)" },
-  { "Name": "tutorial_frazzle_boost", "value": { "after_s": 60, "mult": 1.5 }, "_src": "plan §2.2 2:15 'If no Frazzle by 3:15, it fills faster' (60 s into the fight; x1.5 is a showcase guess)" }
+  {"Name": "_comment", "value": "PROTOTYPE - NOT FOR PRODUCTION. THROWAWAY, NEVER TRANSFERS (plan §4.4 / §7). Applied on top of the canon tables only when createEncounter is called with { showcase: true }.", "_src": "plan §4.4 showcase_overrides.json"},
+  {"Name": "boss_phase_cap", "value": 1, "_src": "plan §2.4 / Combat §3.13 showcase: the optional bout plays phase 1 alone"},
+  {"Name": "anger_stage", "value": {"daifuku": "Furious"}, "_src": "plan §2.4 Life 2 snapshot: Daifuku Furious"},
+  {"Name": "guest_join_p", "value": 1.0, "_src": "plan §2.4 join-in probability 1.0 in branch A (canon 0.35-0.65; Nemesis rolls it, so the sim only consumes the result)"},
+  {"Name": "tutorial_frazzle_boost", "value": {"after_s": 60, "mult": 1.5}, "_src": "plan §2.2 2:15 'If no Frazzle by 3:15, it fills faster' (60 s into the fight; x1.5 is a showcase guess)"},
+  {"Name": "combatant_overrides", "value": {"challenger": {"rank": "captain", "fears": ["water"]}}, "_src": "M1 review round 1, game-designer Fix 1 (approved by the orchestrator; OR-16 says a Tough, so this stays showcase-only pending creative-director sign-off): a Captain-rank challenger with the Water Fear lands 23-34 s and teaches Relay, Fears and the join-in"},
+  {"Name": "ai_fill", "value": 1.0, "_src": "M1 round 2: AI Paw fill for the showcase, 1.0 = the top of the GDD range (canon ai_fill 0.5, GDD range 0.4-1.0; Combat B-17 suggests raising it for the slice) so each AI cat can afford its signature Move inside a 25-40 s fight"}
 ]

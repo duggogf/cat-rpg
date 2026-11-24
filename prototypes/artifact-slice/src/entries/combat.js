@@ -15,7 +15,7 @@ import { loadCatAssets } from '../render/cats/index.js';
 import { createEncounter, DATA } from '../sim/combat/index.js';
 import { skilledBot, medianBot, daifukuBot, passiveBot, withCommandQueue } from '../../tests/smoke/combat/bots.mjs';
 import { buildArena, spendProp } from '../render/vfx/arena.js';
-import { Fighter } from '../render/vfx/fighters.js';
+import { Fighter, portraitFor } from '../render/vfx/fighters.js';
 import { bakeSprites, Kit } from '../render/vfx/sprites.js';
 import { WorldFX } from '../render/vfx/fx.js';
 import { ScreenFX } from '../render/vfx/screen.js';
@@ -24,7 +24,9 @@ import { CombatInput } from '../input/combat-input.js';
 import { CombatHUD } from '../ui/combat/hud.js';
 
 const Q = new URLSearchParams(location.search);
-const FIGHTS = { toughs3: 'toughs_3', captain: 'captain', daifuku: 'daifuku_bout', sandbox: 'sandbox', challenger: 'challenger', lose: 'lose_to_daifuku', toughs2: 'toughs_2', strays: 'two_strays' };
+// a 10-cat brawl for the triangle budget check (inline encounter row; same arena as the sandbox)
+const BRAWL10 = { Name: 'brawl10', arena: 'sandbox_lane', opener: 'standoff', posse: ['mikan', 'hige', 'pon', 'kinako'], enemies: ['goma', 'sasa', 'stray', 'stray', 'stray', 'challenger'], guest: null, tutorial: false };
+const FIGHTS = { brawl10: BRAWL10, toughs3: 'toughs_3', captain: 'captain', daifuku: 'daifuku_bout', sandbox: 'sandbox', challenger: 'challenger', lose: 'lose_to_daifuku', toughs2: 'toughs_2', strays: 'two_strays' };
 const opt = {
   fight: FIGHTS[Q.get('fight')] || 'toughs_3', seed: (+Q.get('seed') || 1) >>> 0, phase: PHASES[Q.get('phase')] ? Q.get('phase') : 'day',
   test: Q.get('test') === '1', script: Q.get('script') || '', post: Q.get('post') !== '0', res: +(Q.get('res') || 1), hud: Q.get('hud') !== '0',
@@ -172,6 +174,8 @@ function onEvent(ev) {
       const facingRot = Math.atan2(cp.dir[1], cp.dir[0]) * 0.5;
       fx.hit(cp.p, ht, ev.feel || { tier: 0, dust: '2 puffs' }, cp.dir, { blocked: ev.blocked, stringIdx: ea ? ea.string_idx : 0, finisher: ev.kind === 'finisher' || ev.kind === 'tag_in', player: ev.authored === 'player', seed: seedCounter++, facingRot });
       applyFeel(ev.feel, cp.p, { dir: screenDir(fa ? fa.pos : cp.p, ft.pos), from: fa ? fa.pos.clone().add(new THREE.Vector3(0, 0.3, 0)) : null, hitType: ht });
+      // the player's own swipes get a short speed smear behind the lunge even on T1 (no flash: Ink wedges, 2 drawings)
+      if (fa && ev.authored === 'player' && (ev.feel?.tier ?? 0) <= 1) scr.add({ kind: 'streak', from: fa.pos.clone().add(new THREE.Vector3(0, 0.3, 0)), to: cp.p.clone(), dur: 0.12, seed: seedCounter++ % 3, len: 120 });
       break;
     }
     case 'Whiff': { const fa = F(ev.attacker); if (fa) { fa.impulse('strike', tw, { mag: 0.8 }); fx.spawn('wedge', fa.head.clone().add(new THREE.Vector3(0, -0.2, 0)), { size: 0.3, drawings: 3 }); } break; }
@@ -191,6 +195,7 @@ function onEvent(ev) {
     case 'FearTriggered': { const f = F(ev.cat); if (f) { scr.add({ kind: 'fear', at: f.head.clone(), dur: 0.9 }); f.impulse('take', tw, { dur: 0.3 }); applyFeel(ev.feel, f.head, {}); } break; }
     case 'PawFilled': { const f = F(ev.cat); if (f) fx.groundMark('pawDisc', f.pos, 0.8 * f.scaleK, 0.33); break; }
     case 'Switch': ccam.blend(COMBAT_CAM.tagBlend); break;
+    case 'SlowBlinkOpen': case 'SlowBlinkClose': ccam.blend(COMBAT_CAM.sbBlend); break;
     case 'TagIn': {
       ccam.blend(COMBAT_CAM.tagBlend); ccam.relayHold = realT + 3;
       const fi = F(ev.to), ftg = F(ev.target);
@@ -215,9 +220,9 @@ function onEvent(ev) {
     case 'PileOnStart': {
       const t = F(ev.target);
       pile = { t: 0, dur: snap.pile_on ? snap.pile_on.dur : (ev.pile_type === 'full' ? 2.5 : 1.2), type: ev.pile_type, target: ev.target, cats: ev.cats, phase: 'main', beat: 0, beatT: null, beatDx: 0, outT: 0,
-        coats: ev.cats.map((id) => { const e = ent(id); const cast = Kit.CAST[{ mikan: 'mikan', hige: 'stalwart', pon: 'goofball', kinako: 'fraidy', togemaru: 'braggart', kagi: 'schemer' }[e?.cat] || 'stalwart']; return cast.coat.patch && id !== 'mikan' ? cast.coat.patch : cast.coat.base; }),
+        coats: ev.cats.map((id) => { const e = ent(id); const k = portraitFor(e?.cat || id, id); return id === 'mikan' ? k.coat.base : (k.coat.patch || k.coat.base); }),
         mikan: ev.cats.includes('mikan'), chevrons: Math.max(0, ev.cats.length - (ev.cats.includes('mikan') ? 1 : 0)), panel: Kit.C.gold,
-        bolter: t && t.side === 'enemy' && (ent(ev.target)?.rank !== 'boss') ? { ...Kit.CAST.brooder } : null, centerW: t ? t.pos.clone() : new THREE.Vector3() };
+        bolter: t && t.side === 'enemy' && (ent(ev.target)?.rank !== 'boss') ? { ...portraitFor(ent(ev.target)?.cat, ev.target) } : null, centerW: t ? t.pos.clone() : new THREE.Vector3() };
       hud.showChrome(false);
       applyFeel(ev.feel, pile.centerW.clone().add(new THREE.Vector3(0, 0.4, 0)), { noFull: true, text: 'BAP-BAP-BAP!' });
       break;
@@ -295,12 +300,16 @@ function present(dt, alpha, menu = []) {
   const s = snap, tw = Math.floor(realT * 30 + 1e-6) / 30;
   const globalStop = s.time_scale === 0;
   // fighters
+  const Cf = F(s.controlled), C0d = Cf ? Math.hypot(Cf.pos.x - cam.position.x, Cf.pos.z - cam.position.z) : null;
   for (const e of s.entities) {
     const f = F(e.id); if (!f) continue;
     const prevE = prevSnap && prevSnap.entities.find((x) => x.id === e.id);
     const frozen = globalStop || (prevE && prevE.anim === e.anim && prevE.anim_t === e.anim_t && e.anim !== 'idle' && e.anim !== 'run');
     const hidden = (pile && pile.phase === 'main' && pile.cats.concat([pile.target]).includes(e.id));
-    f.hidden = hidden;
+    // camera-soft cats: an AI cat crowding the lens (closer than 1.5 m, nearer than the controlled cat) is hidden
+    const dc = Math.hypot(f.pos.x - cam.position.x, f.pos.z - cam.position.z);
+    const crowd = !e.controlled && C0d != null && dc < 2.8 && dc < C0d - 0.3;
+    f.hidden = hidden || crowd;
     f.update(lerpEnt(e, alpha), frozen ? 0 : dt * (s.slow_blink ? 0.05 : 1), realT, tw, dt);
     // routed bolt: a three-puff trail of shrinking clouds
     if (e.anim === 'routed' && routedTrail.has(e.id) && realT - routedTrail.get(e.id) > 0.12) { routedTrail.set(e.id, realT); fx.spawn('puffSmall', f.pos.clone().add(new THREE.Vector3(0, 0.12, 0)), { size: 0.3, drawings: 6 }); }
@@ -323,6 +332,8 @@ function present(dt, alpha, menu = []) {
     }
     if (e.controlled && f.root.visible) f.cat.lookAt(s.lock && F(s.lock) ? F(s.lock).head : null);
   }
+  // camera-soft ring dressing: a prop crowding the lens is hidden outright (never half-transparent)
+  if (world.dress) for (const m of world.dress.children) m.visible = Math.hypot(m.position.x - cam.position.x, m.position.z - cam.position.z) > 1.7;
   // tag window opening: a bell-gold spark ring on the controlled cat
   if (s.tag_window && !lastTagWindow) { const f = F(s.controlled); if (f) fx.tagRing(f.pos); }
   lastTagWindow = s.tag_window;
@@ -335,13 +346,13 @@ function present(dt, alpha, menu = []) {
   const standoffK = s.mode === 'standoff' ? Math.min(1, s.t / 3) : 0;
   ccam.update(dt, realT, { C: C ? C.pos.clone() : new THREE.Vector3(), T: T ? T.pos.clone() : null, enemiesCentroid: cen, aspect: cam.aspect, slowBlink: s.slow_blink,
     highRoad: C && T && Math.abs(C.pos.y - T.pos.y) > 0.6, mode: pile && pile.phase === 'main' ? 'pileon' : s.mode, pileCenter: pile ? pile.centerW : null,
-    standoffFocus, standoffK, offFrame, globalStop, targetNY: T ? project(T.head).ny : null, occluded: C ? (pose) => occludedAt(pose, [C.head, T ? T.head : null]) : null });
+    standoffFocus, standoffK, offFrame, globalStop, targetNY: T ? project(T.head).ny : null, clearance, occluded: C ? (pose) => occludedAt(pose, [C.head, T ? T.head : null]) : null });
   // impact frame state
   let impactMode = null;
   if (impact) {
     const u = (realT - impact.start) * 60;
     if (u >= 0 && u < impact.inv) impactMode = 'inv';
-    else if (u >= impact.inv && u < impact.inv + 2) { if (!impact.flashed) { impact.flashed = true; fx.spawn('burstPlain', impact.at, { size: 2.2, drawings: 1, cycle: false, flat: new THREE.Vector4(1, 0.965, 0.89, 1), breakAt: 9, order: 4 }); } }
+    else if (u >= impact.inv && u < impact.inv + 2) { if (!impact.flashed) { impact.flashed = true; fx.spawn('burstPlain', impact.at, { size: Math.min(2.2, fx.fit(impact.at, 0.4)), drawings: 1, cycle: false, flat: new THREE.Vector4(1, 0.965, 0.89, 1), breakAt: 9, order: 4 }); } }
     else if (u >= impact.inv + 2) impact = null;
   }
   // world FX
@@ -388,6 +399,13 @@ function present(dt, alpha, menu = []) {
   if (!skipDraw) draw(impactMode, s);
 }
 
+/** Distance the camera may sit at from `pivot` along `dir` before camera-solid geometry (minus 0.2 m). */
+const ray2 = new THREE.Ray(), hit2 = new THREE.Vector3();
+function clearance(pivot, dir, want) {
+  ray2.set(pivot, dir); let best = want;
+  for (const b of world.colliders) { if (b.soft) continue; if (b.containsPoint(pivot)) continue; if (ray2.intersectBox(b, hit2)) { const d = hit2.distanceTo(pivot) - 0.2; if (d < best) best = d; } }
+  return best;
+}
 /** Does camera-solid geometry hide any of `pts` from the camera at `pose`? */
 const ray = new THREE.Ray(), hitP = new THREE.Vector3(), camP = new THREE.Vector3();
 function occludedAt(pose, pts) {
@@ -448,7 +466,7 @@ async function boot() {
   shadow = new SunShadow(2048, 21); post = new PaintPost(tex.grain); U.grainMap.value = tex.grain;
   keyLight = new THREE.DirectionalLight('#ffffff', 2.5); fillLight = new THREE.AmbientLight('#6E6AA8', 0.8); lateScene.add(keyLight, fillLight);
   for (const e of snap.entities) { const f = new Fighter(e, { rim: Q.get('rim') !== '0' }); fighters.set(e.id, f); fGroup.add(f.root); }
-  fx = new WorldFX(spr, fxScene, decalScene);
+  fx = new WorldFX(spr, fxScene, decalScene); fx.cam = cam;
   scr = new ScreenFX(app);
   hud = new CombatHUD(app, DATA); if (!opt.hud) hud.el.style.display = 'none';
   // deterministic captures step frames faster than wall-clock CSS transitions: snap them in test mode
@@ -462,7 +480,7 @@ async function boot() {
   layout(); setPhase(opt.phase);
   // start the camera on the Posse, looking down the ring at the opponents
   const C0 = F(snap.controlled);
-  Object.assign(ccam.pose, { px: C0.pos.x, py: 0.5, pz: C0.pos.z + 1, yaw: 0, pitch: 22, dist: 7.5 });
+  Object.assign(ccam.pose, { px: C0.pos.x, py: 0.5, pz: C0.pos.z - 1, yaw: 0, pitch: 18, dist: 6.5, shoulder: 0 });
   addEventListener('resize', layout);
   window.__cat = {
     state: () => ({ fight: opt.fight, seed: opt.seed, tick: enc.tick, realT: +realT.toFixed(4), mode: snap.mode, outcome: snap.outcome, slow_blink: snap.slow_blink, controlled: snap.controlled,

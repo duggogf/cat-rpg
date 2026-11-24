@@ -138,7 +138,12 @@ test('in skilled sandbox fights, AI Kin, Hiss, Move and Relay rules all hold and
       const o = enc.offer;
       if (o && o.type === 'quick') assert.ok(o.cluster.length >= 2 || enc.enemies().filter(e => enc.standing(e)).length === 1);
       for (const e of evs) if (e.type === 'MoveUsed' && e.authored === 'ai' && enc.byId.get(e.user).side !== 'enemy') {
-        assert.notEqual(DATA.moves[e.move].ai_use, 'command_only'); assert.ok(e.paws_after >= 100 - 1e-9, 'AI never spends its last Paw');
+        const u = enc.byId.get(e.user), m = DATA.moves[e.move];
+        // §3.10 Set-ups stay command_only except the personality's own self_setup list (M1 round 2, B-17 deviation).
+        if (m.ai_use === 'command_only') assert.ok((u.pers.self_setup || []).some(r => r.move === e.move), `${u.id} self-cast ${e.move}`);
+        // B-17: the last Paw only when the rest of the Posse banks one for the conductor.
+        const banked = enc.posse().filter(p => p !== u && enc.standing(p)).reduce((a, p) => a + Math.floor((p.paws - p.reserved) / 100), 0);
+        assert.ok(e.paws_after >= 100 - 1e-9 || banked >= 1 || u.side === 'guest', `${u.id} spent the Posse's last Paw`);
       }
       for (const e of evs) if (e.type === 'HissInterrupt' && e.authored === 'ai') assert.equal(e.aimed_at, e.cat, 'AI Hisses only yellows aimed at itself');
     }
@@ -208,4 +213,93 @@ test('Slow Blink runs the sim at 5% and commanded Moves spend Paws only when the
   const used = evs.find(e => e.type === 'MoveUsed' && e.move === 'face_swat');
   assert.ok(used); assert.equal(used.authored, 'player');
   assert.ok(evs.some(e => e.type === 'Ruffled' && e.cat === 'goma'));
+});
+
+test('AI cats spend Paws by personality: Hige (Stalwart) and Pon (Goofball) each self-cast their signature Moves in most fights', () => {
+  // Arrange
+  const runs = [];
+  for (const name of ['sandbox', 'challenger']) for (const seed of [1, 2, 3, 4, 5, 6]) {
+    const enc = createEncounter(name, { seed, showcase: true });
+    // Act
+    const { events } = run(enc, withCommandQueue(skilledBot()), T * 120);
+    runs.push({ enc, ai: events.filter(e => e.type === 'MoveUsed' && e.authored === 'ai' && enc.byId.get(e.user).side !== 'enemy') });
+  }
+  // Assert
+  const share = id => runs.filter(r => r.ai.some(e => e.user === id)).length / runs.length;
+  assert.ok(share('hige') >= 0.5, `Hige self-cast in ${share('hige')}`);
+  assert.ok(share('pon') >= 0.5, `Pon self-cast in ${share('pon')}`);
+  const used = id => new Set(runs.flatMap(r => r.ai.filter(e => e.user === id).map(e => e.move)));
+  assert.ok(used('hige').has('shoulder_check'), 'the Stalwart opens with its Set-up on whatever threatens the controlled cat');
+  assert.ok([...used('pon')].some(m => m === 'withering_hiss' || m === 'purr'));
+  for (const m of used('togemaru')) assert.equal(DATA.moves[m].ai_use, 'auto', 'a guest spends only on auto Pay-offs');
+  assert.notDeepEqual([...used('hige')].sort(), [...used('pon')].sort(), 'personalities fight differently');
+});
+
+test('the showcase challenger is a Captain with the Water Fear and its fight lands in 23-34 s; canon keeps a Tough', () => {
+  // Arrange + Act
+  const lens = [], fulls = [];
+  for (const seed of [1, 2, 3, 4, 5, 6, 7, 8]) {
+    const enc = createEncounter('challenger', { seed, showcase: true });
+    const ch = enc.byId.get('challenger');
+    assert.equal(ch.rank, 'captain'); assert.deepEqual(ch.row.fears, ['water']);
+    const { events } = run(enc, withCommandQueue(skilledBot()), T * 120);
+    assert.equal(enc.outcome, 'win');
+    lens.push(enc.fightT); fulls.push(events.filter(e => e.type === 'PileOnStart' && e.pile_type === 'full').length);
+  }
+  const canon = createEncounter('challenger', { seed: 1 });
+  // Assert
+  assert.equal(canon.byId.get('challenger').rank, 'tough'); assert.deepEqual(canon.byId.get('challenger').row.fears, []);
+  const med = lens.slice().sort((a, b) => a - b)[lens.length >> 1];
+  assert.ok(med >= 23 && med <= 34, `median ${med.toFixed(1)} s`);
+  assert.ok(fulls.every(n => n >= 1), 'every run has a Full Pile-On on the Captain-rank challenger');
+});
+
+test('the bucket splashes a 3 m cone away from the hitter: Soggy in front, dry behind', () => {
+  // Arrange: a cat 2.5 m beyond the bucket along the hit, another 2.5 m behind it.
+  const enc = createEncounter('toughs_2', { seed: 1 });
+  stepN(enc, T * 3 + 1);
+  const p = enc.props[0], hitter = enc.byId.get('mikan'), front = enc.byId.get('goma'), back = enc.byId.get('sasa');
+  hitter.x = p.x; hitter.z = p.z - 1.0;
+  front.x = p.x; front.z = p.z + 2.5; back.x = p.x + 0.3; back.z = p.z - 2.5;
+  // Act
+  enc._triggerProp(p, hitter, null);
+  // Assert
+  assert.equal(front.status?.kind, 'soggy');
+  assert.notEqual(back.status?.kind, 'soggy');
+  assert.equal(p.usesLeft, 0);
+});
+
+test('a Pay-off commanded after a Set-up on the same target in one Slow Blink waits for it (Shoulder Check -> Bunny-Kick)', () => {
+  // Arrange
+  const enc = createEncounter('tough_focus', { seed: 2 });
+  stepN(enc, T * 3 + 1);
+  enc.byId.get('mikan').paws = 100; enc.byId.get('hige').paws = 100;
+  // Act
+  enc.step({ slowBlink: true });
+  const q1 = enc.step({ command: { cat: 'hige', move: 'shoulder_check', target: 'goma' } });
+  const q2 = enc.step({ command: { cat: 'mikan', move: 'bunny_kick', target: 'goma' } });
+  enc.step({ slowBlink: true });
+  const evs = stepN(enc, T * 6);
+  // Assert
+  const a = q1.find(e => e.type === 'CommandQueued'), b = q2.find(e => e.type === 'CommandQueued');
+  assert.equal(b.after, a.id);
+  const sc = evs.find(e => e.type === 'MoveUsed' && e.move === 'shoulder_check'), bk = evs.find(e => e.type === 'MoveUsed' && e.move === 'bunny_kick');
+  assert.ok(sc && bk && bk.sim_t > sc.sim_t, 'the Pay-off lands after the Set-up');
+});
+
+test('the snapshot exports the ring bounds and nobody fights on the far side of a wall', () => {
+  for (const name of ['sandbox', 'daifuku_bout', 'challenger']) {
+    const enc = createEncounter(name, { seed: 3, showcase: true });
+    const b = enc.snapshot().arena.bounds;
+    assert.ok(b.radius > 0 && b.center.length === 2 && b.half_planes.length === enc.hrs.length);
+    const bot = withCommandQueue(name === 'daifuku_bout' ? daifukuBot() : skilledBot());
+    for (let i = 0; i < T * 60 && enc.mode !== 'ended'; i++) {
+      enc.step(bot(enc, i));
+      for (const e of enc.entities) if (enc.standing(e) && !e.onHR && e.y < 0.1 && !e.act?.kind?.match(/routed|fall|climb|mantle|drop|tagin|pounce|leap/))
+        for (const h of b.half_planes) {
+          const hr = enc.hr(h.wall), t = ((e.x - hr.a[0]) * (hr.b[0] - hr.a[0]) + (e.z - hr.a[1]) * (hr.b[1] - hr.a[1])) / ((hr.b[0] - hr.a[0]) ** 2 + (hr.b[1] - hr.a[1]) ** 2);
+          if (t > 0 && t < 1) assert.ok((e.x - h.point[0]) * h.normal[0] + (e.z - h.point[1]) * h.normal[1] >= -1e-6, `${name} ${e.id} behind ${h.wall}`);
+        }
+    }
+  }
 });

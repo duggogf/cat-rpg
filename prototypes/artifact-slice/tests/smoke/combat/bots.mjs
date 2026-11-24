@@ -76,19 +76,40 @@ export function skilledBot({ tagIns = true, commands = true, uptime = 1, tagPeri
 /** Combat F9's median policy: 65% attack uptime, about one Tag-In per 10 s, half the telegraphs answered. */
 export const medianBot = () => skilledBot({ uptime: 0.65, tagPeriod: 10, dodgeEvery: 2 });
 
-/** Set-up -> Pay-off pairs within what each cat can afford (Combat §3.10). */
+/** Would a Shoulder Check from `from` Splat `t`? (A wall, prop, other enemy or the ring edge within 3.6 m behind it.) */
+function obstacleBehind(s, from, t, m = 3.6) {
+  let dx = t.pos[0] - from.pos[0], dz = t.pos[2] - from.pos[2]; const l = Math.hypot(dx, dz) || 1; dx /= l; dz /= l;
+  const fx = t.pos[0] + dx * m, fz = t.pos[2] + dz * m, b = s.arena.bounds;
+  if (Math.hypot(fx - b.center[0], fz - b.center[1]) > b.radius) return true;
+  if (b.half_planes.some(h => (fx - h.point[0]) * h.normal[0] + (fz - h.point[1]) * h.normal[1] < 0)) return true;
+  const onLine = p => { const vx = p[0] - t.pos[0], vz = p[2] - t.pos[2], along = vx * dx + vz * dz; return along > 0 && along <= m && Math.abs(vx * dz - vz * dx) <= 0.8; };
+  return s.props.some(p => onLine(p.pos)) || s.entities.some(e => e.side === 'enemy' && e.id !== t.id && e.present && !e.routed && onLine(e.pos));
+}
+
+/**
+ * One Slow Blink's commands. Set-up -> Pay-off chains first (Combat §3.10): Hige's Shoulder Check -> Mikan's
+ * Bunny-Kick on the Splat (the sim holds the Pay-off until the Set-up resolves), and Pon's Withering Hiss -> Purr
+ * (x1.5 with a Cowed enemy near). Hige's Paws are spent only inside a chain; otherwise his own AI spends them.
+ */
 function planCommands(enc, s, lock) {
   const cmds = [];
   const posse = s.entities.filter(e => e.side === 'posse' && !e.routed);
   const free = e => e.paws - e.paws_reserved;
   const by = id => posse.find(e => e.id === id);
   const mikan = by('mikan'), hige = by('hige'), pon = by('pon');
-  const splatOrSoggy = lock.splat_s > 0 || lock.status?.kind === 'soggy';
-  if (mikan && free(mikan) >= 1 && splatOrSoggy) cmds.push({ cat: 'mikan', move: 'bunny_kick', target: lock.id });
-  else if (hige && free(hige) >= 1 && lock.rank !== 'boss' && Math.abs(hige.pos[1] - lock.pos[1]) < 0.5) cmds.push({ cat: 'hige', move: 'shoulder_check', target: lock.id });
-  else if (mikan && free(mikan) >= 1 && lock.ruffled_s <= 0 && lock.frazzled_s <= 0 && Math.abs(mikan.pos[1] - lock.pos[1]) < 0.5) cmds.push({ cat: 'mikan', move: 'face_swat', target: lock.id });
-  const hurt = posse.filter(e => e.nerve / e.nerve_max < 0.45).sort((a, b) => a.nerve / a.nerve_max - b.nerve / b.nerve_max)[0];
-  if (pon && free(pon) >= 1 && hurt) cmds.push({ cat: 'pon', move: 'purr', target: hurt.id });
+  const level = e => Math.abs(e.pos[1] - lock.pos[1]) < 0.5;
+  const hurt = posse.filter(e => e.nerve / e.nerve_max < 0.7).sort((a, b) => a.nerve / a.nerve_max - b.nerve / b.nerve_max)[0];
+  if (hige && mikan && free(hige) >= 1 && free(mikan) >= 1 && lock.rank !== 'boss' && level(hige) && lock.splat_s <= 0 && obstacleBehind(s, hige, lock)) {
+    cmds.push({ cat: 'hige', move: 'shoulder_check', target: lock.id }, { cat: 'mikan', move: 'bunny_kick', target: lock.id });
+  } else if (pon && free(pon) >= 2 && hurt && lock.status?.kind !== 'cowed') {
+    cmds.push({ cat: 'pon', move: 'withering_hiss', target: lock.id }, { cat: 'pon', move: 'purr', target: hurt.id });
+  } else if (mikan && free(mikan) >= 1 && (lock.splat_s > 0 || lock.status?.kind === 'soggy')) {
+    cmds.push({ cat: 'mikan', move: 'bunny_kick', target: lock.id });
+  } else if (mikan && free(mikan) >= 1 && lock.ruffled_s <= 0 && lock.frazzled_s <= 0 && level(mikan)) {
+    cmds.push({ cat: 'mikan', move: 'face_swat', target: lock.id });
+  } else if (pon && free(pon) >= 1 && hurt && hurt.nerve / hurt.nerve_max < 0.45) {
+    cmds.push({ cat: 'pon', move: 'purr', target: hurt.id });
+  }
   return cmds;
 }
 

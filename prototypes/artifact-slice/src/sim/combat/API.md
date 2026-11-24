@@ -26,7 +26,7 @@ enc.hash();                            // 16 hex chars over the canonical sim st
 |---|---|
 | `def` | An `encounters.json` Name (`tough_focus`, `toughs_2`, `toughs_3`, `sandbox`, `two_strays`, `captain`, `challenger`, `challenger_no_guest`, `daifuku_bout`, `lose_to_daifuku`) or an inline row `{Name, arena, opener, posse[], enemies[], guest:{cat, cue:'start'}|null, tutorial, old_scores?}` |
 | `opts.seed` | uint32. Every AI has its own substream `ai:<id>`, so adding a cat never shifts another's draws |
-| `opts.showcase` | Applies `showcase_overrides.json` (phase cap 1, Daifuku Furious, the tutorial Frazzle boost). Off = canon |
+| `opts.showcase` | Applies `showcase_overrides.json` (phase cap 1, Daifuku Furious, the tutorial Frazzle boost, `ai_fill` 1.0, the Captain-rank challenger with the Water Fear). Off = canon |
 | `opts.difficulty` | `Kitten` / `Alley` (default) / `Feral` (Combat §3.15) |
 | `opts.anger` | `{ daifuku: 'Calm'|'Riled'|'Seething'|'Furious' }`: Nemesis's stage at fight start (beats the showcase value) |
 | `opts.reduceFlashes`, `opts.motionScale` | Accessibility options fed to the arbiter (line hold instead of flashes; shake scale 0–1) |
@@ -56,7 +56,9 @@ There is no heavy attack and no hold-charge (Combat §3.2; DR-28): the string's 
 
 ## `snapshot()` (read-only; a fresh object every call)
 
-Top level: `tick, t, sim_t, fight_t, time_scale, mode ('standoff'|'fight'|'pileon'|'gloat'|'ended'), slow_blink, controlled, lock, arena{id, origin, ring_center, ring_radius, high_roads[]}, props[{id, kind, pos, uses_left}], entities[], telegraphs[], tag_window{target, left_s, relay}|null, relay{starter, count, members, bonus_locked}|null, relay_bonus_locked_s, pile_on_offer{type:'quick'|'full', targetId, cluster[], t_rem, pips}|null, pile_on{type, target, cats[], t, dur}|null, fed_up, outcome`.
+Top level: `tick, t, sim_t, fight_t, time_scale, mode ('standoff'|'fight'|'pileon'|'gloat'|'ended'), slow_blink, controlled, lock, arena{id, origin, ring_center, ring_radius, high_roads[], bounds}, props[{id, kind, pos, uses_left}], entities[], telegraphs[], tag_window{target, left_s, relay}|null, relay{starter, count, members, bonus_locked}|null, relay_bonus_locked_s, pile_on_offer{type:'quick'|'full', targetId, cluster[], t_rem, pips}|null, pile_on{type, target, cats[], t, dur}|null, fed_up, outcome`.
+
+**Ring bounds** (`snapshot().arena.bounds`, also `enc.ringBounds()`): `{center:[x,z], radius, scram_radius, half_planes:[{point:[x,z], normal:[x,z], wall}], origin}`. The fight space is the circle cut by each wall's half-plane (`(p - point)·normal ≥ 0` is playable). Enemies and AI cats are clamped to it; no cat stands on the far side of a wall. Keep walls and set dressing outside it; `scram_radius` is where Scram starts counting.
 
 `entities[]`: `id, cat, name, side ('posse'|'enemy'|'guest'), slot (D-pad 0..3; -1 guest), rank, style, personality, pos [x,y,z], facing [fx,fz], present, routed, anim, anim_t, string_idx, controlled, invulnerable, bracing, on_high_road, nerve, nerve_max, paws (0–2, fractional), paw_points, paws_reserved, orders[], frazzle (enemies 0–100), frazzled_s, pips, ruffled_s (-1 = Fed Up, rest of fight), splat_s, clumped_s, status{kind:'soggy'|'cowed'|'fired_up', left_s, source}|null, anger_fired_up{active, left_s (-1 = whole fight), stage}|null, hiss_cd_s, moves[], target, boss{phase, state:'wall'|'falling'|'ground'|'drop', ground_s, pending_break}|null, guest{state:'waiting'|'yowl'|'in', t}|null`.
 
@@ -79,13 +81,13 @@ Top level: `tick, t, sim_t, fight_t, time_scale, mode ('standoff'|'fight'|'pileo
 | `TelegraphStart` / `TelegraphEnd` | `id, attacker, cls, move, aimed_at, shape, windup_s` / `id, reason ('resolved'|'interrupted'|'cancelled'|...)` |
 | `Hiss`, `HissFizzle`, `HissInterrupt` *, `BackDown` * | `cat` / `cat` / `cat, target, move, tele, aimed_at, authored` / `cat, by` |
 | `MoveUsed` | `user, move, targets_hit[], authored, paws_after` (canon `MoveUsed`) |
-| `CommandQueued` / `CommandRejected` / `CommandDropped` | `cat, move, target, shortcut` / `reason, command` |
+| `CommandQueued` / `CommandRejected` / `CommandDropped` | `id, cat, move, target, shortcut, after` (the order id it waits for: a Pay-off commanded after another cat's Set-up on the same target in the same Slow Blink waits until that Move finishes and the target lands) / `reason, command` |
 | `PawFilled` | `cat, paws` (a per-slot cue, §3.17 rule 8) |
 | `Switch` / `TagIn` / `RelayEnded` | `from, to, tag_in, reason?` / `from, to, relay_count, target` (canon `TagIn`) / `tags, reason, bonus_locked_until` |
 | `SlowBlinkOpen` / `SlowBlinkClose` | `reason` |
 | `PileOnOffered` / `PileOnWithdrawn` | `pile_type, target, cluster[]` |
 | `PileOnStart` * / `PileOnBeat` * / `PileOnEnd` * | `pile_type, target, cluster, cats[], t_rem, pips` / `cat, beat, of, style, flourish` / `pile_type, target, routed[]` |
-| `PropTriggered` * / `PropHit` / `FearTriggered` * | `prop, kind, by, goofball` / `prop, empty` / `cat, fear, source (prop id or 'tell'), effect` |
+| `PropTriggered` * / `PropHit` / `FearTriggered` * | `prop, kind, by, goofball, splash` (the cone shape, drawable like a telegraph) / `prop, empty` / `cat, fear, source (prop id or 'tell'), effect` |
 | `CatRouted` * | `cat, by, how ('by_hit'|'by_pile_on'|'by_back_down'), side` (canon `CatRouted`) |
 | `AllyJoined` / `AllyYowl` / `GuestEntered` / `GuestLeft` | `cat_id, encounter_id` / `cat, from, duration_s` / `cat` / `cat, reason` |
 | `PhaseBreak` * / `PhaseStarted` / `BossFlee` | `cat, phase, capped, carry` / `cat, phase` / `cat, to:'den'` |
@@ -127,21 +129,44 @@ FNV-1a (two lanes) over `enc.state()`: entities, actions, timers, gauges, RNG dr
 12. **Stalwart "takes attack-token priority"**: enemies score a Stalwart within 3 m of the controlled cat 1.5 m closer when picking a token target. This reads the target's perk, not Posse membership (G4/G7 hold).
 13. **Styles not in the GDDs**: Goma = Bruiser Tough Lv 8, Sasa = Yowler Tough Lv 8, Strays Scrapper Lv 7, the challenger a Scrapper Tough Lv 8 with Face Swat + Bunny-Kick, Togemaru Lv 7, Kinako Lv 7 (Mikan − 1), the reference Captain a Lv 8 Yowler. Mikan has no personality, so no bonded Tag-Ins with her.
 14. **Guest cue**: only `cue: 'start'` (the yowl at the Standoff's end). The wave cue is unbuilt until waves exist (phase 2+).
-15. **Prop hits** need an untargeted swing facing the prop (so a whiff on a climbing Boss does not waste the tub). The bucket splash is a 1.5 m circle (the GDD's "3 m cone"). Goofball ×1.3 scales the flat Frazzle chunks.
+15. **Prop hits** need an untargeted swing facing the prop (so a whiff on a climbing Boss does not waste the tub). **The bucket splash is the §3.9 3 m cone, 90° (angle assumed), pointing away from the hitter** (a knocked-back cat: along its flight; a knocked-off Boss: off the wall); the cat that lands in it is always wet. Fear tells play for Fear-holders within 3 m but outside the cone. Goofball ×1.3 scales the flat Frazzle chunks.
 16. **Rival flight** and the Togemaru day-1 bolt are data-driven (`flee_threshold`, `flee_uninterruptible`) but no slice row sets them in M1; `ambush_by_rival` and `raid_defence` openers are not built (`ambush_by_player` is).
 17. **Phases 2–3** keep the phase table and the clamp; with `boss_phase_cap` 3 the fight continues on the phase-1 kit (no waves, horn or ledge junk yet).
+18. **AI Moves by personality (round 2; DEVIATIONS for the combat designer to sign off).** The owner's direction is that personality shows in how a cat fights, so `personalities.json` gives each personality a `move_pref` order (support / Pay-off / Set-up), a `self_setup` list and a `move_gap_s`:
+    - **Stalwart** self-casts Shoulder Check on an enemy threatening the controlled cat when a wall, prop, enemy or the ring edge lies within 3.6 m behind it (so it Splats). On Daifuku's wall it is a knock-off. It follows with Belly Flop on the Splat.
+    - **Goofball** self-casts Withering Hiss on 2+ enemies in its cone (1 if it holds 2 Paws or the target is a leader), then Purrs as a Pay-off when a Cowed enemy is near and an ally is below 70% (`purr.ai_payoff_ally_pct`). The seeded 50% roll applies to both.
+    - **Braggart** self-casts Face Swat on a leader, and **Schemer** on a target at ≥ 50 Frazzle.
+    - **Fraidy, Brooder and Mikan** use Pay-offs and support only.
 
-## Fight lengths (tools/sim-run.mjs, 30 seeds, Alley, showcase on) vs the GDD
+    This deviates from §3.10 ("Set-up Moves are command_only for AI") **for the listed Moves only**. Every other command_only Move stays command_only, and a guest still spends only on auto Pay-offs (§3.14).
+19. **The last Paw (Combat B-17).** An AI cat may spend its last Paw when the other standing Posse cats together bank ≥ 1 Paw (`ai_last_paw_if_posse_paws`), because the conductor can spend any cat's Paw from Slow Blink. This replaces §3.11 "never spends its last Paw on its own".
+20. **Showcase `ai_fill` 1.0** (canon 0.5, GDD range 0.4–1.0), so a signature Move is affordable inside a 25–40 s fight. **Kinako has no Moves** (plan: "string only"), so her personality shows only as distance and Skitters. Mikan's AI row casts only when the player switches away.
+21. **The challenger is a Captain with the Water Fear in the showcase** (`showcase_overrides.combatant_overrides`, review Fix 1, approved by the orchestrator; canon OR-16 keeps a Tough). Creative-director sign-off is pending.
+22. **Ring bounds**: walls moved to the ring's edge (sandbox and gatepost walls at |x| = 5.0; the wash-tub ring centre moved to z 1.5) and each wall's playable side is a half-plane clamp.
 
-| Fight | Median bot (F9 policy) | Skilled bot | GDD (F9 sim) |
+## Fight lengths and Move use (tools/sim-run.mjs, 30 seeds, Alley, showcase on; round 1 → round 2)
+
+| Fight | Median bot | Skilled bot | GDD (F9 sim) |
 |---|---|---|---|
-| Tough alone (last enemy, Quick Pile-On) | 7.7 s | 7.7 s | 5.6–5.7 s |
-| 2 Toughs | 14.2 s | 12.1 s | 18–21 s |
-| 3 Toughs | 21.1 s | 18.5 s | 25–28 s |
-| Sandbox, 4 Toughs/Strays | 26.1 s | 25.2 s | 33–36 s |
-| Captain | 41.4 s | 31.1 s | 37 s (band 30–45) |
-| Daifuku phase 1 (scripted bot) | — | 39.0 s to the break | ≈ 55–60 s (⅓ of 166–176 s); bout ≤ 90 s |
-| Daifuku, all 3 phases (canon, Calm, scripted bot, 3 seeds) | — | 128–195 s, wins | 166–176 s |
-| Lose to Daifuku (passive) | wipe at 90.2 s, 30/30 | — | loss near-certain |
+| Tough alone (Quick Pile-On) | 7.7 → 7.4 s | 7.7 → 7.4 s | 5.6–5.7 s |
+| 2 Toughs | 14.2 → 13.0 s | 12.1 → 11.8 s | 18–21 s |
+| 3 Toughs | 21.1 → 20.5 s | 18.5 → 18.7 s | 25–28 s |
+| Sandbox, 4 Toughs/Strays | 26.1 → 27.1 s | 25.2 → 23.1 s | 33–36 s |
+| Captain | 41.4 → 36.3 s | 31.1 → 27.8 s | 37 s (band 30–45) |
+| **Challenger** (Captain-rank, showcase) | — | **6.8 → 24.3 s** | review: 23–34 s |
+| Daifuku phase 1 (scripted bot) | — | 39.0 → 28.1 s to the break | ≈ 55–60 s; bout ≤ 90 s |
+| Lose to Daifuku (passive) | wipe 90.2 → 91.3 s, 30/30 | — | loss near-certain |
 
-Trash fights run ≈ 20–30% shorter than F9's sim (its group focus factor 0.55 is a model input; here targets rarely split and Quick Pile-Ons clear Frazzled clusters). Not retuned: a tuning change is a GDD change request.
+Moves as a share of Posse damage: 0–8% → **7–13%** (F9 models about 20%; Pile-Ons take 48–58% against leaders).
+
+AI self-cast Moves per fight (skilled bot; share of fights with at least one; round 1 was 0 everywhere):
+
+| Fight | Hige (Stalwart) | Pon (Goofball) | Togemaru (Braggart guest) |
+|---|---|---|---|
+| Sandbox | 0.93 (73%) | 0.57 (47%) | — |
+| Captain | 1.33 (90%) | 0.83 (73%) | — |
+| Challenger | 1.60 (90%) | 0.97 (73%) | 0.23 (23%) |
+
+Hige mostly self-casts Shoulder Check, and Pon Withering Hiss then Purr. Set-up → Pay-off chains per fight: Shoulder Check → Bunny-Kick 0.33–0.47; Withering Hiss → Purr 0.13–0.17; Splat → Belly Flop ≤ 0.07.
+
+Trash fights still run about 20–30% shorter than F9's sim; the game designer accepted this for the showcase (review round 1).

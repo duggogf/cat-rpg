@@ -10,7 +10,7 @@
 import * as THREE from 'three';
 import L0 from '../../world/lane.json';
 import { buildWorld, contactBlob } from '../../world/builder.js';
-import { celMat, hullMat } from '../env.js';
+import { celMat, hullMat, envMat } from '../env.js';
 import { rgb } from '../phases.js';
 
 const clone = (o) => JSON.parse(JSON.stringify(o));
@@ -56,26 +56,69 @@ function baseLot() {
   return L;
 }
 
-/** Wall + fence dressing per sim arena. */
+/** Wall + fence dressing per sim arena: everything solid sits OUTSIDE the fight ring (ring radius + 0.9 m), except
+ * the sim's own High Road, so the camera never loses a fighter behind set dressing. `arena.bounds` (when the sim
+ * exports it: {x:[min,max], z:[min,max]}) wins over the ring estimate. */
 function dressFor(L, arena) {
-  const fenceH = 1.3, wallH = 1.5;
+  const fenceH = 1.3, wallH = 1.5, cx = arena.ring_center[0], cz = arena.ring_center[1], R = arena.ring_radius;
+  const b = arena.bounds && arena.bounds.x ? arena.bounds : { x: [cx - R, cx + R], z: [cz - R, cz + R] };
+  const X0 = b.x[0] - 0.9, X1 = b.x[1] + 0.9, Z0 = b.z[0] - 0.9, Z1 = b.z[1] + 0.9;
+  L.lane = { x0: X0 - 1.5, x1: X1 + 1.5, z0: -14, z1: 26 };
   if (arena.id === 'wash_tub_kit') {
     // Daifuku's yard wall: plaster with coping, across the ring (his High Road), longer than the edge for the set.
-    L.walls.push({ box: [-6.6, 0, -2.65, 6.6, wallH, -2.35], coping: 0.08, tex: 'wall' });
-    L.walls.push({ box: [-6.8, 0, -9.5, -6.6, wallH, -2.35], coping: 0.08, tex: 'wall' });
-    L.walls.push({ box: [6.6, 0, -9.5, 6.8, wallH, -2.35], coping: 0.08, tex: 'wall' });
-    L.fences.push({ box: [-7.5, 0, 9.0, -7.42, fenceH, -2.2] }, { box: [7.42, 0, 9.0, 7.5, fenceH, -2.2] });
+    L.walls.push({ box: [X0, 0, -2.65, X1, wallH, -2.35], coping: 0.08, tex: 'wall' });
+    L.walls.push({ box: [X0 - 0.2, 0, -9.5, X0, wallH, -2.35], coping: 0.08, tex: 'wall' });
+    L.walls.push({ box: [X1, 0, -9.5, X1 + 0.2, wallH, -2.35], coping: 0.08, tex: 'wall' });
+    L.fences.push({ box: [X0 - 0.08, 0, -2.2, X0, fenceH, Z1] }, { box: [X1, 0, -2.2, X1 + 0.08, fenceH, Z1] }, { box: [X0, 0, Z1, X1, fenceH, Z1 + 0.08] });
     L.laundry = { posts: [[-3.2, -6.2], [2.8, -6.2]], h: 2.35, sheets: [[0.06, 0.26, 0.7, '#FFFDF4'], [0.32, 0.52, 0.5, '#F7D9A8'], [0.58, 0.78, 0.74, '#FFFDF4'], [0.82, 0.97, 0.6, '#CFE4F2']] };
     L.trees[0].trunk = [-5.0, -9.5];
     L.hedges = L.hedges.filter(h => h[2] > -2 || Math.abs(h[0]) > 6);
   } else {
     const hr = arena.high_roads[0];
     const wx = hr.a[0], w = hr.width / 2;
-    if (arena.id === 'gatepost') L.fences.push({ box: [wx - w, 0, hr.a[1] - 3, wx + w, hr.y, hr.b[1] + 3] });
-    else L.walls.push({ box: [wx - w, 0, hr.a[1] - 2.6, wx + w, hr.y, hr.b[1] + 2.0], coping: 0.08, tex: 'wall' });
-    L.fences.push({ box: [-7.5, 0, -7.2, 7.5, fenceH, -7.12] });
-    L.fences.push({ box: [7.42, 0, -7.12, 7.5, fenceH, 2.0] });
+    if (arena.id === 'gatepost') L.fences.push({ box: [wx - w, 0, hr.a[1] - 1, wx + w, hr.y, hr.b[1] + 1] });
+    else L.walls.push({ box: [wx - w, 0, hr.a[1] - 0.6, wx + w, hr.y, hr.b[1] + 0.6], coping: 0.08, tex: 'wall' });
+    // a close board fence boxes the lot on the other three sides (gaps only behind the High Road)
+    L.fences.push({ box: [X0, 0, Z0 - 0.08, X1, fenceH, Z0] });
+    L.fences.push({ box: [X1, 0, Z0, X1 + 0.08, fenceH, Z1] });
+    L.fences.push({ box: [Math.min(wx, X0) , 0, Z1, X1, fenceH, Z1 + 0.08] });
   }
+  // grass along every fence base and in the ring's edge
+  L.grassLines = [[X0 + 0.1, Z0 + 0.1, X1 - 0.1, Z0 + 0.1, 70], [X1 - 0.1, Z0, X1 - 0.1, Z1, 70], [X0, Z1 - 0.1, X1, Z1 - 0.1, 70],
+    [cx + R * 0.7, cz + R * 0.6, cx + R * 0.95, cz + R * 0.1, 14], [cx - R * 0.4, cz - R * 0.85, cx + R * 0.1, cz - R * 0.95, 14], [cx + R * 0.85, cz - R * 0.5, cx + R * 0.6, cz - R * 0.8, 10]];
+  L.hedges = L.hedges.concat([[X1 + 0.6, 0.75, cz - 2, 1.0, 0.8, 1.8], [X1 + 0.6, 0.7, cz + 2.5, 1.0, 0.7, 1.6], [cx + 1.5, 0.7, Z0 - 0.6, 1.4, 0.7, 1.0]]);
+}
+
+/** Painted (unlined) ring dressing: tarp, planks, tyres, crate, cardboard, pebbles. Low, so a cat crossing them
+ * reads as climbing over; nothing a cat acts on (those are inked). Placed at 70-95% of the ring radius. */
+function ringProps(arena) {
+  const g = new THREE.Group(), cx = arena.ring_center[0], cz = arena.ring_center[1], R = arena.ring_radius;
+  const mat = envMat({ vertexColors: true, grain: 0.45 });
+  const add = (geo, hex, x, y, z, ry = 0, rx = 0, rz = 0) => {
+    geo = geo.index ? geo.toNonIndexed() : geo; const c = rgb(hex), n = geo.attributes.position.count, col = new Float32Array(n * 3);
+    for (let i = 0; i < n; i++) { const k = 0.92 + 0.08 * Math.sin(i * 1.7); col[i * 3] = c.x * k; col[i * 3 + 1] = c.y * k; col[i * 3 + 2] = c.z * k; }
+    geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.rotation.set(rx, ry, rz); g.add(m); return m;
+  };
+  const at = (a, r) => [cx + Math.sin(a) * R * r, cz + Math.cos(a) * R * r];
+  const hr = (arena.high_roads[0] || {}).a || [-99, 0];
+  const ok = ([x]) => Math.abs(x - hr[0]) > 0.9;   // keep the High Road foot clear for mantles
+  // tarp: a low blue mound with folds
+  { const [x, z] = at(2.2, 0.85); if (ok([x])) { const t = new THREE.SphereGeometry(1, 18, 8, 0, Math.PI * 2, 0, Math.PI / 2); t.scale(0.75, 0.16, 0.55);
+    const p = t.attributes.position; for (let i = 0; i < p.count; i++) p.setY(i, p.getY(i) * (1 + 0.25 * Math.sin(p.getX(i) * 7) * Math.cos(p.getZ(i) * 5)));
+    add(t, '#7393C8', x, 0, z, 0.6); } }
+  // planks: three boards, one propped
+  { const [x, z] = at(-2.5, 0.88); if (ok([x])) for (let i = 0; i < 3; i++) add(new THREE.BoxGeometry(1.3, 0.05, 0.22), i % 2 ? '#C9965E' : '#B98550', x + i * 0.05, 0.03 + i * 0.05, z + (i - 1) * 0.24, 0.4 + i * 0.12, 0, i === 2 ? 0.25 : 0); }
+  // tyres: two flat, one leaning
+  { const [x, z] = at(0.95, 0.9); if (ok([x])) { for (let i = 0; i < 2; i++) add(new THREE.TorusGeometry(0.2, 0.075, 8, 20), '#5A5563', x, 0.075 + i * 0.15, z, 0, Math.PI / 2);
+    add(new THREE.TorusGeometry(0.2, 0.075, 8, 20), '#625C6C', x + 0.42, 0.27, z + 0.2, 0.9, 0.25); } }
+  // crate and a cardboard box
+  { const [x, z] = at(-0.9, 0.9); if (ok([x])) { add(new THREE.BoxGeometry(0.5, 0.42, 0.5), '#B07A48', x, 0.21, z, 0.35); add(new THREE.BoxGeometry(0.4, 0.3, 0.32), '#C8A472', x + 0.45, 0.15, z + 0.45, -0.3); } }
+  { const [x, z] = at(3.6, 0.82); if (ok([x])) { add(new THREE.BoxGeometry(0.55, 0.32, 0.42), '#CBA877', x, 0.16, z, 0.8); add(new THREE.BoxGeometry(0.56, 0.02, 0.43), '#D9BA88', x - 0.08, 0.33, z + 0.05, 1.1, 0.1); } }
+  // a bucket cluster's painted cousins: two flower pots, and pebbles
+  { const [x, z] = at(-1.7, 0.92); if (ok([x])) for (let i = 0; i < 2; i++) add(new THREE.CylinderGeometry(0.13, 0.1, 0.22, 14), '#C9764A', x + i * 0.3, 0.11, z - i * 0.12); }
+  for (let i = 0; i < 18; i++) { const a = i * 2.39, r = 0.55 + (i * 0.37) % 0.4; const [x, z] = at(a, r); add(new THREE.DodecahedronGeometry(0.035 + (i % 3) * 0.015, 0), '#9A8E7E', x, 0.02, z, i); }
+  return g;
 }
 
 /** Inked tub/bucket (cel + hull), returned so the combat scene can tip it when used. */
@@ -116,6 +159,7 @@ export function buildArena(arena, props, tex) {
   const L = baseLot();
   dressFor(L, arena);
   const W = buildWorld(L, tex);
+  const dress = ringProps(arena); W.env.add(dress); W.dress = dress; dress.traverse((m) => { if (m.isMesh) W.casters.add(m); });
   W.props = {};
   for (const p of props) {
     const g = inkedVessel(p.id === 'wash_tub' ? 'tub' : 'bucket');

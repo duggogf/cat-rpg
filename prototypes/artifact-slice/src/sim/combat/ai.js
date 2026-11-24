@@ -15,6 +15,7 @@ export function posseThink(enc, e) {
   e.goal = null; e.ai.faceId = null;
   e.ai.avengeT = Math.max(0, e.ai.avengeT - e.edt);
   e.ai.rollWait = Math.max(0, e.ai.rollWait - e.edt);
+  e.ai.moveGap = Math.max(0, (e.ai.moveGap || 0) - e.edt);
 
   // 1. React to telegraphs aimed at itself (AI Hisses only yellows aimed at itself, CX-8).
   let bracing = false;
@@ -143,29 +144,94 @@ function pickTarget(enc, e, cands) {
   }
 }
 
+/** Combat §3.11 base rule, with Combat B-17: an AI cat keeps a Paw banked unless the rest of the Posse already banks one. */
+function canAfford(enc, e, cost) {
+  const k = enc.k, pts = cost * k.paw_points;
+  if (e.paws < pts - 1e-9) return false;
+  if (e.side === 'guest') return true; // a guest is never commanded, so it banks nothing for the conductor
+  if (e.paws - pts >= k.paw_points - 1e-9) return true;
+  const need = k.ai_last_paw_if_posse_paws;
+  if (need == null) return false;
+  const banked = enc.posse().filter(p => p !== e && enc.standing(p)).reduce((sum, p) => sum + Math.floor((p.paws - p.reserved) / k.paw_points), 0);
+  return banked >= need;
+}
+
+function lowestAlly(enc, below) {
+  const k = enc.k;
+  const list = enc.allies().filter(a => !a.routed && a.nerve / a.nerveMax < below && a.healed < k.heal_cap * a.nerveMax - 1);
+  return list.sort((a, b) => a.nerve / a.nerveMax - b.nerve / b.nerveMax || (a.id < b.id ? -1 : 1))[0] || null;
+}
+
+/** Is there a wall, prop, other enemy or the ring edge within `m` metres behind t, seen from e? (A Shoulder Check Splats.) */
+function obstacleBehind(enc, e, t, m) {
+  const [dx, dz] = norm(t.x - e.x, t.z - e.z);
+  const far = { x: t.x + dx * m, z: t.z + dz * m };
+  if (len(far.x - enc.ringC.x, far.z - enc.ringC.z) > enc.ringR) return true;
+  for (const h of enc.halfPlanes) if ((far.x - h.point[0]) * h.normal[0] + (far.z - h.point[1]) * h.normal[1] < 0) return true;
+  const onLine = o => { const vx = o.x - t.x, vz = o.z - t.z, along = vx * dx + vz * dz; return along > 0 && along <= m && Math.abs(vx * dz - vz * dx) <= 0.8; };
+  return enc.props.some(onLine) || enc.enemies().some(o => o !== t && enc.standing(o) && onLine(o));
+}
+
+/** When a personality self-casts a Set-up (personalities.json self_setup). */
+function setupWhen(enc, e, t, when, m) {
+  const c = enc.controlled;
+  switch (when) {
+    case 'threatens_controlled': {
+      if (!c || c === e) return false;
+      const threat = t.ai.tokenOn === c.id || enc.teles.some(x => x.attackerId === t.id && x.aimedAt === c.id) || dist(t, c) <= 3;
+      if (!threat) return false;
+      if (m.splat_on_collision) return t.boss ? !!t.onHR && t.onHR === e.onHR : obstacleBehind(enc, e, t, enc.k.ai_setup_obstacle_m);
+      return true;
+    }
+    case 'two_in_cone': {
+      if (t.row.immune_status?.includes(m.creates)) return false;
+      const dir = norm(t.x - e.x, t.z - e.z);
+      const n = enc.opponentsOf(e).filter(x => x.present && enc._sameLevel(e, x) && inShape({ type: 'cone', origin: [e.x, e.z], dir, range: m.range, angle_deg: m.angle_deg || 90 }, x, x.radius)).length;
+      return n >= 2 || (n >= 1 && (t.rankRow.leader || e.paws >= 2 * enc.k.paw_points - 1e-9));
+    }
+    case 'leader': return !!t.rankRow.leader && t.ruffledT <= 0;
+    case 'frazzle_half': return t.fzg >= 50 && t.ruffledT <= 0 && t.frazzledT <= 0;
+    default: return false;
+  }
+}
+
+/**
+ * Paw habit by personality (Combat §3.11 + personalities.json move_pref / self_setup): in preference order, the
+ * cat looks for a support, Pay-off or Set-up Move whose condition holds and that it may afford, then casts it.
+ */
 function tryPawHabit(enc, e, t) {
   const k = enc.k, P = e.pers, D = enc.D;
   const guest = e.side === 'guest';
-  for (const id of e.moves) {
-    const m = D.moves[id];
-    if (!m || m.ai_use === 'command_only') continue;
-    if (guest && m.ai_use !== 'auto') continue;
-    if (e.paws - m.cost * k.paw_points < k.paw_points - 1e-9) continue; // never the last Paw
-    if (m.ai_use === 'support') {
-      const allies = enc.allies().filter(a => !a.routed && a.nerve / a.nerveMax < k.purr_ally_pct && a.healed < k.heal_cap * a.nerveMax - 1);
-      if (!allies.length) continue;
-      const ally = allies.sort((a, b) => a.nerve / a.nerveMax - b.nerve / b.nerveMax)[0];
-      if (!habitAllows(enc, e, m, t)) continue;
-      enc._startMove(e, id, ally, 'ai'); return true;
+  if (e.ai.moveGap > 0) return false;
+  for (const kind of P.move_pref || ['payoff']) {
+    for (const id of e.moves) {
+      const m = D.moves[id];
+      if (!m || !canAfford(enc, e, m.cost) || e.moveCd[id] > 0) continue;
+      if (guest && m.ai_use !== 'auto') continue; // a guest spends only on auto Pay-offs (§3.14)
+      let tgt = null;
+      if (kind === 'support' && m.ai_use === 'support') tgt = lowestAlly(enc, k.purr_ally_pct);
+      else if (kind === 'payoff' && m.ai_use === 'support' && m.ai_payoff_ally_pct) {
+        const cowedNear = enc.opponentsOf(e).some(x => x.status?.kind === 'cowed' && dist(x, e) <= k.cowed_heal_radius_m);
+        if (cowedNear) tgt = lowestAlly(enc, m.ai_payoff_ally_pct);
+      } else if (kind === 'payoff' && m.ai_use === 'auto') {
+        if (m.pays_on.some(st => enc._hasState(t, st))) tgt = t;
+      } else if (kind === 'setup' && m.role === 'setup') {
+        const rule = (P.self_setup || []).find(r => r.move === id);
+        if (rule && setupWhen(enc, e, t, rule.when, m)) tgt = t;
+      }
+      if (!tgt) continue;
+      if (P.paw_habit === 'support_first' && kind !== 'support' && e.moves.some(x => D.moves[x]?.ai_use === 'support')) continue;
+      if (!habitAllows(enc, e, m, tgt)) return false;
+      if (tgt.side === 'enemy') {
+        const reachHR = m.flags?.includes('reaches_high_road') || m.shape === 'ring';
+        if (!reachHR && !enc._sameLevel(e, tgt)) continue;
+        const range = m.shape === 'ring' ? Infinity : m.range + tgt.radius + 0.4;
+        if (dist(e, tgt) > range) { e.goal = { x: tgt.x, z: tgt.z, stopAt: Math.max(0.5, m.range - 0.2) }; e.ai.faceId = tgt.id; return true; }
+      }
+      e.ai.moveGap = m.role === 'setup' ? k.ai_followup_gap_s : (P.move_gap_s ?? k.ai_move_gap_s);
+      enc._startMove(e, id, tgt, 'ai');
+      return true;
     }
-    if (P.paw_habit === 'support_first' && e.moves.some(x => D.moves[x]?.ai_use === 'support')) continue;
-    const cond = m.pays_on.some(s => enc._hasState(t, s));
-    if (!cond) continue;
-    if (!habitAllows(enc, e, m, t)) continue;
-    const reachHR = m.flags?.includes('reaches_high_road') || m.shape === 'ring';
-    if (!reachHR && !enc._sameLevel(e, t)) continue;
-    if (m.shape !== 'ring' && dist(e, t) > m.range + t.radius + 0.4) { e.goal = { x: t.x, z: t.z, stopAt: m.range - 0.2 }; e.ai.faceId = t.id; return true; }
-    enc._startMove(e, id, t, 'ai'); return true;
   }
   return false;
 }
@@ -177,9 +243,9 @@ function habitAllows(enc, e, m, t) {
       if (e.ai.rollWait > 0) return false;
       if (e.aiStream.chance(k.ai_goofball_p)) return true;
       e.ai.rollWait = k.ai_goofball_wait_s; return false;
-    case 'avenge_target': return m.ai_use === 'support' || (e.ai.avengeId === t.id && e.ai.avengeT > 0);
-    case 'frazzled': return m.ai_use === 'support' || t.frazzledT > 0;
-    case 'attacker_of_controlled': { const c = enc.controlled; return m.ai_use === 'support' || !c || enc.teles.some(x => x.attackerId === t.id && x.aimedAt === c.id) || t.ai.tokenOn === c.id; }
+    case 'avenge_target': return m.ai_use === 'support' || t.side !== 'enemy' || (e.ai.avengeId === t.id && e.ai.avengeT > 0);
+    case 'frazzled': return m.ai_use === 'support' || t.side !== 'enemy' || t.frazzledT > 0 || m.role === 'setup';
+    case 'attacker_of_controlled': { const c = enc.controlled; return m.ai_use === 'support' || !c || t.side !== 'enemy' || enc.teles.some(x => x.attackerId === t.id && x.aimedAt === c.id) || t.ai.tokenOn === c.id || dist(t, c) <= 4; }
     default: return true; // first_chance, base, support_first fallback
   }
 }

@@ -35,6 +35,7 @@ export class Encounter {
     this.entities = []; this.byId = new Map();
     this.teles = []; this.teleSeq = 0;
     this.tagWin = null; this.relay = null; this.relayLockUntil = -INF;
+    this.orderSeq = 0; this.orderState = new Map(); this.sbChain = [];
     this.pile = null; this.offer = null;
     this.lockId = null;
     this.scramT = 0; this.fedUp = false;
@@ -43,6 +44,9 @@ export class Encounter {
     this.hrs = this.arena.high_roads || [];
     this.ringC = { x: this.arena.ring_center[0], z: this.arena.ring_center[1] };
     this.ringR = this.arena.ring_radius_m ?? this.k.ring_radius_m;
+    // Ring bounds: the circle, cut by each High Road wall on its playable (drop) side, so fights stay in front of walls.
+    this.halfPlanes = this.hrs.map(h => { const off = h.width / 2 + this.k.cat_radius_m + 0.05;
+      return { point: [h.a[0] + h.drop_side[0] * off, h.a[1] + h.drop_side[1] * off], normal: h.drop_side.slice(), wall: h.id }; });
     this.ambushPending = def.opener === 'ambush_by_player';
 
     def.posse.forEach((id, i) => this._spawn(id, 'posse', i, this.arena.spawns.posse[i]));
@@ -61,8 +65,9 @@ export class Encounter {
   /* ------------------------------------------------------------ setup */
 
   _spawn(catId, side, slot, at) {
-    const row = this.D.cats[catId];
-    if (!row) throw new Error(`unknown combatant ${catId}`);
+    const base = this.D.cats[catId];
+    if (!base) throw new Error(`unknown combatant ${catId}`);
+    const row = { ...base, ...(this.show.combatant_overrides?.[catId] || {}) }; // showcase-only (never transfers)
     let id = catId, n = 2;
     while (this.byId.has(id)) id = `${catId}_${n++}`;
     const stats = F.statsFor(row, this.D);
@@ -229,7 +234,7 @@ export class Encounter {
     // Slow Blink toggle (closed during Standoff and Pile-On).
     if (inp.slowBlink) {
       if (this.slowBlink) this._slowBlinkClose('input');
-      else if (this.mode === 'fight' && !this.pile) { this.slowBlink = true; this._emit({ type: 'SlowBlinkOpen' }); }
+      else if (this.mode === 'fight' && !this.pile) { this.slowBlink = true; this.sbChain = []; this._emit({ type: 'SlowBlinkOpen' }); }
     }
     if (inp.command) this._command(inp.command);
     if (inp.lockNext) this._lockNext();
@@ -510,14 +515,20 @@ export class Encounter {
     const target = cmd.target ? this.byId.get(cmd.target) : (mv.target === 'ally' ? cat : this.byId.get(this.lockId));
     if (!target || !this.standing(target)) { this._emit({ type: 'CommandRejected', reason: 'bad_target', command: cmd }); return; }
     if (mv.shape === 'heal' && target.healed >= this.k.heal_cap * target.nerveMax - 1e-9) { this._emit({ type: 'CommandRejected', reason: 'heal_capped', command: cmd }); return; }
-    if (!this._queueOrder(cat, { move: moveId, target: target.id, authored: 'player' })) this._emit({ type: 'CommandRejected', reason: 'paws', command: cmd });
+    // Commands chain (Combat §3.4): a command on a target another cat was just ordered onto in this Slow Blink waits
+    // for that order to resolve, so a Set-up lands before its Pay-off (Shoulder Check -> Bunny-Kick).
+    const prev = (this.sbChain || []).filter(o => o.target === target.id && o.cat !== cat.id && this.orderState.get(o.id) !== 'dropped').pop();
+    const o = { move: moveId, target: target.id, authored: 'player', waitFor: prev ? prev.id : null };
+    if (!this._queueOrder(cat, o)) { this._emit({ type: 'CommandRejected', reason: 'paws', command: cmd }); return; }
+    (this.sbChain = this.sbChain || []).push({ id: o.id, cat: cat.id, target: target.id });
   }
 
   _queueOrder(cat, o) {
     const cost = this.D.moves[o.move].cost * this.k.paw_points;
     if (cat.paws - cat.reserved < cost - 1e-9) return false;
+    o.id = ++this.orderSeq; this.orderState.set(o.id, 'queued');
     cat.reserved += cost; cat.orders.push(o);
-    this._emit({ type: 'CommandQueued', cat: cat.id, move: o.move, target: o.target, shortcut: !!o.shortcut });
+    this._emit({ type: 'CommandQueued', id: o.id, cat: cat.id, move: o.move, target: o.target, shortcut: !!o.shortcut, after: o.waitFor ?? null });
     return true;
   }
 
@@ -526,7 +537,12 @@ export class Encounter {
     for (const e of this.entities) {
       if (!e.orders.length || !this.standing(e)) continue;
       const o = e.orders[0], t = this.byId.get(o.target), mv = this.D.moves[o.move];
-      if (!this.standing(t)) { e.orders.shift(); e.reserved -= mv.cost * this.k.paw_points; this._emit({ type: 'CommandDropped', cat: e.id, move: o.move, reason: 'target_gone' }); continue; }
+      if (!this.standing(t)) { e.orders.shift(); e.reserved -= mv.cost * this.k.paw_points; this.orderState.set(o.id, 'dropped'); this._emit({ type: 'CommandDropped', id: o.id, cat: e.id, move: o.move, reason: 'target_gone' }); continue; }
+      if (o.waitFor) { // wait for the Set-up to resolve: its Move finished and the target is no longer flying back
+        const st = this.orderState.get(o.waitFor);
+        const settled = t.act?.kind !== 'knockback' && t.act?.kind !== 'fall';
+        if (!(st === 'dropped' || (st === 'done' && settled))) { e.goal = null; continue; }
+      }
       if (!this._canAct(e) || (e.act && e.act.kind !== 'string' && e.act.kind !== 'posture')) continue;
       if (e.act && e.act.kind === 'string' && !(e.act.hit || e.act.t < 0.05)) continue;
       const reachHR = mv.flags?.includes('reaches_high_road') || mv.shape === 'ring' || mv.shape === 'heal' || mv.shape === 'self';
@@ -546,17 +562,18 @@ export class Encounter {
         continue;
       }
       e.orders.shift(); e.reserved -= mv.cost * this.k.paw_points; e.goal = null;
-      this._startMove(e, o.move, t, o.authored);
+      this.orderState.set(o.id, 'started');
+      this._startMove(e, o.move, t, o.authored, o.id);
     }
   }
 
   /* ------------------------------------------------------------ Moves (Combat §3.10) */
 
-  _startMove(e, moveId, t, authored) {
+  _startMove(e, moveId, t, authored, orderId = null) {
     const mv = this.D.moves[moveId], k = this.k;
     if (t && t !== e) this._face(e, t);
     if (e.side === 'enemy') { this._enemyWindup(e, moveId, t); return; }
-    e.act = { kind: 'move', moveId, t: 0, windup: k.move_windup_s, dur: k.move_windup_s + k.move_recovery_s, committed: false, targetId: t?.id ?? null, authored };
+    e.act = { kind: 'move', moveId, t: 0, windup: k.move_windup_s, dur: k.move_windup_s + k.move_recovery_s, committed: false, targetId: t?.id ?? null, authored, orderId };
   }
 
   _commitMove(e) {
@@ -566,6 +583,7 @@ export class Encounter {
     if (e.side !== 'enemy' && e.paws < cost - 1e-9) { e.act = null; this._emit({ type: 'MoveFizzled', cat: e.id, move: mv.Name, reason: 'paws' }); return; }
     if (e.side !== 'enemy') e.paws -= cost; else e.enemyPaws = Math.max(0, e.enemyPaws - cost);
     a.committed = true;
+    if (a.orderId) this.orderState.set(a.orderId, 'committed');
     const hits = this._applyMove(e, mv, t, a.authored, null);
     this._emit({ type: 'MoveUsed', user: e.id, move: mv.Name, targets_hit: hits, authored: a.authored, paws_after: e.side === 'enemy' ? null : e.paws });
   }
@@ -774,7 +792,7 @@ export class Encounter {
     return ev;
   }
 
-  _fill(e) { return e.side === 'guest' ? this.k.guest_ai_fill : e.id === this.controlledId ? 1 : this.k.ai_fill; }
+  _fill(e) { const ai = this.show.ai_fill ?? this.k.ai_fill; return e.side === 'guest' ? Math.min(this.k.guest_ai_fill, ai) * (ai / this.k.ai_fill) : e.id === this.controlledId ? 1 : ai; }
 
   _dmgStatusMult(e) {
     const k = this.k;
@@ -904,7 +922,7 @@ export class Encounter {
     this._addFz(b, k.knockoff_fz, by);
     this._flinch(b, 'knock_off');
     const tub = this.props.find(p => p.kind === 'water_bucket' && p.usesLeft > 0 && len(p.x - b.x, p.z - b.z) <= p.radius + k.bucket_catch_m);
-    if (tub) { this._addFz(b, k.bucket_fz, by); this._triggerProp(tub, by, b); }
+    if (tub) { this._addFz(b, k.bucket_fz, by); const hr = this.hrs.find(h => h.boss_wall) || this.hrs[0]; this._triggerProp(tub, by, b, hr ? hr.drop_side : null); }
     this._emit({ type: 'BossLanded', cat: b.id, in_bucket: !!tub });
   }
 
@@ -929,18 +947,26 @@ export class Encounter {
 
   /* ------------------------------------------------------------ props and Fears (Combat §3.9) */
 
-  _triggerProp(p, by, caught) {
+  /** The splash cone: from the prop, away from whatever set it off (Combat §3.9: '3 m cone'). */
+  splashShape(p, dir) { return { type: 'cone', origin: [p.x, p.z], dir, range: p.splash_cone.range_m, angle_deg: p.splash_cone.angle_deg }; }
+
+  _triggerProp(p, by, caught, dirIn) {
     const k = this.k;
     if (p.usesLeft <= 0) { this._emit({ type: 'PropHit', prop: p.id, by: by?.id ?? null, empty: true }); return; }
     p.usesLeft--;
     const goof = by?.pers?.perk === 'prop_mult' ? k.goofball_prop_mult : 1;
-    this._emitFeel({ type: 'PropTriggered', prop: p.id, kind: p.kind, by: by?.id ?? null, goofball: goof > 1 }, { tier: 0, authored: by?.id === this.controlledId ? 'player' : 'ai', victim: 'enemy', kind: 'prop_hit' }, null, null);
+    let dir = dirIn || (by ? norm(p.x - by.x, p.z - by.z) : [0, 1]);
+    if (!dir[0] && !dir[1]) dir = [0, 1];
+    const shape = this.splashShape(p, dir);
+    this._emitFeel({ type: 'PropTriggered', prop: p.id, kind: p.kind, by: by?.id ?? null, goofball: goof > 1, splash: shape }, { tier: 0, authored: by?.id === this.controlledId ? 'player' : 'ai', victim: 'enemy', kind: 'prop_hit' }, null, null);
     for (const x of this.entities) {
       if (!this.standing(x) || x.y > 0.5) continue;
-      const near = len(x.x - p.x, x.z - p.z) <= p.splash_m + x.radius;
-      if (near) this._applyStatus(x, 'soggy', k.status_s.soggy, p.id);
+      const d = len(x.x - p.x, x.z - p.z);
+      const wet = x === caught || d <= p.radius + x.radius || inShape(shape, x, x.radius);
+      if (wet) this._applyStatus(x, 'soggy', k.status_s.soggy, p.id);
       if (x.row.fears?.includes(p.fear)) {
-        if (near) this._fear(x, p.fear, p, goof); else this._emit({ type: 'FearTriggered', cat: x.id, fear: p.fear, source: 'tell' });
+        if (wet) this._fear(x, p.fear, p, goof);
+        else if (d <= p.splash_cone.range_m + x.radius) this._emit({ type: 'FearTriggered', cat: x.id, fear: p.fear, source: 'tell' });
       }
     }
   }
@@ -1211,6 +1237,7 @@ export class Encounter {
   /** Advance every action and resolve impacts. */
   _acts() {
     const k = this.k;
+    for (const [id, st] of this.orderState) if ((st === 'started' || st === 'committed') && !this.entities.some(e => e.act?.kind === 'move' && e.act.orderId === id)) this.orderState.set(id, st === 'committed' ? 'done' : 'dropped');
     for (const e of this.entities) {
       const a = e.act; if (!a || e.gone) continue;
       const rate = e.status?.kind === 'soggy' ? k.soggy_mult : 1;
@@ -1229,7 +1256,7 @@ export class Encounter {
           }
           break;
         }
-        case 'move': if (!a.committed && a.t >= a.windup - 1e-9) this._commitMove(e); if (e.act === a && a.t >= a.dur - 1e-9) e.act = null; break;
+        case 'move': if (!a.committed && a.t >= a.windup - 1e-9) this._commitMove(e); if (e.act === a && a.t >= a.dur - 1e-9) { e.act = null; if (a.orderId) this.orderState.set(a.orderId, 'done'); } break;
         case 'windup': if (a.t >= a.dur - 1e-9) this._resolveWindup(e); break;
         case 'skitter': case 'enter': case 'knockback': case 'routed': {
           if (e.onHR && a.kind === 'skitter') { const hr = this.hr(e.onHR), ax = norm(hr.b[0] - hr.a[0], hr.b[1] - hr.a[1]); const al = a.vx * ax[0] + a.vz * ax[1]; e.x += ax[0] * al * d; e.z += ax[1] * al * d; const p = closestOnSeg(hr.a, hr.b, e); e.x = p.x; e.z = p.z; }
@@ -1289,7 +1316,7 @@ export class Encounter {
     e.y = 0;
     const t = this.byId.get(a.targetId);
     const p = this.props.find(p => len(p.x - e.x, p.z - e.z) <= p.radius + 0.3);
-    if (p) this._triggerProp(p, e, null);
+    if (p) this._triggerProp(p, e, null, norm(a.to[0] - a.from[0], a.to[1] - a.from[1]));
     if (t && this.standing(t) && dist(e, t) <= t.radius + e.radius + 0.9) this._hit(e, t, { mv: a.mv, fz: a.fz, kind: 'pounce', authored: a.authored, noPaw: a.noPaw });
     else this._emitFeel({ type: 'Whiff', attacker: e.id, target: a.targetId }, { tier: 0, authored: a.authored, victim: 'enemy', kind: 'whiff' }, null, null);
   }
@@ -1303,7 +1330,7 @@ export class Encounter {
     const out = len(e.x - this.ringC.x, e.z - this.ringC.z) > this.ringR;
     if (hit || prop || wall || out) {
       a.collided = true;
-      if (prop) this._triggerProp(prop, this.byId.get(a.by), e);
+      if (prop) this._triggerProp(prop, this.byId.get(a.by), e, norm(a.vx, a.vz));
       if (prop && prop.kind === 'water_bucket') this._addFz(e, this.k.bucket_fz, this.byId.get(a.by));
       if (a.splat) { e.act = null; this._splat(e, this.byId.get(a.by));
         if (hit && a.bonusMv) { const by = this.byId.get(a.by); this._hit(by, hit, { mv: a.bonusMv, fz: 0, kind: 'move_mid', authored: 'ai' }); } }
@@ -1346,12 +1373,31 @@ export class Encounter {
         if (!b.onHR) { b.x += nx * push; b.z += nz * push; }
       }
     }
-    // Ring clamp: enemies stay in; AI cats stay in; the controlled cat may leave (Scram).
+    // Ring clamp: enemies and AI cats stay in the ring; nobody passes a wall; the controlled cat may leave the circle (Scram).
     for (const e of this.entities) {
-      if (!this.standing(e) || e.onHR || e.id === this.controlledId) continue;
-      const dx = e.x - this.ringC.x, dz = e.z - this.ringC.z, l = len(dx, dz), R = this.ringR;
-      if (l > R) { e.x = this.ringC.x + dx / l * R; e.z = this.ringC.z + dz / l * R; }
+      if (!this.standing(e) || e.onHR || this._airborne(e)) continue;
+      if (e.id !== this.controlledId) {
+        const dx = e.x - this.ringC.x, dz = e.z - this.ringC.z, l = len(dx, dz), R = this.ringR;
+        if (l > R) { e.x = this.ringC.x + dx / l * R; e.z = this.ringC.z + dz / l * R; }
+      }
+      this._clampHalfPlanes(e);
     }
+  }
+
+  _airborne(e) { return !!e.act && /^(mantle|drop|leap|tagin|pounce|fall|climb|hop)$/.test(e.act.kind); }
+
+  _clampHalfPlanes(e) {
+    for (const h of this.halfPlanes) {
+      const d = (e.x - h.point[0]) * h.normal[0] + (e.z - h.point[1]) * h.normal[1];
+      const hr = this.hr(h.wall), c = closestOnSeg(hr.a, hr.b, e);
+      if (d < 0 && (c.t > 0 && c.t < 1)) { e.x -= h.normal[0] * d; e.z -= h.normal[1] * d; }
+    }
+  }
+
+  /** The fight ring for the presentation: circle plus the walls' half-planes (keep walls and set dressing outside). */
+  ringBounds() {
+    return { center: [this.ringC.x, this.ringC.z], radius: this.ringR, scram_radius: this.ringR + this.k.scram_out_m,
+      half_planes: this.halfPlanes.map(h => ({ point: h.point.slice(), normal: h.normal.slice(), wall: h.wall })), origin: this.arena.origin };
   }
 
   _fedUpCheck() {
@@ -1438,7 +1484,7 @@ export class Encounter {
     return {
       tick: this.tick, t: this.realT, sim_t: this.simT, fight_t: this.fightT, time_scale: this.timeScale, mode: this.mode,
       slow_blink: this.slowBlink, controlled: this.controlledId, lock: this.lockId,
-      arena: { id: this.def.arena, origin: this.arena.origin, ring_center: [this.ringC.x, this.ringC.z], ring_radius: this.ringR, high_roads: this.hrs },
+      arena: { id: this.def.arena, origin: this.arena.origin, ring_center: [this.ringC.x, this.ringC.z], ring_radius: this.ringR, high_roads: this.hrs, bounds: this.ringBounds() },
       props: this.props.map(p => ({ id: p.id, kind: p.kind, pos: [p.x, 0, p.z], uses_left: p.usesLeft })),
       entities: this.entities.map(ent),
       telegraphs: this.teles.map(t => ({ id: t.id, attacker: t.attackerId, cls: t.cls, move: t.moveId, aimed_at: t.aimedAt, shape: t.shape, t: this.simT - t.t0, dur: t.dur, fill: Math.min(1, (this.simT - t.t0) / t.dur) })),
