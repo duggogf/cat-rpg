@@ -17,6 +17,7 @@ export const U = {
   hazeNear: { value: 20 }, hazeFar: { value: 250 }, hazeMax: { value: 0.6 },
   shadowMap: { value: null }, shadowMatrix: { value: new THREE.Matrix4() }, shadowTexel: { value: 1 / 2048 }, shadowOn: { value: 1 },
   grainMap: { value: null },
+  vertLift: { value: 0.4 },
   debugMode: { value: 0 },  // 0 lit, 1 shade mask (R = 1 - lit), 2 albedo (with the same haze)
   zenith: { value: new THREE.Vector3() }, horizon: { value: new THREE.Vector3() },
   sunGlow: { value: new THREE.Vector3() }, sunGlowK: { value: 0.5 },
@@ -36,13 +37,13 @@ export function applyPhase(name) {
   U.zenith.value.copy(rgb(p.zenith)); U.horizon.value.copy(rgb(p.horizon));
   U.sunGlow.value.copy(rgb(p.sunGlow)); U.sunGlowK.value = p.sunGlowK;
   U.cloudLight.value.copy(rgb(p.cloudLight)); U.cloudShade.value.copy(rgb(p.cloudShade));
-  U.backdropKey.value.copy(rgb(p.backdropKey));
+  U.backdropKey.value.copy(rgb(p.backdropKey)); U.vertLift.value = p.vertLift;
   return p;
 }
 
 const LIGHT_PARS = /* glsl */`
 uniform vec3 sunDir, keyColor, shadeMul, bounce, hazeColor;
-uniform float hazeNear, hazeFar, hazeMax, shadowTexel, shadowOn, debugMode;
+uniform float hazeNear, hazeFar, hazeMax, shadowTexel, shadowOn, debugMode, vertLift;
 uniform sampler2D shadowMap, grainMap;
 uniform mat4 shadowMatrix;
 const vec2 PD[12] = vec2[12](vec2(-0.326,-0.406), vec2(-0.840,-0.074), vec2(-0.696,0.457), vec2(-0.203,0.621), vec2(0.962,-0.195), vec2(0.473,-0.480),
@@ -71,13 +72,16 @@ vec3 hazeIt(vec3 c, vec3 p) {
   float h = hazeMax * smoothstep(hazeNear, hazeFar, length(p - cameraPosition));
   return mix(c, hazeColor, h);
 }
-vec3 envShade(vec3 alb, vec3 n, vec3 p, float shadowSoft) {
+vec3 envShade(vec3 alb, vec3 n, vec3 p, float shadowSoft, float twoSided) {
   float ndl = dot(n, sunDir);
+  if (twoSided > 0.5) ndl = abs(ndl) * 0.8 + 0.1;   // cloth: the sun glows through
   float ramp = smoothstep(-0.04, 0.16, ndl);          // E-1: soft terminator, ~12% of the ramp
   float lit = ramp * (ramp > 0.0 ? sunShadow(p, n, shadowSoft) : 1.0);
   float vert = 1.0 - abs(n.y);
   vec3 b = bounce * vert * (1.0 - smoothstep(0.0, 1.7, p.y));
-  vec3 light = mix(shadeMul + b, keyColor, lit);
+  // the painter lifts shaded upright planes (sky fill), warmest at the foot (lane bounce)
+  vec3 sm = mix(shadeMul, vec3(1.0), vertLift * vert * (0.55 + 0.45 * smoothstep(2.5, 0.0, p.y)));
+  vec3 light = mix(sm + b, keyColor, lit);
   vec3 c = alb * light;
   if (debugMode > 1.5) return hazeIt(alb, p);
   if (debugMode > 0.5) return vec3(1.0 - lit, 0.0, 0.0);
@@ -99,7 +103,7 @@ void main() {
 }`;
 
 const STD_FRAG = /* glsl */`
-uniform sampler2D map; uniform float hasMap, alphaCut, grainK, premul, shadowSoft; uniform vec3 tint;
+uniform sampler2D map; uniform float hasMap, alphaCut, grainK, premul, shadowSoft, twoSided; uniform vec3 tint;
 varying vec2 vUv; varying vec3 vN; varying vec3 vP; varying vec3 vC;
 ${LIGHT_PARS}
 void main() {
@@ -110,7 +114,7 @@ void main() {
   if (!gl_FrontFacing) n = -n;
   vec3 alb = t.rgb * tint * vC;
   alb *= mix(1.0, grainAt(vP, n) / 0.83, grainK);
-  gl_FragColor = vec4(envShade(alb, n, vP, shadowSoft), 1.0);
+  gl_FragColor = vec4(envShade(alb, n, vP, shadowSoft, twoSided), 1.0);
 }`;
 
 /** Standard painted environment material. o: {map, tint, grain, alphaCut, side, vertexColors, shadowSoft} */
@@ -118,7 +122,7 @@ export function envMat(o = {}) {
   const m = new THREE.ShaderMaterial({
     uniforms: { ...U, map: { value: o.map || null }, hasMap: { value: o.map ? 1 : 0 }, tint: { value: rgb(o.tint || '#FFFFFF') },
       alphaCut: { value: o.alphaCut || 0 }, grainK: { value: o.grain == null ? (o.map ? 0.15 : 0.6) : o.grain },
-      premul: { value: o.map && o.map.premultiplyAlpha ? 1 : 0 }, shadowSoft: { value: o.shadowSoft || 2.6 } },
+      premul: { value: o.map && o.map.premultiplyAlpha ? 1 : 0 }, shadowSoft: { value: o.shadowSoft || 2.6 }, twoSided: { value: o.twoSided ? 1 : 0 } },
     vertexShader: STD_VERT, fragmentShader: STD_FRAG, side: o.side || THREE.FrontSide, vertexColors: !!o.vertexColors,
   });
   m.userData.alphaCut = o.alphaCut || 0;
@@ -161,7 +165,7 @@ void main() {
   float ndl = dot(n, sunDir);
   float lit = smoothstep(rampLo, rampHi, ndl);
   if (receive > 0.5 && lit > 0.0) lit *= mix(1.0, sunShadow(vCtr + (vP - vCtr) * 0.6, sunDir, 3.5), 0.75);
-  vec3 c = alb * mix(shadeMul, keyColor * 1.04, lit);
+  vec3 c = alb * mix(mix(shadeMul, vec3(1.0), 0.18), keyColor * 1.1, lit);
   if (debugMode > 1.5) c = alb; else if (debugMode > 0.5) c = vec3(1.0 - lit, 0.0, 0.0);
   gl_FragColor = vec4(hazeIt(c, vP), 1.0);
 }`;
@@ -209,10 +213,10 @@ export function skyDome(brush) {
       void main(){
         vec3 d = normalize(vD);
         float e = asin(clamp(d.y, -1.0, 1.0)) * 57.2958;
-        // the kit's sky gradient (top deep, 42% zenith, 80% mix, bottom horizon) laid over 0..34 degrees
+        // the kit's sky gradient (top deep, 42% zenith, 80% mix, bottom horizon) laid over 0..22 degrees
         vec3 deep = mix(zenith, vec3(0.118, 0.373, 0.753), 0.18);
         vec3 mid = mix(zenith, horizon, 0.72);
-        float t = clamp(e / 34.0, 0.0, 1.0);
+        float t = clamp(e / 22.0, 0.0, 1.0);
         vec3 c = t < 0.2 ? mix(horizon, mid, t / 0.2) : (t < 0.58 ? mix(mid, zenith, (t - 0.2) / 0.38) : mix(zenith, deep, (t - 0.58) / 0.42));
         if (e < 0.0) c = horizon;
         float az = atan(d.x, -d.z);
@@ -272,7 +276,7 @@ export function ringGeometry(r, a0, a1, y0, y1, seg = 64) {
 // hard terminator, plus an Aubergine Ink inverted hull whose width is set in render-target pixels.
 export const CEL = {
   keyDir: { value: new THREE.Vector3(0, 1, 0) }, celTint: { value: new THREE.Vector3(1, 1, 1) }, celShade: { value: new THREE.Vector3(0.85, 0.82, 0.92) },
-  rtHeight: { value: 1080 }, rtWidth: { value: 1920 }, lineScale: { value: 1 },
+  rtHeight: { value: 1080 }, rtWidth: { value: 1920 }, lineScale: { value: 1 }, fade: { value: 1 },
 };
 export function celMat() {
   return new THREE.ShaderMaterial({
@@ -280,8 +284,9 @@ export function celMat() {
     vertexColors: true,
     vertexShader: /* glsl */`attribute vec3 shadeCol; varying vec3 vC; varying vec3 vS; varying vec3 vN; varying vec3 vP;
       void main(){ vC = color; vS = shadeCol; vec4 wp = modelMatrix * vec4(position,1.0); vP = wp.xyz; vN = normalize(mat3(modelMatrix) * normal); gl_Position = projectionMatrix * viewMatrix * wp; }`,
-    fragmentShader: /* glsl */`uniform vec3 keyDir, celTint, hazeColor; uniform float hazeNear, hazeFar, hazeMax, debugMode; varying vec3 vC; varying vec3 vS; varying vec3 vN; varying vec3 vP;
-      void main(){ float l = step(0.12, dot(normalize(vN), keyDir)); vec3 c = mix(vS, vC, l) * celTint;
+    fragmentShader: /* glsl */`uniform vec3 keyDir, celTint, hazeColor; uniform float hazeNear, hazeFar, hazeMax, debugMode, fade; varying vec3 vC; varying vec3 vS; varying vec3 vN; varying vec3 vP;
+      float bayer4(vec2 p){ ivec2 i = ivec2(mod(p, 4.0)); int b[16] = int[16](0,8,2,10,12,4,14,6,3,11,1,9,15,7,13,5); return (float(b[i.y * 4 + i.x]) + 0.5) / 16.0; }
+      void main(){ if (fade < 0.999 && bayer4(gl_FragCoord.xy) > fade) discard; float l = step(0.12, dot(normalize(vN), keyDir)); vec3 c = mix(vS, vC, l) * celTint;
         if (debugMode > 1.5) c = vC; else if (debugMode > 0.5) c = vec3(0.0);
         c = mix(c, hazeColor, hazeMax * smoothstep(hazeNear, hazeFar, length(vP - cameraPosition)));
         gl_FragColor = vec4(c, 1.0); }`,
@@ -303,7 +308,7 @@ export function hullMat(widthPx = 2.0) {
         cp.z += 0.0004 * cp.w;
         gl_Position = cp;
       }`,
-    fragmentShader: /* glsl */`void main(){ gl_FragColor = vec4(0.2, 0.153, 0.231, 1.0); }`,
+    fragmentShader: /* glsl */`uniform float fade; float bayer4(vec2 p){ ivec2 i = ivec2(mod(p, 4.0)); int b[16] = int[16](0,8,2,10,12,4,14,6,3,11,1,9,15,7,13,5); return (float(b[i.y * 4 + i.x]) + 0.5) / 16.0; } void main(){ if (fade < 0.999 && bayer4(gl_FragCoord.xy) > fade) discard; gl_FragColor = vec4(0.2, 0.153, 0.231, 1.0); }`,
     side: THREE.BackSide,
   });
 }

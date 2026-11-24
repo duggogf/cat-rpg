@@ -1,3 +1,4 @@
+// PROTOTYPE - NOT FOR PRODUCTION
 // Surface-nets polygoniser: SDF -> welded, closed triangle mesh with gradient (smoothed) normals.
 // A single welded shell is exactly what the inverted-hull outline needs: no cracks at creases.
 import { v3 } from './sdf.js';

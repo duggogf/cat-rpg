@@ -39,7 +39,7 @@ export function buildCast(o) {
   const headC = [0, spineY + 0.138 * hs + 0.006, zF + 0.056 * hs]; // chestnut centre
   pos.head = [0, headC[1] - 0.06 * hs, headC[2] - 0.025 * hs];   // pivot low and behind: nods read well
   const rump = [0, spineY + 0.014, -0.128 * ln * (0.85 + 0.15 * bx)];
-  const tailLen = { pom: 0.06, stub: 0.1, whip: 0.27, ringed: 0.25, plume: 0.27 }[o.tail || 'whip'];
+  const tailLen = { pom: 0.06, stub: 0.1, whip: 0.34, ringed: 0.31, plume: 0.33 }[o.tail || 'whip'];
   const seg = tailLen / 6;
   for (let i = 0; i < 6; i++) pos['tail' + (i + 1)] = [0, rump[1], rump[2] + 0.02 - i * seg];
   pos.fUL = [xF, legTop + 0.005, zF]; pos.fLL = [xF, knee, zF + 0.004];
@@ -129,9 +129,11 @@ export function buildCast(o) {
     { name: 'tail', part: PART.tail, cell: o.tail === 'pom' ? 0.0028 : 0.0035, sigma: 0.006, prims: tail },
   ];
   // ---- collar + bell (Mikan only; collars mean pets)
+  let collar = null;
   if (o.collar) {
     const axis = v3.norm([0, 0.97, 0.24]);
     const cc = [0, headC[1] - 0.1 * hs, headC[2] - 0.036];
+    collar = { c: cc, axis };
     shells.push({ name: 'collar', part: PART.collar, cell: 0.0024, sigma: 0.01, prims: [{ t: 'tor', c: cc, axis, R: 0.058 * bx, r: 0.011, bone: 'neck', k: 0 }] });
     const front = v3.add(cc, [0, -0.026, 0.05 * bx + 0.01]);
     shells.push({ name: 'bell', part: PART.bell, cell: 0.0018, sigma: 0.01, prims: [{ t: 'sph', c: front, r: 0.0165, bone: 'neck', k: 0 }] });
@@ -141,7 +143,7 @@ export function buildCast(o) {
     shells,
     meta: {
       headC, hs, rump, spineY, ears: ears.map((e) => ({ o: e.F.o, u: e.F.u, v: e.F.v, w: e.F.w, A: e.A, B: e.B, C: e.C, th: e.th, side: e.side })),
-      tailLen, legTop, zF, zH, xF, xH,
+      tailLen, legTop, zF, zH, xF, xH, collar,
     },
   };
 }

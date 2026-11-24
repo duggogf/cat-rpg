@@ -70,6 +70,7 @@ export function createCatInternal({ cast = 'mikan', scale = 1.25, carry, silhoue
     uKeyDir: { value: DAY_LIGHT.keyDir.clone() }, uLitMul: { value: new THREE.Vector3(1, 1, 1) }, uShadeMul: { value: new THREE.Vector3(0.8, 0.8, 0.88) },
     uTerm: { value: -0.06 },
     uHeadC: { value: new THREE.Vector3(...meta.headC) }, uSpineY: { value: meta.spineY },
+    uCollarC: { value: new THREE.Vector3(...(meta.collar ? meta.collar.c : [0, -9, 0])) }, uCollarAx: { value: new THREE.Vector3(...(meta.collar ? meta.collar.axis : [0, 1, 0])) },
     uEar: { value: new THREE.Vector3(style.ear.hw * hs, style.ear.h * hs, style.ear.tip * hs) },
     uChin: { value: new THREE.Vector4(0, meta.headC[1] - 0.085 * hs, meta.headC[2] - 0.035 * hs, 0.07 * hs) },
     uFace: { value: faceTex }, uFaceRect: { value: new THREE.Vector4(meta.headC[0] + fr.x, meta.headC[1] + fr.y, fr.hw, fr.hh) },

@@ -24,7 +24,7 @@ export function fillFrag(coatGlsl, colorNames) {
   return /* glsl */`
   ${VARY}
   uniform vec3 uKeyDir; uniform vec3 uLitMul; uniform vec3 uShadeMul; uniform float uTerm;
-  uniform vec3 uHeadC; uniform float uSpineY; uniform vec3 uEar; uniform vec4 uChin;
+  uniform vec3 uHeadC; uniform float uSpineY; uniform vec3 uCollarC; uniform vec3 uCollarAx; uniform vec3 uEar; uniform vec4 uChin;
   uniform sampler2D uFace; uniform vec4 uFaceRect; uniform float uFaceFrame; uniform float uFaceFrames; uniform float uFaceOn;
   uniform float uSil; uniform vec3 uSilCol;
   ${colorNames.map((n) => `uniform vec3 c_${n};`).join('\n')}

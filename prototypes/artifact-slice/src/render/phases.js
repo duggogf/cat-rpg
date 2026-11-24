@@ -15,18 +15,18 @@ export const PHASES = {
     haze: '#D6ECF6', hazeMax: 0.62, hazeNear: 22, hazeFar: 260,
     cloudLight: '#FFFFFF', cloudShade: '#C9D8F0', backdropKey: '#FFFFFF',
     sunGlow: '#FFF6D8', sunGlowK: 0.55,
-    catKey: '#FFFFFF', catShade: '#D8D2EA', catRim: '#FFF6E3',
+    catKey: '#FFFBEF', catShade: '#6E6AA8', catRim: '#FFF6E3', catDir: [-0.35, 0.906, 0.24], vertLift: 0.5,
   },
   dusk: {
     zenith: '#8E6FB0', horizon: '#F7A45A', key: '#FFC27A', shadow: '#7A4E8C', cel: '#FFDDB5',
-    sunEl: 12, sunAz: 22,
+    sunEl: 12, sunAz: 7,
     shadeK: 0.62,
     shadowTint: '#7A4E8C',
     bounce: '#FFB070', bounceK: 0.2,
     haze: '#F4B98C', hazeMax: 0.7, hazeNear: 18, hazeFar: 220,
     cloudLight: '#FFD9A6', cloudShade: '#B88FBE', backdropKey: '#FFD2A0',
     sunGlow: '#FFE0A0', sunGlowK: 0.9,
-    catKey: '#FFDDB5', catShade: '#9C7CB4', catRim: '#FFD9A0',
+    catKey: '#FFC27A', catShade: '#7A4E8C', catRim: '#FFD9A0', catDir: [0.45, 0.8, 0.3], vertLift: 0.35,
   },
 };
 

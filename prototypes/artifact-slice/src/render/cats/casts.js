@@ -31,7 +31,13 @@ export const CASTS = {
     glsl: EAR_INNER + /* glsl */`
   vec3 coat() {
     vec3 h = vRest - uHeadC;
-    if (vPart < 0.5) return c_white;
+    if (vPart < 0.5) {
+      // collar band painted on the neck surface along the torus plane: carries the collar line
+      // wherever the neck shows below the big head (the from-behind read, art bible §5.1)
+      vec3 dc = vRest - uCollarC;
+      if (abs(dot(dc, uCollarAx)) < 0.0105 && length(dc) < 0.085) return c_collar;
+      return c_white;
+    }
     if (vPart < 1.5) {
       float side = h.x >= 0.0 ? 1.0 : -1.0;
       if (onEar(vAux, uEar.y) > 0.5) return earInner(vAux, side, uEar.x, uEar.y, uEar.z) > 0.5 ? c_ear : c_ginger;

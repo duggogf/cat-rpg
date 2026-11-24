@@ -1,3 +1,4 @@
+// PROTOTYPE - NOT FOR PRODUCTION
 // SDF primitives for the cat bakes (pure JS, no three). Units: metres at scale 1 (a real-size cat).
 // Cats face +Z, +Y is up, the cat's left is +X. Each primitive carries the bone it is skinned to.
 export const v3 = {

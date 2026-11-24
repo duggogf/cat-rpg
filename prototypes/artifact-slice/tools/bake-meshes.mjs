@@ -8,6 +8,10 @@ import path from 'node:path';
 import { CASTS, buildCast, BONES } from './cats/casts.sdf.js';
 import { shellSdf, shellBounds, prim, v3, toFrame } from './cats/sdf.js';
 import { surfaceNets } from './cats/surfacenets.js';
+import { MeshoptSimplifier } from 'meshoptimizer';
+await MeshoptSimplifier.ready;
+// triangle budget per shell (≈ 11–13k per cat; the plan's 4–6k is the Unreal target, this is a browser spike)
+const BUDGET = { body: 4200, head: 4800, tail: 1400, collar: 700, bell: 260 };
 
 const root = path.dirname(new URL(import.meta.url).pathname) + '/..';
 const out = path.join(root, 'assets/mesh');
@@ -21,7 +25,14 @@ for (const [name, opts] of Object.entries(CASTS)) {
   const P = [], N = [], SI = [], SW = [], PT = [], AX = [], IDX = [];
   for (const S of M.shells) {
     const f = shellSdf(S);
-    const { pos, nrm, tris } = surfaceNets(f, shellBounds(S, S.cell * 3), S.cell);
+    let { pos, nrm, tris } = surfaceNets(f, shellBounds(S, S.cell * 3), S.cell);
+    // decimate (silhouette-preserving error metric), then drop unused vertices
+    const before = tris.length / 3;
+    const [ix] = MeshoptSimplifier.simplify(new Uint32Array(tris), new Float32Array(pos.flat()), 3, Math.min(tris.length, BUDGET[S.name] * 3), 0.02);
+    const remap = new Map(), np = [], nn = [];
+    tris = Array.from(ix, (i) => { if (!remap.has(i)) { remap.set(i, np.length); np.push(pos[i]); nn.push(nrm[i]); } return remap.get(i); });
+    pos = np; nrm = nn;
+    if (before !== tris.length / 3) process.stdout.write(`  (${before} -> ${tris.length / 3}) `);
     const base = P.length / 3;
     const boneIds = [...new Set(S.prims.filter((p) => !p.cut).map((p) => p.bone))];
     for (let i = 0; i < pos.length; i++) {

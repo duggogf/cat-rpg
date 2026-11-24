@@ -3,7 +3,7 @@
   "w": 1024,
   "h": 512,
   "alpha": false,
-  "bytes": 28030
+  "bytes": 25554
  },
  "fence": {
   "w": 1024,
@@ -63,7 +63,7 @@
   "w": 4096,
   "h": 1024,
   "alpha": true,
-  "bytes": 71792
+  "bytes": 115054
  },
  "hillsFar": {
   "w": 4096,

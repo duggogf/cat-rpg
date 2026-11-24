@@ -23,7 +23,7 @@
     inner += `<path d="M120 60h220v180h-220z" fill="#EFE1CC" opacity="0.5" filter="url(#k-soft2)"/>`;
     inner += `<path d="M640 230h260v210h-260z" fill="#E2CDB4" opacity="0.4" filter="url(#k-soft2)"/>`;
     inner += `<path d="M420 120h120v300h-120z" fill="#C6B8C0" opacity="0.28" filter="url(#k-soft)"/>`;
-    inner += K.texture(-40, -10, W + 80, H + 20, 'brush-v', 0.26);
+    inner += K.texture(-40, -10, W + 80, H + 20, 'brush-v', 0.12) + K.texture(-40, -10, W + 80, H + 20, 'mottle', 0.18);
     inner += `<g fill="none" stroke="#9A8C9C" stroke-width="2.5" opacity="0.6" filter="url(#k-rough)"><path d="M300 0l10 46l-8 38l14 50"/><path d="M820 20l6 22l-5 18l9 30"/></g>`;
     let s = K.surface({ pts: q, color: C.plaster, top: K.mix(C.plaster, '#FFFFFF', 0.18), bottom: K.mix(C.plaster, '#D9BF98', 0.35), grime: 0.32, inner });
     // base course (kit wall: lower ~10%)
@@ -117,19 +117,40 @@
 
   /* Hill ring panoramas. u = azimuth (0 at the sea, -Z; increasing toward +X). */
   // Near hills: the hillside the town sits on, 4096 x 1024 for 360°, elevation band −4°..+20°.
+  // Painted with small gouache dabs (the ring is magnified ~2x on screen, so marks stay small).
+  const paintHill = (ridge, x, y, W, H, base, seed, crowns) => {
+    const R = K.rng(seed), pts = ridge.map(([a, e]) => [x(a), y(e)]);
+    const d = K.blob(pts, false) + `L${pts[pts.length - 1][0]} ${H + 20}L${pts[0][0]} ${H + 20}Z`;
+    let inner = `<path d="${d}" fill="${base}"/>`;
+    const top = Math.min(...pts.map((p) => p[1]));
+    inner += `<rect x="0" y="${top}" width="${W}" height="${H - top}" fill="${K.mix(base, '#D6ECF6', 0.5)}" opacity="0.5" filter="url(#k-soft3)" transform="translate(0 ${(H - top) * 0.55})"/>`;
+    let dabs = '';
+    const xs = pts.map((p) => p[0]), x0 = Math.min(...xs), x1 = Math.max(...xs);
+    for (let i = 0; i < (x1 - x0) * 1.6; i++) {
+      const px = x0 + R() * (x1 - x0), py = top + Math.pow(R(), 0.8) * (H - top), r = 3 + R() * 7;
+      const t = R(); const col = t < 0.4 ? K.mix(base, '#1F5A48', 0.35) : t < 0.8 ? K.mix(base, '#CFE8B0', 0.32) : K.mix(base, '#6E6AA8', 0.25);
+      dabs += `<ellipse cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" rx="${(r * 1.6).toFixed(1)}" ry="${r.toFixed(1)}" fill="${col}" opacity="0.55"/>`;
+    }
+    inner += `<g filter="url(#k-leaf-fine)">${dabs}</g>`;
+    if (crowns) for (let i = 0; i < pts.length - 1; i++) for (let k = 0; k < 6; k++) {
+      const t = R(), p = [pts[i][0] + (pts[i + 1][0] - pts[i][0]) * t, pts[i][1] + (pts[i + 1][1] - pts[i][1]) * t];
+      inner += K.foliage({ x: p[0], y: p[1] + 10 + R() * 30, w: 50 + R() * 60, h: 34 + R() * 26, seed: seed * 100 + i * 7 + k, far: true, tones: { dark: K.mix(base, '#1F5A48', 0.4), mid: base, light: K.mix(base, '#CFE8B0', 0.3) } });
+    }
+    return `<g filter="url(#k-leaf-far)">${K.clipTo(d, inner)}</g>`;
+  };
   T.hillsNear = { w: 4096, h: 1024, alpha: true, svg: () => {
     const W = 4096, H = 1024, el0 = -4, el1 = 20;
     const y = (deg) => H * (el1 - deg) / (el1 - el0);
     const x = (az) => (az / 360) * W;
-    // ridge profile (az, elevation): low by the sea window, high behind (az 180)
-    const ridge = [[-10, -3], [14, 1.6], [30, 4.5], [55, 7.5], [80, 9.5], [110, 12], [140, 15.5], [170, 17], [200, 16.5], [230, 13], [255, 9.5], [280, 6.5], [305, 4], [330, 1.2], [352, -3], [370, -3]];
-    const pts = ridge.map(([a, e]) => [x(a), y(e)]);
-    let s = K.hill({ pts, baseY: H + 20, color: '#4F9E78', seed: 6 });
-    // a second, nearer shoulder with forest texture on the high side
-    const r2 = [[90, 2], [120, 6], [150, 9.5], [175, 10.5], [205, 9], [235, 6], [262, 2]].map(([a, e]) => [x(a), y(e)]);
-    s += K.hill({ pts: r2, baseY: H + 20, color: '#3F8A5E', seed: 8 });
-    // tree crowns along the near shoulder
-    for (let i = 0; i < 16; i++) { const a = 95 + i * 10.5, e = 3 + 7 * Math.sin((a - 90) / 172 * Math.PI); s += K.foliage({ x: x(a), y: y(e), w: 190, h: 120, seed: 300 + i, far: true, tones: { dark: '#2F6E50', mid: '#4C8F5E', light: '#7DB87A' } }); }
+    // back range (bluer, higher) then the near shoulder (greener); open window over the sea at az -28..6
+    const back = [[-40, 3.5], [-30, 0.5], [-27, -5], [4, -5], [8, 0.6], [24, 3.2], [50, 6.2], [85, 8.2], [120, 9.8], [160, 11.2], [190, 11.6], [225, 10], [260, 7.6], [290, 6], [320, 4.6], [330, 3.5]];
+    const near = [[60, -5], [80, 2.5], [105, 4.8], [140, 6.8], [175, 7.4], [205, 6.6], [240, 4.6], [270, 2.6], [295, -5]];
+    let s = '';
+    for (const off of [0, 360]) {
+      const sx = (a) => x(a + off);
+      s += paintHill(back, sx, y, W, H, '#6FAE98', 5, false);
+      s += paintHill(near, sx, y, W, H, '#4F9E6E', 6, true);
+    }
     return svg(W, H, s);
   } };
   // Far headlands: 4096 x 256, elevation band −1°..+5°, hazy blue-green, gap over the open sea.

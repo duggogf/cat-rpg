@@ -56,9 +56,10 @@ const gait = q.get('gait') || 'idle', speed = num('speed', 0.6);
 if (strip) {
   const order = ['flag', 'post', 'spring', 'blade', 'anchor', 'comma'];
   order.forEach((carry, i) => {
-    const c = createCatInternal({ cast: q.get('cast') || 'wallSitter', scale: 1.25, carry, silhouette: true, seed: i + 3 });
-    c.object3D.position.set((i - 2.5) * 0.62, 0, 0);
-    c.object3D.rotation.y = Math.PI; // from behind
+    const c = createCatInternal({ cast: q.get('cast') || 'wallSitter', scale: 1.25, carry, silhouette: q.get('sil') !== '0', seed: i + 3 });
+    if (q.get('sil') === '0') c.setLighting(PH.light);
+    c.object3D.position.set((i - 2.5) * 0.86, 0, 0);
+    c.object3D.rotation.y = Math.atan2(c.object3D.position.x, -num('dist', 3.0)); // each seen square from behind
     scene.add(c.object3D); cats.push(c);
   });
 } else {
@@ -76,7 +77,7 @@ for (const c of cats) { c.setGait(gait, speed); c.setOutlineScale(num('ol', 1));
 
 // ---- camera: third-person height by default
 const cam = new THREE.PerspectiveCamera(num('fov', 40), W / H, 0.05, 200);
-if (strip) { cam.position.set(0, num('h', 1.5), num('dist', 3.2)); cam.lookAt(0, 0.2, 0); }
+if (strip) { cam.position.set(0, num('h', 0.85), num('dist', 3.0)); cam.lookAt(0, 0.3, 0); }
 else if (q.get('cam') === 'close') { cam.position.set(0, num('h', 0.55), num('dist', 1.5)); cam.lookAt(0, 0.28, 0); }
 else { cam.position.set(0, num('h', 0.95), num('dist', 2.2)); cam.lookAt(0, 0.26, 0); }
 
