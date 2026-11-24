@@ -42,3 +42,14 @@ The owner also asked that all further agent work run on Opus at high effort.
 > And as I mentioned before in the previous comments, it's not about just gain control of a territory and done, sometimes some new cats are coming to town to challenge your territory and gain control over it.
 >
 > Play around the system a bit more, but don't over-bloat it.
+
+## C6 — Rivals board layout (chat, after the redraw)
+
+> About the Rival menu, I want it to display similarly to this instead of a line from left to right. This shows more dynamic.
+
+Reference image: `design/reviews/refs/rivals-board-layout-ref.webp` (layout reference only). It shows one gang staged
+as a scene in a narrow alley seen in deep perspective: the boss on a raised porch perch at the far end (vanishing
+point, crown), the gang arranged down the stone steps and path toward the camera by rank, each cat with a name ribbon
+and a role tag (e.g. Lieutenant, Enforcer, Sentry, Brawler, Scout, Patrol), dashed arrows between cats showing who
+answers to whom, a header bar with the place name and influence, a left column of facts (Raid, Scent, Objective), a
+boss card bottom-left (personality, anger, ties) and a button bar bottom-right.
