@@ -1,6 +1,6 @@
 # UX Spec: Key Screens — Cat RPG (vertical slice, round 2)
 
-*Owner: ux-designer · Date: 2026-11-23, revised 2026-11-24 (owner feedback pass; consistency pass by the creative director) · Status: round-2 slice rewrite, revised to the owner's comments C1–C5 (the first draft is archived at `design/backlog/first-drafts/key-screens.md`)*
+*Owner: ux-designer · Date: 2026-11-23, revised 2026-11-24 (owner feedback pass; consistency pass by the creative director; Rivals board declutter, `design/ux/rivals-board-cleanup.md`) · Status: round-2 slice rewrite, revised to the owner's comments C1–C5 (the first draft is archived at `design/backlog/first-drafts/key-screens.md`)*
 *Canon order: owner comments `design/reviews/user-comments-2026-11-24.md` → `design/reviews/owner-feedback-rulings.md` (OR-xx, binding), as settled by `design/reviews/owner-feedback/consistency-pass.md` (F1–F12) → `design/creative-brief.md` v1.6 → round-1 DR-xx and round-2 R1–R5. Patent guardrails: `design/legal/nemesis-patent-analysis.md` v2 §5 (binding). Companions: `design/ux/hud.md` (HUD, control map), `design/accessibility-requirements.md`.*
 
 **Scope.** The slice screens: the **Rivals board** (§2, replaces the Fence Line), the **Rival card** (§3), the **Verdict** and the **loss-to-night walk home** (§4), the **unified Turf Board** (§5), the **Crew roster, Posse and Lessons** (§6) and the **first-15-minutes and first-hour onboarding plan** (§7). Every number, threshold and rule shown is read from its owning GDD; this doc decides only what is shown, where, and how the player moves through it.
@@ -72,7 +72,7 @@ The owner's note on the old Turf Board ("the UI are all over the place") applies
 | **Cat chip** | `ui.portrait` (chestnut) + `.k-ribbon` name tag in the Clowder colour + personality icon | Every small cat: Crew strip, Tonight panel, Sniff cards, tags' owner, ally plate | — |
 | **Paper tag** | `.k-pill --cream`, icon + one word | Relationship tags on the Rivals board; assignment chips | Numbers |
 | **Badge** | One pom-backed icon in the top-right of whatever it marks | Tonight (moon), Challenge (stake flag), Fading (cracked wisp), Home (house), Window (crown), New (tape star) | More than one per object |
-| **Bar** | `.k-gauge` | Influence (header), Repelled/Scuffed/Lost odds (Tonight panel) | Feelings (Grudge, Regard, Loyalty, anger) |
+| **Bar** | `.k-gauge` | Influence (Turf Board header), Repelled/Scuffed/Lost odds (Tonight panel) | Feelings (Grudge, Regard, Loyalty, anger) |
 | **Buttons** | `.k-btn`: one **primary** (Cocoa) or **confirm** (Collar Crimson) per screen, plus pom secondaries | "Post Hige", "Hold to decide" | Two primaries on one screen |
 | **Control footer** | `.k-prompt` row, bottom-left, binding glyph + verb | Every menu | — |
 
@@ -394,12 +394,12 @@ The board would serve as '179's output element for any second-cat change it disp
 
 ### 2.12 Acceptance
 
-1. **Fit:** each scene fits its gang (Lane: ≤ 10 tracked + silhouettes) at the 1080p default framing without scrolling; every focusable cat ≥ 64 px tall; every ribbon, role tag and relationship tag ≥ 28 px text.
-2. **Screenshot test (OR-03):** a 1080p capture of the Lane scene lets 4 of 5 unbriefed viewers say who the Lane's Boss is, who hates the player, and which cats they have not met.
+1. **Fit:** each scene fits its gang (Lane: ≤ 10 tracked + silhouettes) at the 1080p default framing without scrolling; every focusable cat ≥ 64 px tall; every ribbon, role tag and relationship tag ≥ 28 px text. At rest each discovered cat shows exactly one text label; ≤ 16 text items on screen at rest; no label overlaps another cat; no arrow crosses the centre line.
+2. **Screenshot test (OR-03):** a 1080p capture of the Lane scene's **rest** frame (nothing focused) lets 4 of 5 unbriefed viewers say who the Lane's Boss is, who hates the player, and which cats they have not met.
 3. **Roster test (C1):** asked "how many gangs are there, and which have you not met?", ≥ 80% of testers answer from the scene strip within 10 s.
-4. **Tag test:** asked "who is Togemaru's rival?" and "who was Hige's old boss?", ≥ 80% of testers answer in ≤ 10 s, with the mouse and with the pad (the second needs Go to tie or the tab tag).
-5. **Role test:** ≥ 70% of testers, shown a role tag, can guess how that cat fights (e.g. "Shield: protects the others").
-6. **Anger test:** shown the Lane scene with Daifuku Seething, ≥ 80% of testers can say what made him angry (marking in his Lane) and that it will be spent in his next fight.
+4. **Tag test:** asked "who is Togemaru's rival?" and "who was Hige's old boss?", ≥ 80% of testers answer in ≤ 10 s, with the mouse and with the pad (the second needs Go to tie or the tab chip).
+5. **Role test:** ≥ 70% of testers, shown a role tag on the focused cat's **card**, can guess how that cat fights (e.g. "Shield: protects the others").
+6. **Anger test:** shown the Lane scene's rest frame with Daifuku Seething, plus the Boss's card, ≥ 80% of testers can say what made him angry (marking in his Lane) and that it will be spent in his next fight.
 7. Opening from the street takes ≤ 300 ms to the first interactive frame; changing scene ≤ 200 ms; the clock is paused while it is open.
 8. The §2.11 audit passes with zero findings.
 
@@ -421,8 +421,10 @@ Everything the player knows about one discovered Rival, presented as a cat with 
 | **History (Memory)** | Stamp strip of up to 6 pinned entries, then the rest (≤ 10): each a pictogram stamp (Routed by you, Routed you, Ambushed, Fled, Nose-Touched, truce, Lick In, Spray over its mark, Old Score) + one line in its own voice ≤ 60 characters + the day. **Only its own dealings with Mikan** (G8) | Nemesis |
 | **Grudge** and **Regard** | Two 4-step moods as pictograms: Grudge = hackles (smooth → bristled → arched → storm); Regard = ears (back → level → forward → nose-out). **No numbers, no bars** | Nemesis |
 | Sworn / Bitter | Storm mark around the portrait with *Sworn Enemy* or *Sworn Rival* / grumble cloud | Nemesis |
-| **Ties** (OR-04) | One row of paper tags for discovered cats only: "Boss: Daifuku · Rival: Goma · Kin: Sasa". Each tag's portrait is focusable and jumps the board's focus to that cat | Nemesis |
+| **Ties** (OR-04) | One row of paper tags for discovered cats only, the full list, including a Boss's whole gang (the board shows Gang/Boss by arrows only, and at most 3 tags): "Boss: Daifuku · Rival: Goma · Kin: Sasa". Each tag's portrait is focusable and jumps the board's focus to that cat | Nemesis |
 | **Anger** (Bosses only, OR-07) | Steam puffs, stage word and the two system lines of §2.8 | Nemesis |
+| **Tonight** | Moon (raid) or stake flag (challenge) + the target Patch ("Tonight: raids Persimmon Alley."), when a raid or challenge by this cat is forecast. Moved from the deleted fact column | Territory |
+| **Objective** (Bosses only) | One line from the turf goal: "Mark the Lane until he comes down." → "He roams: find him." → "Spray the Den corner stone." → "The Lane is yours." Moved from the deleted fact column | Territory |
 | **Truce** (Nose-Touched) | Sprig + "Truce: 6 days left" (days are calendar counts, not feelings) or "Friend" | Nemesis |
 | **Strengths** | Known Strengths as stamps; unknown as "?". Line: "If recruited: always-on perk" under the Strength | Nemesis chooses, Combat values |
 | **Fears** | Known Fears as stamps (Water, Loud Noise, Cucumbers in the slice); unknown "?" | Nemesis chooses, Combat values |
@@ -924,6 +926,8 @@ A single button on its tab: the cost (Σ Crew levels), the Stash, and a preview 
 - Handheld-console framing check for the Rivals board (fit at 720p).
 
 ## Revision Log
+
+**Owner: Rivals board declutter (2026-11-24).** Owner on preview 06: 'very crowded and cramped'. `design/ux/rivals-board-cleanup.md`: names only at rest (one label per cat), role tags and ties on focus only (≤ 3 tags, Gang/Boss by arrows), card on focus only, fact column and influence bar removed (Turf Board owns them), compact emblem scene strip, faint merged arrows, ≤ 1 mark per cat; §2.1–2.9, §2.12, §3.2 updated; §2.6.1 deleted.
 
 **2026-11-24, Consistency pass (creative director; `design/reviews/owner-feedback/consistency-pass.md`).**
 

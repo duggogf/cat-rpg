@@ -3,7 +3,7 @@
 > **Trigger.** The owner on preview `design/previews/06-fence-line.png`: *"The new Rivals board looks very crowded and cramped. Everything is everywhere, please evaluate it again, clean it up."*
 > **Keep:** the staged alley from C6 (`design/reviews/refs/rivals-board-layout-ref.webp`): Boss on a perch at the far end, gang down the alley by role, depth and movement.
 > **Rulings kept:** silhouettes until discovered (OR-03), ties only between discovered cats (OR-04), Boss anger shown (OR-07), own-history lines only (G8, §2.11), no numbers for feelings (R3).
-> **Spec status:** `design/ux/key-screens.md` §2 and §3 are **not yet edited**. The edits are listed in §4 below and wait for the owner's approval (and answers to D1–D4).
+> **Spec status:** **applied 2026-11-24.** The owner asked for this pass directly ("please evaluate it again, clean it up, use ux designer agent to do a pass on it") and said the studio's recommendations apply where they do not answer, so D1–D4 are decided as recommended (§2.10) and the §4 edits are in `design/ux/key-screens.md` §2 and §3.
 
 ---
 
@@ -192,14 +192,16 @@ The legend stays on View hold / Tab hold / "?" and is not a button.
   Text on focus: 11 at rest - Last night + 1 tag + 6 card lines + Card = 18. One tag in the scene.
 ```
 
-### 2.10 Open decisions for the owner
+### 2.10 Decisions (decided 2026-11-24, as recommended)
 
-| # | Decision | Chosen here | Alternative |
+All four are **decided as recommended**. The owner asked for this pass directly ("The new Rivals board looks very crowded and cramp. Everything is everywhere, please evaluate it again, clean it up, use ux designer agent to do a pass on it.") and has said that for design questions they do not answer, the studio's recommendations apply.
+
+| # | Decision | Decided | Alternative (not taken) |
 |---|---|---|---|
-| D1 | The left fact column | **Removed**: its facts are on the Turf Board or the cat's card | Keep a single caption line under the header: the Objective only |
-| D2 | The influence bar in the Rivals header | **Removed** (the Turf Board owns territory, R3) | Keep a thin bar with no crown and no % |
-| D3 | Role tags at rest | **Hidden**: on the card only; depth already shows rank | Show the role word under the name like the reference (2 labels per cat) |
-| D4 | The card when nothing is focused | **Hidden**: the rest frame is the screenshot | Show the Boss's card (the previous rule) |
+| D1 | The left fact column | **DECIDED: Removed**: its facts are on the Turf Board or the cat's card | Keep a single caption line under the header: the Objective only |
+| D2 | The influence bar in the Rivals header | **DECIDED: Removed** from this screen (the Turf Board owns territory, R3) | Keep a thin bar with no crown and no % |
+| D3 | Role tags at rest | **DECIDED: Hidden**: on the selected cat's card only; depth already shows rank | Show the role word under the name like the reference (2 labels per cat) |
+| D4 | The card when nothing is focused | **DECIDED: Hidden** until a cat is selected: the rest frame is the screenshot | Show the Boss's card (the previous rule) |
 
 ---
 
@@ -220,7 +222,7 @@ Redraw `06-fence-line.png` as the **focus** state. Checklist:
 
 ---
 
-## 4. Proposed edits to `design/ux/key-screens.md` (pending owner approval)
+## 4. Edits to `design/ux/key-screens.md` (applied 2026-11-24)
 
 | Section | Edit |
 |---|---|

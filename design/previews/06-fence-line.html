@@ -24,7 +24,7 @@
   .nm { position: absolute; transform: translateX(-50%); display: flex; align-items: center; }
   .nm .k-ribbon { height: 40px; font-size: 28px; padding: 0 26px 0 14px; }
   .nm--dim { opacity: .55; }
-  .nm--focus .k-ribbon { --k-clowder: var(--sage); box-shadow: 0 0 0 4px var(--gold); }
+  .nm--focus { filter: drop-shadow(3px 0 0 var(--gold)) drop-shadow(-3px 0 0 var(--gold)) drop-shadow(0 3px 0 var(--gold)) drop-shadow(0 -3px 0 var(--gold)); }
   .star { position: absolute; right: 8px; top: -12px; }
   .rtag { margin-left: -4px; display: flex; align-items: center; gap: 6px; height: 40px; padding: 0 14px 0 8px; background: var(--cream); border: 3px solid var(--ink); border-radius: 8px 12px 10px 12px; box-shadow: 2px 3px 0 rgba(110,106,168,.6); font: 800 28px/1 var(--font); color: var(--ink); transform: rotate(-3deg); }
   .rtag svg { display: block; }
@@ -144,9 +144,9 @@ const [dx, dy] = POS.daifuku;
 const dash = (d, w, op) => `<path d="${d}" fill="none" stroke="${C.cream}" stroke-width="${w + 5}" stroke-linecap="round" opacity="${op}"/><path d="${d}" fill="none" stroke="${C.ink}" stroke-width="${w}" stroke-dasharray="12 10" stroke-linecap="round" opacity="${op}"/>`;
 const head = (x, y, ang, w, op) => `<g transform="translate(${x} ${y}) rotate(${ang})" opacity="${op}"><path d="M-14 -10L4 0L-14 10" fill="none" stroke="${C.cream}" stroke-width="${w + 5}" stroke-linecap="round" stroke-linejoin="round"/><path d="M-14 -10L4 0L-14 10" fill="none" stroke="${C.ink}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/></g>`;
 s.push(dash('M906 548Q896 480 932 424', 2, 0.35) + head(932, 424, -62, 2, 0.35));                     // left trunk (faint)
-s.push(dash('M760 630Q820 570 906 548', 2, 0.35) + dash('M836 548L906 548', 2, 0.35) + dash('M800 870Q820 680 906 548', 2, 0.35));
+s.push(dash('M760 630Q820 570 906 548', 2, 0.35) + dash('M836 548L906 548', 2, 0.35) + dash('M760 850Q600 800 598 700Q620 540 906 548', 2, 0.35));
 s.push(dash('M1060 548L1014 548', 2, 0.35) + dash('M1180 880Q1120 680 1014 548', 2, 0.35));           // dim right branches
-s.push(dash('M1170 600Q1160 470 1050 440Q1010 430 992 424', 4, 1) + head(992, 424, -165, 4, 1));  // Togemaru's own arrow
+s.push(dash('M1170 600Q1160 470 1100 420Q1074 398 1048 392', 4, 1) + head(1048, 392, -160, 4, 1));  // Togemaru's own arrow
 
 // Daifuku (his Boss): full colour, crown on the perch, two steam puffs above
 s.push(K.inked(K.blob(K.xf([[-90, 0], [-84, -16], [0, -22], [84, -16], [90, 0], [70, 10], [0, 14], [-70, 10]], { x: dx, y: dy })), '#8E6EB8', 2.5));
@@ -158,8 +158,8 @@ s.push(K.dustCloud({ x: dx - 80, y: dy - 196, r: 22, puffs: 4, seed: 2 }) + K.du
 // dimmed: Captains, Sasa, Kuri, and the two unmet silhouettes in the wall shade
 s.push(dim(K.cat({ ...RV.CAST.kagi, pose: 'side-walk', expr: 'smug', x: POS.kagi[0], y: POS.kagi[1], scale: 1.0 }) + `<g transform="translate(${POS.kagi[0] + 42} ${POS.kagi[1] - 100}) rotate(-20)">${K.inked('M-4 -14H4V9H-4Z', '#F2D8A0', 1.8)}</g>`));
 s.push(dim(K.cat({ ...RV.CAST.ohagi, pose: 'front-sit', x: POS.ohagi[0], y: POS.ohagi[1], scale: 1.1, flip: true })));
-s.push(K.castShadow('M520 520L660 516L690 660L500 672Z', 0.5) + K.castShadow('M1310 520L1450 516L1470 660L1300 672Z', 0.5));
-s.push(`<g opacity="0.72">${sil(K.cat({ ...RV.CAST.hanpen, pose: 'front-sit', x: 590, y: 640, scale: 0.92, shadow: false }))}${sil(K.cat({ ...RV.CAST.nori, pose: 'front-sit', x: 1380, y: 640, scale: 0.9, shadow: false, flip: true }))}</g>`);
+s.push(K.castShadow('M380 650L500 640L520 790L360 800Z', 0.55) + K.castShadow('M1440 680L1560 670L1580 820L1430 830Z', 0.55));
+s.push(`<g opacity="0.72">${sil(K.cat({ ...RV.CAST.hanpen, pose: 'front-sit', x: 440, y: 766, scale: 0.82, shadow: false }))}${sil(K.cat({ ...RV.CAST.nori, pose: 'front-sit', x: 1500, y: 800, scale: 0.95, shadow: false, flip: true }))}</g>`);
 s.push(dim(K.cat({ ...RV.CAST.sasa, pose: 'front-sit', expr: 'happy', carry: 'spring', x: POS.sasa[0], y: POS.sasa[1], scale: 1.55 })));
 s.push(dim(K.cat({ ...RV.CAST.kuri, pose: 'side-walk', expr: 'shock', x: POS.kuri[0], y: POS.kuri[1], scale: 1.4, flip: true })));
 
@@ -172,7 +172,7 @@ s.push(K.shadow({ x: tg.x, y: tg.y + 6, rx: 70, ry: 10, opacity: 0.5 }));
 s.push(K.glow(tg.x, tg.y - 90, 150, 140, '#FFF0C0', 0.55));
 s.push(RV.hackles({ x: tg.x, y: tg.y, scale: tg.sc, rim: C.gold }));
 s.push(RV.notched(K.cat({ ...RV.CAST.togemaru, pose: 'front-sit', expr: 'angry', outline: 'gold', x: tg.x, y: tg.y, scale: tg.sc, flip: true, shadow: false }), [RV.frontNotch(tg.x, tg.y, tg.sc, 'l')], { rim: C.cream }));
-s.push(RV.storm({ x: tg.x + 4, y: tg.y - 236, s: 0.85 }));
+s.push(RV.storm({ x: tg.x + 18, y: tg.y - 198, s: 0.85 }));
 
 /* ---------- grade: soft violet edge ---------- */
 s.push(`<radialGradient id="vg" cx="0.5" cy="0.42" r="0.75"><stop offset="0.55" stop-color="#6E5AA0" stop-opacity="0"/><stop offset="1" stop-color="#6E5AA0" stop-opacity="0.34"/></radialGradient><rect width="${W}" height="${H}" fill="url(#vg)" style="mix-blend-mode:multiply"/>`);
