@@ -37,8 +37,8 @@
   .hints { display: flex; gap: 16px; align-items: center; }
   .hint { display: flex; gap: 6px; align-items: center; font: 800 26px/1 var(--font); color: var(--ink); }
   #ribbon { left: 50%; top: 22px; transform: translateX(-50%); }
-  .idr { display: flex; align-items: center; gap: 16px; height: 74px; padding: 0 74px 0 30px; background: var(--sage); border: 4px solid var(--ink); border-right: 0;
-         clip-path: polygon(22px 0, 100% 0, calc(100% - 40px) 100%, 0 100%); font: 800 40px/1 var(--font); color: var(--ink); }
+  /* name card = the kit ribbon (Clowder colour, Ink text, folded wedge end), sized up for the combat banner */
+  .idr.k-ribbon { height: 64px; font-size: 38px; gap: 14px; padding: 0 46px 0 20px; }
   .idr small { font: 700 26px/1 var(--font); }
   .idr-wrap { filter: drop-shadow(3px 4px 0 rgba(110,106,168,.55)); }
   .stamps { display: flex; gap: 10px; justify-content: center; margin-top: 8px; }
@@ -52,7 +52,7 @@
   .ftag svg { display: block; }
   .ftag::after { content: ''; position: absolute; left: 50%; bottom: -14px; width: 16px; height: 14px; margin-left: -8px; background: var(--ink); clip-path: polygon(0 0, 100% 0, 50% 100%); }
   /* the Slow Blink grade: world saturation -30%, value -10%, cool lavender cast; HUD and the targeted things untouched */
-  .grade { filter: saturate(.62) brightness(.9) hue-rotate(-6deg); }
+  .grade { filter: saturate(.42) brightness(.86) hue-rotate(-8deg); }
 </style>
 </head>
 <body>
@@ -71,6 +71,14 @@ const cs = (d) => 16 / d;
 const s = [];
 const pt = (p) => p[0].toFixed(1) + ' ' + p[1].toFixed(1);
 const ink = C.ink, gold = C.gold;
+
+/* ---- canon slice crew (design/gdd/crew-and-progression.md §3.3 "Look"), as kit cat() options ---- */
+const CREW = {
+  pon: { ...K.CAST.goofball },                                                   // small round calico, half-folded ear, tail up (Goofball)
+  hige: { coat: { base: '#8E93A8', patch: '#5C5F72' }, pattern: 'solid', tail: 'whip', ears: 'standard', build: 'round', scars: ['notch'], eye: 'yellowgreen', carry: 'post', expr: 'neutral' }, // big grey tom, torn ear (Stalwart)
+  kinako: { coat: { base: '#ECD3A8' }, pattern: 'solid', tail: 'whip', ears: 'tall', build: 'long', eye: 'amber', carry: 'comma', expr: 'shock' }, // pale fawn, huge ears, half-crouched (Fraidy)
+  toge: { coat: { base: '#C98A4A', patch: '#37323F' }, pattern: 'saddle', tail: 'plume', ears: 'standard', build: 'long', eye: 'amber', carry: 'flag', expr: 'smug' }, // lean black-and-tan tom (Braggart)
+};
 
 /* ================= painted world: the Lot (seen from the tactical lift) ================= */
 s.push(K.sky({ w: W, h: 300, phase: 'day', zenith: '#4A9FE4', horizon: '#CFE6F0' }));
@@ -156,21 +164,21 @@ const bk = P(6.1, 0, 11.4);
 // --- left: brooder held under a frozen, mid-air Goofball; Fraidy flanking
 s.push(K.cat({ ...K.CAST.brooder, pose: 'hiss', outline: 'sage', x: br.x, y: br.y, scale: cs(14.6) }));
 s.push(K.speedLines({ mode: 'parallel', x: br.x + 300, y: br.y - 300, w: 170, h: 70, angle: 132, count: 8, seed: 4 }));
-s.push(`<g transform="translate(${br.x + 70} ${br.y - 120}) rotate(-30)">${K.cat({ ...K.CAST.goofball, pose: 'side-pounce', outline: 'gold', flip: true, expr: 'happy', x: 0, y: 64, scale: cs(14) * 1.05, shadow: false })}</g>`);
+s.push(`<g transform="translate(${br.x + 70} ${br.y - 120}) rotate(-30)">${K.cat({ ...CREW.pon, pose: 'side-pounce', outline: 'gold', flip: true, expr: 'happy', x: 0, y: 64, scale: cs(14) * 1.05, shadow: false })}</g>`);
 s.push(K.shadow({ x: br.x + 40, y: br.y + 4, rx: 70, ry: 12 }));
 s.push(chevron(br.x + 70, br.y - 236, 0.8));
 s.push(K.speedLines({ mode: 'parallel', x: fr.x - 260, y: fr.y - 80, w: 170, h: 60, angle: 0, count: 6, seed: 8 }));
-s.push(K.cat({ ...K.CAST.fraidy, pose: 'side-walk', outline: 'gold', expr: 'shock', x: fr.x, y: fr.y, scale: cs(9.4) * 0.92 }));
+s.push(K.cat({ ...CREW.kinako, pose: 'side-walk', outline: 'gold', expr: 'shock', x: fr.x, y: fr.y, scale: cs(9.4) * 0.92 }));
 s.push(chevron(fr.x + 30, fr.y - 168, 0.9));
 s.push(dustRing(br.x + 10, br.y + 4, 80, 3, 21, 20));
 
 // --- right: Stalwart vs Schemer
 s.push(K.cat({ ...K.CAST.schemer, pose: 'hiss', outline: 'sage', flip: true, x: sch.x, y: sch.y, scale: cs(13.6) }));
-s.push(K.cat({ ...K.CAST.stalwart, pose: 'hiss', outline: 'gold', expr: 'angry', x: stw.x, y: stw.y, scale: cs(12.6) }));
+s.push(K.cat({ ...CREW.hige, pose: 'hiss', outline: 'gold', expr: 'angry', x: stw.x, y: stw.y, scale: cs(12.6) * 1.1 }));
 s.push(K.impactBurst({ x: (sch.x + stw.x) / 2 + 36, y: sch.y - 30, r: 26, points: 9, star: true, seed: 6 }));
 s.push(chevron(stw.x + 16, stw.y - 128, 0.8));
-// Schemer's yellow telegraph, frozen mid-windup (Hiss it): decal grows from the attacker toward Gin
-s.push(K.telegraph({ kind: 'yellow', x: stw.x + 40, y: stw.y + 6, rx: 110, ry: 30 }));
+// Schemer's yellow telegraph, frozen mid-windup (Hiss it): decal grows from the attacker toward Hige
+
 
 // --- Togemaru, Frazzled and held: dust and fur wedges frozen in the air from Frame 02's hit
 s.push(dustRing(tg.x + 10, tg.y + 14, 130, 5, 41, 22));
@@ -183,6 +191,7 @@ s.push(K.speedLines({ mode: 'parallel', x: tg.x - 420, y: tg.y - 170, w: 300, h:
 // --- props + bucket
 s.push(K.castShadow(`M${bk[0] - 30} ${bk[1] - 2}L${bk[0] + 34} ${bk[1] - 2}L${bk[0] + 120} ${bk[1] + 18}L${bk[0] + 40} ${bk[1] + 22}Z`, 0.34));
 
+s.push(K.prop({ kind: 'bucket', x: bk[0], y: bk[1], scale: 1.15 }));   // props take the grade; only their highlight halo is exempt
 const WORLD = s.join('');
 
 /* ================= un-graded overlays: highlighted props, target cursor, Frazzled ring, Pile-On prompt ================= */
@@ -191,7 +200,7 @@ const o = [];
 const halo = (x, y, rx, ry) => `<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${C.cream}" fill-opacity="0.35" stroke="${ink}" stroke-width="10"/><ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="none" stroke="${C.cream}" stroke-width="5"/>`;
 const cr = P(-1.25, 0, 13.4);
 o.push(halo(cr[0] + 4, cr[1] - 2, 80, 22));
-o.push(K.prop({ kind: 'bucket', x: bk[0], y: bk[1], scale: 1.15 }));
+o.push(K.telegraph({ kind: 'yellow', x: stw.x + 40, y: stw.y + 6, rx: 110, ry: 30 }));   // telegraph decals are gameplay info: ungraded
 o.push(halo(bk[0], bk[1] - 2, 56, 16));
 
 // Frazzled ring: countdown over the 6 s window (held at 5%), 5 pips on a Captain; 3 still lit = an early, big Pile-On
@@ -202,7 +211,7 @@ o.push(halo(bk[0], bk[1] - 2, 56, 16));
   for (let i = 0; i < 5; i++) { const a = Math.PI * (0.15 + i * 0.175), px = x + Math.cos(a) * (rx + 2), py = y + Math.sin(a) * (ry + 2); o.push(`<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="11" fill="${i < 3 ? C.magenta : C.recessed}" stroke="${ink}" stroke-width="3"/>`); }
 }
 // the hovered target stays in full colour (the grade drops off the cat under the cursor)
-o.push(K.cat({ ...K.CAST.braggart, pose: 'frazzled', x: tg.x, y: tg.y, scale: cs(12.6) * 1.36, lw: 3 }));
+o.push(K.cat({ ...CREW.toge, pose: 'frazzled', x: tg.x, y: tg.y, scale: cs(12.6) * 1.36, lw: 3 }));
 o.push(K.frazzleOrbit({ x: tg.x + 2, y: tg.y - 176, r: 80 }));
 // target cursor: four Bell-Gold corner brackets snapping around the Frazzled cat + a paw pip
 { const x = tg.x, y = tg.y - 92, w = 128, h = 130, L = 46; let g = '';
@@ -251,7 +260,7 @@ const pileGlyph = `<svg width="54" height="46" viewBox="-30 -25 60 50"><path d="
 
 const eb = [tg.x - 86, tg.y - 290];
 const hud = `
-  <div class="k-abs" id="ribbon"><div class="idr-wrap"><div class="idr">${brick}TOGEMARU <small>the First Thorn</small>${claw}${claw}</div></div>
+  <div class="k-abs" id="ribbon"><div class="idr-wrap"><span class="k-ribbon k-ribbon--sage idr">${brick}TOGEMARU <small>the First Thorn</small>${claw}${claw}</span></div>
     <div class="stamps"><span class="stamp stamp--lit">${cuke(34)}</span><span class="stamp">?</span></div></div>
   <div class="k-abs ebar" style="left:${eb[0]}px; top:${eb[1]}px">
     <div class="ebar-row"><svg width="22" height="18" viewBox="-12 -9 24 18"><path d="M-10 -7h20v14h-20z" fill="${C.sage}" stroke="${ink}" stroke-width="2.5"/><path d="M-10 0h20M0 -7v7" stroke="${ink}" stroke-width="2"/></svg><div class="k-gauge" style="--v:52%"><i></i></div></div>
@@ -261,9 +270,9 @@ const hud = `
   <div class="ftag" style="left:${bk[0] - 22}px; top:${bk[1] - 132}px">${drop}</div>
   <div class="k-abs" id="plates">
     ${plate({ ctrl: true, sel: true, dir: 'n', name: 'Mikan', cat: K.CAST.mikan, nerve: 82, paws: [100, 100], bell: true })}
-    ${plate({ dir: 'w', name: 'Mochi', cat: K.CAST.goofball, nerve: 70, paws: [100, 45], bell: true, q: true })}
-    ${plate({ dir: 's', name: 'Gin', cat: K.CAST.stalwart, nerve: 91, paws: [60, 0], bell: false })}
-    ${plate({ dir: 'e', name: 'Kinako', cat: K.CAST.fraidy, nerve: 48, paws: [100, 0], bell: true })}
+    ${plate({ dir: 'w', name: 'Pon', cat: CREW.pon, nerve: 70, paws: [100, 45], bell: true, q: true })}
+    ${plate({ dir: 's', name: 'Hige', cat: CREW.hige, nerve: 91, paws: [60, 0], bell: false })}
+    ${plate({ dir: 'e', name: 'Kinako', cat: CREW.kinako, nerve: 48, paws: [100, 0], bell: true })}
   </div>
   <div class="k-abs k-panel" id="menu">
     <div class="m-head"><span class="m-sh">L1</span><span class="who">${K.ui.portrait({ cat: Object.assign({}, K.CAST.mikan, { expr: 'angry' }), size: 52, ring: gold })}Mikan</span><span class="m-sh">R1</span></div>
@@ -276,8 +285,8 @@ const hud = `
   </div>`;
 
 document.getElementById('stage').innerHTML = K.svg(W, H, `<g class="grade">${WORLD}</g>`
-  + `<rect width="${W}" height="${H}" fill="#B9B4E6" opacity="0.2" style="mix-blend-mode:multiply"/>`
-  + `<rect width="${W}" height="${H}" fill="url(#vig)"/><radialGradient id="vig" cx="50%" cy="50%" r="75%"><stop offset="0.6" stop-color="#DCD8F2" stop-opacity="0"/><stop offset="1" stop-color="#DCD8F2" stop-opacity="0.55"/></radialGradient>`
+  + `<rect width="${W}" height="${H}" fill="#ACA6E6" opacity="0.32" style="mix-blend-mode:multiply"/>`
+  + `<rect width="${W}" height="${H}" fill="url(#vig)"/><radialGradient id="vig" cx="50%" cy="50%" r="75%"><stop offset="0.55" stop-color="#FFF6E3" stop-opacity="0"/><stop offset="1" stop-color="#FFF6E3" stop-opacity="0.6"/></radialGradient>`
   + o.join(''), 'class="k-world"') + hud;
 </script>
 </body>
