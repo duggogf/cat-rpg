@@ -202,12 +202,10 @@ def run(pol, seed, days=7):
         if d >= 3:
             for c in ("Kinako", "Pon"):
                 if c not in crew: crew.append(c)
-        if ch and ch_seen_day is None: ch_seen_day = d      # the Sniff announces it this morning
-        # ---- the Lot: posting for tonight (taught on L2D2 = day 4)
+        if ch:
+            ch["armed"] = True                                 # active from the morning after it arrives
+            if ch_seen_day is None: ch_seen_day = d            # the Sniff announces it this morning
         out = pol["goes_out"](d)
-        tonight = raid if (raid and raid["patch"] in held) else None
-        posts = pol["post"](held, other, tonight, ch if (ch and ch["armed"]) else None, window,
-                            [c for c in crew if c not in routed], dsv, prng) if (d >= 4 and out and pol["posts"]) else {}
         # ---- the street
         visited, claimed_today, field_frac, extra_loot = set(), set(), 1.0, 0
         if out:
@@ -226,7 +224,7 @@ def run(pol, seed, days=7):
                     if pol["bribe"] and stash >= 96: stash -= 96; row["spend"] += 96; bribed = True
                     crew.append("Kagi")
             for p in list(held):
-                if prng.random() < pol["visit_p"]:
+                if (pol.get("visit_only") is None or p in pol["visit_only"]) and prng.random() < pol["visit_p"]:
                     visited.add(p)
                     if held[p] < 60 and prng.random() < pol["spray_p"]: held[p] = 90
             if not den_claimed and influence(held) >= 100 and not window:
@@ -243,7 +241,7 @@ def run(pol, seed, days=7):
             elif pol.get("settle_from") and d >= pol["settle_from"]:
                 field_frac = pol["settle_frac"]
             # the Boss on his patrol
-            if window and not den_claimed and pol["boss_win_on"] and not row["wiped"]:
+            if window and not den_claimed and pol["boss_win_on"] and not row["wiped"] and d >= pol.get("boss_from", 1):
                 boss_tries += 1
                 if boss_tries >= pol["boss_win_on"]:
                     held["DEN"] = 70; other.pop("DEN", None); den_claimed = True; window = False
@@ -251,6 +249,10 @@ def run(pol, seed, days=7):
                 else:
                     field_frac *= 0.75 * 0.8; row["wiped"] = True
         for p in YIELD: dsv[p] = 0 if p in visited else dsv[p] + 1
+        # ---- posting for tonight (Turf Board, taught on L2D2 = day 4; the post-claim prompt included)
+        tonight = raid if (raid and raid["patch"] in held) else None
+        posts = pol["post"](held, other, tonight, ch, window, [c for c in crew if c not in routed], dsv, prng) \
+            if (d >= 4 and out and pol["posts"]) else {}
         if out:
             row["field"] = round(FIELD[d] * pol["field_mult"] * field_frac) + extra_loot + \
                 (10 if (d in CACHE_DAYS and pol["caches"] and not row["wiped"]) else 0)
@@ -313,7 +315,6 @@ def run(pol, seed, days=7):
                 other[p] = dict(kind="outsider", scent=60, stale=0, was_ours=other[p].get("was_ours", False))
                 ch_log["newcomers"] += 1
             next_te = d + 2 + rng.randint(0, 1)
-        if ch: ch["armed"] = True
         if first3 is None and len(held) >= 3: first3 = d; next_ch = d + 2
         if next_ch is not None and d == next_ch:
             if ch is None:
@@ -325,7 +326,7 @@ def run(pol, seed, days=7):
             next_ch = d + 4
         raid = None
         if ch and ch["target"] in held:
-            raid = challenge_raid(ch["target"]) if ch["armed"] or True else None
+            raid = challenge_raid(ch["target"])
         elif d >= 3:
             adm = [q for q in held if q != "LWC" and q != last_raided and (q != "DEN" or I < 75)]
             if adm: raid = make_raid(rng, min(adm, key=lambda q: held[q]), d)
@@ -347,14 +348,14 @@ def run(pol, seed, days=7):
 ENGAGED = dict(claims={1: "LWC", 2: "LPY", 3: "PA", 5: "TSS"}, wins=lambda d: True, share=lambda d: True,
                lesson_days=(4, 6, 7), bribe=True, goes_out=lambda d: True, visit_p=1.0, spray_p=1.0,
                field_mult=1.0, caches=True, post=post_best, posts=True, fight_ch_p=0.7, retake_p=1.0,
-               boss_win_on=2, presence=lambda d: d == 4)
+               boss_win_on=2, boss_from=6, presence=lambda d: d == 4)
 CASUAL = dict(ENGAGED, claims={1: "LWC", 2: "LPY", 4: "PA", 6: "TSS"}, share=lambda d: d % 2 == 0,
               lesson_days=(5, 8), bribe=False, visit_p=0.6, spray_p=0.5, field_mult=0.75, post=post_random,
-              fight_ch_p=0.3, retake_p=0.5, presence=lambda d: False)
+              fight_ch_p=0.3, retake_p=0.5, boss_from=1, presence=lambda d: False)
 SLEEP_SKIP = dict(ENGAGED, claims={1: "LWC", 2: "LPY"}, share=lambda d: False, lesson_days=(), bribe=False,
                   goes_out=lambda d: d <= 2, posts=False, boss_win_on=None, fight_ch_p=0.0, retake_p=0.0)
 RUB_SKIP = dict(SLEEP_SKIP, goes_out=lambda d: True, visit_p=1.0, spray_p=0.0, field_mult=1.0, caches=False,
-                settle_from=3, settle_frac=0.0)
+                settle_from=3, settle_frac=0.0, visit_only={"LWC"})
 PATROL_SETTLE = dict(ENGAGED, claims={1: "LWC", 2: "LPY", 3: "PA"}, lesson_days=(), bribe=False,
                      settle_from=4, settle_frac=0.10, boss_win_on=None, fight_ch_p=0.0, caches=False)
 WIPE_SKIP = dict(PATROL_SETTLE, settle_from=None, wipe_from=4, wipe_frac=0.10)   # same morning, then throws the 1st fight

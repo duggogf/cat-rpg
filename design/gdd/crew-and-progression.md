@@ -585,7 +585,7 @@ BetrayalTriggered    ⇔ wavering_nights = WAVER_NIGHTS                     (Nem
 | Situation | Resolution |
 |---|---|
 | Recruit Verdict with a full Crew | "Recruit — make room" lists Lounging cats (§3.4.4). If none is Lounging, the list is empty and Recruit is greyed with the reason "Everyone's busy: bring one home first". Story recruits are never listed |
-| The Stash cannot cover fair/feast | Those options grey out; "none" is always available. Life 1 never shows the row |
+| The Stash covers fair but not feast | Feast greys out; fair stays. Life 1 never shows the row |
 | Recruited cat's level exceeds `SLICE_LEVEL_CAP` | Kept as is (Daifuku ≤ 10 by Nemesis's Mikan + 3 cap); XP stops at the cap |
 | A cat is Tail-Up'd out mid-day | It counts as "in the Posse that day" (+2) if it was in the Posse at any encounter start; Goofball "Lounging" penalty applies only if it was never in the Posse and is not posted at the Night Shuffle |
 | Bonded or clashing cat Routed mid-fight | Still "together" for the day; the bonded Tag-In needs both standing (Combat) |
@@ -725,7 +725,7 @@ Owned elsewhere (do not tune here): combat-perk magnitudes, Cowed durations (20 
 - *From the round-2 check (`design/reviews/round-2/combat-and-crew.md`), not fixed in iteration 3:*
 - **R-1 Brooder dismissal arithmetic** — the edge case says −10 raw → −5, but F7 clamps to ±8 before halving (→ −4). Set dismissal to −8 raw, or exempt it from `DAILY_CAP`.
 - **R-3 Leader levels** — Daifuku Lv ≈ 9 (Bribe 288) and Kagi Lv 6 here vs Combat's leader-level rule (Combat B-21) and Territory's Daifuku Lv 8 (Bribe 256). Settle with Combat/Nemesis; F8's example becomes 256/512 at Lv 8.
-- **R-4 Slice body ≈ 54 KB** vs the 50 KB target (§3.2.1's combat lines are now short pointers; trim further later).
+- **R-4 Slice body ≈ 79 KB** (bytes, after the 2026-11-24 owner feedback pass; ≈ 54 KB before) vs the 50 KB target. Trim candidates: §5 rows that restate §3.7.4, the §3.3 Verdict row (Nemesis's), §3.5.7's display bullet (UX's).
 - **R-5 AC-6 / F2 pacing** is a hand derivation; confirm in the Lives 1–2 economy sim with Combat's sim encounter lengths (skirmishes 18–28 s, not 16–24).
 - **X-1 Brooder visibility** — Daifuku is the only Brooder and joins at the end of Life 2, so no tester fights beside Brooder AI. Use Stalwart Hige, Goofball Pon and Braggart Togemaru as DR-02's three prototype personalities; test the Brooder in the grey box.
 - **Pon's join beat** — "crows at the laundry poles" sits on Laundry Pole Yard, which is Togemaru's Patch on Life 1 day 2; Narrative to confirm the two beats don't collide.
@@ -795,3 +795,31 @@ Owned elsewhere (do not tune here): combat-perk magnitudes, Cowed durations (20 
 | R-1, R-3, R-4, R-5, X-1 | BACKLOG | Moved to `## Backlog (post-slice)` |
 
 **Assumptions for creative-director / owner review:** working names Hige, Pon, Kinako, Kagi (Narrative/Nemesis; Togemaru adopted by Nemesis in round 2); the six seeds' personality assignments and proposed Strengths/Fears (Nemesis, Combat); schema extensions in §3.1; A-1 fight supply (≈ 12.5 TE/day) to be confirmed by Day-loop/Combat encounter density.
+
+**2026-11-24 — Owner feedback pass (C1–C5 via `design/reviews/owner-feedback-rulings.md`, under legal note v2 §5).** Crew is assigned OR-04, 05, 06, 11, 12, 15 (§2) and applies OR-20/OR-21 everywhere in this doc.
+
+| Ruling | Status | How |
+|---|---|---|
+| OR-01 | IMPLEMENTED (Crew side) | A loss ends the day and closes the Lot: Day Loop dependency row; edge cases (the Posse wipe; a Wavering cat cannot be un-posted after a wipe) |
+| OR-02 | IMPLEMENTED (Crew side) | −3 per Routed Posse cat kept as the cat's own experience; no Crew cat's Loyalty reads who beat Mikan (§5, §3.7.6) |
+| OR-03 | IMPLEMENTED (refs only) | Rivals board named for the old-gang tag, Wavering pose, legend card and guest sprig; the screen is UX's |
+| OR-04 | IMPLEMENTED | Reads `relations[]`; slice seeds on the recruit sheet (§3.3 Tags row); Hige authored `OLD_GANG(daifuku)`; Togemaru and Kagi gain it on recruit |
+| OR-05 | IMPLEMENTED | Kin = bonded pair, beats a clash (§3.2.2; inert in the slice); Kin AI rule cited as Combat's; join-in effects land only on the joiner (§3.5.7) |
+| OR-06 | IMPLEMENTED | Join step 1a: `OLD_GANG` in the recruit's own Memory, nerves unless Braggart/Stalwart/Brooder; Cowed 20 s (Fraidy 30 s) below Sworn; Tag-In clears; old-gang stamp on the Crew card; "Old gang" bullet on every personality sheet; §3.2.3 row; AC-20 |
+| OR-07 | N/A | Boss anger touches no Crew data; AC-19 checks it never writes Loyalty |
+| OR-08 / OR-09 / OR-10 | IMPLEMENTED (refs only) | Daifuku's recruit at any patrol stop then Den Claim Spray (§3.3, §5); turncoat route of OR-10 is §3.7.4 |
+| OR-11 | IMPLEMENTED | §3.7.4 and F11: live from Life 2, posted ex-Rival recruits only, < 30 (Schemer < 35), not on Home Ground or the Den, 2 Wavering mornings, defection on the 3rd night to Keeper at Scent 40; cancels; rate AC-23. The G10 check found W1/W2 able to feed betrayal, so the **betrayal firewall** (§3.7.6, F7) keeps every betrayal driven by the cat's own state only |
+| OR-12 | IMPLEMENTED | Three Verdicts; Recruit costs a Bribe (fair/feast; **"none" cut from Life 2**, so Recruit is the only Morsel Verdict), post clears to Claim Spray (§3.4.1); release < 60 = Gone (§3.4.4, AC-17); Stalwart's new dislike (−3 on a Scuffed/Lost night on its own post); Schemer's Nose-Touch dislike kept as a '303 watch item (W1) |
+| OR-13 | IMPLEMENTED | §3.5.7 allied guest: not Crew, fights by its own personality, sprig and guest portrait, no Loyalty/XP/slots; AC-21 |
+| OR-14 | IMPLEMENTED | Release < 60 and Chase Off = Gone; Togemaru's day-1 flee uninterruptible, first Verdict day 2 (§3.3) |
+| OR-15 | IMPLEMENTED | Humble and everything hanging off it removed from Crew (Stalwart dislike, Goofball "never simmer" → "Laughs off a challenge"); the arc lead may be Recruited (§3.4.1); his closing card on recruit (§3.3) |
+| OR-16 | IMPLEMENTED (Crew side) | Goofball guard-perk identity; §3.2.3 row; challenger raids count for the Stalwart's dislike |
+| OR-17 | IMPLEMENTED (refs only) | Turf Board Crew strip shows tier word and Wavering; Territory/UX own it |
+| OR-18 | IMPLEMENTED | No new daily action, currency or promotion added here |
+| OR-19 | IMPLEMENTED | Ranks are fixed roles; `former_rank` is a record (§3.1); no Crew line or Loyalty input cites what Mikan did to another cat beyond the listed watch items |
+| OR-20 | IMPLEMENTED | `VerdictApplied` ∈ {chase, recruit, nose}; `BetrayalTriggered` from Life 2; `RivalCombatProfile` fields read; `AllyJoined` explicitly not consumed; Night Shuffle step 1/3 order (§6) |
+| OR-21 | IMPLEMENTED | Deleted here: Humble (Stalwart dislike, Goofball simmer perk), "Recruit greyed for the Nemesis", "betrayal locked/unreachable in the slice" (§3.2.1, §3.7, §5, AC-13), release-to-Chase-Off comebacks, Daifuku "never leaves his wall", the Den-gate recruit. Also cut: Comes Knocking (Backlog; a non-Verdict recruit route) |
+| Re-sim | DEFERRED | AC-6 pacing and AC-23 betrayal rate need the Lives 1–2 sim re-run under OR-01/02 and the fair-minimum Bribe (owned with Territory's economy re-sim) |
+| G10 watch items | DEFERRED (counsel) | W1–W3 and the join-in held, not redesigned, per v2 G10; Backlog line added |
+
+**Assumptions for creative-director review (this pass):** (1) cutting the "none" Bribe from Life 2 is Crew's reading of C4's "Recruit for a bribe" and OR-12's "the only option that costs Morsels"; brief §3.3 still lists "none / fair / feast", and Territory's price sheet and key-screens §4 need the same change; (2) a Wavering cat posted on Home Ground or the Den is not eligible (OR-11 forbids those Patches as the prize); (3) the betrayal firewall is Crew's answer to OR-11's G10 check and goes beyond "add none" only by fencing two existing inputs off from betrayal; (4) the allied guest uses its personality's AI row and its own Rival kit (a proposal to Combat).

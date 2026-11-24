@@ -249,19 +249,28 @@ Style Nerve multipliers stack on top for Strays, Toughs, crows and the Boss (Dai
   - `standoff`: name-card plus one taunt, 2–4 s. A memory-citing line cannot be skipped for 1 s. Both sides start neutral.
   - `ambush_by_player`: an unseen first hit, or a Pounce from the High Road. That hit is ×1.5 and **Ruffles** the target; every Posse cat gets +25 Pounce points; there is no Standoff. A remembered Rival's memory line plays **at its Rout** (DR-40).
   - `ambush_by_rival`: a 2.0 s directional yowl-sting. A Skitter or Brace in its **last 0.75 s** gives a neutral start. Otherwise the controlled cat takes MV 1.5 and the Posse starts at 0 Pounce points.
-  - `raid_defence`: the posted Sentries fight as allied AI. They are not controllable, do not join Pile-Ons, and count toward the cap.
+  - `raid_defence`: the posted Sentries fight as allied AI. They are not controllable, do not join Pile-Ons, and count toward the cap. *(Territory's presence rule: the raid resolves by its formula whatever happens in this brawl; its outcome changes only the cats in it.)*
+- **Allied guest: the Nose-Touch join-in (OR-13).** Nemesis rolls the join-in at `EncounterStarted` (from Life 2; a truce cat or Friend in the same district whose own **Rival** is among the encounter's opponents, including its waves) and emits `AllyJoined(cat_id, encounter_id)`. Combat then:
+  - **Entry:** a 3 s directional yowl from the ring edge nearest its old Patch, then it bounds in. If its Rival arrives in a wave, the yowl starts when that wave enters. It needs a free combatant slot (≤ 10); if none is free, it waits at the edge and enters when one frees up.
+  - **AI:** an **allied AI guest** under the `raid_defence` guest rules: not controllable (no D-pad slot, no Slow Blink commands, no Tag-In), no Pile-On, its own personality row (§3.11) for distance and habits, Paws at `ai_fill` used only for `auto` Pay-offs. Its one bias is its own: it prefers its Rival as a target while the Rival stands. It counts toward the High Road limit of 2 on Daifuku's wall. Its hits render at the AI tier (§3.17 rule 1).
+  - **Sides and HUD:** it fights on the Posse's side. It shows the Posse's bell-gold keyline but a **truce-sprig tick** instead of the Posse chevron, gets a small fifth **guest plate** beside the Posse plates (Nerve only: no Paw pips, no switch slot), and never shows an enemy Frazzle bar. UX owns the drawing (`ux/hud.md`).
+  - **Leaving:** Routed, it slips away like any Routed Rival (no Verdict, nothing recorded against it). At `EncounterEnded` it leaves the ring whatever the outcome. On a Posse `win` Nemesis gives **the joiner** +5 Regard.
+  - **The opposing Rival is untouched (G7):** the same AI, targeting, buffs and lines as against any Posse cat. No "traitor" bark, no aggro toward the joiner.
 - **Composition** (threat: Tough 1, Captain 3, Boss 8, crow 0.5):
   - **skirmish** (roaming): 2–3
   - **normal encounter**: 4–6, for example 4–6 Toughs or a Captain + 1–3 Toughs
-  - **Den approach**: 6
+  - **challenger** (OR-16): the challenger (a Tough) + 1 Stray escort at its staked post, as a normal encounter; on a win, a Verdict
+  - **Boss bout**: Daifuku alone at his patrol stop (threat 8); his Toughs arrive by phase (§3.13)
   - **Life 1 tutorial**: a crow; then 2 Strays
 - **Caps:** 1–6 enemies at the start; **≤ 10 combatants** in total; anything beyond that arrives as a wave when ≤ 2 enemies remain; at most 2 waves outside the Boss fight.
 - **Scram:** hold the controlled cat > 2 m outside the ring for 3 s, or pick Scram in Slow Blink. Outcome `player_fled`. The group is then alert for 20 s, so it cannot be Ambushed. Combat applies no penalty of its own.
-- **Rival flight:** a Rival with a `flee_threshold` (Nemesis) bolts on a yellow windup of 1.0 s. A Hiss or any landed hit stops it. A Frazzled or Splat cat cannot bolt. The First Thorn uses this same rule (DR-22, DR-41).
+- **Rival flight:** a Rival with a `flee_threshold` (Nemesis) bolts on a yellow windup of 1.0 s. A Hiss or any landed hit stops it. A Frazzled or Splat cat cannot bolt. The First Thorn uses this same rule (DR-22, DR-41), **except on Life 1 day 1 (OR-14):** at 25% Nerve Togemaru bolts with no windup and nothing interrupts it ("faster than a kitten"), not even Frazzled or Splat; the encounter ends `rival_fled`. So the first Verdict is always day 2's, after his memory line.
 - **Fed Up at 75 s** (non-Boss fights): every enemy is Ruffled for the rest of the fight, ignoring the cooldown, and Toughs Back Down to a Hiss at ≤ 30%.
 - **Ending:**
   - `win`: survivors Lick Wounds (+25% of missing Nerve, outside the heal cap). Mikan, if Routed, gets up at 20%. Routed Crew stay Routed until a Sunspot or home.
-  - `loss`: every Posse cat Routed. DR-19 applies; the victor Gloats (≤ 3 s, Nemesis/UX).
+  - `loss`: every Posse cat Routed (a Scram or a Rival fleeing is never a loss; Life 1 tutorial fights cannot be lost). Combat's part ends at the Gloat: the ring holds, the victor plays its Gloat (≤ 3 s, Nemesis/UX), any allied guest slips away, and `EncounterEnded(outcome = loss)` fires. **Day Loop owns what follows** (`day-loop.md` §3.6, OR-01): the clock jumps to Night, the street closes, and Mikan comes to on the spot and walks home. **Only the victor changes** (OR-02, Nemesis): a `WON` Memory entry, its Glory Title if it has none, and for a Boss the −10% plaster. No promotion, level gain, seat, feud or line for any other cat. Combat applies no penalty of its own.
+  - `rival_fled` (a Rival bolted, §3.14 Rival flight) and `player_fled` (Scram) end the encounter with the outing going on.
+  - **Boss anger at the end (OR-07):** Nemesis spends it at `EncounterEnded` when the outcome is `win`, `loss` or `rival_fled` and the Boss took part. **Not on `player_fled`**, so engaging a Furious Boss, Scramming and re-engaging gives no calm reset.
   - Nerve and Zoomies persist within the day. Paws, statuses and Frazzle do not.
 - **Verdict:** routed tracked Rivals are held at the ring edge (DR-36). There is one full Verdict per fight (Nemesis).
 
@@ -284,7 +293,8 @@ Style Nerve multipliers stack on top for Strays, Toughs, crows and the Boss (Dai
 | Life 2 day 1 | Ambush, High Road Pounce |
 | Life 2 day 2 | Props and Fears; Relay (Posse of 4) |
 | Life 2 day 3 | Zoomies (Mikan's unlocks today, on the Captain; Crew `crew-and-progression.md` §3.8.4). Lessons open at the Lot the same day (Crew/Territory) |
-| Life 2 day 4+, Den | Daifuku: knock-offs |
+| Life 2 day 4+, his patrol stop (Boss window open) | Daifuku: knock-offs; Fired Up read from his anger; a recruit's Cowed flinch answered by a Tag-In |
+| Life 2, any fight against a truce cat's Rival | The join-in ally (no new input: it shows the guest plate) |
 
 ### 3.17 Game feel and VFX — Impact Moments (the single tier table, DR-07)
 
@@ -444,6 +454,20 @@ This is the **expected-value spec for the encounter sim (DR-57)**, not a substit
 
 The single retune is `captain_style_nerve` = off (the ×1.3 Bruiser Captain ran 55–58 s). Every other line is a corrected figure, not a retune. The hand derivation below is kept as the explanation of *why* the bands hold.
 
+**Owner feedback pass (2026-11-24) — Daifuku under the new rules.** Sim: `design/reviews/owner-feedback/sim/combat_slice_sim.py` (round-2 model unchanged, so every line above reproduces exactly; output `combat_slice_sim.out.txt`, before `combat_slice_sim.before.out.txt`). It adds F10's incoming damage, Purr heals, Routs and the wipe, plus F11. Slice variant, same level, Alley, one knock-off per 8 s of wall time; "landed" is the share of his swings that land (good 35% / median 50% / poor 65%).
+
+| Daifuku case | Fight length | Posse Nerve lost (before heals), median | Notes |
+|---|---|---|---|
+| Before (round 2, no incoming model) | 175.6 s | — | Reproduced exactly with incoming off |
+| Calm / Riled 20 s / Seething 40 s / Furious all fight | **175.5 s at every stage** (wins at good, median and poor dodging) | **52.3 / 54.0 / 56.1 / 60.6%** (good 37–42%, poor 68–79%) | Fired Up changes his damage only, so a win takes the same time; all inside F10's 50–80% band |
+| Where the expected-value Posse wipes | — | — | Calm at ≥ 95% landed, Riled 93%, Seething 91%, **Furious 83%**; a lost attempt lasts ≈ 190 s with ≈ 90–96% of his Nerve gone |
+| Rematch at −10%, anger spent (Calm) | **157.2 s** (161 s good dodging) | 45.7% | Wipe line ≥ 98% landed |
+| Kagi Cowed 20 s, cleared by the first Tag-In (≈ 10 s) | 176.0 s | 52.3% | **+0.6 s** |
+| Kagi Cowed 20 s, no answer (Fraidy 30 s: same) | 179.7 s | 54.0% | **+4.3 s** at every anger stage; the cost is quantised by the Frazzle cycle |
+| Nose-Touch ally (Togemaru, guest), family Posse | **161.7 s from the start / 169.5 s with the phase-2 wave** (no ally 175.5 s) | 40.9% / 45.8% (no ally 54.2%) | −14 s / −6 s; Furious with the ally from the start 162.2 s, 47.0% lost. In the slice Daifuku has no Rival tag, so the reachable case is the phase-2 wave holding Goma |
+
+**What the numbers say.** Anger is a *pressure* knob, not a *length* knob: the fight stays 2.6–3 min at every stage, and the stage shows up as Nerve lost and as how much dodging the player can get wrong before a wipe. A Cowed recruit costs ≤ 5 s even unanswered, so the flinch is a beat and a prompt to Tag-In, not a tax. A join-in ally is worth ≈ 8% of the fight and ≈ 13 points of Nerve. The expected-value model wipes only under very poor dodging; the reference path's lost L2D4 attempt (`day-loop.md` §3.10) is a first-attempt assumption that variance and under-levelling supply, and Furious makes it more likely.
+
 **Rates per cat (from F1–F3):**
 
 | Source | MV/s | Raw FZ/s |
@@ -516,6 +540,28 @@ The single retune is `captain_style_nerve` = off (the ×1.3 Bruiser Captain ran 
 - The Tough waves add about 8 MV.
 - Total 64 MV = **72% without heals** (target 50–80% ✓).
 - Purr can recover at most 60% per cat, so the fight stays tense but survivable.
+- **Sim (owner feedback pass):** with his swings held while he is Frazzled, during Pile-Ons and during phase breaks, the 175 s fight costs **52% at the median** (37% good dodging, 68% poor). **Fired Up** (F11) multiplies the swings it covers by 1.25: Riled +1.7, Seething +3.8, Furious +8.3 points at the median; poor dodging while Furious reaches 79%, still inside the band.
+
+### F11. Fight-start statuses: anger and nerves (OR-06, OR-07)
+
+```
+Fired Up on a Boss:  D_out = D × fu_dmg   while  fu_left > 0  and the Boss has no newer status
+                     fu_left(0) = anger_fu_s[stage]       stage ∈ {Calm, Riled, Seething, Furious}
+                     fu_left decreases only while the anger Fired Up is active (paused under Soggy)
+Cowed on a recruit:  D_out = D × cowed_dmg ; AI target set excludes old_boss_id
+                     while  t < t_seen + nerves_s[personality]  and no Tag-In to it since t_seen
+                     applies iff  old_gang_nerves = true  and  Loyalty < 80  and  old_boss_id ∈ opponents
+```
+
+| Variable | Meaning | Value (range) |
+|---|---|---|
+| `fu_dmg` | Fired Up damage multiplier (existing status) | 1.25 (1.15–1.4) |
+| `anger_fu_s` | Seconds of Fired Up by stage | Calm 0 · Riled 20 · Seething 40 · Furious ∞ (the whole fight) |
+| `cowed_dmg` | Cowed damage multiplier (existing status) | 0.75 |
+| `nerves_s` | Seconds Cowed at the sight of the Old Boss | 20; Fraidy 30 (10–30) |
+| `t_seen` | Standoff end, or the moment a wave brings the Old Boss in | — |
+
+*Example (Furious Daifuku, median):* he swings every 4 s for 2 × 1.6 = 3.2 MV, half lands = 1.6 MV; Fired Up makes it 2.0 MV, +0.4 MV a swing. About 20 of his swings fall outside his Soggy windows (the rest land while he is doused, or are held by Frazzles, Pile-Ons and breaks), so the Posse takes ≈ 8 MV more of its 97 MV of Nerve: 52.3% → 60.6% (sim). *Riled:* 20 s of buff is 5 swings × 0.4 MV = 2.0 MV ≈ +1.7 points. *Kagi Cowed and unanswered:* 20 s × 0.68 MV/s (AI basics) × 1.08 (a Yowler on a Bruiser) × 0.5 (wall focus) ≈ 7 MV withheld, ≈ 1.3% of his 578 MV, which costs 4.3 s once the Frazzle cycle rounds it.
 
 ---
 
@@ -545,6 +591,20 @@ The single retune is `captain_style_nerve` = off (the ×1.3 Bruiser Captain ran 
 22. **Wipe during a Pile-On:** impossible (participants are invulnerable). A wipe in the frames after it resolves normally (`loss`).
 23. **Fed Up during a Frazzle window:** the window is unaffected. Ruffled applies after it ends.
 24. **Ambush by player on a group:** only the first target is Ruffled and takes ×1.5. The rest start neutral.
+26. **Wipe with a join-in ally standing:** the guest is not Posse, so all four Posse cats Routed is a `loss` even if the guest still stands. It slips away at the Gloat; it gains no Regard and nothing is recorded on it.
+27. **Wipe while a recruit is still Cowed:** a normal `loss`. The flinch writes nothing anywhere; next time it sees its Old Boss it flinches again unless Sworn by then.
+28. **Cowed recruit when the Old Boss is the only opponent** (Daifuku's phase 1): its AI has no target, so it postures at 4–6 m, Braces, and still Hisses yellows aimed at itself. It still fills Paws (passive only). The player's Tag-In is the answer.
+29. **Old Boss arrives in a wave:** the flinch starts when he enters the ring (`t_seen`), not at the Standoff. A Cowed recruit hit by a newer status (Soggy) loses the Cowed early under the one-status rule; the AI exclusion ends with it.
+30. **Two susceptible recruits from the same gang:** each flinches on its own memory and needs its own Tag-In. The Old Boss's behaviour is the same either way.
+31. **Anger Fired Up and the bucket:** a knock-off into the water prop makes him Soggy for 6 s; anger's Fired Up pauses and resumes with its remaining time. A Furious Boss is Fired Up again as soon as he is dry. Wall Yowl's Fired Up on his **Toughs** (phase 2) is the move's own effect and has nothing to do with anger.
+32. **Scram from a Furious Boss:** `player_fled`; anger is not spent and he is still Furious at the next Standoff (unless a night's −15 dropped the stage). Re-engaging is never a calm reset.
+33. **Boss phase break at a stop's edge, or a stop reached at a phase change:** the arena is the stop where the Standoff began. The clock is paused in combat, so `PhaseChanged` (and his walk to the next stop) cannot happen mid-fight; he walks on after `EncounterEnded`.
+34. **Join-in rolled but no free slot (10 combatants):** the guest waits at the ring edge and enters when a slot frees. If the fight ends first, it never enters, and the join is not counted.
+35. **The joiner's Rival is Routed or bolts before the guest arrives:** it still enters and fights the rest of the opponents; its target bias simply has nothing to point at.
+36. **A Kin opponent is the last enemy standing:** the Kin AI cat postures and Braces; the others finish it. A player-triggered Quick Pile-On includes the Kin cat (player-authored).
+37. **Togemaru on Life 1 day 1 Frazzled or Splatted at 25%:** he still bolts (the day-1 exception overrides both). On every later day the normal flight rule applies.
+38. **Loss in a `raid_defence` brawl (the Caterwaul):** a normal `loss` for the day (Day Loop §5). The raid result is Territory's formula with the presence term; the brawl's outcome moves no Scent.
+
 25. **Degenerate strategies checked:**
     - **Stun-lock:** poise rules cap a leader's lost action time to ≤ 4 s outside Frazzled, Splat or Fear.
     - **Turtle:** red attacks and Fed Up.
