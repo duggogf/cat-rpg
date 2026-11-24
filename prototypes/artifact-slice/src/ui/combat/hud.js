@@ -265,8 +265,8 @@ export class CombatHUD {
         if (this.tc._h !== html) { const [a1, f1] = html.split('|'); anEl.innerHTML = a1; fuEl.innerHTML = f1; this.tc._h = html; }
       }
     }
-    this.updateWorld(ctx, byId);
     this.updateSlowBlink(ctx, byId);
+    this.updateWorld(ctx, byId);
   }
 
   wEl(key, cls, html) {

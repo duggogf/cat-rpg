@@ -131,8 +131,8 @@ export class ScreenFX {
         s += `<path d="M${r1(p.x)} ${r1(p.y - 118)}Q${r1(p.x + 22)} ${r1(p.y - 86)} ${r1(p.x + 14)} ${r1(p.y - 76)}Q${r1(p.x)} ${r1(p.y - 62)} ${r1(p.x - 14)} ${r1(p.y - 76)}Q${r1(p.x - 22)} ${r1(p.y - 86)} ${r1(p.x)} ${r1(p.y - 118)}Z" fill="${C.claw}" stroke="${C.ink}" stroke-width="4" stroke-linejoin="round"/>`;
       } else if (f.kind === 'splash') {
         // bucket splat: opaque Cream-and-cyan blob shapes, no liquid (art bible §10.1 rule 6)
-        const p = ctx.project(f.at); const R = rng(f.seed * 13 + di), sc = 1 + k * 0.6;
-        for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2 + R() * 0.5, d = (40 + R() * 40) * sc; s += `<path d="${Kit.blob(Kit.pomPts(p.x + Math.cos(a) * d, p.y - 30 + Math.sin(a) * d * 0.55, 22 + R() * 16, 7, 0.14, R() * 3))}" fill="${i % 2 ? C.cream : '#7FC4E8'}" stroke="${C.ink}" stroke-width="4"/>`; }
+        const p = ctx.project(f.at); const R = rng(f.seed * 13 + di), sc = (1 + k * 0.8) * h / 1080;
+        for (let i = 0; i < 5; i++) { const a = i / 5 * Math.PI * 2 + R() * 0.5, d = (55 + R() * 35) * sc; s += `<path d="${Kit.blob(Kit.pomPts(p.x + Math.cos(a) * d, p.y - 20 + Math.sin(a) * d * 0.45, (11 + R() * 8) * h / 1080, 7, 0.14, R() * 3))}" fill="${i % 2 ? C.cream : '#7FC4E8'}" stroke="${C.ink}" stroke-width="4"/>`; }
       } else if (f.kind === 'band') {
         // wedge-ended band (Standoff name-card / outcome) slamming in: one drawing at 115%, then settled
         const sc = k < 0.06 ? 1.15 : 1, y = f.y * h;

@@ -67,7 +67,7 @@ let world, shadow, post, enc, snap, prevSnap, fighters = new Map(), fx, scr, cca
 let realT = 0, acc = 0, paused = false, script = null, cmdQueue = [], injectQ = [], pile = null, impact = null, dip = null, midTone = new THREE.Color('#8C88B8');
 const DT = 1 / 60, evLog = [], counts = {};
 let lastTagWindow = null, routedTrail = new Map(), crackedUntil = new Map(), standoffFocus = null, fightStartT = null, endShown = false, lastStats = {};
-let pendingCard = null, seedCounter = 1, skipDraw = false; const pendingMenu = [];
+let hudBackAt = null, pendingCard = null, seedCounter = 1, skipDraw = false; const pendingMenu = [];
 
 function setPhase(name) {
   const p = applyPhase(name), sd = sunDir(p);
@@ -235,6 +235,7 @@ function onEvent(ev) {
       fx.dust('ring plus crack decal', f.pos); fx.spawn('burstGold', f.head.clone(), { size: 1.6, drawings: 5, cycle: false });
       applyFeel(ev.feel, f.head.clone(), { hitType: 'thump', dir: [0, 1] });
       hud.card('PHASE BREAK', '', 1400, realT, 'gold', 0.78);
+      hud.showChrome(false); hudBackAt = realT + 1.0;   // authored T5: screen-anchored HUD hides, returns over 200 ms
       break;
     }
     case 'GuestEntered': case 'AllyYowl': { const f = F(ev.cat); if (f) fx.spawn('sparkleCream', f.head.clone(), { size: 0.4, drawings: 6 }); break; }
@@ -348,8 +349,10 @@ function present(dt, alpha, menu = []) {
   // Pile-On set-piece clock
   if (pile) {
     pile.t += dt; if (pile.beatT != null) pile.beatT += dt;
-    if (pile.phase === 'out') { pile.outT += dt; if (pile.outT > 0.42) { pile = null; hud.showChrome(true); } }
+    if (pile.phase === 'out') { pile.outT += dt; if (pile.outT > 0.42) { pile = null; hudBackAt = realT + (scr.word ? Math.max(0, scr.word.ms / 1000 - scr.word.t) : 0); } }
   }
+  // the giant T5 word plays only while the HUD is hidden (HUD §4.1): the chrome returns after it
+  if (hudBackAt != null && realT >= hudBackAt) { hudBackAt = null; hud.showChrome(true); }
   // screen layer
   const w = app.clientWidth, h = app.clientHeight;
   const cb = C ? (() => { const a = project(C.pos), b = project(C.head); const hh = Math.max(40, a.y - b.y) * 1.5; return { x: a.x - hh * 0.8, y: b.y - hh * 0.4, w: hh * 1.6, h: hh * 1.4 }; })() : { x: 0, y: 0, w: 0, h: 0 };
