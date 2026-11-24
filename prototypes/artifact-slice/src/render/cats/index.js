@@ -21,6 +21,10 @@
 //                                           keyDir: THREE.Vector3 (world, towards light);
 //                                           colours: THREE.Color. Called on phase change.
 //   Cat.setOutlineScale(k)                  1 = art-bible line weight; for tests
+//   Cat.setLod('auto'|'full'|'low')         (ADDITION) LOD: auto = full mesh above 14% of screen height,
+//                                           ≈ 7k-tri mesh below 12%; also createCat({ lod }). Use 'full' for the
+//                                           controlled cat. Cat.lod (0/1) and Cat.triangles (per pass) read it.
+//                                           A shell named 'keyline-rim' in the cat's subtree is hidden below 5%.
 //   Cat.lookAt(worldPos | null)             (M0 fix pass ADDITION) head turns toward a THREE.Vector3 in world
 //                                           space, clamped ±70°; null = back to idle glances
 //   Cat.dispose()
@@ -42,6 +46,9 @@ export function createCat({ cast = 'mikan', scale = 1.25, ...rest } = {}) {
     setLighting: (l) => c.setLighting(l),
     setOutlineScale: (k) => c.setOutlineScale(k),
     lookAt: (p) => c.lookAt(p),
+    setLod: (m) => c.setLod(m),
+    get lod() { return c.lod; },
+    get triangles() { return c.triangles; },
     dispose: () => c.dispose(),
   };
 }

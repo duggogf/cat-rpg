@@ -100,7 +100,7 @@ if (strip) {
     scene.add(c.object3D); cats.push(c);
   });
 }
-for (const c of cats) { c.setGait(gait, speed); c.setOutlineScale(num('ol', 1)); }
+for (const c of cats) { c.setGait(gait, speed); c.setOutlineScale(num('ol', 1)); if (q.has('lod')) c.setLod(q.get('lod')); }
   // look=cam: heads turn to the camera; look=x,y,z: to a world point (e.g. a point of interest)
   if (q.has('look')) { const L = q.get('look'); const tgt = L === 'cam' ? null : new THREE.Vector3(...L.split(',').map(Number)); for (const c of cats) c.lookAt(tgt || new THREE.Vector3(0, 0.95, 2.2)); }
 

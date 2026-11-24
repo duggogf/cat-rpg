@@ -47,11 +47,15 @@ function entryGeometry(name) {
   g.setAttribute('skinIndex', new THREE.BufferAttribute(cat('skinIndex'), 4));
   g.setAttribute('skinWeight', new THREE.BufferAttribute(cat('skinWeight'), 4, true));
   g.setAttribute('part', new THREE.BufferAttribute(cat('part'), 1));
-  const idx = new Uint32Array(P.reduce((a, p) => a + p.attrs.index.length, 0));
+  // index = [full triangles | LOD triangles] over the same vertices; each cat picks a range via its groups
+  const nF = P.reduce((a, p) => a + p.attrs.index.length, 0), nL = P.reduce((a, p) => a + p.attrs.indexLod.length, 0);
+  const idx = new Uint32Array(nF + nL);
   let o = 0, base = 0;
   for (const p of P) { for (let i = 0; i < p.attrs.index.length; i++) idx[o + i] = p.attrs.index[i] + base; o += p.attrs.index.length; base += p.json.vertexCount; }
+  base = 0;
+  for (const p of P) { for (let i = 0; i < p.attrs.indexLod.length; i++) idx[o + i] = p.attrs.indexLod[i] + base; o += p.attrs.indexLod.length; base += p.json.vertexCount; }
   g.setIndex(new THREE.BufferAttribute(base < 65536 ? Uint16Array.from(idx) : idx, 1));
-  g.addGroup(0, idx.length, 0); g.addGroup(0, idx.length, 1); // fill, then ink hull
+  g.userData.ranges = { full: [0, nF], low: [nF, nL] };
   g.boundingSphere = new THREE.Sphere(new THREE.Vector3(0, 0.25, 0), 0.6);
   return (geoCache[name] = g);
 }
@@ -113,7 +117,16 @@ export function createCatInternal(opts = {}) {
   };
   const hull = new THREE.ShaderMaterial({ uniforms: HU, vertexShader: hullVert, fragmentShader: hullFrag, side: THREE.BackSide });
 
-  const mesh = new THREE.SkinnedMesh(entryGeometry(entry), [fill, hull]);
+  // per-cat geometry: shares every attribute and the index (one GPU buffer each), so LOD is a per-cat
+  // choice of index range. Extra hull shells built on this geometry (keyline, rim) follow it automatically.
+  const shared = entryGeometry(entry), geo = new THREE.BufferGeometry();
+  for (const k in shared.attributes) geo.setAttribute(k, shared.attributes[k]);
+  geo.setIndex(shared.index); geo.boundingSphere = shared.boundingSphere;
+  const ranges = shared.userData.ranges;
+  geo.addGroup(ranges.full[0], ranges.full[1], 0); geo.addGroup(ranges.full[0], ranges.full[1], 1);
+  let lodMode = opts.lod || 'auto', lodLevel = 0, share = 1; // 0 full, 1 low
+  const setLevel = (l) => { if (l === lodLevel) return; lodLevel = l; const r = l ? ranges.low : ranges.full; for (const gr of geo.groups) { gr.start = r[0]; gr.count = r[1]; } };
+  const mesh = new THREE.SkinnedMesh(geo, [fill, hull]);
   mesh.add(bones.root);
   mesh.updateMatrixWorld(true);
   const skeleton = new THREE.Skeleton(list);
@@ -171,7 +184,8 @@ export function createCatInternal(opts = {}) {
     // screen-height share of the cat (feet to head top)
     group.getWorldPosition(p0); p1.copy(p0); p1.y += (meta.headC[1] + 0.08 * hs) * group.scale.y;
     p0.project(camera); p1.project(camera);
-    const far = Math.abs(p1.y - p0.y) * 0.5 < 0.04;
+    share = Math.abs(p1.y - p0.y) * 0.5;
+    const far = share < 0.04;
     const outPx = (far ? 1 : 2.5) * outlineK * outH / 1080 + (1 - k) * 1.0; // ≈ 2.3–2.4 px at 85% on the harness
     HU.uLinePx.value = outPx * k;
     U.uFaceOn.value = silhouette || far ? 0 : 1;
@@ -198,6 +212,11 @@ export function createCatInternal(opts = {}) {
     object3D: group,
     bones, mesh,
     update(dt) {
+      // LOD (hysteresis): full above 14% of screen height, the low mesh below 12%; 'full' / 'low' force it.
+      setLevel(lodMode === 'full' ? 0 : lodMode === 'low' ? 1 : (lodLevel ? (share > 0.14 ? 0 : 1) : (share < 0.12 ? 1 : 0)));
+      // A cream rim shell added in this cat's subtree by the combat presentation (named 'keyline-rim') is
+      // dropped below 5% of screen height, where it is under a pixel and only costs triangles.
+      if (share < 0.05) for (const c of group.children) if (c.name === 'keyline-rim') c.visible = false;
       if (lookWorld) { group.updateWorldMatrix(true, false); lookLocal.copy(lookWorld); group.worldToLocal(lookLocal); anim.setLook(lookLocal); }
       anim.update(dt);
       U.uFaceFrame.value = anim.state.faceFrame;
@@ -215,6 +234,11 @@ export function createCatInternal(opts = {}) {
       void rimColor; // reserved: the reference has no rim light on cels
     },
     setOutlineScale(k) { outlineK = k; },
+    /** ADDITION: 'auto' (default: by projected screen height) | 'full' (the controlled cat, close-ups) | 'low'. */
+    setLod(mode) { lodMode = mode; },
+    /** ADDITION: current level, 0 = full, 1 = low; and triangles per pass at that level. */
+    get lod() { return lodLevel; },
+    get triangles() { return (lodLevel ? ranges.low[1] : ranges.full[1]) / 3; },
     /** ADDITION to the contract: turn the head (and neck) toward a world point; null releases to idle glances. */
     lookAt(worldPos) { lookWorld = worldPos ? worldPos.clone() : null; if (!lookWorld) anim.setLook(null); },
     dispose() {
@@ -222,7 +246,7 @@ export function createCatInternal(opts = {}) {
       if (faceTex) faceTex.dispose();
       if (eyesTex) eyesTex.dispose();
       if (whiskers) { whiskers.geometry.dispose(); whiskers.material.dispose(); }
-      skeleton.dispose(); group.clear();
+      geo.dispose(); skeleton.dispose(); group.clear();
     },
   };
 }

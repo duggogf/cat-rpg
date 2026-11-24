@@ -15,6 +15,8 @@ import { MeshoptSimplifier } from 'meshoptimizer';
 await MeshoptSimplifier.ready;
 // triangle budget per shell (≈ 20k per cat; the plan's 4–6k is the Unreal target, this is a browser spike)
 const BUDGET = { body: 7000, legs: 6000, head: 8000, tail: 2000, collar: 1200, bell: 300, peg: 200 };
+// LOD index (same vertices, decimated further): other cats at combat distance, ≈ 7k triangles per cat
+const LOD = { body: 1800, legs: 1700, head: 2800, tail: 500, collar: 300, bell: 80, peg: 60 };
 
 const root = path.dirname(new URL(import.meta.url).pathname) + '/..';
 const out = path.join(root, 'assets/mesh');
@@ -32,7 +34,7 @@ function toHalf(v) {
 }
 
 function bakeShells(M, shells, label) {
-  const P = [], N = [], SN = [], SI = [], SW = [], PT = [], AX = [], TH = [], IDX = [];
+  const P = [], N = [], SN = [], SI = [], SW = [], PT = [], AX = [], TH = [], IDX = [], IDXL = [];
   const meta = {};
   for (const S of shells) {
     const f = shellSdf(S);
@@ -67,6 +69,9 @@ function bakeShells(M, shells, label) {
       AX.push(...ax);
     }
     for (const t of tris) IDX.push(t + base);
+    // LOD: simplify the baked shell again (lock nothing; silhouette-preserving error metric)
+    const [il] = MeshoptSimplifier.simplify(new Uint32Array(tris), new Float32Array(pos.flat()), 3, Math.min(tris.length, (LOD[S.name] || 500) * 3), 0.05);
+    for (const t of il) IDXL.push(t + base);
     if (S.name === 'head') {
       // eye anchors: where the face's eye centres (kit x = ±12 units, 0.00335 m each) meet the skull
       const hs = M.meta.hs, ey = M.meta.headC[1] - 0.004 * hs;
@@ -79,7 +84,7 @@ function bakeShells(M, shells, label) {
     ['position', Uint16Array.from(P, toHalf), 3, 'half'], ['normal', Int8Array.from(N, q), 3, 'snorm8'], ['snormal', Int8Array.from(SN, q), 3, 'snorm8'],
     ['skinIndex', Uint8Array.from(SI), 4, 'u8'], ['skinWeight', Uint8Array.from(SW), 4, 'unorm8'],
     ['part', Uint8Array.from(PT), 1, 'u8'], ['aux', Uint16Array.from(AX, toHalf), 3, 'half'], ['thick', Uint16Array.from(TH, toHalf), 1, 'half'],
-    ['index', Uint16Array.from(IDX), 1, 'u16'],
+    ['index', Uint16Array.from(IDX), 1, 'u16'], ['indexLod', Uint16Array.from(IDXL), 1, 'u16'],
   ];
   const attributes = {}; let off = 0; const bufs = [];
   for (const [k, arr, size, kind] of chunks) {
@@ -88,8 +93,8 @@ function bakeShells(M, shells, label) {
     const pad = (4 - (off % 4)) % 4; if (pad) { bufs.push(Buffer.alloc(pad)); off += pad; }
   }
   fs.writeFileSync(path.join(out, label + '.bin'), Buffer.concat(bufs));
-  fs.writeFileSync(path.join(out, label + '.json'), JSON.stringify({ part: label, meta, vertexCount: P.length / 3, triangleCount: IDX.length / 3, attributes, bin: label + '.bin' }));
-  return { meta, tris: IDX.length / 3, bytes: off };
+  fs.writeFileSync(path.join(out, label + '.json'), JSON.stringify({ part: label, meta, vertexCount: P.length / 3, triangleCount: IDX.length / 3, triangleCountLod: IDXL.length / 3, attributes, bin: label + '.bin' }));
+  return { meta, tris: IDX.length / 3, trisLod: IDXL.length / 3, bytes: off };
 }
 
 // every cast and every tough combination; parts are baked once and shared
@@ -107,7 +112,7 @@ for (const [name, opts] of entries) {
       baked[g] = bakeShells(M, M.shells.filter((s) => s.group === g), g);
       manifest.parts[g] = { json: g + '.json' };
       total += baked[g].bytes;
-      console.log(`  ${g}: ${baked[g].tris} tris, ${(baked[g].bytes / 1024).toFixed(0)} KB, ${Date.now() - t0} ms`);
+      console.log(`  ${g}: ${baked[g].tris} tris (LOD ${baked[g].trisLod}), ${(baked[g].bytes / 1024).toFixed(0)} KB, ${Date.now() - t0} ms`);
     }
     Object.assign(meta, baked[g].meta);
   }
