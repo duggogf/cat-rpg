@@ -93,7 +93,7 @@ export const hullVert = /* glsl */`
     // interior overlap lines: pull the hull toward the eye by a share of the local thickness (model units)
     vec4 mv = modelViewMatrix * vec4(transformed, 1.0);
     float sc = length(modelViewMatrix[0].xyz);
-    mv.xyz += normalize(-mv.xyz) * min(max(thick - 0.03, 0.0) * uPull, uPullMax) * sc; // thin parts (ears) never pull
+    mv.xyz += normalize(-mv.xyz) * min(max(thick - 0.03, 0.0) * uPull, part > 4.5 ? 0.008 : uPullMax) * sc; // thin parts never pull; legs ≤ 0.8 cm
     vec4 clip = projectionMatrix * mv;
     vec3 vn = normalize(normalMatrix * objectNormal);
     vec2 sd = (projectionMatrix * vec4(vn, 0.0)).xy * uRes;

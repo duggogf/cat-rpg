@@ -31,6 +31,25 @@ Open `http://localhost:5173/` (the M0 scene; `dist/catlab.html` is the cat lab).
 (writes to `production/qa/evidence/artifact-slice/M0/`). Publish set: `dist/index.html` (page fragment,
 three from jsDelivr) plus `dist/game.js`, `dist/mesh/*.json`, `dist/tex/*`.
 
+## Combat simulation (M1, headless)
+
+The combat rules run as pure, deterministic logic in `src/sim/combat/` (API and assumptions:
+`src/sim/combat/API.md`), with every number in `src/data/combat/*.json` (each row cites its GDD source in `_src`).
+No browser and no `npm install` beyond Node 22 are needed:
+
+```bash
+node --test 'tests/unit/combat/*.test.mjs' 'tests/smoke/combat/*.test.mjs'
+```
+
+```bash
+node tools/sim-run.mjs --seeds 30
+```
+
+The first runs the unit tests (F1–F7 and F11 worked examples, determinism by hash, the join-in guest leaving the
+opposing Rival's AI bit-identical, Old Gang Nerves, the arbiter's flash and hit-stop caps) and the smoke bots on
+3 seeds. The second prints fight lengths per scenario (skilled, median-policy, scripted-Daifuku and passive bots)
+against the GDD's F9 figures and exits non-zero if a bot misses its expectation (`--only <id>`, `--json out.json`).
+
 ## Status
 
 - **M0 look-dev:** concluded on the studio side — three review iterations (art + creative director): final

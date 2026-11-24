@@ -96,8 +96,9 @@ export function createAnimator(B, o) {
         if (p < stance) a = -A + 2 * A * (p / stance);
         else { const s = (p - stance) / (1 - stance); a = A - 2 * A * easeOut(s); bend = Math.sin(Math.PI * Math.min(1, s * 1.1)); }
         const front = up[0] === 'f';
-        setRot(up, walkW * (a - (front ? 0 : bend * 0.45)), 0, 0);
-        setRot(lo, walkW * bend * (front ? 1.5 : 1.15), 0, 0);
+        // lift comes mostly from the shoulder/hip; the wrist/hock bend stays under ~55° so the skin never folds through
+        setRot(up, walkW * (a - (front ? bend * 0.25 : bend * 0.45)), 0, 0);
+        setRot(lo, walkW * bend * (front ? 0.95 : 0.85), 0, 0);
       }
 
       // ---- head: look target, else idle glances (on twos); a head bob a beat behind the bounce
