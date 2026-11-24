@@ -51,14 +51,27 @@ Encounter schedule (assumption; mirrors the docs' reference path, Territory sect
 Policies: chase, recruit, mixed, pacifist, lose40 (mixed + 40% of days from day 2 end in a wipe).
 Marking styles (anger): quiet (2 Over-marks + 1 Counter-Spray per contest), typical (+ 50% chance of one
 extra Counter-Spray on a gang post per day), loud (2 Counter-Sprays per contest + 1 extra a day).
-Observations only.  Usage: python3 -I nemesis_slice_sim.py [--quick]
+Observations only.  Usage: python3 -I nemesis_slice_sim.py [--quick] [--or-pass]
+
+Consistency pass (creative director, 2026-11-24, iteration 2; design/reviews/owner-feedback/consistency-pass.md).
+Default rules now include the F11/F12 rulings; --or-pass reproduces the revisers' owner-feedback run (the "before"):
+  * F12 "a loud take closes Nose-Touch" (from Life 2, with the unlock ladder): the gate is open only if pending
+    Grudge < 50 + shift AND the take was not loud. Loud = a Keeper whose own post took >= 2 Counter-Sprays this contest, or a Boss that started the fight
+    Seething or Furious (anger >= 60, read at the Standoff, before the fight spends it). Marking model unchanged:
+    quiet 2 Over-marks + 1 Counter-Spray; typical the same + 50% one extra Counter-Spray, which in a contest lands on
+    the contested post; loud 2 Counter-Sprays (+1 extra). The Den cannot be marked, so the Boss gets no Keeper-mark row.
+  * F11 "every Verdict on Togemaru is an ending": arc achieved = his memory line (>= 2 encounters) + >= 1 mark +
+    an ending (any Verdict on him, or the Declaration). His first Rout by the Posse always leaves the ear notch
+    (authored, like his fixed Grudge). A truce/Friend cat's daily greeting (TRUCE_GREET, a Standoff-group meeting)
+    counts as an encounter (<= 1 a day, not on a day it joined in).
 """
 import copy, hashlib, statistics as st, sys
 from collections import Counter
 
 QUICK = "--quick" in sys.argv
+CP = "--or-pass" not in sys.argv   # consistency-pass rules (F11, F12); --or-pass = the revisers' rules
 INJECT = set()          # --selftest re-injects deleted rules to prove the invariant checks catch them
-GREET_COUNTS = False    # lever run: a truce/Friend lead's daily greeting counts as an arc encounter (NOT the ruling)
+GREET_COUNTS = CP       # F11: a truce/Friend greeting counts as an encounter (the ruling from the consistency pass; was a lever): a truce/Friend lead's daily greeting counts as an arc encounter (NOT the ruling)
 
 # personality: m_g, m_r, decay, flee_p (chance it bolts before the Rout), gate shift (OR-13)
 P = {"braggart": (1.2, 0.7, 2, 0.00, -5), "brooder": (1.1, 0.8, 1, 0.00, -5),
@@ -106,6 +119,7 @@ class Cat:
         s.anger, s.plaster_until, s.strengths = 0, -1, []
         s.adapt_due, s.joined_day, s.old_patch = False, -1, None
         s.ch_patch, s.ch_repelled, s.arrived = None, 0, None
+        s.greeted_day = -1
 
     @property
     def marks(s): return min(2, s.scars) + min(1, s.title)
@@ -137,6 +151,9 @@ class World:
         s.share75 = []; s.raids = 0; s.adapts = 0; s.l2_antag_days = 0; s.l2_days = 0
         s.sniff_items = []; s.today_items = 0; s.today_ops = 0
         s.daifuku_fights = 0; s.nerve_moments = 0
+        s.counters = {}                    # Counter-Sprays on each post in today's contest (F12 loud take)
+        s.gate_closed_why = Counter(); s.gate_l2 = Counter(); s.gate_boss = Counter()
+        s.toge_enc_end = 0
 
     # ---------------- generation ----------------
     def mk(s, name, pers, rank, g=None, r=10, rec=False, clowder="wall", origin="prehistory"):
@@ -197,6 +214,7 @@ class World:
         gain = 0
         if patch is not None and s.patches.get(patch) == "wall" and patch != "DEN":
             gain += 5 * n_over + 15 * n_counter
+            s.counters[patch] = n_counter + extra      # in a contest the extra Counter-Spray lands on the contested post
         gain += 15 * extra
         if D.state == "Seated" and gain:
             D.anger = min(100, D.anger + gain)
@@ -239,15 +257,19 @@ class World:
         mg, mr, _, flee, shift = P[c.pers]
         k = ("fight", c.id, s.today_ops)
         cap = 35 if c.enc < 2 else 20
+        anger_start = stage(c.anger) if c.rank == "Boss" else 0     # read at the Standoff, before the fight spends it
+        if CP and keeper and patch == "DEN": keeper_marked = False   # the Den post cannot be marked
+        else: keeper_marked = keeper
         if c.enc == 0: c.first_meet = d; c.memory.append("FIRST_MEETING")
         c.enc += 1; c.last_enc_day = d; s.discover(c)
         if joiner:
-            joiner.enc += 1; joiner.joined_day = d; joiner.memory.append("JOINED_IN"); s.discover(joiner)
+            if not (CP and joiner.greeted_day == d): joiner.enc += 1   # <= 1 counted meeting a day for a truce cat
+            joiner.joined_day = d; joiner.memory.append("JOINED_IN"); s.discover(joiner)
             s.joins += 1; s.join_days.add(d); s.join_by[joiner.name] += 1
         fled = force_flee if force_flee is not None else (R.u(d, "D", "flee", *k) < flee)
         if c.rank == "Boss": fled = False
         if fled:
-            c.g = min(100, c.g + min(cap, round(mg * (8 + (6 if keeper else 0)))))
+            c.g = min(100, c.g + min(cap, round(mg * (8 + (6 if keeper_marked else 0)))))
             c.memory.append("FLED"); c.adapt_due = d >= 3
             if joiner: joiner.r = min(100, joiner.r + 5)
             return "fled"
@@ -255,10 +277,11 @@ class World:
         ambush = (opener == "player_ambush") or (opener is None and life2 and R.u(d, "D", "amb", *k) < 0.3)
         fear = life2 and d >= 4 and R.u(d, "D", "fear", *k) < 0.3
         pile = R.u(d, "D", "pile", *k) < 0.5
-        g = 6 + 3 * pile + 3 * fear + 3 * ambush + (6 if keeper else 0)
+        g = 6 + 3 * pile + 3 * fear + 3 * ambush + (6 if keeper_marked else 0)
         r = -2 * fear - 3 * ambush + (8 if not (ambush or fear) else 0)
         c.routs += 1; c.memory.append("ROUTED")
-        if c.scars < 2 and (c.routs >= 2 or R.u(d, "D", "scar", *k) < 0.35 + 0.15 * pile):
+        authored_notch = CP and c.name == "Togemaru" and c.scars == 0     # F11: his first Rout always leaves the ear notch
+        if c.scars < 2 and (authored_notch or c.routs >= 2 or R.u(d, "D", "scar", *k) < 0.35 + 0.15 * pile):
             c.scars += 1; c.memory.append("SCAR")
         if life2 and R.u(d, "D", "lick", *k) < 0.08 and not c.title:
             c.title = 1; c.beat_mikan = True; c.memory.append("LICK_IN")
@@ -271,7 +294,15 @@ class World:
             c.memory.append("SLIPPED_AWAY"); c.adapt_due = d >= 3
             return "slipped"
         nose_open = g_pend < 50 + shift
+        loud = False
+        if not nose_open: s.gate_closed_why["grudge"] += 1
+        if CP:
+            loud = d >= 3 and ((keeper_marked and s.counters.get(patch, 0) >= 2) or (c.rank == "Boss" and anger_start >= 2))  # from Life 2
+            if nose_open and loud: s.gate_closed_why["loud"] += 1
+            nose_open = nose_open and not loud
         s.gate_open["open" if nose_open else "closed"] += 1
+        if d >= 3: s.gate_l2["open" if nose_open else "closed"] += 1
+        if c.rank == "Boss": s.gate_boss["open" if nose_open else "closed"] += 1
         can_recruit = c.recruitable and (g_pend < 90 or c.r >= 50) and (c.rank != "Boss" or c.r >= 50) and \
             sum(1 for x in s.cats if x.state == "Crew") < 3
         v = s.choose(c, nose_open, can_recruit, k)
@@ -333,7 +364,7 @@ class World:
         if s.day < 3 or T.state in ("Gone", "Crew"): return
         if T.state in ("Truce", "Friend"):                 # a non-hostile greeting (no encounter) or a join-in
             if GREET_COUNTS and T.joined_day != s.day:
-                T.enc += 1; T.last_enc_day = s.day; s.discover(T)
+                T.enc += 1; T.last_enc_day = s.day; s.discover(T); T.greeted_day = s.day
             return
         if T.keeper_of and s.patches.get(T.keeper_of) != "mikan": return   # today's contest places him
         opener = "rival_ambush" if (T.g >= 50 and s.R.u(s.day, "D", "ambush_roll") < 0.5) else None
@@ -391,7 +422,7 @@ class World:
 
     def play_day(s):
         d, R = s.day, s.R
-        s.today_items = 0; s.today_ops = 0
+        s.today_items = 0; s.today_ops = 0; s.counters = {}
         s.sniffs()
         T = s.by["Togemaru"]
         if d == 1:
@@ -569,8 +600,14 @@ class World:
             s.arc_closed = "gone" if T.state == "Gone" else "crew"
         if not s.declared and s.arc_closed is None and ((T.enc >= 3 and T.marks >= 1) or d >= 5):
             s.declared = True; s.decl_day = d; s.decl_deadline = not (T.enc >= 3 and T.marks >= 1)
-        if not s.arc and T.enc >= 3 and T.marks >= 1 and (s.declared or T.state in ("Truce", "Friend", "Crew", "Gone")):
+        if CP:   # F11: every Verdict on him is an ending; so is the Declaration
+            ended = s.declared or "VERDICT" in T.memory
+            if not s.arc and T.enc >= 2 and T.marks >= 1 and ended:
+                s.arc = True; s.arc_day = d
+        elif not s.arc and T.enc >= 3 and T.marks >= 1 and (s.declared or T.state in ("Truce", "Friend", "Crew", "Gone")):
             s.arc = True; s.arc_day = d
+        s.arc_old = getattr(s, "arc_old", False) or (T.enc >= 3 and T.marks >= 1 and (s.declared or T.state in ("Truce", "Friend", "Crew", "Gone")))
+        s.toge_enc_end = T.enc
         # 3g raid request for tomorrow (<= 1): challenge > arc lead > others; gang_orders fallback
         s.raid_req = None; s.raid_motive = None; s.raid_patch = None
         held = [p for p in s.held() if p not in ("LWC", "DEN")]
@@ -628,8 +665,8 @@ def report(days, n, label):
     pols = ["chase", "recruit", "mixed", "pacifist", "lose40"]
     styles = ["quiet", "typical", "loud"]
     print(f"\n### {label}: {days} days, {n} seeds per policy (marking style cycles quiet/typical/loud by seed)")
-    print("| Policy | L1 memory line | Verdicts chase / recruit / nose | Nose gate open | Nemesis record = Togemaru | Declared (night median; by deadline) | Face Sworn Rival | Arc closed early (Gone / Crew) | Arc achieved | Join-ins per run (mean; runs >= 1) | Lane cats discovered at end (mean / of present) | Daifuku discovered | Seated at G>=75 (mean) | L2 days with an antagonist | Violations / checks |")
-    print("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
+    print("| Policy | L1 memory line | Verdicts chase / recruit / nose | Nose gate open (closed by Grudge / loud take) | Nemesis record = Togemaru | Declared (night median; by deadline) | Face Sworn Rival | Arc closed early (Gone / Crew) | Arc achieved (this run's rule; OR-pass rule) | Togemaru encounters at end (mean) | Join-ins per run (mean; runs >= 1) | Lane cats discovered at end (mean / of present) | Daifuku discovered | Seated at G>=75 (mean) | L2 days with an antagonist | Violations / checks |")
+    print("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
     out = {}
     for pol in pols:
         ws = [run(sd, pol, days, styles[sd % 3]) for sd in range(n)]
@@ -644,6 +681,9 @@ def report(days, n, label):
         face = sum(1 for w in decl if w.by["Togemaru"].r > w.by["Togemaru"].g) / max(1, len(decl))
         cg = sum(1 for w in ws if w.arc_closed == "gone") / n; cc = sum(1 for w in ws if w.arc_closed == "crew") / n
         arc = sum(w.arc for w in ws) / n
+        arc_old = sum(getattr(w, "arc_old", False) for w in ws) / n
+        tenc = st.mean(w.toge_enc_end for w in ws)
+        gw = Counter(); [gw.update(w.gate_closed_why) for w in ws]; ng = max(1, sum(go.values()))
         jm = st.mean(w.joins for w in ws); j1 = sum(1 for w in ws if w.joins) / n
         lane = [w for w in ws]
         disc = st.mean(sum(1 for c in w.cats if c.discovered and c.clowder == "wall" and c.state != "Crew") for w in ws)
@@ -652,7 +692,7 @@ def report(days, n, label):
         s75 = st.mean(st.mean(w.share75) for w in ws if w.share75)
         ant = st.mean(w.l2_antag_days / max(1, w.l2_days) for w in ws)
         viol = sum(w.viol for w in ws); chk = sum(w.checks + w.night_checks for w in ws)
-        print(f"| {pol} | {pct(l1)} | {pct(v['chase']/tv)} / {pct(v['recruit']/tv)} / {pct(v['nose']/tv)} | {pct(go['open']/max(1,sum(go.values())))} | {pct(rec/n)} | {pct(len(decl)/n)} (night {dn}; {pct(dd)}) | {pct(face)} | {pct(cg)} / {pct(cc)} | {pct(arc)} | {jm:.2f}; {pct(j1)} | {disc:.1f} / {present:.1f} | {pct(dfk)} | {s75:.1%} | {pct(ant)} | {viol} / {chk} |")
+        print(f"| {pol} | {pct(l1)} | {pct(v['chase']/tv)} / {pct(v['recruit']/tv)} / {pct(v['nose']/tv)} | {pct(go['open']/ng)} ({pct(gw['grudge']/ng)} / {pct(gw['loud']/ng)}) | {pct(rec/n)} | {pct(len(decl)/n)} (night {dn}; {pct(dd)}) | {pct(face)} | {pct(cg)} / {pct(cc)} | {pct(arc)}; {pct(arc_old)} | {tenc:.1f} | {jm:.2f}; {pct(j1)} | {disc:.1f} / {present:.1f} | {pct(dfk)} | {s75:.1%} | {pct(ant)} | {viol} / {chk} |")
     return out
 
 
@@ -668,6 +708,18 @@ def anger_table(out):
         print(f"| {sty} | " + " / ".join(pct(pk[i] / len(ws)) for i in range(4)) + " | " +
               " / ".join(pct(af[i] / naf) for i in range(4)) + f" (n={naf}) | {st.mean(w.anger_cards for w in ws):.2f} | "
               f"{st.mean(w.daifuku_fights for w in ws):.2f} | {st.mean(w.nerve_moments for w in ws):.2f} |")
+
+
+def gate_table(out):
+    print("\n#### Nose-Touch gate by Life and on the Boss (F12)")
+    print("| Policy | Open, Life 1 Verdicts | Open, Life 2 Verdicts | Open, Daifuku Verdicts |")
+    print("|---|---|---|---|")
+    for pol, ws in out.items():
+        g = Counter(); l2 = Counter(); b = Counter()
+        for w in ws: g.update(w.gate_open); l2.update(w.gate_l2); b.update(w.gate_boss)
+        l1o = g["open"] - l2["open"]; l1n = sum(g.values()) - sum(l2.values())
+        f = lambda o, n: f"{o / n:.0%} (n={n})" if n else "-"
+        print(f"| {pol} | {f(l1o, l1n)} | {f(l2['open'], sum(l2.values()))} | {f(b['open'], sum(b.values()))} |")
 
 
 def world_table(out, days):
@@ -743,12 +795,12 @@ if __name__ == "__main__":
         selftest(); sys.exit()
     n7 = 150 if QUICK else 500
     n30 = 60 if QUICK else 300
-    print("Variant: OWNER-FEEDBACK (OR-01..OR-21) as written into nemesis-system.md, 2026-11-24")
+    print("Variant: " + ("CONSISTENCY PASS (OR-01..OR-21 + F11/F12 rulings), 2026-11-24" if CP else "OWNER-FEEDBACK (OR-01..OR-21) as written into nemesis-system.md, 2026-11-24 (--or-pass)"))
     out = report(7, n7, "Slice (Lives 1-2)")
-    anger_table(out); world_table(out, 7); join_detail(out)
+    anger_table(out); gate_table(out); world_table(out, 7); join_detail(out)
     sniff_sensitivity(n7)
     selftest(n7 // 2 if not QUICK else 60)
-    greet_lever(n7)
+    if not CP: greet_lever(n7)
     QUICK = True   # the counterfactual check runs on the slice; the 30-day extrapolation skips it for speed
     out30 = report(30, n30, "Extrapolation (one district, 30 days; counterfactual check off)")
     world_table(out30, 30); join_detail(out30)

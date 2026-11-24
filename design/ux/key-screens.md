@@ -1,7 +1,7 @@
 # UX Spec: Key Screens — Cat RPG (vertical slice, round 2)
 
-*Owner: ux-designer · Date: 2026-11-23, revised 2026-11-24 (owner feedback pass) · Status: round-2 slice rewrite, revised to the owner's comments C1–C5 (the first draft is archived at `design/backlog/first-drafts/key-screens.md`)*
-*Canon order: owner comments `design/reviews/user-comments-2026-11-24.md` → `design/reviews/owner-feedback-rulings.md` (OR-xx, binding) → `design/creative-brief.md` v1.5 → round-1 DR-xx and round-2 R1–R5. Patent guardrails: `design/legal/nemesis-patent-analysis.md` v2 §5 (binding). Companions: `design/ux/hud.md` (HUD, control map), `design/accessibility-requirements.md`.*
+*Owner: ux-designer · Date: 2026-11-23, revised 2026-11-24 (owner feedback pass; consistency pass by the creative director) · Status: round-2 slice rewrite, revised to the owner's comments C1–C5 (the first draft is archived at `design/backlog/first-drafts/key-screens.md`)*
+*Canon order: owner comments `design/reviews/user-comments-2026-11-24.md` → `design/reviews/owner-feedback-rulings.md` (OR-xx, binding), as settled by `design/reviews/owner-feedback/consistency-pass.md` (F1–F12) → `design/creative-brief.md` v1.6 → round-1 DR-xx and round-2 R1–R5. Patent guardrails: `design/legal/nemesis-patent-analysis.md` v2 §5 (binding). Companions: `design/ux/hud.md` (HUD, control map), `design/accessibility-requirements.md`.*
 
 **Scope.** The slice screens: the **Rivals board** (§2, replaces the Fence Line), the **Rival card** (§3), the **Verdict** and the **loss-to-night walk home** (§4), the **unified Turf Board** (§5), the **Crew roster, Posse and Lessons** (§6) and the **first-15-minutes and first-hour onboarding plan** (§7). Every number, threshold and rule shown is read from its owning GDD; this doc decides only what is shown, where, and how the player moves through it.
 
@@ -113,7 +113,7 @@ A single painted panorama in the current phase light (morning cream, day blue, D
 
 **Parallax:** three layers (sky and hill, walls, foreground weeds and the gate); 2–4 px drift on focus change (off under Reduce Motion).
 
-### 2.3 Wireframe: default framing (1080p, Life 2 day 3, Dusk)
+### 2.3 Wireframe: default framing (1080p, Life 2 day 2, Dusk; before the Boss window opens)
 
 ```
 +------------------------------------------------------------------------------------------+
@@ -357,7 +357,7 @@ Fixed directions with mnemonic meaning: **Up = Nose-Touch** (lift them up), **Le
 
 | Card | One line (system text; Narrative words it) | Chip | When unavailable (halftoned, in place) |
 |---|---|---|---|
-| **Nose-Touch** (Up) | "Steps down in peace. May side with you against its rival." | **10 days** truce | Pending Grudge ≥ its gate (OR-13): "Tail lashing. Not today." |
+| **Nose-Touch** (Up) | "Steps down in peace. May side with you against its rival." | **10 days** truce | Pending Grudge ≥ its gate (OR-13): "Tail lashing. Not today." · From Life 2, a loud take (≥ 2 Counter-Sprays on its own post; Nemesis F4): "Too much of your stink on its post." · A Boss that came to the fight Seething or Furious: "Still steaming. Not today." |
 | **Chase Off** (Left) | "Gone from town for good." | — | Always available |
 | **Recruit** (Right) | "Joins your Crew with everything it remembers." | **from 96** (the Fair price; "Free" in Life 1) | Gate shut: "Too bitter to join." / Boss: "Daifuku doesn't rate you yet." / Stash below the Fair price: "Stash short: 72 of 96." / Crew full: the card reads "Recruit — make room" (§4.3) |
 
@@ -696,21 +696,21 @@ A single button on its tab: the cost (Σ Crew levels), the Stash, and a preview 
 | 0:17–0:19 | One wave, then the Keeper (an **untracked Stray**: Routing it gives no Verdict) | **Hiss** on the Keeper's **yellow** telegraph |
 | 0:19–0:20 | A Tough at low Nerve in the wave | **Back Down** (Hiss at ≤ 15%). Hint after, not before |
 | 0:20–0:21 | The post has no Keeper now | **Spray** (North / E): **Claim Spray**, Patch claimed; the tag flips to the Bell. "Fight to clear, spray to claim" is taught by doing it |
-| 0:21–0:24 | **The First Thorn Standoff**: **Togemaru** (Braggart Scrapper), after the claim (name-card, sting contour) | **Brace** (R1 / RMB hold) against his string. **His flee at 25% cannot be interrupted on day 1** (OR-14), so the first Verdict is always day 2's |
-| 0:24–0:25 | Sunspot | **Nap**: the **phase dial** jumps half a phase; heal |
-| 0:25–0:27 | Dusk chime, the lamp wave; **K1.3 The first Call** | **Call glyph**; **Head Home** thread (D-pad Down / H hold) |
-| 0:27–0:30 | Evening at home; sleep | Home verbs by pictogram; Bond hearts |
-| 0:30–0:31 | **Day 2 Doorstep**: the first 1-item Sniff ("the Thorn waits at the gatepost") + first Tribute | **Doorstep Sniff**, the pile |
-| 0:31–0:32 | The Lot (Crew tab only) | **Crew card**: personality front and centre for Hige |
-| 0:32–0:38 | **The Thorn at the Laundry Pole Yard gatepost**: memory-citing Standoff line ("Faster than a kitten…"), unskippable for 1 s | **Tag-In** (spark ring + plate glyph pop; hint on the first two windows) |
-| 0:38–0:40 | Togemaru Routed | **First Verdict**: three cards; hint line "Choose what they become. Chasing off is for good." Then the **Claim Spray** of the gatepost (the prompt appears at once) |
-| 0:40–0:41 | From the yard, Daifuku is on his wall; Hige: "That's Daifuku up there." | **Sniff to discover** (hold Whisker Sense on him for 1 s within 10 m): the scent-outline confirmation (`hud.md` §3.2). In Life 1 there is no Rivals chip: the payoff is on Life 2 day 1, when he is the only coloured cat on his gatepost |
-| 0:41–0:45 | **Pon** joins (story recruit 2) | Posse of three; **Relay** happens if it happens (not taught by card) |
-| 0:45–0:52 | Free roaming, 2–3 fights | Practice; no new verbs |
-| 0:52–0:57 | Dusk, home, **K1.4** (Life 1 Closing); sleep | Life 1 ends |
-| 0:57–1:00 | Montage 1→2; **Life 2 day 1** Doorstep: the 3-item Sniff | **Rivals board** reveal: "(N) See the Rivals" on a Sniff card (§7.4) |
+| 0:21–0:22 | **The First Thorn Standoff**: **Togemaru** (Braggart Scrapper), after the claim (name-card, sting contour) | **Brace** (R1 / RMB hold) against his string. **His flee at 25% cannot be interrupted on day 1** (OR-14), so the first Verdict is always day 2's |
+| 0:22–0:23 | Sunspot | **Nap**: the **phase dial** jumps half a phase; heal |
+| 0:23–0:25 | Dusk chime, the lamp wave; **K1.3 The first Call**; evening at home; sleep | **Call glyph**; **Head Home** thread (D-pad Down / H hold); home verbs by pictogram; Bond hearts |
+| 0:25–0:26 | **Day 2 Doorstep**: the first 1-item Sniff ("the Thorn waits at the gatepost") + first Tribute | **Doorstep Sniff**, the pile |
+| 0:26–0:27 | The Lot (Crew tab only) | **Crew card**: personality front and centre for Hige |
+| ≈ 0:28–0:31 | **The Thorn at the Laundry Pole Yard gatepost**: memory-citing Standoff line ("I ran yesterday. Not off my own post, Collar."), unskippable for 1 s; the contest | **Tag-In** (spark ring + plate glyph pop; hint on the first two windows) |
+| 0:31–0:32 | Togemaru Routed | **First Verdict**: three cards; hint line "Choose what they become. Chasing off is for good." Then the **Claim Spray** of the gatepost (the prompt appears at once) |
+| 0:32–0:33 | From the yard, Daifuku is on his wall; Hige: "That's Daifuku up there." | **Sniff to discover** (hold Whisker Sense on him for 1 s within 10 m): the scent-outline confirmation (`hud.md` §3.2). In Life 1 there is no Rivals chip: the payoff is on Life 2 day 1, when he is the only coloured cat on his gatepost |
+| 0:33–0:40 | **Pon** joins (story recruit 2); free roaming, 1–2 fights | Posse of three; **Relay** happens if it happens (not taught by card) |
+| 0:40–0:45 | Dusk, home, **K1.4** (Life 1 Closing); sleep | Life 1 ends |
+| 0:45–0:47 | Montage 1→2; **Life 2 day 1** Doorstep: the 3-item Sniff | **Rivals board** reveal: "(N) See the Rivals" on a Sniff card (§7.4) |
 
-**Slice tests covered:** two cats and a Pile-On by 0:15; first memory-citing Rival line at ≈ 0:32 (target < 1:00, 100% of testers).
+*Times follow `day-loop.md` §3.9 (the budget owner; aligned in the consistency pass).*
+
+**Slice tests covered:** two cats and a Pile-On by 0:15; first memory-citing Rival line at ≈ 0:28 (target < 1:00, 100% of testers).
 
 ### 7.4 Life 2: one headline per day (DR-22; days per `day-loop.md` §3.9 and the rulings)
 
@@ -720,8 +720,8 @@ A single button on its tab: the cost (Σ Crew levels), the Stash, and a preview 
 |---|---|---|
 | **L2D1** | **Ambush** (from the High Road, Pounce opener; the Rival yowl-sting with its Skitter/Brace counter) | **The Rivals board** from the 3-item Sniff: opens focused on the Sniff's cat; one hint card "Hover a cat: see who it knows." The first ties the player can see: Hige → Daifuku **Old Boss** (if sniffed), Togemaru ↔ Goma **Rival** once Goma is met, Daifuku's **anger puffs** if Life 1's Counter-Sprays left him Riled. **Kinako's favour**, the required first objective (Interact / E within 4 m); the Lot opens after it. **Turf Board look**: the influence bar as Life 2's goal ("Fill the bar. Daifuku comes down."). Persimmon Alley taken |
 | **L2D2** | **Props and Fears** (bucket, scooter horn, cucumber junk) | **The first raid forecast** in that morning's Sniff, often beside the Declaration card → **Sentries and the Turf Board's one decision** at the Lot. Relay with the Posse of 4; **Share a Morsel**; K2.3 the cat flap at Dusk → **Night**; the raid fires as **the Caterwaul**, with one hint "Get there in time: your guard holds better" (the presence rule) |
-| **L2D3** | **Zoomies** (the hint fires the first time the gauge is full; Captain **Kagi** at Tofu Shop Step) | **Lessons** (Rank I). If Daifuku reaches Seething, the Sniff's anger card ("The big wall is seething.") and a puff on the board. Recruiting Kagi writes his **Old Gang** (Nerves) on his Crew card |
-| **L2D4** | **Daifuku comes down** (the Boss window): rescue Sprays take the Lane to 100; his yowl rolls down, he climbs off his wall, his first stop appears; the compass crown tick (`hud.md` §3.2); "knock him off into the bucket" at any stop | **The challenger**, announced in that morning's Sniff (silhouette, stake flag on the Turf Board, a tick on the compass); optional by day. **Old Gang Nerves** first seen in the Daifuku fight: Kagi flinches and is Cowed → hint "Tag-In to steady it."; Hige resists with his own line. A lost attempt plays the loss-to-night (§4.6) |
+| **L2D3** | **Zoomies** (the hint fires the first time the gauge is full; Captain **Kagi** at Tofu Shop Step) | **Lessons** (Rank I). **The Tofu Shop Step Claim Spray fills the bar: Daifuku comes down** (the Boss window; reference day per the consistency pass): his yowl rolls down and he climbs to the wall above the post, in view, with control kept; the compass crown tick appears (`hud.md` §3.2). Fighting him today is optional. If Daifuku reaches Seething, the Sniff's anger card ("The big wall is seething.") and a puff on the board. Recruiting Kagi writes his **Old Gang** (Nerves) on his Crew card |
+| **L2D4** | **The Daifuku fight** at his patrol stop (the Sniff's Boss-window card lists today's three stops): "knock him off into the bucket" at any stop | **The challenger**, announced in that morning's Sniff (silhouette, stake flag on the Turf Board, a tick on the compass); optional by day. **Old Gang Nerves** first seen in the Daifuku fight: Kagi flinches and is Cowed → hint "Tag-In to steady it."; Hige resists with his own line. A lost attempt plays the loss-to-night (§4.6) |
 | **L2D5** | **The claim:** Rout Daifuku at any stop, give a Verdict, **Claim Spray the Den corner stone** (a gold thread leads there) | No new verbs |
 
 **Taught when they first happen (no fixed day):**
@@ -729,7 +729,8 @@ A single button on its tab: the cost (Σ Crew levels), the Stash, and a preview 
 | Event | Teaching |
 |---|---|
 | **A Nose-Touch join-in** (from Life 2, a truce cat whose Rival is in the fight) | No hint before. The ally guest plate appears with its sprig (`hud.md` §4.1); after the fight, one hint "Your truce cat joined in." and the Rivals chip |
-| **The first loss** | The nightfall plays itself; on the walk home one hint "Day's over. Head home." (Head Home glyph) |
+| **The first loss** | The nightfall plays itself; on the walk home one hint "Day's over. Head home." (Head Home glyph). No loss is scripted in the slice (consistency pass F5) |
+| **A Nose-Touch card closed by a loud take** (from Life 2) | The halftoned card names the reason (§4.2); the first time only, one hint under the cards: "Spray quietly to make peace." |
 | **First discovery by encounter** | The Rivals chip after the fight (from L2D1) |
 | **First Gone cat** | The legend card's pin beat on the board (§2.8) |
 | **First Wavering morning** | The Sniff card, then the Turf Board fix line |
@@ -747,8 +748,8 @@ A single button on its tab: the cost (Σ Crew levels), the Stash, and a preview 
 | Case | Handling |
 |---|---|
 | Togemaru on day 1 | His flee at 25% cannot be interrupted (OR-14), so there is never a day-1 Verdict; his day-2 gatepost line cites the day-1 flee |
-| Togemaru is Chased Off on day 2 | Gone; a closing Sniff card "Run out of town" next morning; the legend card on the board; his arc closes (2 encounters, "unachieved"). Life 2 pressure comes from Daifuku's anger and window and the challenger. The < 60 min memory-line test was already met at 0:32 |
-| Togemaru is Recruited / Nose-Touched on day 2 | Recruit: "Wears the bell now" card; his storm mark becomes a bell on the Bell fence. Nose-Touch: a truce greeting at the gatepost; normally declared a Sworn Rival; he may join a fight against Goma |
+| Togemaru is Chased Off on day 2 | Gone, with his farewell line; a closing Sniff card "Run out of town" next morning; the legend card on the board. His arc closes as a complete ending (Nemesis §3.7, F11). Life 2 pressure comes from Daifuku's anger and window and the challenger. The < 60 min memory-line test was already met at 0:32 |
+| Togemaru is Recruited / Nose-Touched on day 2 | Recruit: "Wears the bell now" card; his storm mark becomes a bell on the Bell fence. Nose-Touch: a truce greeting at the gatepost each day; declared a Sworn Rival in the L2D2 Sniff; he may join a fight against Goma |
 | The player loses a Life 1 fight | Tutorial fights cannot be lost. Any other Life 1 loss plays §4.6 (staged nightfall), with no haul lost; Haru's plaster |
 | The player never sniffs Daifuku | He stays a crowned silhouette until met; the name-card says how to discover him |
 | The player skips Hige's trail | Hige walks to Mikan after 60 s; the recruit is not optional |
@@ -764,8 +765,8 @@ A single button on its tab: the cost (Σ Crew levels), the Stash, and a preview 
 - **A-2 One assignment per cat** (Posse, Posted or Lounging); posting a Posse cat removes it from the Posse. Territory and Crew to confirm.
 - **A-3** The slice's Patch names follow Territory (Low Wall Corner, Laundry Pole Yard, Persimmon Alley, Tofu Shop Step, the Den).
 - **A-4** The disposition pose set (§2.4) is an example; Nemesis owns the mapping from Grudge/Regard to pose.
-- **A-5 (new) Pause ▸ Rivals.** The owner asked for the board from the pause menu; the rulings list View / J, the Doorstep and the Lot. The pause tab is added on the street and at the Lot only (never at home), with the same read-only board.
-- **A-6 (new) L2D1 Turf Board look.** The rulings want the influence bar from L2D1; Day Loop and Territory want posting on L2D2. The tab opens on L2D1 for a ≤ 15 s look with no Sentry pegs. Day Loop to budget it inside L2D1's Lot time.
+- **A-5 (new) Pause ▸ Rivals. CONFIRMED (consistency pass F6).** The owner asked for the board from the pause menu; the rulings list View / J, the Doorstep and the Lot. The pause tab is added on the street (the closed street included) and at the Lot only (never at home), with the same read-only board.
+- **A-6 (new) L2D1 Turf Board look. CONFIRMED (consistency pass F6).** The rulings want the influence bar from L2D1; Day Loop and Territory want posting on L2D2. The tab opens on L2D1 for an unprompted ≤ 15 s look with no Sentry pegs, inside L2D1's Lot time (Day Loop §3.9).
 - **A-7 (new, not built) A post strip on the street.** A tiny 4-post strip on the Patch tag (gold = held Strong) would let the player track influence on the street without a number. OR-08 says the street shows wisps only, so it is **not** in this spec; offered for the owner's "ease to use" if the L2D4 window proves hard to read in playtest.
 - **A-8 (new) The Rivals chip** rather than auto-opening the board after key events: it never interrupts a fight or a walk.
 
@@ -782,12 +783,23 @@ A single button on its tab: the cost (Σ Crew levels), the Stash, and a preview 
 - One-handed presets.
 - Kits, Wall Watch, the Usurper newcomer on the Rivals board.
 - Rivals board "Last night" replay: one held hero frame (a newcomer landing at the Outsiders gate) for trailer capture; re-run the flash test on the replay beats.
-- First-hour clock: `day-loop.md` puts K1.4 at ≈ 0:40–0:45, §7.3 at 0:52–0:57. Re-time both against the first playable.
+- First-hour clock: §7.3 now follows `day-loop.md` §3.9 (K1.4 at ≈ 0:40–0:45). Re-time both together against the first playable.
 - Rival card history lines in §3.3 are illustrative; re-cut them once Nemesis's day-1 flee / day-2 gatepost schedule is in the prototype.
 - If counsel clears a line-only boss bark at a defector (OR-06), it plays in the Standoff with no UI change.
 - Handheld-console framing check for the Rivals board (fit at 720p).
 
 ## Revision Log
+
+**2026-11-24, Consistency pass (creative director; `design/reviews/owner-feedback/consistency-pass.md`).**
+
+| Item | How |
+|---|---|
+| F6 · A-5, A-6 | Confirmed (§8): Pause ▸ Rivals on the street and at the Lot; the L2D1 Turf Board look, unprompted, ≤ 15 s |
+| F7 · window day | §7.4: Daifuku comes down on **L2D3** at the Tofu Shop Step Claim Spray (in view, control kept); L2D4 is the fight day with the challenger and the Boss-window Sniff card |
+| F11 · Togemaru's arc | §7.6: a Chase Off on day 2 is a complete ending, not "unachieved"; a Nose-Touched Togemaru is declared in the L2D2 Sniff |
+| F12 · Nose-Touch gate | §4.2: the halftoned card names its reason (Grudge, a loud take, a steaming Boss); §7.4: a one-time hint "Spray quietly to make peace." |
+| F5 · the loss | §7.4: no loss is scripted; the first loss teaches itself |
+| First-hour clock | §7.3 re-timed to `day-loop.md` §3.9 (memory line ≈ 0:28, K1.4 ≈ 0:40–0:45) |
 
 **2026-11-24, Owner feedback pass (2026-11-24): C1, C3, C4, C5 through `owner-feedback-rulings.md` OR-01…OR-21 and patent note v2 §5.**
 

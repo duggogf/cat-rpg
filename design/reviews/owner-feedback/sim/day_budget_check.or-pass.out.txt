@@ -1,0 +1,39 @@
+## Reference days (budget check)
+
+| Day | Typical (min) | Heavy (min) | Encounter min typ / heavy | Clock used / open (heavy) | vs DR-16 (<= 25 median, 30 cap) |
+|---|---|---|---|---|---|
+| L1D1 tutorial (unchanged) | 23.8 | 23.8 | 8.8 / 8.8 | 6 / 12 ok | fits |
+| L1D2 Thorn + LPY take (unchanged) | 18.4 | 22.9 | 3.9 / 6.1 | 12 / 12 ok | fits |
+| L2D1 Kinako, PA take, Ambush, Rivals board (was Fence Line) | 20.6 | 24.3 | 5.4 / 7.8 | 12 / 12 ok | fits |
+| L2D2 Declaration, Turf Board first use, flap, first Night, Caterwaul | 22.4 | 28.9 | 5.4 / 8.2 | 16 / 16 ok | fits |
+| L2D3 TSS take, Lessons, out all Night, Late Home, K2.2 | 24.9 | 28.9 | 5.4 / 8.2 | 16 / 16 ok | fits |
+| L2D4 K2.5; rescue Sprays -> window; challenger Sniff; Daifuku LOST -> Night, walk home, Routed Evening | 15.2 | 21.8 | 3.8 / 6.5 | 7.0 / 16 ok | fits |
+| L2D5 Daifuku rematch (-10%, Calm), Den Claim Spray, victory lap, Life-end sleep | 15.7 | 23.6 | 5.2 / 8.3 | 12 / 16 ok | fits |
+
+## Normal day vs loss day
+
+| Day | Typical (min) | Heavy (min) | Encounter min typ / heavy | Clock used / open (heavy) | vs DR-16 (<= 25 median, 30 cap) |
+|---|---|---|---|---|---|
+| L2D2 normal (above) | 22.4 | 28.9 | 5.4 / 8.2 | 16 / 16 ok | fits |
+| L2D2 with a wipe at clock 6:00 (Day): K2.3 in its Late form at the Routed Evening; first Night moves to L2D3 | 16.6 | 17.6 | 3.9 / 5.4 | 6 / 16 ok | fits |
+| L2D3 normal (above) | 24.9 | 28.9 | 5.4 / 8.2 | 16 / 16 ok | fits |
+| L2D3 with a wipe at clock 13:00 (Night): clock stays, walk home, plaster, K2.2 | 22.4 | 24.9 | 5.4 / 6.7 | 13 / 16 ok | fits |
+| Worst real-time case: a wipe at clock 2:00 (Morning), the accepted OR-02 residue | 8.9 | 10.2 | 2.2 / 2.2 | 2 / 16 ok | fits |
+| L1D3 bonus morning after a L1D2 loss: K1.4 Closing in the morning slot, Settle In at once, Life-end sleep | 4.0 | 5.0 | 0.0 / 0.0 | 1.0 / 12 ok | fits |
+
+## Slice clock (target 120-150 min, DR-03 / F6)
+
+- Reference path (7 days, L2D4 lost): before 149 min, after 143.5 min (fits)
+- Fast path (Daifuku won on L2D4, 6 days; L2D4 then runs like L2D5, 16 min): before 132, after 128.0
+- Each extra Boss wipe: before +16-20 min (a Dusk-to-sleep evening plus a rematch day); after: the lost day was already played, so it adds one rematch day: 15.7 min (budget typical) to 16 min (worked day). Reference + 1 extra wipe = 159.5 min (over the 150 median target; AC-P2 is a median, as before (149 + 16-20))
+- Budget-check typical sum (7 days): 140.9 min; heavy sum 174.1 min
+
+## L2D4 script clock check (clock seconds; Daifuku's stop follows PhaseChanged)
+
+  clock   0  ok  street; Whisker Sense
+  clock  90  ok  rescue Spray Laundry Pole Yard 56 -> 90 (influence ~89 -> 91; illustrative Scent, Territory owns it)
+  clock 180  ok  rescue Spray Persimmon Alley 38 -> 90: influence 100, BossWindowChanged(open); reveal (paused)
+  clock 240  ok  PhaseChanged Day: Daifuku at his Day stop, Tofu Shop's back wall (rain barrel)
+  clock 270  ok  Standoff within 8 m; the fight (clock paused ~3.5 real min)
+  clock 270  ok  wipe -> clock 720 (Night); street closed; Head Home thread
+  clock 720  ok  walk home <= 60 s -> HomeArrived(routed)

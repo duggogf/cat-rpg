@@ -1,7 +1,7 @@
 # Day Loop
 
-*Owner: game-designer · Created 2026-11-23 · Iteration 3 (final fix pass) 2026-11-24 · Owner feedback pass 2026-11-24 · Status: slice spec · Commissioned by DR-25 / DR-56*
-*Canon: the owner's comments C1–C5 (`design/reviews/user-comments-2026-11-24.md`) → `design/reviews/owner-feedback-rulings.md` OR-01…OR-21 (binding) → `design/creative-brief.md` v1.5 §5.2–5.3, §6 → `design/reviews/round-1/director-rulings.md` DR-01, DR-03, DR-13, DR-15–DR-22. Patent guardrails: `design/legal/nemesis-patent-analysis.md` v2 §5. Where this doc and canon disagree, canon wins. Phase lengths and Life rules belong to the brief. This doc implements them. **Day Loop owns the loss time-skip and the closed street (OR-20).***
+*Owner: game-designer · Created 2026-11-23 · Iteration 3 (final fix pass) 2026-11-24 · Owner feedback pass 2026-11-24 · Consistency pass (creative director) 2026-11-24 · Status: slice spec · Commissioned by DR-25 / DR-56*
+*Canon: the owner's comments C1–C5 (`design/reviews/user-comments-2026-11-24.md`) → `design/reviews/owner-feedback-rulings.md` OR-01…OR-21 (binding), as settled by `design/reviews/owner-feedback/consistency-pass.md` (F1–F12) → `design/creative-brief.md` v1.6 §5.2–5.3, §6 → `design/reviews/round-1/director-rulings.md` DR-01, DR-03, DR-13, DR-15–DR-22. Patent guardrails: `design/legal/nemesis-patent-analysis.md` v2 §5. Where this doc and canon disagree, canon wins. Phase lengths and Life rules belong to the brief. This doc implements them. **Day Loop owns the loss time-skip and the closed street (OR-20).***
 
 ## 1. Overview
 
@@ -120,7 +120,7 @@ Every draw uses `rng(save_seed, day_index, step, subsystem, cat_id, ordinal)`. S
 
 **Influence, anger and the window across the day** (Day Loop sequences them; Territory and Nemesis own the values):
 - **Influence** is a read-out of Scent (Territory), so it moves exactly when Scent moves: by day only through Mikan's marking acts (Claim, Rescue and Counter-Sprays, Over-marks), and overnight only at step 2 (decay for everyone, refresh, challenger over-mark, the raid result). A loss, a win or a Verdict never moves it.
-- **The Boss window opens** the moment influence reaches 100: after a daytime Spray (Daifuku's yowl, the climb down, ≈ 15 s, clock paused as an authored street beat; he goes to the **current phase's stop**), or at step 2. **It closes only at step 2**, when influence is below 75; nothing by day can close it. A closed window means he is back at the Den the next morning. While it is open, held outer Patches cannot be Lost at step 2 (Lost becomes Scuffed).
+- **The Boss window opens** the moment influence reaches 100: after a daytime Spray (Daifuku's yowl, the climb down, ≈ 15 s; he goes to the **current phase's stop**), or at step 2. **When his stop is in view the reveal plays in the world on the running clock with control kept** (the reference case: on L2D3 the Tofu Shop Step Claim Spray fills the bar and he climbs to his Day stop, the wall above that post); when it is not, the clock pauses for the cut, as an authored street beat (consistency pass, F7). **It closes only at step 2**, when influence is below 75; nothing by day can close it. A closed window means he is back at the Den the next morning. While it is open, held outer Patches cannot be Lost at step 2 (Lost becomes Scuffed).
 - **Anger** rises only by day through marking acts in his district (Over-mark +5, Counter-Spray +15) and falls −15 at step 3; a win, loss or `rival_fled` with him spends it at `EncounterEnded` (Scram does not). The Sniff names it at Seething or Furious.
 
 ### 3.6 Losing a fight: the day ends (OR-01, OR-02; the owner's C2)
@@ -140,11 +140,11 @@ At most one loss per day is possible, because the street closes.
 
 **How a loss meets the 7-day slice script** (Narrative owns the beats; `design/narrative/dual-story-progression.md` must follow OR-01, its "jump to Dusk" text is superseded):
 - **Day gates never move.** A loss shortens the day it happens on; it never skips, delays or brings forward a `day_gate`.
-- **L1D1** (after the tutorial): a wipe (rare; Togemaru's day-1 flee at 25% is uninterruptible) plays nightfall, the walk home and **K1.3 in its Late form, which keeps the Call**: Haru sings from the step into the moon-blue lane and the thread is the Call's thread (PP-06: the first Call is never lost). Nothing is lost in Life 1. If Low Wall Corner is not yet held, the turf goal carries to day 2.
+- **L1D1** (after the tutorial): a wipe (rare; Togemaru's day-1 flee at 25% is uninterruptible) plays nightfall, the walk home and **K1.3 in its Late form, which keeps the Call** (confirmed by the creative director, consistency pass F4; Narrative stages it, `dual-story-progression.md` §3.6): Haru sings from the step into the moon-blue lane and the thread is the Call's thread (PP-06: the first Call is never lost). Nothing is lost in Life 1. If Low Wall Corner is not yet held, the turf goal carries to day 2.
 - **L1D2:** K1.4 is the Life 1 **Closing**, so after a wipe it waits for the L1D3 morning slot; **Settle In is offered at once** after it (the existing Closing rule, §5), and the Life ends at that sleep. Cost: one ≈ 4–5 min bonus morning.
 - **L2D2:** K2.3 (the flap) plays in its Late form at the Routed Evening; the flap is there from then on, but this day's Night and Caterwaul are gone (the raid auto-resolves). The first Night moves to L2D3.
 - **L2D3:** a wipe by day or in Night lands in the Routed Evening with Haru home (the clock is Night, past her late Call at 630); then K2.2.
-- **L2D4** is the reference loss (§3.10): K2.5, the Closing, already played that morning, so the loss costs no story beat; the Life ends at the first sleep after the claim (L2D5).
+- **L2D4** is the budget's loss branch (§3.10): K2.5, the Closing, already played that morning, so the loss costs no story beat; the Life ends at the first sleep after the claim (L2D5). No loss is scripted (F5).
 - **The Boss window survives a loss:** influence is unchanged, so if it was ≥ 75 at step 2 he is on patrol again tomorrow, Calm (anger spent) and plastered.
 
 ### 3.7 Encounter density (owned here; values are tuning)
@@ -187,12 +187,12 @@ At most one loss per day is possible, because the street closes.
 | 0:46–0:60 | L2D1: K2.1 (cicada-shell Gift); 3-item Sniff; **the Rivals board** (unlocks today: the Lane row, uphill silhouettes, relationship tags on hover); **Kinako's scent-trail favour, the day's required first objective** (the Lot opens after it; Crew) → 4th cat; **Ambush** a Persimmon Alley Tough; take **Persimmon Alley (Patch 3)**; the influence bar now reads ≈ 75 (three outer posts Strong) | Rivals board, influence, Ambush |
 
 **The Life 2 ladder, one headline a day** (UX owns it: `ux/key-screens.md` §7.4, as ruled in the presentation review; Combat §3.16 and Territory §3.12 agree):
-- **L2D1:** Ambush (and the Rival yowl-sting counter); **the Rivals board** and **the influence bar**; 3-item Sniff. No posting yet.
+- **L2D1:** Ambush (and the Rival yowl-sting counter); **the Rivals board** and **the influence bar** (the Turf Board tab opens for an unprompted look of ≤ 15 s inside the Lot's time, key-screens A-6, confirmed); 3-item Sniff. No posting yet.
 - **L2D2:** the **first raid, forecast in that morning's Sniff** (DR-46: forecasts are always on), often beside the **Declaration card** (Nemesis §3.6); **Sentries and the Turf Board**, taught at the Lot as the answer to that forecast (one posting decision); **props and Fears**; Relay with a Posse of 4; K2.3 the cat flap at Dusk, the first Night, and the forecast raid offered as **the Caterwaul**.
-- **L2D3:** **Lessons** (Rank I) and **Zoomies** (the hint fires the first time the gauge is full; first used on Captain Kagi at Tofu Shop Step). Late Home at Dusk; K2.2 that evening.
-- **L2D4:** K2.5 in the morning (the Closing); **the first challenger** announced in that morning's Sniff (a silhouette staking a post; its fight is optional); **rescue Sprays fill the influence bar to 100 and the Boss window opens** (Daifuku's yowl, he climbs down onto his patrol); the first Daifuku attempt at his stop, with his anger read as Fired Up; on the reference path **the attempt is lost: nightfall, the walk home, the Routed Evening and the plaster** (the loss rule is taught by living it once).
+- **L2D3:** **Lessons** (Rank I) and **Zoomies** (the hint fires the first time the gauge is full; first used on Captain Kagi at Tofu Shop Step). **The Tofu Shop Step Claim Spray fills the influence bar and the Boss window opens**: Daifuku's yowl rolls down and he climbs to his Day stop, the wall above that post (in view, on the running clock; fighting him today is optional and not budgeted). Late Home at Dusk; K2.2 that evening.
+- **L2D4:** K2.5 in the morning (the Closing); **the first challenger** announced in that morning's Sniff (a silhouette staking a post; its fight is optional), beside the Boss-window card with today's three stops; rescue Sprays keep the bar full; **the first Daifuku attempt** at his stop, with his anger read as Fired Up. The budget's long case loses it: **nightfall, the walk home, the Routed Evening and the plaster**. A loss is never scripted: the Combat sim's median Posse wins, so many players take the fast path (claim on L2D4) and meet the loss rule only if they lose a fight. The browser showcase stages it on purpose as the optional Daifuku bout (rulings §2 item 6; consistency pass F5).
 - **L2D5:** the rematch (he is plastered −10% and Calm, his anger spent); **Claim Spray the Den post** → `DistrictClaimed`; the Life-end sleep.
-- *Challenger timing note:* OR-16's calendar (Nemesis F-challenger) places the first challenger on the second night after Mikan first holds ≥ 3 Lane Patches. The rulings' slice expectation is the **L2D4** Sniff, used here. If Nemesis's count lands it a day earlier (the L2D3 Sniff), L2D3, the heaviest day, gains only an *optional* fight; skipping it costs one night's −10 over-mark on its target. Both fit (§3.11).
+- *Challenger timing (settled, consistency pass F3):* night *n* is the Night Shuffle that ends day *n* (Nemesis F12). Mikan first holds 3 Lane Patches on night 3 (after L2D1), so the first challenger arrives on **night 5** (after L2D3) and is announced in the **L2D4** Sniff, in every doc.
 
 ### 3.10 Worked days
 
@@ -233,7 +233,7 @@ Totals: S 6 · H 2 · C 9 · T 8. The day's only exception is the tutorial nap, 
 | 4:45–6:00 | P | **Ambush** a Tough pair from the High Road | Combat | C |
 | 6:00–8:00 | 2:30–4:30 | To **Tofu Shop Step**: Rub, Counter-Spray | Territory | T |
 | 8:00–11:00 | P | Wave → **Captain Kagi** Standoff → fight (**first Zoomies**) → Verdict | Combat, Nemesis | C |
-| 11:00–11:30 | 4:30–5:00 | Claim Spray: all 4 outer Patches held; **influence ≈ 95** (Persimmon Alley has slipped below Strong), so the Boss window stays shut | Territory | T |
+| 11:00–11:30 | 4:30–5:00 | Claim Spray: all 4 outer Patches Strong (Persimmon Alley was rescue-Sprayed against yesterday's raid; the morning's Spray kept the other post up) → **influence 100: the Boss window opens.** Daifuku's yowl rolls down and he climbs to his Day stop, the wall above this post, in view (on the running clock, control kept). Fighting him now is optional and not in this reference | Territory, Nemesis | T |
 | 11:30–11:45 | 5:00→7:00 | Sunspot nap | Day loop | T |
 | 11:45–14:45 | 7:00–10:00 | Roam. **Dusk at 12:45: the chime and the bell glint, but no Call (Late Home)**; the thread appears with the chime; the player stays out | Territory | T |
 | 14:45–16:00 | P | Crow and Stray fight | Combat | C |
@@ -245,16 +245,16 @@ Totals: S 6 · H 2 · C 9 · T 8. The day's only exception is the tutorial nap, 
 
 Totals: C 6.75 (5.5 paused + ≈ 1.25 stalking and approach) · T 15.5 · H 0.75 · S 1. Four encounters (the optional Night-only Roamer is left out of the reference so that K2.2 fits). This day is the budget's worst realistic case: round-3 budget check 24.9 typical / 28.9 heavy, so it fits the 25-minute median with almost no slack. A home-by-Dusk version (Late Home's wait inside the wall, then K2.2) is ≈ 22 min.
 
-**The loss day: Life 2 day 4 (L2D4, the window opens and the first attempt is lost; 15.5 min).** The reference path's one planned loss (OR-01). Daifuku is fought at his Day stop; the Combat sim (F9 there) shows a same-level Posse with median dodging *wins*, so this row is the first-attempt case (variance, a lighter Posse, or a Riled-to-Furious Boss after loud marking).
+**The loss branch: Life 2 day 4 (L2D4, the first attempt is lost; 15.5 min).** The budget's long case (OR-01), not a scripted loss (F5). Daifuku is fought at his Day stop; the Combat sim (F9 there) shows a same-level Posse with median dodging *wins*, so this is the first-attempt case for variance, a lighter Posse, or a Riled-to-Furious Boss after loud marking. The window has been open since the L2D3 Claim Spray.
 
 | Real | Clock | Activity | System | Cat |
 |---|---|---|---|---|
 | 0:00–2:30 | P | Wake; **K2.5 *The Envelope*** (the Closing, morning) | Narrative | S |
-| 2:30–3:00 | P | Doorstep: Tribute; Sniff: **"A stranger's scent"** (the challenger's silhouette staking a post; tape star), the raid forecast, one Nemesis item | Economy, Nemesis | T |
+| 2:30–3:00 | P | Doorstep: Tribute; Sniff: **"A stranger's scent"** (the challenger's silhouette staking a post; tape star), **"Daifuku has come down off the walls"** (today's three stops), the raid forecast | Economy, Nemesis | T |
 | 3:00–4:00 | P | Lot: Turf Board (post for the forecast); Share a Morsel | Crew, Territory | T |
-| 4:00–5:30 | 0:00–1:30 | Whisker Sense; **rescue Spray** Laundry Pole Yard (slipped below Strong overnight) | Territory | T |
-| 5:30–7:00 | 1:30–3:00 | To Persimmon Alley; **rescue Spray → influence 100** | Territory | T |
-| 7:00–7:15 | P | **The Boss window opens:** a yowl rolls down from his wall, Daifuku climbs down to his Morning stop; the Turf Board crown lights | Territory, Nemesis | T |
+| 4:00–5:30 | 0:00–1:30 | Whisker Sense; **rescue Spray** Laundry Pole Yard (slipped below Strong overnight; keeps the bar at 100) | Territory | T |
+| 5:30–7:00 | 1:30–3:00 | To Persimmon Alley; rescue Spray (the window stays open while influence is ≥ 75) | Territory | T |
+| 7:00–7:15 | P | Rivals board look: Daifuku down off his gatepost, his steam puffs (his stop on the compass) | Nemesis, UX | T |
 | 7:15–8:45 | 3:00–4:30 | Toward him; **Day at 4:00**: he moves to Tofu Shop's back wall (rain barrel); a crown tick on the compass | Day loop | T |
 | 8:45–12:15 | P | Daifuku Standoff and fight on the stop's kit (≈ 3.2 min), Fired Up if his anger is Riled or worse; **wipe** in phase 3; his Gloat | Combat, Nemesis | C |
 | 12:15–13:15 | 4:30 → **12:00** | **Nightfall** (clock to 720); the street closes; the thread at once; walk home under moonlight → `routed` | Day loop | T |
@@ -289,8 +289,8 @@ Totals: C 7 · T 7.5 · H 0.75 · S 0.75. (Owner-feedback budget check, with Dai
 | L1D2 | 20 | 7 | 10 | 1.5 | 1.5 | Memory line, first Verdict, Patch 2 (Laundry Pole Yard, Togemaru), Pon joins, K1.4 |
 | L2D1 | 20 | 7 | 9.5 | 1 | 2.5 | Montage, K2.1, Rivals board, Kinako's favour, Ambush, Patch 3 (Persimmon Alley), influence ≈ 75 |
 | L2D2 | 23 | 7.75 | 13 | 1 | 1.25 | Declaration card + first forecast, Sentries and Turf Board, props and Fears, K2.3 flap, first Night, Caterwaul |
-| L2D3 | 24 | 6.75 | 15.5 | 0.75 | 1 | Lessons, Kagi, Zoomies, Patch 4 (Tofu Shop Step), influence ≈ 95, Late Home, K2.2 |
-| L2D4 | **15.5** (was 21) | 3.5 | 7.25 | 1.75 | 3 | K2.5 (morning, the Closing), challenger Sniff, rescue Sprays → **the Boss window opens**, Daifuku attempt lost in Day → **Night**, walk home, the Routed Evening and the plaster |
+| L2D3 | 24 | 6.75 | 15.5 | 0.75 | 1 | Lessons, Kagi, Zoomies, Patch 4 (Tofu Shop Step) → influence 100: **the Boss window opens** (in view, no paused time), Late Home, K2.2 |
+| L2D4 | **15.5** (was 21) | 3.5 | 7.25 | 1.75 | 3 | K2.5 (morning, the Closing), challenger + Boss-window Sniff, rescue Sprays keep the bar, Daifuku attempt lost in Day (the loss branch) → **Night**, walk home, the Routed Evening and the plaster |
 | L2D5 | 16 | 7 | 7.5 | 0.75 | 0.75 | Daifuku rematch (−10%, Calm), Den Claim Spray → claimed, Life-end sleep in the suitcase, title card |
 | **Total** | **143.5** (was 149) | **48 (33%)** | **70.75 (49%)** | **8.75 (6%)** | **16 (11%)** | |
 
@@ -302,7 +302,7 @@ territory T |########|##########|#########|#############|################|######
            L1D1      L1D2      L2D1      L2D2        L2D3          L2D4      L2D5
 ```
 
-Combat and territory alternate inside every day, because each Patch take is roam → escalate → fight → Spray → post. Neither one runs for more than ≈ 4 real minutes without the other, apart from the Daifuku fight. The **fast path** (Daifuku won on L2D4 after the window opens, then the Den Claim Spray) is 6 days and ≈ 2 h 08 (was 2 h 13). **Each extra Boss wipe** now adds one rematch day, ≈ 16 min (was 16–20: the lost day no longer plays out its Dusk tail), so reference + one extra wipe is ≈ 160 min, over the 150 median as before; AC-P2 is a median. *Owner-feedback re-run:* `design/reviews/owner-feedback/sim/day_budget_check.py` (output `.out.txt`; before `.before.out.txt`).
+Combat and territory alternate inside every day, because each Patch take is roam → escalate → fight → Spray → post. Neither one runs for more than ≈ 4 real minutes without the other, apart from the Daifuku fight. The **fast path** (Daifuku won on L2D4, then the Den Claim Spray) is 6 days and ≈ 2 h 08 (was 2 h 13). **Each extra Boss wipe** now adds one rematch day, ≈ 16 min (was 16–20: the lost day no longer plays out its Dusk tail), so reference + one extra wipe is ≈ 160 min, over the 150 median as before; AC-P2 is a median. *Owner-feedback re-run:* `design/reviews/owner-feedback/sim/day_budget_check.py` (output `.out.txt`; before `.before.out.txt`).
 
 ## 4. Formulas
 
@@ -345,6 +345,8 @@ Targets: T 0.50 ± 0.05, C 0.35 ± 0.05, H + S 0.15 ± 0.05.
 - **Wipe in a Caterwaul** (the `raid_defence` brawl): Mikan reached the Patch, so the raid resolves by Territory's formula with the presence term ×1.5 **whatever happened in the brawl**; then the loss rules apply: nightfall (already Night), the street closes, walk home. The raid result is shown in the next Sniff as usual.
 - **Wipe on the voluntary walk home after the Dusk Call** (a Rival Ambush on the thread): a normal loss; the clock jumps from Dusk to 720 and Mikan is already on the thread. The arrival is `routed`, not `on_time`, so no Well-Fed.
 - **Wipe against a challenger:** a normal loss. The challenger Gloats and gains its own `WON`; it keeps staking its post and over-marking at step 2 as before. A loss gives it no Scent and no Patch (only a raid result can).
+- **The window opens on L2D4 instead** (a player who let Persimmon Alley fade): the morning rescue Spray fills the bar; the reveal plays then (paused if his stop is out of view). Same rule, a day later; the challenger Sniff is unchanged.
+- **Fighting Daifuku on L2D3 right after the reveal:** optional and unbudgeted; a win claims the Lane on L2D3, and the Life waits for K2.5's morning (Closing timing, below).
 - **Wipe against Daifuku with the window open:** influence is untouched, so the window stays open unless step 2 finds it below 75 (decay alone takes a Strong-90 post three nights to fall below Strong). He is back on patrol tomorrow at −10%, Calm.
 - **Loss after the district claim** (a victory-lap wipe on L2D5): the Routed Evening's sleep is the Life-end sleep, since the turf goal, minimum days and the Closing are all met.
 - **Idle on the closed street:** the autopilot starts at 60 s real. Standing still never keeps Mikan out.
@@ -380,7 +382,7 @@ Targets: T 0.50 ± 0.05, C 0.35 ± 0.05, H + S 0.15 ± 0.05.
 3. The tutorial nap wakes at Dusk.
 4. Settle In exists.
 5. Pre-flap arrivals are always `on_time`, **except `routed`**.
-6. *(Owner feedback pass)* K1.3's Late form keeps the Call (§3.6), so PP-06 survives OR-01. Narrative to stage it.
+6. *(Owner feedback pass)* K1.3's Late form keeps the Call (§3.6), so PP-06 survives OR-01. **Confirmed (consistency pass F4);** `dual-story-progression.md` §3.6 and §5 now say so.
 7. *(Owner feedback pass)* The closed street keeps Whisker Sense and the Rivals board open (read-only) and lets the player wander for up to 60 s; nothing responds.
 
 ## 7. Tuning Knobs
@@ -446,10 +448,10 @@ All values live in `assets/data/day/day_loop.*`.
 - A mid-day home visit with a small reason to exist (a Texture slot), if playtests show the quiet house reads as dead.
 - **(Iteration 3)** Budget the Lot at 1.5–2 minutes on first-use days: Turf Board on L2D2, Lessons on L2D3. Measure Lot and Doorstep time first; they are the assumptions most likely to break.
 - **(Iteration 3)** L2D3 out all Night now carries Late Home and K2.2: round-3 budget check 24.9 typical / 28.9 heavy, so it has almost no slack at the median. If it overruns, move the Tofu Shop Step take earlier in the reference path or trim the Night roam.
-- **(Iteration 3)** The first-hour clock times disagree with `ux/key-screens.md` §7.3 (K1.4 at ≈ 0:40–0:45 here, 0:52–0:57 there). Align when the grey box is timed.
+- ~~(Iteration 3) The first-hour clock times disagree with `ux/key-screens.md` §7.3~~ aligned in the consistency pass: key-screens §7.3 now follows §3.9 here.
 - **(Owner feedback pass)** A loss-day budget per Life for Lives 3–7 (Night-heavy districts lose more roaming to a Night jump).
 - **(Owner feedback pass)** If playtests show the closed street reads as dead air, a one-line Mikan inner beat or a single ambient cat glance on the walk home (no Standoff, no line choice keyed to other cats, G8).
-- **(Owner feedback pass)** Reconcile the challenger arrival count with Nemesis F-challenger (L2D3 vs L2D4 Sniff, §3.9 note).
+- ~~(Owner feedback pass) Reconcile the challenger arrival count~~ settled: night 5, the L2D4 Sniff (consistency pass F3).
 - **(Iteration 3)** The round-2 territory review asked for Sentries and the Turf Board on L2D1; the presentation review ruled that UX's sheet keeps them on L2D2. This doc follows UX. If L2D2 (22.4 typical / 28.9 heavy) proves too heavy, moving the Turf Board back to L2D1 is the lever.
 
 ## Revision Log
@@ -485,3 +487,14 @@ All values live in `assets/data/day/day_loop.*`.
 | 7-day slice script | RE-MEASURED | Budget check: L2D4 (loss) 15.2 typical / 21.8 heavy (was 14.1 / 17.0 with the Daifuku attempt as one 1.1-min fight); L2D5 15.7 / 23.6 (was 14.4 / 20.2, same correction); other days unchanged. A loss day vs the normal day: L2D2 22.4 → 16.6, L2D3 24.9 → 22.4; worst case (wipe at clock 2:00) 8.9; an L1D2 loss adds a 4–5 min bonus morning. Pacing graph: reference **143.5 min** (was 149), fast path ≈ 128 (was 132), each extra Boss wipe ≈ +16 (was 16–20). Every day fits its clock (`C_open`) and DR-16 |
 | Owner answers (rulings §5) | NOTED | Every answer matched the default (the recruit-side flinch pending counsel; 10-day truce; Chase Off final; full influence = four Strong posts; betrayal on). Nothing here changed because of them |
 | Narrative's wipe text | FLAGGED | `design/narrative/dual-story-progression.md` §3.6 "After a wipe" still says "jump to Dusk"; OR-01 supersedes it (§3.6 here, Assumption 6) |
+
+**2026-11-24 — Consistency pass (creative director).** Rulings in `design/reviews/owner-feedback/consistency-pass.md`. Budget re-run: `day_budget_check.py` (output `.out.txt`; the owner-pass output kept as `.or-pass.out.txt`).
+
+| Item | Status | How |
+|---|---|---|
+| F3 challenger night | SETTLED | Night 5 (after L2D3), the L2D4 Sniff; the §3.9 timing note and its Backlog line replaced |
+| F4 K1.3 Late form | CONFIRMED | Keeps the Call (Assumption 6); Narrative updated |
+| F5 the L2D4 loss | RULED | A budgeted branch, never scripted (§3.6, §3.9, §3.10); the showcase stages the loss as the optional Daifuku bout |
+| F6 L2D1 Turf Board look | CONFIRMED | Unprompted, ≤ 15 s inside the Lot's time (§3.9) |
+| F7 window day | RULED | **L2D3**, at the Tofu Shop Step Claim Spray (§3.5, §3.9, §3.10 L2D3 and L2D4, §3.11, §5). The in-view reveal runs on the clock with control kept, so L2D3 stays **24.9 typical / 28.9 heavy** (a paused 0.25-min cut would make it 25.1, over the median; printed for comparison). L2D4 keeps its 15.2 / 21.8; slice 143.5 min, fast path 128 |
+| First-hour clock | ALIGNED | key-screens §7.3 follows §3.9 (Backlog line closed) |

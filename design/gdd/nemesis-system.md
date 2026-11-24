@@ -1,7 +1,7 @@
 # Nemesis System ("Rivals") — Vertical Slice
 
-*Owner: systems-designer (nemesis/AI) · Round 2 rewrite · 2026-11-23 · Iteration 3 (final fix pass) 2026-11-24 · **Owner feedback pass 2026-11-24** · Status: slice spec*
-*Canon order: owner comments C1–C5 (`design/reviews/user-comments-2026-11-24.md`) → **`design/reviews/owner-feedback-rulings.md` (OR-01…OR-21, binding; owner answers in its §5)** → `design/creative-brief.md` v1.5 → round-1 DR-xx and round-2 R1–R5 → final-assessment R-A…R-K. Where an older ruling cited below disagrees with an OR, the OR wins. The first draft is archived at `design/backlog/first-drafts/nemesis-system.md` and is the content backlog.*
+*Owner: systems-designer (nemesis/AI) · Round 2 rewrite · 2026-11-23 · Iteration 3 (final fix pass) 2026-11-24 · **Owner feedback pass 2026-11-24** · **Consistency pass (creative director) 2026-11-24** · Status: slice spec*
+*Canon order: owner comments C1–C5 (`design/reviews/user-comments-2026-11-24.md`) → **`design/reviews/owner-feedback-rulings.md` (OR-01…OR-21, binding; owner answers in its §5)**, as settled by `design/reviews/owner-feedback/consistency-pass.md` (rulings F1–F12) → `design/creative-brief.md` v1.6 → round-1 DR-xx and round-2 R1–R5 → final-assessment R-A…R-K. Where an older ruling cited below disagrees with an OR, the OR wins. The first draft is archived at `design/backlog/first-drafts/nemesis-system.md` and is the content backlog.*
 *In-project and UI name: **Rivals**. "Nemesis" is an internal design term only (G12, §6.4).*
 
 > **Patent rule (brief v1.5; legal note v2 §5):** nothing Mikan does to one cat, and nothing that cat becomes because of it, may change a *different* cat. A change may land on the cat Mikan dealt with, on territory and objects, on the calendar, or on a newly generated cat. Cats speak only from their own history. Every rule below is written to that rule, and §8 AC 27–29 test it. Not legal advice: counsel review still blocks scope lock and any public showing (§6.4).
@@ -10,7 +10,7 @@
 
 ## 1. Overview
 
-Rivals is the system that makes every named cat in Hidamari Lane remember Mikan. It covers the **≤ 12 tracked cats** of the slice: the 8 Wall Sitters (Daifuku the Boss, 2 Captains and 5 Toughs, one of whom is **Togemaru, the First Thorn**), 2 Roamers, and the **newcomers and challengers** the calendar brings to town. Each cat has a **personality** (the six-value model the Crew uses), two hidden feelings about Mikan (**Grudge** and **Regard**, 0–100, never shown as numbers), a 10-entry **Memory** of what Mikan did, and a few fixed **relationships** with other cats (Gang, Rival, Kin, and, for a recruit, its Old Boss). Cats wear their history where a third-person camera can see it: **silhouette Scars**, a **Title**, a disposition pose and one sharp line of cat speech drawn only from their own history. Every cat in town sits on the **Rivals board**, a painted roster by district that shows a flat silhouette until the cat is **discovered** (met, or sniffed for one second in Whisker Sense); hovering one discovered cat tags the other discovered cats it relates to. After every won fight against a Rival the player gives one of **three Verdicts**: **Recruit** (for a Bribe), **Chase Off** (gone for good) or **Nose-Touch** (a 10-day truce, after which the cat may fight beside Mikan against its own Rival). Every Verdict clears the post, and Mikan Claim Sprays it. The district Boss carries **anger**, raised only by Mikan's marking of his gang's posts and spent in the next real fight with him. Rivals has **no ladder**: roles are fixed at generation, nobody is promoted, and empty places wait for **newcomers**. Off-screen, the town changes through cheap **town events** and a fixed **challenger calendar**, never through what Mikan did to some other cat. **Nemesis** is one slot in Lives 1–2, held by the fixed arc lead Togemaru and declared in the Sniff as a **Sworn Enemy** or **Sworn Rival**; if the player Recruits or Chases him off, his arc closes with a card and the slot stays his as a record. The slice must prove one thing: *within two hours, a player can name a Rival and say what they did to it.*
+Rivals is the system that makes every named cat in Hidamari Lane remember Mikan. It covers the **≤ 12 tracked cats** of the slice: the 8 Wall Sitters (Daifuku the Boss, 2 Captains and 5 Toughs, one of whom is **Togemaru, the First Thorn**), 2 Roamers, and the **newcomers and challengers** the calendar brings to town. Each cat has a **personality** (the six-value model the Crew uses), two hidden feelings about Mikan (**Grudge** and **Regard**, 0–100, never shown as numbers), a 10-entry **Memory** of what Mikan did, and a few fixed **relationships** with other cats (Gang, Rival, Kin, and, for a recruit, its Old Boss). Cats wear their history where a third-person camera can see it: **silhouette Scars**, a **Title**, a disposition pose and one sharp line of cat speech drawn only from their own history. Every cat in town sits on the **Rivals board**, a painted roster by district that shows a flat silhouette until the cat is **discovered** (met, or sniffed for one second in Whisker Sense); hovering one discovered cat tags the other discovered cats it relates to. After every won fight against a Rival the player gives one of **three Verdicts**: **Recruit** (for a Bribe), **Chase Off** (gone for good) or **Nose-Touch** (offered after a quiet take: a 10-day truce, after which the cat may fight beside Mikan against its own Rival). Every Verdict clears the post, and Mikan Claim Sprays it. The district Boss carries **anger**, raised only by Mikan's marking of his gang's posts and spent in the next real fight with him. Rivals has **no ladder**: roles are fixed at generation, nobody is promoted, and empty places wait for **newcomers**. Off-screen, the town changes through cheap **town events** and a fixed **challenger calendar**, never through what Mikan did to some other cat. **Nemesis** is one slot in Lives 1–2, held by the fixed arc lead Togemaru and declared in the Sniff as a **Sworn Enemy** or **Sworn Rival**; if the player Recruits or Chases him off, his arc closes with a card and the slot stays his as a record. **Every Verdict on him is a complete ending of his arc** (F11). The slice must prove one thing: *within two hours, a player can name a Rival and say what they did to it.*
 
 ## 2. Player Fantasy
 
@@ -133,7 +133,7 @@ Grudge and Regard move only through the event table below, combined per encounte
 ### 3.6 The Nemesis slot (fixed lead); dispositions are poses
 
 - **One slot in Lives 1–2, held only by the fixed arc lead, Togemaru** (OR-15, amending A-6 and R-B). The Lane slot opens in **Life 3** (Backlog). Every other cat at Grudge ≥ 75 is **Bitter**.
-- **The Declaration (step 3, §3.12).** On the first night Togemaru has **≥ 3 encounters and ≥ 1 mark**, or at the **deadline** (the night after Life 2 day 3), he is **declared**, at any Grudge, unless his arc has already closed. The next morning's Sniff opens with the **Declaration card** (portrait, storm mark, Scars, Title and his best memory line; `NemesisDeclared(cat_id, face)`). The face is re-read each night from his own meters: **Sworn Enemy** (Grudge ≥ Regard) or **Sworn Rival** (Regard > Grudge: a friendly challenger that still wants the rematch). A Nose-Touched Togemaru is normally declared a Sworn Rival.
+- **The Declaration (step 3, §3.12).** On the first night Togemaru has **≥ 3 encounters and ≥ 1 mark** (a truce greeting counts as an encounter, §3.7), or at the **deadline** (the night after Life 2 day 3), he is **declared**, at any Grudge, unless his arc has already closed. The next morning's Sniff opens with the **Declaration card** (portrait, storm mark, Scars, Title and his best memory line; `NemesisDeclared(cat_id, face)`). The face is re-read each night from his own meters: **Sworn Enemy** (Grudge ≥ Regard) or **Sworn Rival** (Regard > Grudge: a friendly challenger that still wants the rematch). A Nose-Touched Togemaru is normally declared a **Sworn Rival on night 3** (the L2D2 Sniff), after his first greeting (sim: 100% of Nose-Touch runs, none at the deadline).
 - **All three Verdicts stay open on him**, declared or not (Recruit is no longer greyed; his Crew hook is "your first enemy, now your loudest friend").
 - **His arc closes** when he is **Chased Off** (closing Sniff card "Run out of town"; a legend card with the storm mark) or **Recruited** (closing card "Wears the bell now"; the storm mark becomes a bell on his Crew card). Closing can happen before or after the Declaration. **The slot stays his as a record. No other cat is ever promoted, re-named or declared into the role in Lives 1–2.** *(Deleted: the old §3.7 (b) re-naming and "a new lead the same night": that made cat Y's role, placement and Grudge decay change because of a Verdict on cat X, the '908 B3 / '303 C4 shape.)*
 - **Disposition on the Rivals board** (one pose per discovered cat; first match wins; numbers never shown, NX-14):
@@ -155,8 +155,12 @@ A challenger shows a **staking stamp**; a Boss shows **anger puffs** (§3.19); a
 - **Memory:** 10 entries, **≤ 6 pinned** (NS-4). An entry is `{day, kind, patch, opener, finisher_move, damage_type, fear, verdict, by_pile_on, count, other_id?}`. Kinds in the slice: `FIRST_MEETING, ROUTED, FLED, PATCH_LOST, VERDICT, AMBUSHED_BY_PLAYER, AMBUSHED_PLAYER, LICK_IN, WON, PLAYER_FLED, SCAR, TITLE, SLIPPED_AWAY, RAID, JOINED_IN, OLD_GANG`. `other_id` is set only on `OLD_GANG` (the recruit's own old boss). A repeat of the same kind and patch on consecutive encounters collapses into one entry with `count` +1. Every entry records an event the cat itself took part in.
 - **Pinned:** `FIRST_MEETING`, `OLD_GANG`, the latest encounter, and the source entry of each displayed Scar and the displayed Title. ≤ 2 Scars come from Mikan in the slice and there is 1 Title, so pins ≤ 6 (the invariant). Eviction removes the oldest unpinned entry.
 - **The arc lead is Togemaru, the First Thorn, for all of Lives 1–2** (OR-15). His Grudge **does not decay while his arc is open** (DR-39).
-- **Arc achieved** (`NemesisArcAchieved`, DR-39 as amended by OR-15.4) = Togemaru has **≥ 3 encounters (join-ins count) + ≥ 1 mark** (a player-sourced Scar or a Title involving Mikan) + a resolved state: the Nemesis slot, `Friend`, `Truce`, `Crew` or `Gone`. A player who Chases him off or Recruits him on Life 1 day 2 closes the arc at 2 encounters, "unachieved": the accepted price of a final Chase Off (owner answer, rulings §5).
-- **Presence guarantee (OR-15.5):** from Life 2 day 1, Togemaru turns up on Mikan's route **at least once a day until his arc closes**. Placements: Keeper of the Patch she is heading for, waiting at a Scent Post, a Rival Ambush (§3.10), the raid leader (counts only if he leads it), or, under a truce or as a Friend, a **non-hostile greeting** (`TRUCE_GREET`) or a **join-in**. Placement is a spawn rule, never a scripted outcome (DR-41). For players whose arc closed early, Life 2's antagonist pressure comes from **Daifuku** (his anger, then his window) and the **challenger** (sim: 63–100% of Life 2 days have one of them on the street, §4 sim note).
+- **Arc achieved** (`NemesisArcAchieved`; DR-39 as amended by OR-15.4 and the consistency pass, F11) = Togemaru has **cited his memory** (≥ 2 encounters; his uninterruptible day-1 flee guarantees the day-2 line), carries **≥ 1 mark** (his first Rout by the Posse always leaves a Scar, §3.8; a wipe gives him his Title instead), and has reached **an ending: any Verdict on him, or the Declaration**. Each Verdict is a whole ending, not a cut-short arc:
+  - **Chase Off:** he is gone, with his farewell line (`VERDICT_CHASE`: "Fine! I've got other walls. Better walls!"), the "Run out of town" closing card and his legend card.
+  - **Recruit:** he joins ("Wears the bell now"; the storm mark becomes a bell), and his story goes on in the Posse: he stares his old boss down in the Daifuku fight.
+  - **Nose-Touch:** a truce that his daily greeting and any join-in carry; normally declared a Sworn Rival; the rematch comes when the truce ends.
+  Sim: arc achieved **100% for every policy** (the OR-pass definition, ≥ 3 encounters, gave 0 / 0 / 5 / 15 / 41%). The routes differ in depth, not in completeness: mean encounters with him by slice end are chase 2.0 · recruit 2.0 · mixed 3.8 · pacifist 7.0 · lose40 3.0 (§4). *(Supersedes A-10 and the "2 encounters, unachieved" price; the owner's final Chase Off is kept.)*
+- **Presence guarantee (OR-15.5):** from Life 2 day 1, Togemaru turns up on Mikan's route **at least once a day until his arc closes**. Placements: Keeper of the Patch she is heading for, waiting at a Scent Post, a Rival Ambush (§3.10), the raid leader (counts only if he leads it), or, under a truce or as a Friend, a **non-hostile greeting** (`TRUCE_GREET`) or a **join-in**. **A greeting is a Standoff-group meeting and counts as an encounter** (F11): ≤ 1 counted meeting a day, so a join-in on a day he greeted adds no second. Placement is a spawn rule, never a scripted outcome (DR-41). For players whose arc closed early, Life 2's antagonist pressure comes from **Daifuku** (his anger, then his window) and the **challenger** (sim: 63–100% of Life 2 days have one of them on the street, §4 sim note).
 
 ### 3.8 Making memory visible (NX-01, NX-02, NX-03, NX-04, NX-15; DR-40)
 
@@ -172,7 +176,7 @@ A challenger shows a **staking stamp**; a Boss shows **anger puffs** (§3.19); a
 | Yowl | Folded ear |
 | Routed after its Water Fear this fight | Damp cowlick |
 
-Scar chance is F7. Every player-sourced Scar is a silhouette Scar; a cat displays ≤ 2 from Mikan in the slice. Off-screen feud scuffles give a **head plaster for 2 days**, never a Scar, so a Scar always means "Mikan did this".
+Scar chance is F7. **Togemaru's first Rout by the Posse always leaves a Scar** (authored, like his fixed starting Grudge; F11), so every player who Routs him has marked him. Every player-sourced Scar is a silhouette Scar; a cat displays ≤ 2 from Mikan in the slice. Off-screen feud scuffles give a **head plaster for 2 days**, never a Scar, so a Scar always means "Mikan did this".
 
 5. **Lick In (DR-40.5).** A tracked Rival that Routs Mikan in an encounter the Posse wins earns its personality's Glory Title (no promotion, no levels). Its next Standoff draws `REMATCH_I_WON` with tag `lick_in`; its Verdict tell is **chin up**.
 6. **The plaster (DR-40.6, OR-02).** After a wipe, Mikan wears Haru's plaster the next day. **Only the victor** may read it: tag `mikan_plastered` requires the speaker's own `WON` entry from the wipe. "Nice plaster, Collar. Fall off a cushion?" No other cat's line cites the loss.
@@ -218,7 +222,7 @@ Slice Strengths (Nemesis chooses them, Combat values them): **Thick Fur** (resis
 |---|---|---|---|---|
 | **Recruit** (Right) | Grudge < 90 **or** Regard ≥ 50 (DR-09); slice-recruitable (§3.1); room, or "make room" (DR-34). Daifuku: Regard ≥ 50. **Togemaru may be Recruited, declared or not** | Joins the Crew with Memory, Scars, Title, Fear and personality; its Strength becomes its perk; its Memory gains `OLD_GANG(boss_id)` and `old_gang_nerves` is set (§3.18) | rout items, then halved / +10 | Costs a **Bribe** (Crew; free in Life 1, PP-07) and a slot. Starting Loyalty reads `G_pre` (NS-C2). May betray if neglected on a post from Life 2 (OR-11, §3.12) |
 | **Chase Off** (Left) | Always | **Gone for good** (OR-14): it leaves Yunagi and keeps a legend card on the Rivals board | — | **Never returns.** Its empty gang place waits for a newcomer on the town-event calendar (§3.20); nothing is inherited from it |
-| **Nose-Touch** (Up) | **Deterministic gate (F4):** pending Grudge < 50 + personality shift. Otherwise the card is halftoned: "Tail lashing. Not today." | **Steps down peacefully** into a **10-day truce** (`Truce`, a truce sprig): it leaves its post and roams its district, non-hostile | set to 0 / +25 | During the truce, and as a Friend after it, it **may join Mikan's fights against its own Rival** (F11). At truce end: Regard ≥ 75 → **Friend** for good; otherwise it becomes a **challenger** for its old Patch (§3.20) |
+| **Nose-Touch** (Up) | **Deterministic gate (F4):** pending Grudge < 50 + personality shift, **and, from Life 2, a quiet take** (F12): not after **≥ 2 Counter-Sprays on its own post** this contest, and, for a Boss, not if he came to the fight **Seething or Furious**. Otherwise the card is halftoned with the reason: "Tail lashing. Not today." (Grudge) · "Too much of your stink on its post." (loud take) · "Still steaming. Not today." (a Boss's anger) | **Steps down peacefully** into a **10-day truce** (`Truce`, a truce sprig): it leaves its post and roams its district, non-hostile | set to 0 / +25 | During the truce, and as a Friend after it, it **may join Mikan's fights against its own Rival** (F11). At truce end: Regard ≥ 75 → **Friend** for good; otherwise it becomes a **challenger** for its old Patch (§3.20) |
 
 **The compass has no Down card.** The three cards fan Left, Up and Right. **Tells** (shown before choosing; honest): the **tail** lashes when the Nose-Touch gate is closed; **eyes and lean** show the Bribe band (Crew); **Mikan turns away** previews Chase Off; **chin up** means Lick In.
 
@@ -227,13 +231,13 @@ Slice Strengths (Nemesis chooses them, Combat values them): **Thick Fur** (resis
 **Why none dominates (OR-12):**
 - **Recruit** is the only option that adds a fighter, and the only one that costs Morsels and a slot.
 - **Chase Off** is free and final: the cat is lost as a future ally, recruit or story, and a stranger eventually fills the gap.
-- **Nose-Touch** is free but **earned** (it needs clean play: the gate) and **deferred** (a possible rematch after 10 days, as a challenger).
+- **Nose-Touch** is free but **earned** (a quiet take and a low Grudge: loud Counter-Spraying, the fast way to take a post, closes it) and **deferred** (a possible rematch after 10 days, as a challenger).
 
-Sim (mixed policy, availability-weighted): chase 49% / recruit 7% / nose 43%; the Nose-Touch gate is open on 91–100% of Verdicts (§4). Playtest acceptance is AC 4.
+Sim (mixed policy, availability-weighted): chase 55% / recruit 8% / nose 37% (was 49 / 7 / 43 before F12); the gate is open on 100% of Life 1 Verdicts and **82% of Life 2 Verdicts** (Daifuku 81%), closed by a loud take on 15% of all slice Verdicts (was 91–100% open; §4). Playtest acceptance is AC 4.
 
 **Crew reactions (G10):** no *new* Crew reaction is keyed to a Verdict on another cat. The Stalwart's Humble dislike is gone with Humble; its new dislike is a Scuffed or Lost night on its own post (Crew). The Schemer's existing "dislikes Nose-Touch Verdicts" is a **'303 watch item**, held for counsel, not redesigned (§6.4).
 
-**Daifuku's Verdict** (end of the slice): any of the three, then Mikan Claim Sprays the Den post (OR-09). Chase Off: Gone. Nose-Touch: he steps down into a truce and roams the Lane's walls. Recruit needs Regard ≥ 50. **The gang is re-tasked by nobody** (G6): no gang cat is promoted or moves to the Den, and the raid fallback stays the gang's (`gang_orders`). A future new Boss is a newly generated cat (Backlog: Usurper).
+**Daifuku's Verdict** (end of the slice): any of the three, then Mikan Claim Sprays the Den post (OR-09). Chase Off: Gone. Nose-Touch (open only if he came to the fight Calm or Riled, F12; a loss spends his anger, so a rematch usually meets him Calm): he steps down into a truce and roams the Lane's walls. Recruit needs Regard ≥ 50. **The gang is re-tasked by nobody** (G6): no gang cat is promoted or moves to the Den, and the raid fallback stays the gang's (`gang_orders`). A future new Boss is a newly generated cat (Backlog: Usurper).
 
 ### 3.12 Off-screen: Night Shuffle step 3 (OR-20 canon order)
 
@@ -253,7 +257,7 @@ Step 3 runs after Crew (step 1) and Territory (step 2: decay and refresh, challe
 
 ### 3.13 Morning Sniff, discovery and the Rivals board (OR-03; NX-07, DR-43)
 
-- **Sniff:** the Tribute line, tonight's raid or challenge forecast (always, when one is coming), and **≤ 3 nemesis items**. Life 1 day 2 has exactly 1 item. **Admission:** the cat has ≥ 1 encounter with the player, **or** the item touches a player Patch or Crew cat, **or** it is a district card (Boss window, Boss anger). **Card types (v1.5):** the Declaration; an **arc-closing card** ("Run out of town" / "Wears the bell now"); **"A stranger's scent"** (challenger arrival: silhouette until discovered, the target's landmark, a tape star); the **Boss window** ("The big wall's come down."); **Boss anger** at Seething or Furious ("The big wall is seething."); **Wavering** (Crew); a town event; a truce ending. **Priority:** Declaration > arc-closing > challenger arrival > Boss window > Wavering > anger > arc lead > town event > other. Town events among strangers appear on the board only.
+- **Sniff:** the Tribute line, tonight's raid or challenge forecast (always, when one is coming), and **≤ 3 nemesis items**. Life 1 day 2 has exactly 1 item. **Admission:** the cat has ≥ 1 encounter with the player, **or** the item touches a player Patch or Crew cat, **or** it is a district card (Boss window, Boss anger). **Card types (v1.5):** the Declaration; an **arc-closing card** ("Run out of town" / "Wears the bell now"); **"A stranger's scent"** (challenger arrival: silhouette until discovered, the target's landmark, a tape star); the **Boss window** ("The big wall's come down."); **Boss anger** at Seething or Furious ("The big wall is seething."); **Wavering** (Crew); a town event; a truce ending. **Priority (one order, shared with `hud.md` §5.3; consistency pass):** Wavering (always admitted; it is the one warning that cannot be undone) > Declaration > arc-closing > challenger arrival > Boss window > anger > arc lead > town event > other. Town events among strangers appear on the board only.
 - **Discovered (OR-03).** A cat is discovered at the first of: (a) **any encounter** with it (a Standoff, a fight, a Rival Ambush, or a join-in); (b) a **Whisker Sense sniff**: holding Whisker Sense with the cat on screen within **10 m** for **1.0 s**, which plays a brief scent-outline confirmation; (c) it is **Crew** (always discovered). Discovery emits `CatDiscovered(cat_id, how)`. It is a player-knowledge flag: it changes nothing about the cat. **Life 1 day 2 prompt:** while Mikan stands at the Laundry Pole Yard gatepost, Daifuku's wall top is within range and the Whisker Sense read points at him once (Narrative/UX stage it; skippable). Sim: Daifuku discovered by the slice's end in 97–100% of runs.
 - **An undiscovered cat** shows a flat silhouette, its section, and a crown outline if it is a Boss: no name, tags, pose or traits. Forecast and challenger cards show undiscovered cats as the same silhouette.
 - **The Rivals board** (data here; screen by UX `key-screens.md` §2; replaces the Fence Line). Every cat in the game state, in sections from left to right, climbing the town:
@@ -270,10 +274,10 @@ Step 3 runs after Crew (step 1) and Territory (step 2: decay and refresh, challe
 | When | Switches on |
 |---|---|
 | Life 1 | Standoff, the three Verdicts, Togemaru, 1-item Sniff (day 2), Lick In, Gloat, discovery (Whisker Sense is taught on day 1), Boss anger accrues (shown from Life 2 day 1) |
-| Life 2, day 1 | Rivals board (static first view), Rival Ambush, 3-item Sniff, town events (from that night), join-ins, adaptation, betrayal eligibility (Crew) |
+| Life 2, day 1 | Rivals board (static first view), Rival Ambush, 3-item Sniff, town events (from that night), join-ins, adaptation, betrayal eligibility (Crew), **the quiet-take clause of the Nose-Touch gate** (F4, F12) |
 | Cat flap (Life 2, day 2) | Night Rivals; the first raid (Togemaru's, if he is hostile), forecast that morning |
 | Night h + 2 (h = the first night Mikan holds ≥ 3 Patches; normally night 5) | Challengers (announced in the Life 2 day 4 Sniff on the reference path) |
-| Influence 100 (Territory) | The Boss window: Daifuku's patrol (§3.19) |
+| Influence 100 (Territory) | The Boss window: Daifuku's patrol (§3.19). Reference path: the Tofu Shop Step Claim Spray on **L2D3** (F7 ruling) |
 | Togemaru's arc conditions, or the night after Life 2 day 3 at the latest | The Declaration, unless his arc has closed (§3.6) |
 | Life 3+ | The Lane slot; Captain-tier challengers; the rest (Backlog) |
 
@@ -350,19 +354,19 @@ personality= "braggart"|"brooder"|"schemer"|"fraidy"|"stalwart"|"goofball"|"any"
 | When | What the player sees | Rules at work | After |
 |---|---|---|---|
 | L1 D1 ≈ 0:20 | After the Low Wall Corner claim, Togemaru struts down from the laundry poles. "Nice bell, Collar. Does it ring when you run?" At 25% Nerve he bolts; the flee **cannot be interrupted** on day 1 | OR-14.5. F1: fled 8 × 1.2 = 9.6 → 10. Discovered (encounter). Low Wall Corner is Stray-held, so no anger | G 25, R 10. Memory FIRST_MEETING, FLED. Enc 1 |
-| L1 D2 ≈ 0:28–0:33 | Sniff, 1 item: his fresh mark over the gatepost. He sits on it: "I ran yesterday. Not off my own post, Collar." (unskippable 1 s). **First memory line.** Mikan Over-marks both Rub Marks and Counter-Sprays the gatepost; at Scent 30 he comes down; a two-cat Pile-On Routs him. The Whisker Sense read points uphill: Mikan sniffs **Daifuku** on his wall | Daifuku's anger +5 +5 +15 = **25 (Calm)** (F10). F1 pending: (Rout 6 + Pile-On 3 + Keeper's post marked 6) × 1.2 = 18 → **G_p 43**; R_p 10 + round(0.7 × 8) = 16. **F4 gate 45: open** (tail still). F7: 0.50, rolled yes; Claw → **ear notch**. Daifuku discovered (sniff) | Enc 2, 1 Scar. The Verdict |
+| L1 D2 ≈ 0:28–0:33 | Sniff, 1 item: his fresh mark over the gatepost. He sits on it: "I ran yesterday. Not off my own post, Collar." (unskippable 1 s). **First memory line.** Mikan Over-marks both Rub Marks and Counter-Sprays the gatepost; at Scent 30 he comes down; a two-cat Pile-On Routs him. The Whisker Sense read points uphill: Mikan sniffs **Daifuku** on his wall | Daifuku's anger +5 +5 +15 = **25 (Calm)** (F10). F1 pending: (Rout 6 + Pile-On 3 + Keeper's post marked 6) × 1.2 = 18 → **G_p 43**; R_p 10 + round(0.7 × 8) = 16. **F4 gate 45: open** (tail still; the quiet-take clause starts in Life 2). His first Rout always scars (§3.8); Claw → **ear notch**. Daifuku discovered (sniff) | Enc 2, 1 Scar. The Verdict |
 | L1 D2, Verdict **A: Nose-Touch** | He touches noses, hops off the gatepost and saunters up the lane with a truce sprig. Claim Spray: the gatepost is Mikan's at 70. "Keep the post. I'll be back for it. Ten days." | G ← 0; R 10 + round(0.7 × (8 + 25)) = **33**. `Truce` until day 12. Nobody takes his post or role (G6) | G 0, R 33. Truce |
-| L1 D2, Verdict **B: Recruit** (free in Life 1) | He shakes himself off and follows Mikan to the Lot | G ← round(43 / 2) = 22; R 10 + round(0.7 × 18) = 23. Memory gains `OLD_GANG(daifuku)`; Braggart **resists**, so `old_gang_nerves` = false. Arc closes | Crew. Closing card "Wears the bell now" in the L2D1 Sniff |
-| L1 D2, Verdict **C: Chase Off** | Mikan turns away; he slinks off over the far wall. "Fine! I've got other walls. Better walls!" | **Gone** (OR-14). Arc closes at 2 encounters, unachieved | Legend card; closing card "Run out of town" |
-| L2 D1 ≈ 1:05 | The Rivals board opens: the Lane row with Togemaru (A: truce sprig; B: on the Bell fence; C: legend card), Daifuku on the gatepost with **no puffs** (anger decayed to 10), and two silhouettes. Hovering Togemaru tags Goma **Rival** and Daifuku **Boss**. **A:** he greets Mikan at the gatepost (`TRUCE_GREET`). The Persimmon Alley contest: if **Goma** is in it, Togemaru yowls in from the laundry poles and fights beside the Posse | **F11:** p = 0.35 + 0.15 (Persimmon Alley neighbours his old Patch) = **0.50**, seeded. A join is an encounter (enc 3) and +5 Regard on the win (R 38). Goma's AI, targeting and lines are exactly as against any Posse (G7). Anger: the contest +25 → 35, **Riled** | A, if joined: enc 3 |
-| Night 3 | — | **A, joined:** 3 encounters + the notch → **the Declaration**, **Sworn Rival** (R 38 > G 0). **A, not joined:** declared at the deadline (night 5), also Sworn Rival. **B/C:** no Declaration; the slot stays his record. **C:** the town event may draw **newcomer**, filling his empty gang place with a fresh Tough (nothing inherited) | — |
+| L1 D2, Verdict **B: Recruit** (free in Life 1) | He shakes himself off and follows Mikan to the Lot | G ← round(43 / 2) = 22; R 10 + round(0.7 × 18) = 23. Memory gains `OLD_GANG(daifuku)`; Braggart **resists**, so `old_gang_nerves` = false. Arc closes, **achieved** (an ending, F11) | Crew. Closing card "Wears the bell now" in the L2D1 Sniff |
+| L1 D2, Verdict **C: Chase Off** | Mikan turns away; he slinks off over the far wall. "Fine! I've got other walls. Better walls!" | **Gone** (OR-14). Arc closes, **achieved**: 2 encounters, the notch, and his farewell (F11) | Legend card; closing card "Run out of town" |
+| L2 D1 ≈ 1:05 | The Rivals board opens: the Lane row with Togemaru (A: truce sprig; B: on the Bell fence; C: legend card), Daifuku on the gatepost with **no puffs** (anger decayed to 10), and two silhouettes. Hovering Togemaru tags Goma **Rival** and Daifuku **Boss**. **A:** he greets Mikan at the gatepost (`TRUCE_GREET`). The Persimmon Alley contest: if **Goma** is in it, Togemaru yowls in from the laundry poles and fights beside the Posse | The greeting is his encounter 3 (F11 ruling). **F11 (join):** p = 0.35 + 0.15 (Persimmon Alley neighbours his old Patch) = **0.50**, seeded; a join the same day adds no second count but gives +5 Regard on the win (R 38). Goma's AI, targeting and lines are exactly as against any Posse (G7). Anger: the contest +25 → 35, **Riled** | A: enc 3 |
+| Night 3 | — | **A:** 3 encounters (the greeting) + the notch → **the Declaration**, **Sworn Rival** (R 33–38 > G 0), in the L2D2 Sniff. **B/C:** no Declaration; the slot stays his record. **C:** the town event may draw **newcomer**, filling his empty gang place with a fresh Tough (nothing inherited) | — |
 | L2 D2 | Sniff: the Declaration card (A). Tonight's raid forecast: Togemaru is not hostile (A/B/C), so the requester is the highest-F3 Grudge ≥ 40 cat, else `gang_orders` | §3.12 3g | — |
-| L2 D3 | Tofu Shop Step contest with Kagi (anger +25) | Kagi's gate is 50: open after a clean fight | — |
+| L2 D3 | Tofu Shop Step contest with Kagi (anger +25). The Claim Spray fills the bar: **Daifuku's yowl rolls down and he climbs to his Day stop**, Tofu Shop's back wall (the window, OR-09; reference day per the F7 ruling); fighting him today is optional | Kagi's gate is 50 on Grudge, **and** the take must be quiet (F12): one Counter-Spray on his awning post keeps the card open; a second closes it whatever his Grudge | — |
 | Night 5 → L2 D4 | Sniff: "A stranger's scent": a silhouette staking a held Patch. It is a fresh challenger, with a Rival tag (p 0.5) on a uniformly drawn town cat | F12: h = 3 → first arrival night 5 | — |
-| L2 D4 | Rescue Sprays take influence to 100: Daifuku yowls and climbs down to his Laundry Pole Yard stop. Fight: **Riled → Fired Up 20 s**. **B:** Togemaru in the Posse sees his old boss: "Not your cat anymore." (no status). If Kagi was recruited, Kagi flinches, **Cowed 20 s**, until the player Tag-Ins to him ("Right. Right. I'm with the bell.") | §3.18, §3.19. Anger spent at `EncounterEnded`. Daifuku's own parameters never read who is in the Posse | Daifuku Verdict → Claim Spray the Den → `DistrictClaimed` (L2D4–L2D5) |
+| L2 D4 | The Sniff carries "A stranger's scent" and "Daifuku has come down off the walls" (today's three stops). Mikan meets him at his Laundry Pole Yard stop. Fight: **Riled → Fired Up 20 s**; Riled is below Seething, so his Nose-Touch stays open (F12). **B:** Togemaru in the Posse sees his old boss: "Not your cat anymore." (no status). If Kagi was recruited, Kagi flinches, **Cowed 20 s**, until the player Tag-Ins to him ("Right. Right. I'm with the bell.") | §3.18, §3.19. Anger spent at `EncounterEnded`. Daifuku's own parameters never read who is in the Posse | Daifuku Verdict → Claim Spray the Den → `DistrictClaimed` (L2D4–L2D5) |
 | After the slice (A) | Day 12: the truce ends with Regard 38 < 75, so Togemaru waits for the next free challenger night and stakes his old gatepost: "Back for my post, Collar." | §3.20, origin `truce_end`. Driven by his own timer and Regard | The rematch |
 
-**What the sim says about this story (§4):** the Life 1 memory line plays for 100% of players. Under a Nose-Touch-first policy Togemaru is declared (Sworn Rival) in 100% of runs, 86% of them at the deadline, and 34% of runs see at least one join-in inside the slice. Chase-first and Recruit-first players close his arc on Life 1 day 2 in 100% of runs, as the owner accepted.
+**What the sim says about this story (§4):** the Life 1 memory line plays for 100% of players. Under a Nose-Touch-first policy Togemaru is declared (Sworn Rival) in 100% of runs, **all on night 3** (the greeting counts; before the consistency pass 86% waited for the deadline), meets Mikan 7.0 times on average, and 34% of runs see at least one join-in inside the slice. Chase-first and Recruit-first players close his arc on Life 1 day 2 in 100% of runs, as the owner accepted, and that close is an achieved ending (F11).
 
 ---
 ### 3.17 Relationships and what each one does (OR-04, OR-05)
@@ -426,6 +430,7 @@ Mikan's own relationship with a cat (Grudge, Regard, truce, Nemesis) is **not** 
 - On a **town-event night** (§3.12 3b) whose drawn kind is `newcomer`, a **freshly generated** cat arrives if the district has an **empty gang place** (fewer than 7 non-Boss Wall Sitters on the street) or a **keeperless Patch** (one that lapsed to 0, or was cleared by a Verdict and not Claim Sprayed), and tracked < 12.
 - It joins the gang **as a Tough** (never in a departed Captain's or Boss's role), with traits, personality, level and Memory **drawn fresh**. Nothing is inherited from, scaled by or chosen because of the cat that left, or Mikan's history with it. A keeperless Patch gets it as **Keeper at rival Scent 60** (Territory). **An existing cat is never moved up or in** (G3, G6). `origin = newcomer`; it sits at the Outsiders gate on the Rivals board.
 - *Deleted (OR-21.5):* refills by Roamers (NS-18 and old §3.12 3d), seats.
+- **The Usurper: a new Boss (OR-14.2, C4's "new boss may appear, mainly when you lose influence"; full game, consistency pass).** On a town-event night in a district that has **no Boss on the street** (its Boss is Gone, Crew, in truce or a Friend) and where **Mikan's influence is below 25** (less than one Strong post: the district has slipped away), the event is a **Usurper**: a **freshly generated** cat of Boss role (traits, personality, level and Memory drawn fresh; nothing from the old Boss; `origin = newcomer`). It **stakes the Den as a challenger** (§3.20 table, motive `challenge`, its target the Den whatever the influence); Lost, it becomes the Den's Keeper and the district's Boss, and the window rules (Territory §3.5) apply to it from scratch; Repelled twice, it leaves. It reads only territory state, the calendar and the RNG, and no existing cat moves up (G3, G6). **Unreachable in the slice**, which ends at the Lane claim; built and simmed with Life 3 (Backlog).
 
 **Challengers** ("a raid leader with a face by day"; formula F12).
 
@@ -487,17 +492,23 @@ Rounding is to the nearest integer, .5 up, at the end of each formula. Every `rn
 
 Every input is the scored cat's own record. It is only compared, never displayed. *No longer used for lead choice:* the lead is fixed (OR-15). **Example:** a Tough after 2 encounters, 1 Scar, G 55, seen today: 24 + 10 + 16.5 = 50.5.
 
-### F4. Nose-Touch gate (deterministic; OR-13.1)
+### F4. Nose-Touch gate (deterministic; OR-13.1, F12)
 
-`open = G_pending < 50 + shift(personality)`
+`open = G_pending < 50 + shift(personality)  ∧  ¬loud`
+`loud = life ≥ 2 ∧ ( (keeper ∧ n_counter_own ≥ 2) ∨ (boss ∧ anger_stage_at_standoff ≥ Seething) )`
 
 | Symbol | Type | Range | Description |
 |---|---|---|---|
 | `G_pending` | int | 0–100 | The cat's Grudge after this encounter's rout items (F1) |
 | `shift` | int | −5 … +15 | Stalwart +15 · Goofball +10 · Fraidy +5 · Schemer 0 · Brooder −5 · Braggart −5 |
-| `open` | bool | — | Card offered; otherwise halftoned, "Tail lashing. Not today." |
+| `n_counter_own` | int | 0+ | Counter-Sprays Mikan put on **this cat's own post** in this contest (from `MarkApplied`, kind `counter_spray`) |
+| `anger_stage_at_standoff` | stage | Calm–Furious | A Boss's own anger stage at the Standoff, before the fight spends it (F10) |
+| `open` | bool | — | Card offered; otherwise halftoned with its reason: "Tail lashing. Not today." (Grudge) · "Too much of your stink on its post." (Keeper) · "Still steaming. Not today." (Boss) |
 
-**Range:** gate 45–65. No roll, no snubs; reloading changes nothing. *Deleted: F4 as a probability, snubs, `nose_accept` / `nose_snub` (OR-21.2).* **Worked check:** Togemaru on L1 D2 after a clean Pile-On: 43 < 45 → **open**. With an Ambush opener as well: 25 + round(1.2 × 18) = 47 ≥ 45 → closed. A Stalwart Tough at its first Rout (G 15 + round(0.8 × 15) = 27 < 65) → open.
+**Range:** Grudge gate 45–65. No roll, no snubs; reloading changes nothing. Every input is the cat's own record, its own post's marking acts or its own anger (G2, G8: no other cat is read). *Deleted: F4 as a probability, snubs, `nose_accept` / `nose_snub` (OR-21.2).*
+**Why the quiet-take clause (consistency pass, F12):** the Grudge gate alone was open on 91–100% of slice Verdicts, so Nose-Touch was free. The clause makes it something the player earns or forfeits during the take: the quiet take (two unseen Over-marks, one Counter-Spray) costs more sneaking and keeps the card; the loud take (two Counter-Sprays) is faster and closes it. For a Boss the same choice is already visible as his steam puffs. It starts in Life 2, so the first Verdict (Togemaru, L1D2) keeps all three cards.
+**Worked checks:** Togemaru on L1D2 after a clean Pile-On: 43 < 45, Life 1 → **open**. With an Ambush opener as well: 25 + round(1.2 × 18) = 47 ≥ 45 → closed (Grudge). Kagi on L2D3 after the quiet take (G 15 + round(1.0 × 15) = 30 < 50, one Counter-Spray) → open; after two Counter-Sprays → **closed** (loud). Daifuku met Riled → open on his Grudge (gate 45); met Seething → **closed**; after a lost first attempt his anger is spent, so the rematch meets him Calm → open on his Grudge. A Stalwart Tough at its first Rout (G 15 + round(0.8 × 15) = 27 < 65), quiet take → open.
+**Sim (§4):** open on 100% of Life 1 Verdicts, **82% of Life 2 Verdicts** and 81% of Daifuku Verdicts (before: 100 / 100 / 100%; lose40 71% of Life 2).
 
 ### F5. (Deleted: comeback delay)
 
@@ -517,7 +528,7 @@ The next event comes on night `n + 2 + b`, `b ∈ {0, 1}` seeded 50/50, from the
 
 ### F7. Scar chance (on a Rout by the Posse)
 
-`p_scar = min(1, 0.35 + 0.15·by_pile_on + 0.50·[routs_by_player ≥ 2])`. A cat on its 2nd+ Rout with no Mikan Scar is **always** scarred. No Scar if it already shows 2 from Mikan.
+`p_scar = min(1, 0.35 + 0.15·by_pile_on + 0.50·[routs_by_player ≥ 2])`. A cat on its 2nd+ Rout with no Mikan Scar is **always** scarred, and **Togemaru's first Rout always scars** (`p_scar` = 1, authored; F11). No Scar if it already shows 2 from Mikan.
 
 | Symbol | Type | Range | Description |
 |---|---|---|---|
@@ -525,7 +536,7 @@ The next event comes on night `n + 2 + b`, `b ∈ {0, 1}` seeded 50/50, from the
 | `routs_by_player` | int | 1+ | Including this Rout |
 | `p_scar` | float | 0.35–1.0 | |
 
-**Example:** Togemaru's first Rout, by Pile-On: 0.50. His second: 1.0.
+**Example:** a Tough's first Rout, by Pile-On: 0.50; its second: 1.0. Togemaru's first: 1.0 (authored).
 
 ### F8. Bark score
 
@@ -579,7 +590,7 @@ On a marking act: `A ← min(100, A + 5·n_over + 15·n_counter)`. Each night: `
 
 ### F12. Challenger calendar (F-challenger; OR-16)
 
-`first = h + 2`, `next_k = first + 4k` (k = 1, 2, …), where `h` is the first night at whose step 2 Mikan holds ≥ 3 Patches in the district. On a due night: if no challenger is active in the district, a waiting truce-end cat arrives, else a fresh one (if tracked < 12 and an admissible target exists); otherwise the night is skipped.
+`first = h + 2`, `next_k = first + 4k` (k = 1, 2, …), where `h` is the first night at whose step 2 Mikan holds ≥ 3 Patches in the district. **Night numbering (one count for every doc; consistency pass, F3):** night *n* is the Night Shuffle that ends day *n* (day 1 = L1D1, day 2 = L1D2, day 3 = L2D1, day 5 = L2D3), and a cat that arrives on night *n* is announced in day *n* + 1's Sniff. On a due night: if no challenger is active in the district, a waiting truce-end cat arrives, else a fresh one (if tracked < 12 and an admissible target exists); otherwise the night is skipped.
 
 | Symbol | Type | Range | Description |
 |---|---|---|---|
@@ -590,29 +601,29 @@ On a marking act: `A ← min(100, A + 5·n_over + 15·n_counter)`. Each night: `
 
 ### Simulation results (owner-feedback pass, 2026-11-24)
 
-`design/reviews/owner-feedback/sim/nemesis_slice_sim.py` (output `nemesis_slice_sim.out.txt`; before: `nemesis_slice_sim.before.out.txt`, the round-3 `--fix3` model). 500 seeds × 5 policies × 7 days (the slice) and 300 seeds × 30 days; marking style cycles quiet / typical / loud by seed. Policies: **chase**, **recruit** (Recruit when allowed, else Nose-Touch, else Chase), **mixed** (random among available), **pacifist** (Nose-Touch when open), **lose40** (mixed, and 40% of days from day 2 end in a wipe). *Humble* is gone, so the round-3 humble policy is replaced by recruit. Encounter schedule and territory proxies as in the script's header; Territory's own sim owns Scent and raid outcomes, and Crew's owns betrayal.
+`design/reviews/owner-feedback/sim/nemesis_slice_sim.py` (output `nemesis_slice_sim.out.txt`, which includes the consistency pass's F11/F12 rulings; `--or-pass` reproduces the revisers' run, kept as `nemesis_slice_sim.or-pass.out.txt`; before the owner pass: `nemesis_slice_sim.before.out.txt`, the round-3 `--fix3` model). 500 seeds × 5 policies × 7 days (the slice) and 300 seeds × 30 days; marking style cycles quiet / typical / loud by seed. Policies: **chase**, **recruit** (Recruit when allowed, else Nose-Touch, else Chase), **mixed** (random among available), **pacifist** (Nose-Touch when open), **lose40** (mixed, and 40% of days from day 2 end in a wipe). *Humble* is gone, so the round-3 humble policy is replaced by recruit. Encounter schedule and territory proxies as in the script's header; Territory's own sim owns Scent and raid outcomes, and Crew's owns betrayal.
 
-| Measure (slice, 7 days) | Before (round 3, old rules) | **After (OR rules)** | Note |
+| Measure (slice, 7 days) | Before (round 3, old rules) | **After (OR rules + consistency pass F11/F12)** | Note |
 |---|---|---|---|
 | Togemaru's memory line in Life 1 | 100% every policy | **100% every policy** | His day-1 flee cannot be interrupted, so day 2 always cites it |
 | One Nemesis record (Togemaru declared, or his arc closed) | 100% declared | **100%** every policy; **never another cat** | Declared: chase 0% · recruit 0% · mixed 37% · pacifist 100% · lose40 29%. The rest closed early (Gone / Crew) on L1D2: the accepted price |
-| Declaration night (when declared) | median 3 (lose40: 5) | **median 5** (the deadline in 78–86% of declarations) | A Nose-Touched lead reaches his 3rd encounter only through a join-in |
+| Declaration night (when declared) | median 3 (lose40: 5) | **median 3** (the L2D2 Sniff); 0% at the deadline (lose40: median 4, 19%) | The truce greeting counts as an encounter (F11). OR pass alone: median 5, 78–86% at the deadline |
 | Sworn Rival face (of declared) | pacifist 99% | pacifist **100%**, mixed 100%, lose40 73% | |
-| Arc achieved (§3.7) | 100 / 100 / 89 / 100 / 80% | **0 / 0 / 5 / 15 / 41%** (chase / recruit / mixed / pacifist / lose40) | **The big change.** Chase/Recruit on L1D2 close at 2 encounters by design; a truce lead fights again only by joining in. 30 days: 0 / 0 / 36 / 100 / 55%. See A-10 |
-| Verdict shares, mixed (availability-weighted) | chase 47 · humble 9 · recruit 5 · nose 39 | **chase 49 · recruit 7 · nose 43** | Recruit is rare because only 3 slice cats are recruitable |
-| Nose-Touch gate open | (roll: 43–57% accepted) | **100%** of slice Verdicts (lose40: 91%) | Slice Grudge stays low; the gate starts to bite only after wipes or Ambush-heavy play (Backlog) |
-| Join-ins per slice (mean; runs with ≥ 1) | — | chase 0; recruit 0.09 (9%); mixed 0.18 (17%); **pacifist 0.38 (34%)**; lose40 0.06 (5%) | 39–43% of join opportunities succeed. 30 days: pacifist 1.63 per run (84% of runs) |
-| Lane cats discovered by slice end (mean / present) | — | **7.7–9.7 of 9.5–11.7 (81–91%)** | Sniff success 0.25 / 0.5 / 0.75 → 8.1 / 9.1 / 9.7 of 10.8 (mixed); 1.1–2.7 silhouettes left |
+| Arc achieved (§3.7) | 100 / 100 / 89 / 100 / 80% | **100% every policy** (F11: every Verdict on him, or the Declaration, is an ending) | OR pass (≥ 3 encounters): 0 / 0 / 5 / 15 / 41%. Depth by route, mean encounters with Togemaru at slice end: chase 2.0 · recruit 2.0 · mixed 3.8 · pacifist 7.0 · lose40 3.0 (30 days: 2.0 / 2.0 / 7.8 / 30 / 4.3) |
+| Verdict shares, mixed (availability-weighted) | chase 47 · humble 9 · recruit 5 · nose 39 | **chase 55 · recruit 8 · nose 37** | OR pass: 49 · 7 · 43. Recruit is rare because only 3 slice cats are recruitable |
+| Nose-Touch gate open | (roll: 43–57% accepted) | **Life 1 100% · Life 2 82% · Daifuku 81%** (lose40 Life 2: 71%); closed by a loud take on 15% of all slice Verdicts | F12. OR pass: 100% (lose40 91%). The loud share follows the marking style (the sim cycles quiet / typical / loud); a player who wants Nose-Touch can keep it open by taking quietly |
+| Join-ins per slice (mean; runs with ≥ 1) | — | chase 0; recruit 0.06 (6%); mixed 0.17 (16%); **pacifist 0.37 (34%)**; lose40 0.05 (5%) | 34–42% of join opportunities succeed. 30 days: pacifist 1.61 per run (85% of runs) |
+| Lane cats discovered by slice end (mean / present) | — | **7.8–9.7 of 9.6–11.7 (81–92%)** | Sniff success 0.25 / 0.5 / 0.75 → 8.0 / 9.1 / 9.7 of 10.9 (mixed); 1.2–2.8 silhouettes left |
 | Bosses discovered | — | **Daifuku: 97–100%** (the L1D2 prompt); the 4 uphill crowns stay silhouettes by design | |
 | Boss anger: peak / at the first Daifuku fight | — | **quiet:** peak Riled 94%; Calm at the fight 100% · **typical:** peak Seething 51%, Furious 13%; at the fight Riled 53%, Seething 34% · **loud:** Furious 84%; Seething at the fight 92% | Anger tracks the sneak-versus-loud choice; the decay means nobody is Furious *at* the fight unless he marks loudly the same day |
 | Challengers | — | **0.98 per slice**, first arrival median **night 5** (L2D4 Sniff); lose40 0.68 | 30 days ≈ 6.9 per district |
-| Town events per Life 2 night | 0.45 | **0.43–0.44** (newcomer 0.21–0.34, scuffle 0.10–0.44) | Pacifist players never vacate a place, so all their events are scuffles |
+| Town events per Life 2 night | 0.45 | **0.44–0.45** (newcomer 0.12–0.34, scuffle 0.10–0.32) | Pacifist players rarely vacate a place, so most of their events are scuffles |
 | Seated cats at Grudge ≥ 75 (AC 11) | 9.5 / 11.4 / 0.9 / 0.0 / 0.6% | **0.0%** every policy | No comebacks or uprisings feed Grudge any more |
 | Life 2 days with an antagonist on the street (Togemaru, a challenger, the window, or Daifuku Riled+) | — | chase 67% · recruit 67% · mixed 79% · pacifist 100% · lose40 63% | 30 days: 91–100% |
-| **Invariant (1): only participants change** | (old rules violated it: promotion, refills, Stewing) | **0 violations in ≈ 51,300 checks** (interactions + nightly counterfactuals) | Self-test: re-injecting loss promotion is caught 622 times; re-injecting Stewing 70 times |
-| **Residual (OR-19): who raids tomorrow** | — | perturbing one cat's history changes the requester's identity on **7–13% of nights** | Enemy selection by each cat's own Grudge; listed for counsel (§6.4), not a rule that changes the other cat's record |
+| **Invariant (1): only participants change** | (old rules violated it: promotion, refills, Stewing) | **0 violations in ≈ 51,300 checks** (interactions + nightly counterfactuals) | Self-test: re-injecting loss promotion is caught 623 times; re-injecting Stewing 83 times |
+| **Residual (OR-19): who raids tomorrow** | — | perturbing one cat's history changes the requester's identity on **8–13% of nights** | Enemy selection by each cat's own Grudge; listed for counsel (§6.4), not a rule that changes the other cat's record |
 
-**Sim note.** The script draws every random number from a counter-based substream keyed by `(seed, day, step, subsystem, cat_id, ordinal)`, so the nightly counterfactual (perturb one cat's Grudge, Regard, encounters and marks, re-run step 3) cannot be polluted by draw order. Lever (not adopted): counting a truce lead's daily greeting as an arc encounter raises arc achieved to mixed 16% / pacifist 46% (A-10).
+**Sim note.** The script draws every random number from a counter-based substream keyed by `(seed, day, step, subsystem, cat_id, ordinal)`, so the nightly counterfactual (perturb one cat's Grudge, Regard, encounters and marks, re-run step 3) cannot be polluted by draw order. **Consistency pass (F11, F12):** the counted greeting (formerly the A-10 lever), Togemaru's authored first Scar, the ending-based arc definition and the quiet-take clause are now the default rules; the F12 model keeps the marking styles unchanged (a typical player's extra Counter-Spray, 50% of contests, lands on the contested post), and the Den post, which cannot be marked, no longer adds the Keeper-mark Grudge row to Daifuku (a sim correction). Anger figures are unchanged by the pass.
 
 ---
 
@@ -624,12 +635,15 @@ On a marking act: `A ← min(100, A + 5·n_over + 15·n_counter)`. Each night: `
 | The player avoids the gatepost on Life 1 day 2 | His placement is on the only route out, within 30 s. By the High Road he is moved to the first Scent Post the player approaches |
 | The player wipes against Togemaru on Life 1 day 2 | The day ends (OR-01; the moon-blue nightfall before the flap). Togemaru Gloats, gains `WON` and Bell-Ringer (a mark) and stays Keeper; nothing else changes. L2 D1: `REMATCH_I_WON` with `mikan_plastered`, and the gatepost contest moves to that day |
 | Togemaru is Chased Off or Recruited (any time) | His arc closes with a closing card; the slot stays his as a record; **no other cat is declared, named lead or promoted** in Lives 1–2. Life 2 pressure comes from Daifuku and the challenger |
-| Togemaru is Nose-Touched | He stays the lead, greets daily (`TRUCE_GREET`), may join in against Goma (or a challenger tagged his Rival), and is declared at his 3rd encounter or the deadline, normally as a Sworn Rival |
+| Togemaru is Nose-Touched | He stays the lead, greets daily (`TRUCE_GREET`, each greeting an encounter, ≤ 1 counted a day), may join in against Goma (or a challenger tagged his Rival), and is declared on night 3 after his first greeting, normally as a Sworn Rival |
 | Togemaru is declared, then Recruited or Chased Off | The arc closes; the storm mark becomes a bell (Crew card) or stays on his legend card |
 | The highest-ranked Routed cat is not Togemaru | It gets the Verdict; Togemaru slips away (`SLIPPED_AWAY`, rout items only) and adapts that night from Life 2 |
 | The Crew is full | "Recruit — make room" (DR-34) |
 | Recruit blocked (G ≥ 90 and R < 50; or not slice-recruitable) | Greyed; tell: it bares its teeth at the bell / turns its tail to the bell |
-| Nose-Touch gate closed | The Up card is halftoned ("Tail lashing. Not today."); Recruit and Chase Off remain |
+| Nose-Touch gate closed | The Up card is halftoned with its reason ("Tail lashing. Not today." / "Too much of your stink on its post." / "Still steaming. Not today."); Recruit and Chase Off remain |
+| A loud take in Life 2 (≥ 2 Counter-Sprays on the Keeper's own post this contest) | Nose-Touch closed for that Keeper's Verdict whatever its Grudge (F4). Counter-Sprays on other posts, Over-marks, and Claim or Rescue Sprays do not count |
+| Daifuku met Seething or Furious | Nose-Touch closed for that fight's Verdict; his anger is spent by the fight (win, loss or `rival_fled`), so a rematch after a loss normally meets him Calm and the card can open |
+| A Verdict on a cat that is not a Keeper or a Boss (a wave cat, a Roamer, a challenger, a raid leader) | Only the Grudge gate applies: it has no post of its own in the contest |
 | Nose-Touch on a Keeper whose Patch the player needs | The post is cleared like any Verdict; Claim Spray it at once. Its truce never blocks the Patch |
 | A cat in truce would be a raid requester, Ambusher, or in a group hostile to Mikan | Never (OR-13.3) |
 | A truce ends while its old Patch is no longer Mikan's | A truce-end challenger targets its old Patch only if Mikan holds it; otherwise it targets per F12's rule |
@@ -676,7 +690,7 @@ On a marking act: `A ← min(100, A + 5·n_over + 15·n_counter)`. Each night: `
 | In | `FearTriggered` | Fear item, Water cowlick, adaptation input |
 | In | `EncounterEnded` (outcome, routed_ids) | Verdict cat, `SLIPPED_AWAY`, loss and victor, **anger spent**, joiner Regard |
 | In | `PatchChanged`, `RaidResolved` (+ `presence`), `DistrictClaimed` | Keeper, challenger Lost / Repelled count |
-| In | Territory marking acts (`MarkingAct(kind ∈ {over_mark, counter_spray}, patch_id, district_id, owner_clowder)`) | Boss anger (F10) |
+| In | `MarkApplied(patch_id, district_id, kind ∈ {over_mark, counter_spray, claim_spray, rescue_spray}, target_clowder)` (Territory; brief §6.1, adopted in the consistency pass, F8) | Boss anger (F10: `over_mark` and `counter_spray` on the Boss's own Clowder only); the Nose-Touch quiet-take count (F4: `counter_spray` on the contested Keeper's own post) |
 | In | `BossWindowChanged(district_id, open)` | Patrol placement (§3.19) |
 | In | `HomeArrived`, `PhaseChanged`, `DayEnded`, `LifeAdvanced` | Routine tags, `mikan_plastered` (victor only), Night Shuffle |
 | In | `CatRecruited` (Crew) | Writes `OLD_GANG` and `old_gang_nerves` |
@@ -713,7 +727,7 @@ On a marking act: `A ← min(100, A + 5·n_over + 15·n_counter)`. Each night: `
 - **A-7:** a Nemesis can be friendly (the **Sworn Rival** face). Narrative to confirm tone.
 - **A-8 (new):** newcomers always join as **Toughs**: a departed Captain's or Boss's role is not refilled in the slice, so no newcomer's role is "chosen because of" the cat that left (OR-14.3).
 - **A-9 (new):** anger counts only marks on **the Boss's own Clowder's** Rub Marks and posts. A Stray-held Low Wall Corner (the L1D1 tutorial) and challenger or turncoat posts do not count. The showcase's "Furious from the Life 1 Counter-Sprays" is a seeded snapshot, not this rule.
-- **A-10 (new, needs a decision):** OR-15.4's arc definition now leaves most players "unachieved" inside the slice (sim: chase 0%, recruit 0%, mixed 5%, pacifist 15%, lose40 41%). Chase/Recruit on L1D2 is the accepted price. For a Nose-Touched Togemaru, the 3rd encounter comes only from a join-in. **Lever, not adopted:** count his daily `TRUCE_GREET` as an arc encounter (it changes only him): pacifist → 46%, mixed → 16%. The Declaration and the one-record guarantee do not depend on this.
+- ~~A-10~~ **Resolved by the creative director (consistency pass, F11):** every Verdict on Togemaru is an ending, so the arc counts as achieved at any Verdict (or the Declaration) once he has cited his memory and carries a mark; his first Rout always scars; and the truce greeting counts as an encounter. Sim: arc achieved 100% for every policy; truce Declarations on night 3.
 - **A-11 (new):** the L1D2 Whisker Sense prompt toward Daifuku (§3.13) is a Narrative/UX staging request, so the Lane's Boss is discovered in Life 1 for ≈ 90%+ of players.
 - **A-12 (new):** a truce-end challenger keeps its own record (Memory, Scars, Grudge 0 + its Regard), and targets its old Patch when Mikan holds it.
 
@@ -736,8 +750,8 @@ On a marking act: `A ← min(100, A + 5·n_over + 15·n_counter)`. Each night: `
 | The Boss window and patrol (§3.19) | **G5, G6** | Opened by the district's influence (territory acts) alone; a place and a schedule. The Boss's stats never read influence |
 | Three Verdicts; Chase Off = Gone; no seats; newcomers only (§3.11, §3.12, §3.20) | **G3, G6, G11** | A Verdict changes cat X's status; no existing cat moves up, in or over. Vacancies wait for the calendar and only new cats fill them. The raid fallback is the gang's (`gang_orders`) |
 | The fixed arc lead (§3.6) | **G3** | The deleted re-naming made cat Y's role change on a Verdict on cat X ('908 B3 / '303 C4 shape) |
-| Nose-Touch and the join-in (§3.11, §3.17, F11) | **G7**; **G10 watch** | The joiner changes itself; the opposing Rival is unchanged. Watch item: under pending '303, an ally joining because of its own earlier truce is a Crew-side effect for counsel |
-| Challengers and town events (§3.12, §3.20) | **G3, G5, G6** | Calendar- and territory-driven; never weighted by Mikan's history; only new cats appear (a truce-end challenger acts on its own timer) |
+| Nose-Touch and the join-in (§3.11, §3.17, F4, F11) | **G2**, **G7**; **G10 watch** | The gate reads only the cat's own Grudge, its own post's marking acts (objects) and its own anger. The joiner changes itself; the opposing Rival is unchanged. Watch item: under pending '303, an ally joining because of its own earlier truce is a Crew-side effect for counsel |
+| Challengers, town events and the Usurper (§3.12, §3.20) | **G3, G5, G6** | Calendar- and territory-driven; never weighted by Mikan's history; only new cats appear (a truce-end challenger acts on its own timer). The Usurper is a newly generated Boss keyed to influence and the calendar; its "no Boss on the street" check is the same eligibility class as residual 2 |
 | Barks (§3.15) | **G8** | Own history only, enforced by lint (AC 24) |
 | No online features | **G9** | Single-player |
 | Naming | **G12** | UI says "Rivals", "Sworn Enemy", "Sworn Rival"; never "nemesis", "vendetta", "fort" or "follower" in game, store or marketing text |
@@ -766,7 +780,9 @@ On a marking act: `A ← min(100, A + 5·n_over + 15·n_counter)`. Each night: `
 | Slots | Lives 1–2: 1 (Togemaru, fixed); Life 3+: + Lane | ruled (OR-15) | — |
 | Declaration deadline | the night after L2 D3 | L2 D2–L2 D3 nights | Earlier = more deadline Declarations |
 | Raid requester Grudge | 40 | 30–60 | Below 40 more raids are grudge-led; `gang_orders` keeps one a night |
-| Nose-Touch gate base (F4) | 50 | 40–60 | Lower = Nose-Touch closes more often (slice: open on 91–100% of Verdicts) |
+| Nose-Touch gate base (F4) | 50 | 40–60 | Lower = Nose-Touch closes more often on Grudge (slice: Grudge alone closes 0–9%) |
+| Quiet-take clause (F4, F12) | from Life 2; ≥ 2 Counter-Sprays on its own post; a Boss at Seething+ | 2–3 Counter-Sprays; Seething or Furious; Life 1–2 start | How often loud play closes Nose-Touch (slice: 15% of Verdicts, 18% of Life 2 Verdicts) |
+| Truce greeting counts as an encounter | yes, ≤ 1 counted meeting a day | ruled (F11) | Declaration night for a truce lead (night 3) |
 | Gate shifts | Stalwart +15 … Braggart −5 | ±5 each | Personality flavour; Togemaru's 45 must stay open after a clean L1D2 (G_p 43) |
 | Truce length | 10 days | 7–14 (owner answer: 10) | Window for join-ins; when truce-end challengers arrive |
 | Join-in base / near / Regard / cap (F11) | 0.35 / 0.15 / 0.15 / 0.65 | 0.25–0.45 / 0.1–0.2 / 0.1–0.2 / 0.5–0.75 | Slice join frequency (pacifist 34% of runs) |
@@ -797,7 +813,7 @@ On a marking act: `A ← min(100, A + 5·n_over + 15·n_counter)`. Each night: `
 ## 8. Acceptance Criteria
 
 **Experience (slice playtest, unbriefed testers)**
-1. 100% of testers see a memory-citing Rival line (`n_mem ≥ 1`) **before minute 60** (DR-03). Expected ≈ minute 33. *(Sim: 100% every policy.)*
+1. 100% of testers see a memory-citing Rival line (`n_mem ≥ 1`) **before minute 60** (DR-03). Expected ≈ minute 28 (Day Loop §3.9). *(Sim: 100% every policy.)*
 2. ≥ 80% can name one Rival at 2 h and say one thing they did to it.
 3. **Scar readability:** in a Rivals-board view of ≥ 8 cats and in third-person exploration at default FOV, a reviewer picks out the cat Mikan Scarred 8 times out of 8.
 4. **Verdict variety (OR-12):** across testers, no single Verdict exceeds **60%** of all Verdicts given, and **≥ 70%** of testers use **≥ 2** of the three.
@@ -815,7 +831,7 @@ On a marking act: `A ← min(100, A + 5·n_over + 15·n_counter)`. Each night: `
 14. **Discovery:** at sniff success 0.5, Daifuku is discovered by slice end in ≥ 95% of seeds and ≥ 75% of present Lane cats are discovered. *(Sim: 97–100%; 81–91%.)*
 15. **Anger tracks the marking style:** a quiet player meets a Calm Daifuku in ≥ 90% of seeds; a loud player meets him Seething or Furious in ≥ 90%. *(Sim: 100%; 92%.)*
 16. **Join-ins:** ≥ 25% of Nose-Touch-first runs see ≥ 1 join-in inside the slice; join success per opportunity is 35–65%. *(Sim: 34%; 39–43%.)*
-17. **Arc achieved** is reported per policy each re-sim (not gated; A-10). *(Sim: 0 / 0 / 5 / 15 / 41%.)*
+17. **Arc achieved** (F11 definition) is **100%** for every policy, and the mean encounters with Togemaru at slice end are reported per policy each re-sim. *(Sim: 100%; 2.0 / 2.0 / 3.8 / 7.0 / 3.0.)*
 
 **Rules and data (automated)**
 18. Pinned Memory ≤ 6 and entries ≤ 10 for every cat over 1,000 seeded runs.
@@ -830,6 +846,7 @@ On a marking act: `A ← min(100, A + 5·n_over + 15·n_counter)`. Each night: `
 27. **The patent working rule (unit tests on the full save):** a **join-in**, a **Verdict**, a **loss** and an **anger change** each leave every cat other than their subject(s) byte-identical (subjects: the Verdict cat; the victor; the joiner and the cats in the fight; the Boss). *(Sim analogue: 0 violations in ≈ 51,300 checks; the self-test catches re-injected loss promotion and Stewing.)*
 28. **No rule reads what Mikan did to a different cat:** for every Night Shuffle step-3 sub-step, perturbing one cat's Grudge, Regard, encounters and marks changes no other pre-existing cat's record (counterfactual test, as in the sim). The raid requester and Ambush candidate are exempt and listed as residuals (§6.4).
 29. **Fresh newcomers and challengers:** no field of a newcomer or calendar challenger is copied from, scaled by or chosen by a Gone or Crew cat (property test); the challenger calendar's inputs are `h`, the night index and the RNG only (lint).
+30. **Nose-Touch gate (F4, F12; unit test):** in Life 1 only the Grudge gate applies; from Life 2, ≥ 2 Counter-Sprays on the Keeper's own post in the contest, or a Boss at Seething or Furious at the Standoff, closes the card whatever its Grudge; the gate reads only the cat's own Grudge and personality, its own post's `MarkApplied` events and its own anger (perturbing any other cat's record or post changes nothing). *(Sim: open Life 1 100%, Life 2 82%.)*
 
 ---
 
@@ -840,9 +857,9 @@ On a marking act: `A ← min(100, A + 5·n_over + 15·n_counter)`. Each night: `
 - NS-10: full population (27 gang places + ≤ 12 off-wall), legend records, save-size budget.
 - NS-14: rewrite the archived A.2 (Sumi) and A.3 (Buri/Aji) stories for the full game under the v1.5 rules.
 - NS-17: Holdouts in claimed districts.
-- NS-C8: "Comes Knocking" (a Friend with Regard ≥ 75 asks to join, ≤ 1 per Life).
+- ~~NS-C8: "Comes Knocking"~~ **cut** (consistency pass): a Friend that asks to join would be a fourth recruit route, against C4's "Recruit for a bribe" (Crew §3.4).
 - NX-C6: epilogue `wall_friend` / `wall_nemesis` candidates.
-- **Usurper (OR-09.7):** a newly generated Boss arriving from territory state and time after a district's Boss is Verdicted (total influence loss, days elapsed); fresh traits, no inheritance.
+- **Usurper (OR-09.7):** the rule is now written (§3.20, consistency pass); build it and sim it with Life 3 (it is unreachable in the slice).
 - Captain-tier challengers from Life 3; challengers in several districts at once.
 - Ageing, retirement, Old-Timers.
 - Multi-district behaviour and the Nemesis slot per district; the Lane slot (highest F3 at Grudge ≥ 75) from Life 3, re-simmed for 3 districts.
@@ -856,15 +873,14 @@ On a marking act: `A ← min(100, A + 5·n_over + 15·n_counter)`. Each night: `
 - Botan's Verdict (Nose-Touch only; the hand-bell calls her home).
 - Botan's "Collar" hypocrisy payoff and the Secret Collar quirk.
 - Full bark budget (≤ 700) and the `CREW_SPOTTED`, `WAVERING`, `LAST_WALK` triggers.
-- **(Owner feedback pass)** A-10: decide whether a truce lead's daily greeting counts toward the arc (sim lever: pacifist 15% → 46%).
-- **(Owner feedback pass)** The Nose-Touch gate is open on 91–100% of slice Verdicts, so inside 7 days it reads as free. Playtest AC 4 first; if Nose-Touch exceeds 60% of Verdicts, lower the gate base within 40–60.
+- **(Consistency pass)** The quiet-take clause (F12) makes Nose-Touch closable in Life 2 (open on 82% of Life 2 Verdicts in the sim, whose marking styles are not adaptive). Playtest AC 4 first; if Nose-Touch still exceeds 60% of Verdicts, lower the gate base within 40–60; if testers cannot say why the card closed, strengthen the card line before touching numbers.
 - **(Owner feedback pass)** Typical play meets Daifuku Riled, not Furious (decay −15). If the owner wants the Furious Boss visible without loud play, lower decay within 10–20 or raise Counter-Spray within +10–20, and re-run the sim.
 - **(Owner feedback pass, counsel)** The residual enemy-selection items and G10 watch items in §6.4; a defector-targeted boss line only if counsel clears it (§3.18).
 - **(Owner feedback pass)** Betrayal rate (OR-11: 0% reference, ≤ 10% neglect) is simulated by Crew's sim, not this one.
 - **(Iteration 3, Combat)** Togemaru is a Scrapper (resists Claw ×0.8): check in the combat prototype that a Life 1 kitten can beat him; reconcile Combat's "+15% Nerve" Strength with §3.9's slice list.
 - NS-C10: the Holdout naming split with Territory.
 - Wall Watch: the **victor** of a wipe sits on the wall opposite Haru's gate the next morning (victor only, G1/G8).
-- **(Iteration 3, still open)** Deadline Declarations: 78–86% of declared Togemarus are declared at the deadline, many with < 3 encounters. Playtest whether they read as earned.
+- ~~(Iteration 3) Deadline Declarations~~ resolved by the counted greeting (F11): truce Declarations now land on night 3; only lose-40 still declares 19% at the deadline.
 - **(Iteration 3)** Rival Ambush budget: this doc's ≤ 1 per day sits inside Day Loop §3.7's ceiling (≤ 2 per day). Keep them aligned when Life 3+ budgets are set.
 
 ## Revision Log
@@ -984,3 +1000,17 @@ On a marking act: `A ← min(100, A + 5·n_over + 15·n_counter)`. Each night: `
 | Arc-achieved collapse | DEFERRED (creative director, A-10) | A direct consequence of OR-14/OR-15 as written; lever simulated (greeting counts: pacifist 46%), not adopted |
 | Nose-Touch effectively free in the slice | DEFERRED (Backlog) | Gate open on 91–100% of slice Verdicts; playtest AC 4 decides |
 | Interpretations | NOTED | A-8 (newcomers join as Toughs), A-9 (anger counts only the Boss's own Clowder's objects), A-11 (L1D2 sniff prompt), A-12 (truce-end challenger target). The challenger Rival-tag pool (non-Gone, non-Crew) is implemented as ruled and listed as a counsel residual with an alternative |
+
+**2026-11-24 — Consistency pass (creative director, iteration 2 of the owner-feedback change).** Rulings in `design/reviews/owner-feedback/consistency-pass.md`. Sim re-run: `nemesis_slice_sim.py` (default = the rulings below; `--or-pass` reproduces the revisers' run, kept as `nemesis_slice_sim.or-pass.out.txt`).
+
+| Item | Status | How |
+|---|---|---|
+| F11 Togemaru's arc rarely completed | RULED, APPLIED | Every Verdict on him (or the Declaration) is an ending; arc achieved = memory line + ≥ 1 mark + an ending (§3.7); his first Rout always scars (§3.8, F7); a truce greeting counts as an encounter, ≤ 1 counted a day (§3.7). Sim: arc achieved 0 / 0 / 5 / 15 / 41% → **100%** every policy; truce Declarations night 5 (86% at the deadline) → **night 3** (0%). A-10 closed |
+| F12 Nose-Touch nearly free | RULED, APPLIED | F4 gains the **quiet-take clause** from Life 2: ≥ 2 Counter-Sprays on the Keeper's own post, or a Boss at Seething+, closes the card (§3.11, F4, §5, AC 30, knobs). Sim: gate open 100% → Life 2 82% (Daifuku 81%); mixed Verdicts 49/7/43 → 55/8/37; join-ins unchanged (pacifist 34% of runs) |
+| F3 challenger night | RULED | Night numbering defined in F12: night 5 = after L2D3 → the L2D4 Sniff |
+| F7 window day | RULED | Reference day L2D3, at the Tofu Shop Step Claim Spray (§3.14, §3.16); the first attempt stays L2D4 |
+| F8 `MarkApplied` | ADOPTED | §6.1 consumes it (renamed from `MarkingAct`) |
+| Sniff priority | FIXED | One order shared with `hud.md` §5.3: Wavering first (§3.13) |
+| C4 "new boss may appear" | WRITTEN | The Usurper rule (§3.20), full game; unreachable in the slice |
+| AC 1 | FIXED | Expected memory line ≈ minute 28 (Day Loop §3.9), not 33 |
+| Comes Knocking (NS-C8) | CUT | A fourth recruit route would contradict C4 and Crew §3.4 (Backlog line struck) |

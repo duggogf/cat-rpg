@@ -15,6 +15,15 @@ What changed (design/reviews/owner-feedback-rulings.md OR-01, OR-02, OR-09, OR-1
 Minutes per segment, typical (median-ish) and heavy (75th-pct-ish). Same per-fight costs as round 3:
 1.1 min per fight, +0.35 per Verdict prompt, +0.25 per Standoff with an unskippable memory line.
 Observations only.  Usage: python3 -I day_budget_check.py
+
+Consistency pass (creative director, 2026-11-24; design/reviews/owner-feedback/consistency-pass.md, F7):
+  - The Boss window's reference day is L2D3: the Tofu Shop Step Claim Spray fills the bar and Daifuku climbs to his
+    Day stop, the wall above that post. The reveal is in view, so it plays in the world on the running roaming clock
+    with control kept (no paused minutes; the L2D3 clock is already fully used, so real time is unchanged). With a
+    paused 0.25-min reveal L2D3 would be 25.2 typical, just over the 25 median: that variant is printed below.
+    Fighting him on L2D3 is optional and not budgeted.
+  - L2D4 keeps its minutes: the morning rescue Sprays now only keep the bar full, and the paused 0.25 min is a
+    Rivals-board look at Daifuku down off his gatepost. The before figures are day_budget_check.or-pass.out.txt.
 """
 F = ("wake", "door", "lot", "clock", "naps", "fights", "verdicts", "mem", "boss", "beats", "way", "eve", "c_open")
 # boss = Daifuku fight minutes incl. Standoff/Gloat; beats = other paused authored street beats (reveal)
@@ -30,9 +39,9 @@ DAYS = {
         clock=(12, 12), naps=(1, 1), fights=(4, 6), verdicts=(2, 2), mem=(1, 2), way=(1, 1), eve=(1.5, 2), c_open=12),
     "L2D2 Declaration, Turf Board first use, flap, first Night, Caterwaul": day(wake=(1.5, 1.5), door=(0.75, 1.0),
         lot=(1.5, 2.0), clock=(13, 16), naps=(1, 1), fights=(4, 6), verdicts=(2, 3), mem=(1, 2), way=(1, 1), eve=(1, 1)),
-    "L2D3 TSS take, Lessons, out all Night, Late Home, K2.2": day(wake=(0.25, 0.25), door=(0.5, 0.75), lot=(1.5, 2.0),
-        clock=(16, 16), naps=(1, 1), fights=(4, 6), verdicts=(2, 3), mem=(1, 2), way=(1, 1), eve=(2.0, 2.5)),
-    "L2D4 K2.5; rescue Sprays -> window; challenger Sniff; Daifuku LOST -> Night, walk home, Routed Evening":
+    "L2D3 TSS take -> window opens (reveal), Lessons, out all Night, Late Home, K2.2": day(wake=(0.25, 0.25), door=(0.5, 0.75), lot=(1.5, 2.0),
+        clock=(16, 16), naps=(1, 1), fights=(4, 6), verdicts=(2, 3), mem=(1, 2), beats=(0, 0), way=(1, 1), eve=(2.0, 2.5)),
+    "L2D4 K2.5; challenger + Boss-window Sniff; rescue Sprays keep the bar; Daifuku LOST -> Night, walk home, Routed Evening":
         day(wake=(2.5, 3.0), door=(0.5, 0.75), lot=(1.0, 1.0), clock=(4.5, 7.0), naps=(0, 0), fights=(0, 2),
             verdicts=(0, 1), mem=(0, 0), boss=(3.5, 3.7), beats=(0.25, 0.25), way=(1, 1), eve=(2.0, 2.5)),
     "L2D5 Daifuku rematch (-10%, Calm), Den Claim Spray, victory lap, Life-end sleep": day(wake=(0.25, 0.25),
@@ -46,10 +55,12 @@ LOSS = {
     "L2D2 with a wipe at clock 6:00 (Day): K2.3 in its Late form at the Routed Evening; first Night moves to L2D3":
         day(wake=(1.5, 1.5), door=(0.75, 1.0), lot=(1.5, 2.0), clock=(6, 6), naps=(0, 1), fights=(3, 4), verdicts=(1, 2),
             mem=(1, 1), way=(1, 1), eve=(2.0, 2.5)),
-    "L2D3 normal (above)": DAYS["L2D3 TSS take, Lessons, out all Night, Late Home, K2.2"],
+    "L2D3 normal (above)": DAYS["L2D3 TSS take -> window opens (reveal), Lessons, out all Night, Late Home, K2.2"],
     "L2D3 with a wipe at clock 13:00 (Night): clock stays, walk home, plaster, K2.2": day(wake=(0.25, 0.25),
         door=(0.5, 0.75), lot=(1.5, 2.0), clock=(13, 13), naps=(1, 1), fights=(4, 5), verdicts=(2, 2), mem=(1, 2),
         way=(1, 1), eve=(2.5, 3.0)),
+    "L2D3 variant: the reveal as a paused 0.25-min cut (not used; for comparison)": day(wake=(0.25, 0.25), door=(0.5, 0.75),
+        lot=(1.5, 2.0), clock=(16, 16), naps=(1, 1), fights=(4, 6), verdicts=(2, 3), mem=(1, 2), beats=(0.25, 0.25), way=(1, 1), eve=(2.0, 2.5)),
     "Worst real-time case: a wipe at clock 2:00 (Morning), the accepted OR-02 residue": day(wake=(0.25, 0.25),
         door=(0.5, 0.75), lot=(1.0, 1.5), clock=(2, 2), fights=(2, 2), verdicts=(0, 0), way=(1, 1), eve=(2.0, 2.5)),
     "L1D3 bonus morning after a L1D2 loss: K1.4 Closing in the morning slot, Settle In at once, Life-end sleep":
@@ -83,7 +94,7 @@ table(LOSS)
 
 # The pacing graph (day-loop sec. 3.11) uses the worked-day reference minutes, not the budget check.
 GRAPH_BEFORE = {"L1D1": 25, "L1D2": 20, "L2D1": 20, "L2D2": 23, "L2D3": 24, "L2D4": 21, "L2D5": 16}
-GRAPH_AFTER = dict(GRAPH_BEFORE, L2D4=15.5)       # day-loop sec. 3.10 worked day L2D4 (loss -> Night)
+GRAPH_AFTER = dict(GRAPH_BEFORE, L2D4=15.5)       # day-loop sec. 3.10 worked day L2D4 (loss -> Night); L2D3's in-view reveal adds no real time
 print("\n## Slice clock (target 120-150 min, DR-03 / F6)\n")
 b, a = sum(GRAPH_BEFORE.values()), sum(GRAPH_AFTER.values())
 fast_before, fast_after = 132, sum(v for k, v in GRAPH_AFTER.items() if k != "L2D5") - 15.5 + 16.0
@@ -97,8 +108,9 @@ print(f"- Each extra Boss wipe: before +16-20 min (a Dusk-to-sleep evening plus 
 print(f"- Budget-check typical sum (7 days): {sum(v[0] for v in ref.values()):.1f} min; heavy sum {sum(v[1] for v in ref.values()):.1f} min")
 
 print("\n## L2D4 script clock check (clock seconds; Daifuku's stop follows PhaseChanged)\n")
-EVENTS = [(0, "street; Whisker Sense"), (90, "rescue Spray Laundry Pole Yard 56 -> 90 (influence ~89 -> 91; illustrative Scent, Territory owns it)"),
-          (180, "rescue Spray Persimmon Alley 38 -> 90: influence 100, BossWindowChanged(open); reveal (paused)"),
+EVENTS = [(0, "street; Whisker Sense (the window has been open since the L2D3 Tofu Shop Step Claim Spray)"),
+          (90, "rescue Spray Laundry Pole Yard (below Strong overnight; keeps influence at 100; Territory owns the Scent)"),
+          (180, "rescue Spray Persimmon Alley; a Rivals-board look at Daifuku off his gatepost (paused)"),
           (240, "PhaseChanged Day: Daifuku at his Day stop, Tofu Shop's back wall (rain barrel)"),
           (270, "Standoff within 8 m; the fight (clock paused ~3.5 real min)"),
           (270, "wipe -> clock 720 (Night); street closed; Head Home thread"), (720, "walk home <= 60 s -> HomeArrived(routed)")]

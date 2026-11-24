@@ -1,7 +1,7 @@
 # Dual Story Progression
 
-*Owner: narrative-director · Round 2 (vertical slice) · 2026-11-23 · Status: slice spec*
-*Canon: `design/creative-brief.md` v1.3, then `design/reviews/round-1/director-rulings.md`. The first draft is archived at `design/backlog/first-drafts/dual-story-progression.md`; it is the content backlog for Lives 3–9.*
+*Owner: narrative-director · Round 2 (vertical slice) · 2026-11-23 · Consistency pass (creative director) 2026-11-24 · Status: slice spec*
+*Canon: the owner's comments C1–C5 → `design/reviews/owner-feedback-rulings.md` (OR-01…OR-21; OR-01/02 and OR-20 give Narrative the Routed Evening and the plaster beat) as settled by `design/reviews/owner-feedback/consistency-pass.md` → `design/creative-brief.md` v1.6, then `design/reviews/round-1/director-rulings.md`. The first draft is archived at `design/backlog/first-drafts/dual-story-progression.md`; it is the content backlog for Lives 3–9.*
 
 **Scope of this doc.** It covers the **slice in full**: Lives 1–2, 11 home vignettes, the Routine layer, the daily find, the piano, and Bond. It gives **the whole game as a one-page framing**, including Life 8 as ruled (DR-27). Everything else is listed under `## Backlog (post-slice)`.
 
@@ -239,7 +239,7 @@ Each Keystone lists what Mikan perceives, the channels, the trace, and the **thr
 - *Dusk tail:* A feast smell, and the Bowl gets something better than kibble. That evening Haru plays the Piece **straight through for the first time**, past the stuck bar, still clumsy. Then she takes down a suitcase and leaves it open and empty on her floor. Mikan may sit in it: scent wisp (yellow) + question mark.
 - *Channels:* C2★ C10 C4★ C7★ C9 C11★. *Trace:* the open suitcase.
 - *Tier A:* "Something wonderful happened to her. And there is a new box, and I do not like it."
-- **Slice end.** At Life 2's Life-end sleep (Daifuku Routed, day ≥ 4, K2.5 played), the sleep spot offered is **the open suitcase**. Sleeping in it cuts to the title card. There is no time-skip to Life 3 (DR-01).
+- **Slice end.** At Life 2's Life-end sleep (the Lane claimed: Daifuku Routed, given his Verdict and his Den post Claim Sprayed; day ≥ 4; K2.5 played), the sleep spot offered is **the open suitcase**. Sleeping in it cuts to the title card. There is no time-skip to Life 3 (DR-01).
 
 ### 3.5 The home and what changes
 
@@ -278,7 +278,7 @@ The slice house has five spaces, all walkable: **Entryway** (lower floor, step, 
 
 **Other verbs:** Eat, Sleep (offered **from Dusk only**, to stop the day count being skipped; day-loop implements it), Meow (gets attention: a door opened, a look down), Sit in Box, Comfort (only when offered).
 
-**After a wipe** (DR-19, DR-40.6). Mikan slinks home. If it is before Dusk, the clock jumps to Dusk and the evening plays as usual (**a K1.3 or K1.4 due that day plays normally: the first Call is never lost**, PP-06). Haru checks Mikan over and puts a **sticking plaster** on an ear: **the same asset as the Scar kit's head plaster**. Mikan wears it all next day (tag `mikan_plastered`), and Rivals may cite it ("Nice plaster, Collar."). In Life 1 nothing is lost.
+**After a wipe: the Routed Evening** (OR-01, OR-02; DR-40.6; the owner's C2: "when you lose, the time skips to the night time and you cannot do anything else except going home to interact with your owner"). The clock jumps to **Night** (from any phase; a wipe during Night leaves it where it is) and the street closes: before the cat flap this is staged as a moon-blue nightfall the kitten cannot stay out in. Mikan walks home under the moon (Day Loop §3.6). `HomeArrived(kind = routed)`: **Haru is home and waiting.** The evening opens with the **plaster beat** (≤ 30 s: she kneels and puts a **sticking plaster** on Mikan's ear, **the same asset as the Scar kit's head plaster**), then the normal home verbs until sleep: Lap, the piano, the daily find. Bond as for a Late arrival (0.5); no Well-Fed. **A Keystone due that evening plays in its Late form; a Closing waits for the next morning slot.** **K1.3's Late form keeps the Call** (PP-06: the first Call is never lost): Haru sings from the step into the moon-blue lane and the thread is the Call's thread. Mikan wears the plaster all next day (tag `mikan_plastered`), and **only the cat that won the fight** may cite it ("Nice plaster, Collar."); no other Rival's line reads the loss (G8). In Life 1 nothing is lost.
 
 ### 3.7 Who the household is (by the end of the slice)
 
@@ -390,15 +390,17 @@ home_share = (wake_to_door + evening_home) / day_total     # target ≈ 0.15, al
 
 | Case | Resolution |
 |---|---|
-| Player claims the Lane on L2 day 2 | No beat accelerates. The Life ends at the first sleep on day ≥ 4 after K2.5. The days between are victory laps: the Fence Line reacts and the Plateau runs |
-| Player never Routs Daifuku | The Life never ends. K2.5 has played and the Plateau "Waiting to Leave" runs. Daifuku is plastered −10% per wipe (to −30%) |
+| Player claims the Lane before L2 day 4 | No beat accelerates. The Life ends at the first sleep on day ≥ 4 after K2.5. The days between are victory laps: the Rivals board reacts and the Plateau runs |
+| Player never claims the Lane (never Routs Daifuku, or never sprays his Den post) | The Life never ends. K2.5 has played and the Plateau "Waiting to Leave" runs. Daifuku is plastered −10% per wipe (to −30%) |
 | Player stays in the house all day | The clock is paused inside the wall, so nothing advances. No fail state; the door is open |
 | Player tries to sleep repeatedly to skip days | Sleep is offered only from Dusk, so the day's clock must be roamed |
 | Late arrival on K2.2's day | Any-hour staging (lighting variant) |
 | Mikan out all Night on L2D3 (Late Home) | The late Call is heard from the house at Dusk + 2:30 on the street clock and the normal bleed follows; Haru is home by the time Mikan comes in, and K2.2 plays on that arrival with its Late-arrival lighting variant |
 | Mikan inside the wall at Dusk on L2D3 | The clock is paused inside the wall, so Haru's key turns ≈ 40 s of real time after the Feeding (Gran feeds, Gran lights the Lamp); then the Call at the door and K2.2 |
 | A Closing would play Late | Cannot happen in the slice: K1.4 is pre-flap (universal Dusk) and K2.5 is a morning beat. Rule kept: Closings never play Forensic; they wait for the next morning |
-| Wipe on L1 day 1 before Dusk | The clock jumps to Dusk; K1.3 plays in full, plus the plaster |
+| Wipe on L1 day 1 (after the tutorial) | Nightfall (the clock jumps to Night), the walk home, then the plaster beat and **K1.3 in its Late form, which keeps the Call** (PP-06). Nothing is lost |
+| Wipe on L1 day 2 | The Routed Evening; K1.4, the Closing, waits for the L1 day 3 morning slot, then Settle In is offered at once and the Life ends at that sleep (Day Loop §3.6) |
+| Wipe on L2 day 2 | K2.3 (the flap) plays in its Late form at the Routed Evening |
 | Player ignores Haru at the Call (K1.3) | Up to three Calls, then the nose two-step. The Bowl, Tap-Tap and Lamp still play |
 | Player never knocks the Bowl | The tail sweeps it off at bedtime; the chip exists |
 | Player never finds the daily change | It expires at sleep. No guilt, no comment; the prop state stays (it is just there) |
@@ -471,7 +473,7 @@ home_share = (wake_to_door + evening_home) / day_total     # target ≈ 0.15, al
 - Home music: home theme entry at the K1.3 Lamp; the Dusk bleed; the Life 1→2 montage cue. All inside the slice's ≤ 25 min.
 
 **UX**
-- No HUD inside the wall except the Doorstep Sniff; home pause shows only the Mikan tab and Options. The Fence Line is never shown in the house.
+- No HUD inside the wall except the Doorstep Sniff; home pause shows only the Mikan tab and Options. The Rivals board is never shown in the house.
 - Contextual Interact prompts at home are icon-only (Knees, Eat, Sleep spot), never human-event text.
 - Onboarding beats at home: Eat (K1.3), Knock (K1.3), Whisker Sense in the house (first evening find, L1 day 2), Gift (K2.1), Comfort (K2.2), piano (T2.2).
 - The Call glyph is always on; the ear icon marks off-screen home sounds; haptics are on by default for the bell and Tap-Tap.
@@ -522,6 +524,16 @@ home_share = (wake_to_door + evening_home) / day_total     # target ≈ 0.15, al
 ---
 
 ## Revision Log
+
+**2026-11-24 — Consistency pass (creative director; `design/reviews/owner-feedback/consistency-pass.md`).** This doc was not revised in the owner-feedback pass, so the rulings had left it stale.
+
+| Item | How |
+|---|---|
+| F2 · the wipe | §3.6 "After a wipe" rewritten as **the Routed Evening** (OR-01/02): the jump is to **Night**, not Dusk; the street closes; Haru is home and waiting; the plaster beat opens the evening; Keystones play Late and Closings wait; only the victor cites the plaster. §5 edge cases for L1D1, L1D2 and L2D2 wipes follow Day Loop §3.6 |
+| F4 · K1.3 | Its Late form keeps the Call (PP-06 survives OR-01); Narrative stages the moon-blue version |
+| Slice end | The Life-end condition is the Lane **claimed** (the Den post Claim Sprayed after Daifuku's Verdict, OR-09), not "Daifuku Routed" |
+| Naming | Fence Line → the Rivals board (§5, §8) |
+| PP-06 row below | Superseded: a Life 1 wipe now jumps to Night, and K1.3 plays in its Late form with the Call |
 
 **2026-11-24 — Iteration 3 (round-2 presentation review, final pass).**
 

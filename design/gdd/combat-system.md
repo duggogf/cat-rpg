@@ -1,6 +1,6 @@
 # Combat System — Vertical Slice
 
-*Owner: combat designer (game-designer) · Round 2 (slice rewrite) · 2026-11-23 · Owner feedback pass 2026-11-24 · Canon: the owner's comments C1–C5 → `design/reviews/owner-feedback-rulings.md` (OR-01…OR-21, binding) → `design/creative-brief.md` v1.5 → `design/reviews/round-1/director-rulings.md`. Patent guardrails: `design/legal/nemesis-patent-analysis.md` v2 §5 (binding). First draft archived at `design/backlog/first-drafts/combat-system.md`.*
+*Owner: combat designer (game-designer) · Round 2 (slice rewrite) · 2026-11-23 · Owner feedback pass 2026-11-24 · Consistency pass (creative director) 2026-11-24 · Canon: the owner's comments C1–C5 → `design/reviews/owner-feedback-rulings.md` (OR-01…OR-21, binding), as settled by `design/reviews/owner-feedback/consistency-pass.md` (F1–F12) → `design/creative-brief.md` v1.6 → `design/reviews/round-1/director-rulings.md`. Patent guardrails: `design/legal/nemesis-patent-analysis.md` v2 §5 (binding). First draft archived at `design/backlog/first-drafts/combat-system.md`.*
 
 > **Patent rule (brief v1.5):** nothing Mikan does to one cat, and nothing that cat becomes because of it, changes a *different* cat. In combat that means: a loss changes only the victor (G1); Boss anger buffs only that Boss and never comes from a fight (G2); an old boss fights the same whoever is in the Posse, and only the recruit's own memory makes it flinch (G4); a join-in belongs to the joiner and its Rival fights exactly as it would anyway (G7). Not legal advice; counsel review still blocks scope lock.
 
@@ -726,7 +726,7 @@ Cowed on a recruit:  D_out = D × cowed_dmg ; AI target set excludes old_boss_id
 - A2. "Normal encounter" means a threat budget of 4–6. Roaming skirmishes of 2–3 are allowed to run 18–28 s (sim, F9).
 - A3. The Pile-On "earlier is worth more" coefficient (k = 1.0) is stated together with the Paw-dump trade-off, so the choice stays non-trivial.
 - A4. The Daifuku arena kit (wall edge, water prop with refills, noise prop, ledge junk, crumbling wall top), now needed at **each of his three patrol stops** (OR-09), is a request to Level and Nemesis. His Fear is Nemesis's choice. The fight does not require it.
-- A5. *(Owner feedback pass)* Anger's Fired Up **pauses under a newer status** instead of being replaced (§3.5). The one-status rule would otherwise let the first bucket end a Riled buff after ≈ 8 s and make the tiers unreadable. Creative-director to confirm; the knob `anger_fu_pause_under_status` reverts it.
+- A5. *(Owner feedback pass)* Anger's Fired Up **pauses under a newer status** instead of being replaced (§3.5). The one-status rule would otherwise let the first bucket end a Riled buff after ≈ 8 s and make the tiers unreadable. **CONFIRMED by the creative director (consistency pass F4):** the dunk still pays (no Fired Up while he is Soggy) and the stage stays readable; the knob `anger_fu_pause_under_status` reverts it.
 - A6. *(Owner feedback pass)* The join-in guest uses the `raid_defence` guest rules plus one bias of its own (it prefers its own Rival as a target). The bias is keyed to the joiner's own tag (G7). Counsel watch item under '303 (G10), held, not redesigned.
 - A7. *(Owner feedback pass)* Plain switches do not clear the Cowed flinch; only a Tag-In does (the ruling's "conducting moment").
 
@@ -860,3 +860,5 @@ Cowed on a recruit:  D_out = D × cowed_dmg ; AI target set excludes old_boss_id
 | Showcase bout (doc change list) | IMPLEMENTED | `boss_phase_cap` knob; phase 1 only → `rival_fled` at the break (§3.13) |
 | Owner answers (rulings §5) | NOTED | Every answer matched the default (the recruit-side flinch pending counsel; 10-day truce; Chase Off final; full influence = four Strong posts; betrayal on). Nothing here changed because of them |
 | Sim deliverables | DONE | Daifuku per anger stage, with an ally, rematch, Cowed cost (F9 table). **Not done:** a wipe *rate* needs a variance model (B-29); the EV model wipes only under very poor dodging |
+
+**2026-11-24 — Consistency pass (creative director; `design/reviews/owner-feedback/consistency-pass.md`).** F4: A5 confirmed (Soggy pauses anger's Fired Up). F7: the Boss window's reference day is L2D3 (the Tofu Shop Step Claim Spray); the first fight stays L2D4, so §3.16's "Life 2 day 4+" teaching row is unchanged. F12: a Boss met Seething or Furious will not Nose-Touch after the fight (Nemesis F4); no combat value changes.

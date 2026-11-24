@@ -16,3 +16,5 @@ Collected by the orchestrating session from reviser hand-backs, for the consiste
 | F10 | Posting stakes dropped to +24% slice / +33% raid nights (from +34% / +45%) after fights stopped moving Scent — still a real decision, but watch the "stand out" score | territory reviser | territory |
 | F11 | Togemaru arc-achieved collapsed to 0/0/5/15/41% (chase/recruit/mixed/pacifist/lose-40) after Chase Off became final and Humble was cut; a Nose-Touched Togemaru reaches his third encounter only via a join-in. Doc open question A-10 (count the daily greeting as an encounter → pacifist 46%) | nemesis reviser | nemesis (creative-director ruling) |
 | F12 | Nose-Touch gate open on 91–100% of Verdicts because Grudge stays low in the slice: Nose-Touch is nearly free, so the three-way Verdict is not yet a real choice | nemesis reviser | nemesis (creative-director ruling) |
+
+**Status (2026-11-24):** all twelve items are ruled and applied in `consistency-pass.md` (§1 for F11–F12, §2 for F1–F10).

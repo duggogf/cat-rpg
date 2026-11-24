@@ -1,6 +1,6 @@
 # Crew & Progression
 
-*Owner: systems-designer · Round 2 (vertical slice) · 2026-11-23, owner feedback pass 2026-11-24 · Canon: owner comments C1–C5 → `design/reviews/owner-feedback-rulings.md` (OR-01…OR-21, binding) → `design/creative-brief.md` v1.5 → `design/reviews/round-1/director-rulings.md`. Patent guardrails: `design/legal/nemesis-patent-analysis.md` v2 §5 (binding; not legal advice, counsel review still blocks scope lock). First draft archived at `design/backlog/first-drafts/crew-and-progression.md`.*
+*Owner: systems-designer · Round 2 (vertical slice) · 2026-11-23, owner feedback pass 2026-11-24, consistency pass (creative director) 2026-11-24 · Canon: owner comments C1–C5 → `design/reviews/owner-feedback-rulings.md` (OR-01…OR-21, binding), as settled by `design/reviews/owner-feedback/consistency-pass.md` (F1–F12) → `design/creative-brief.md` v1.6 → `design/reviews/round-1/director-rulings.md`. Patent guardrails: `design/legal/nemesis-patent-analysis.md` v2 §5 (binding; not legal advice, counsel review still blocks scope lock). First draft archived at `design/backlog/first-drafts/crew-and-progression.md`.*
 
 **Scope.** This doc specifies what the vertical slice (DR-01: Lives 1–2, Hidamari Lane, levels 1–8, Crew cap 6) needs: the **personality model** shared by Crew and Rivals (§3.2), the six slice recruits (§3.3), stats/levels/XP for Lv 1–10, recruitment and starting Loyalty, the Crew / Posse / guard-duty split, allied guests (§3.5.7), Loyalty and the betrayal thresholds, learnsets and Lessons, Tail-Up, and "make room". Everything else is in `## Backlog (post-slice)`.
 
@@ -159,14 +159,14 @@ Among the slice's one-of-each six: **7 bonded, 4 clashing, 4 neutral** pairs.
 | **Look** | Big grey tom, torn left ear (old, authored), heavy jowls, sits like a loaf on the low wall | Small round calico, one ear always half-folded, tail up like a question mark | Pale fawn ("kinako" soy flour) shorthair, huge ears, thin, always half-crouched | Lean black-and-tan tom, spiky cheek ruff, struts | Long-bodied silver tabby, narrow eyes, sits on the tofu shop's awning looking down | Canon: enormous white-and-grey tom who never comes down off the walls (until full influence opens his window, OR-09) |
 | **Joins** | Life 1 day 1, ≈ 0:08–0:10, after teaching Whisker Sense ("Use your whiskers, Collar.") | Life 1 day 2, at a Narrative beat (proposal: the crows cornering her at the laundry poles are day 2's first fight; she tags along) | Life 2 day 1: one-time scent-trail favour, **the day's required first objective** (§3.4.3) | Recruit Verdict, Life 1 day 2 earliest, at the gatepost (Laundry Pole Yard); his day-1 flee cannot be interrupted (OR-14), so day 2 holds the first Verdict. **Free, fixed yes** in Life 1 (PP-07). He is the fixed arc lead, and Recruit stays open on him before and after the Declaration (OR-15): his arc closes "Wears the bell now" | Recruit Verdict, Life 2 day 3 earliest (Tofu Shop Step), for a fair or feast Bribe | Recruit Verdict after his Boss fight at any of his three patrol stops, once full influence opens the Boss window (OR-09); Regard ≥ 50 (DR-09); fair or feast Bribe; Mikan then Claim Sprays the Den post. End of Life 2 |
 | **Join level** | Mikan's level | Mikan's level | Mikan's level − 1 (min 1) | Own level (Nemesis) | Own level (≈ 6) | Own level (≈ 9) |
-| **Starting Loyalty** | **60** fixed (True) | **55** fixed (Steady) | **50** fixed (Steady) | F6 (worked: 36, Aloof) | F6 (worked: 40 fair / 45 feast) | F6 (worked: 56 fair / 61 feast) |
+| **Starting Loyalty** | **60** fixed (True) | **55** fixed (Steady) | **50** fixed (Steady) | F6 (worked: 44, Aloof) | F6 (worked: 40 fair / 45 feast) | F6 (worked: 56 fair / 61 feast) |
 | **Signature perk** | none (story) | none (story) | none (Stray) | Strength → perk *(proposal, from Combat §3.9's menu: **+15% Nerve**)* | *(proposal, menu: **Thick Ruff**, resists Claw ×0.6, covering the Yowler's Claw weakness)* | *(proposal, menu: **immune to Cowed**; no effect on knock-offs or stagger. Never "cannot be knocked off": Combat §3.13 forbids it on Daifuku)* |
 | **Fear (kept)** | — | — | — | *(proposal)* Cucumbers | *(proposal)* Loud Noise | *(proposal)* Water (the bucket) |
 | **Arrives knowing** | Belly Flop, Shoulder Check | Purr, Withering Hiss | Face Swat, Bunny-Kick | Nemesis kit (Tough: 2 Moves) | Nemesis kit (Captain: 4 Moves, incl. **Banshee Screech**) | Authored Boss kit (incl. **Sit On It**) |
 | **Bonds / clashes in the six** | ♥ Fraidy, Goofball, Brooder · ✗ Schemer | ♥ all but Brooder · ✗ Brooder | ♥ Stalwart, Schemer, Goofball · ✗ Braggart | ♥ Goofball · ✗ Fraidy | ♥ Fraidy, Goofball · ✗ Brooder, Stalwart | ♥ Stalwart · ✗ Schemer, Goofball |
 | **Tags (OR-04 slice seeds)** | Ex–Wall Sitter: **Old Boss** Daifuku (authored) | — | **Kin** Sasa (a Wall Sitter) | **Boss** Daifuku; **Rival** Goma | **Boss** Daifuku; **Rival** the second Captain | **Gang** (the Wall Sitters) |
 | **Old Gang Nerves (OR-06)** | Authored `OLD_GANG(daifuku)` from the start; Stalwart **resists**: "Not your cat anymore." | — (no old gang) | — (a Stray; no gang) | Gains `OLD_GANG(daifuku)` on recruit; Braggart **resists** | Gains `OLD_GANG(daifuku)` on recruit; Schemer **susceptible**: Cowed 20 s in the Daifuku fight unless Sworn; a Tag-In steadies Kagi | — (he was the Boss) |
-| **The other Verdicts (OR-12–14)** | — | — | — | **Chase Off:** Gone for good; his arc closes "Run out of town"; no other cat becomes the lead. **Nose-Touch** (gate 45; open on Life 1 day 2 after a clean Pile-On, pending Grudge 43): 10-day truce, normally declared a Sworn Rival; may join Mikan's fights against Goma (§3.5.7) | **Chase Off:** Gone. **Nose-Touch** (gate 50): truce; may join fights against the second Captain | **Chase Off:** Gone. **Nose-Touch** (gate 45): steps down into a 10-day truce; no Rival tag, so no join-in |
+| **The other Verdicts (OR-12–14)** | — | — | — | **Chase Off:** Gone for good; his arc closes "Run out of town"; no other cat becomes the lead. **Nose-Touch** (gate 45; open on Life 1 day 2 after a clean Pile-On, pending Grudge 43): 10-day truce, normally declared a Sworn Rival; may join Mikan's fights against Goma (§3.5.7) | **Chase Off:** Gone. **Nose-Touch** (gate 50, and a quiet take: one Counter-Spray on his post, not two; Nemesis F4): truce; may join fights against the second Captain | **Chase Off:** Gone. **Nose-Touch** (gate 45; closed if he came to the fight Seething or Furious, Nemesis F4): steps down into a 10-day truce; no Rival tag, so no join-in |
 | **Betrayal (OR-11)** | Never (story) | Never (story) | Never (Friend Stray) | Eligible when posted and Shifty (§3.7.4); posting is what he hates | Eligible when posted below 35 (Schemer) | Eligible in principle; joins at the end of Life 2, so not reachable in the slice |
 | **Hook in one line** | The bodyguard who taught you to smell the street, and once sat on Daifuku's wall | Prop chaos and the reason everyone gets along | The skittish lookout who never gets flattened | Your first enemy, now your loudest friend | The clever one who brings the screech, and friction, and a flinch at the old boss | The old king who never comes down off the walls until the Lane smells of you, and only warms to the cat who earned it |
 
@@ -467,7 +467,7 @@ Fixed values (not F6): story recruits Hige 60, Pon 55; Friend Stray 50.
 
 **Output range.** Clamped 5–80. Unclamped extremes: maximum 50 + 30 + 10 + 10 = **100** (G 0, Regard 100, Goofball, feast) → 80; minimum under the availability gate (G ≥ 90 needs Regard ≥ 50): 50 − 40 + 15 − 5 + 5 − 20 = **5**; without the gate the expression could reach −10, which the clamp absorbs.
 
-**Worked examples.** Togemaru, the First Thorn (G_pre 55, Regard 10, Braggart, Life 1): 50 − 22 + 3 + 0 + 5 = **36** (Aloof: cannot teach yet). Kagi (G_pre 40, Regard 20, Schemer, fair): 50 − 16 + 6 − 5 + 5 = **40**; feast **45** (Steady: can teach Banshee Screech at once; that is what a feast buys). Daifuku (G_pre 30, Regard 60, Brooder, fair): 50 − 12 + 18 − 5 + 5 = **56**; feast **61** (True: Warden-eligible).
+**Worked examples.** Togemaru, the First Thorn, Recruited on L1D2 after the quiet clean Pile-On of Nemesis §3.16 (G_pre 43, Regard 23 after the Recruit term, Braggart, Life 1): 50 − 17.2 + 6.9 + 0 + 5 = 44.7 → **44** (floored, as F7 displays Loyalty; Aloof: cannot teach yet). *(Corrected in the consistency pass: the old inputs, G_pre 55 and Regard 10, were the round-3 Grudge path.)* Kagi (G_pre 40, Regard 20, Schemer, fair): 50 − 16 + 6 − 5 + 5 = **40**; feast **45** (Steady: can teach Banshee Screech at once; that is what a feast buys). Daifuku (G_pre 30, Regard 60, Brooder, fair): 50 − 12 + 18 − 5 + 5 = **56**; feast **61** (True: Warden-eligible).
 
 ### F7. Daily Loyalty change
 
@@ -512,7 +512,8 @@ Firewall check: Kagi starts at 40 and `L_own` = 47, both ≥ 35, so W1 applies (
 
 ```
 bribe_fair  = BRIBE_PER_LEVEL × level × RANK_MULT[rank]
-bribe_feast = FEAST_MULT × bribe_fair;  bribe_none = 0
+bribe_feast = FEAST_MULT × bribe_fair
+bribe      = 0 in Life 1 (free, PP-07); from Life 2 bribe_fair or bribe_feast only (no "none" tier; consistency pass F1)
 ```
 
 | Symbol | Type | Range | Description |
@@ -523,7 +524,7 @@ bribe_feast = FEAST_MULT × bribe_fair;  bribe_none = 0
 | FEAST_MULT | float | 2 | Canon |
 | bribe | int | 0–640 | Morsels from the Stash (Life 1: 0) |
 
-**Output range.** 0 (none, or Life 1) to **640** (feast for a Lv 10 Boss: 2 × 8 × 10 × 4). Territory's sheet wins on any difference.
+**Output range.** 0 (Life 1 only) to **640** (feast for a Lv 10 Boss: 2 × 8 × 10 × 4). Territory's sheet wins on any difference.
 
 **Worked example.** Kagi, Lv 6 Captain: fair 8 × 6 × 2 = **96**; feast **192**. Daifuku, Lv 9 Boss: fair **288**, feast 576.
 
@@ -576,7 +577,7 @@ BetrayalTriggered    ⇔ wavering_nights = WAVER_NIGHTS                     (Nem
 
 **Output range.** Boolean per cat per night. At most one betrayal per cat (it leaves the Crew). With 2 Sentry slots, at most 2 per night; in practice ≤ 1 in a slice run, and 0 under the reference policy.
 
-**Worked example (neglect policy).** Togemaru is recruited free on Life 1 day 2 at 36 and ends Life 1 at 39. From Life 2 day 1 the player posts him beside Kinako (a clash) and never feeds the Crew. Nights 1–2: post +1, clash −1 → 39. From night 3 the Braggart's "out of the Posse" −2 bites: 37, 35, 33, 31, then **29 on night 7** → `wavering_nights` 1; Wavering mornings on days 8 and 9; if he is still posted and below 30 on night 9, he takes his Patch. A day in the Posse (+3, and it resets his days out) or un-posting him cancels it at once; Share a Morsel only holds him at 29, because the sulk eats it. For a Braggart the cure is the thing he wants: the Posse. A median Life 2 lasts 4.5–6 days, so this path is reachable only by long neglect: that is the "rare" of C3, and his personality is what drives it.
+**Worked example (neglect policy).** Togemaru is recruited free on Life 1 day 2 at 44 and ends Life 1 at 47. From Life 2 day 1 the player posts him beside Kinako (a clash) and never feeds the Crew. Nights 1–2: post +1, clash −1 → 47. From night 3 the Braggart's "out of the Posse" −2 bites: 45, 43, 41, …, then **29 on night 11** → `wavering_nights` 1; Wavering mornings on Life 2 days 12 and 13; if he is still posted and below 30 on night 13, he takes his Patch. A day in the Posse (+3, and it resets his days out) or un-posting him cancels it at once; Share a Morsel only holds him, because the sulk eats it. For a Braggart the cure is the thing he wants: the Posse. A median Life 2 lasts 4.5–6 days, so this path is reachable only by long neglect, well past the slice: that is the "rare" of C3, and his personality is what drives it. **Slice bound (consistency pass F9, analytic):** the earliest any posted ex-Rival recruit can defect is past day 7 under both policies (Togemaru above: Life 2 night 13; Kagi joins on L2D3 at ≥ 40 and would have to be below 35 on that same night, a drop of 6+ in one day that no slice input produces), so AC-23 holds at 0% / 0% inside the slice. The Lives 1–2 sim still owes the measured rate.
 
 ---
 
@@ -822,4 +823,13 @@ Owned elsewhere (do not tune here): combat-perk magnitudes, Cowed durations (20 
 | Re-sim | DEFERRED | AC-6 pacing and AC-23 betrayal rate need the Lives 1–2 sim re-run under OR-01/02 and the fair-minimum Bribe (owned with Territory's economy re-sim) |
 | G10 watch items | DEFERRED (counsel) | W1–W3 and the join-in held, not redesigned, per v2 G10; Backlog line added |
 
-**Assumptions for creative-director review (this pass):** (1) cutting the "none" Bribe from Life 2 is Crew's reading of C4's "Recruit for a bribe" and OR-12's "the only option that costs Morsels"; brief §3.3 still lists "none / fair / feast", and Territory's price sheet and key-screens §4 need the same change; (2) a Wavering cat posted on Home Ground or the Den is not eligible (OR-11 forbids those Patches as the prize); (3) the betrayal firewall is Crew's answer to OR-11's G10 check and goes beyond "add none" only by fencing two existing inputs off from betrayal; (4) the allied guest uses its personality's AI row and its own Rival kit (a proposal to Combat).
+**Assumptions for creative-director review (this pass):** (1) cutting the "none" Bribe from Life 2 is Crew's reading of C4's "Recruit for a bribe" and OR-12's "the only option that costs Morsels" (**CONFIRMED, consistency pass F1**: the brief, Territory's price sheet and key-screens §4 now all read Life 1 free, then Fair or Feast); (2) a Wavering cat posted on Home Ground or the Den is not eligible (OR-11 forbids those Patches as the prize); (3) the betrayal firewall is Crew's answer to OR-11's G10 check and goes beyond "add none" only by fencing two existing inputs off from betrayal; (4) the allied guest uses its personality's AI row and its own Rival kit (a proposal to Combat).
+
+**2026-11-24 — Consistency pass (creative director; `design/reviews/owner-feedback/consistency-pass.md`).**
+
+| Item | Status | How |
+|---|---|---|
+| F1 Bribe tiers | CONFIRMED | F8 drops `bribe_none`; Life 1 free, then Fair or Feast only (assumption 1 closed) |
+| F9 betrayal rate | BOUNDED, SIM OWED | F11 neglect example re-derived from the current Nemesis inputs (Togemaru starts at 44, not 36; earliest defection Life 2 night 13); the slice bound is analytic (0% / 0%); AC-23's measured rate is still owed by the Lives 1–2 sim before the build |
+| Cross-doc number | FIXED | F6 worked example and §3.3: Togemaru G_pre 43 (Nemesis F1), Regard 23 → starting Loyalty 44 |
+| F12 Nose-Touch gate | NOTED | §3.3 Kagi and Daifuku rows carry the quiet-take clause |

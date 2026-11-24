@@ -1,7 +1,7 @@
 # HUD Design — Cat RPG (vertical slice, round 2)
 
-*Owner: ux-designer · Date: 2026-11-23, revised 2026-11-24 (owner feedback pass) · Status: round-2 slice rewrite (the first draft is archived at `design/backlog/first-drafts/hud.md`)*
-*Canon: owner comments C1–C5 → `design/reviews/owner-feedback-rulings.md` (OR-xx, binding) → `design/creative-brief.md` v1.5 → `design/reviews/round-1/director-rulings.md` (DR-xx). Patent guardrails: `design/legal/nemesis-patent-analysis.md` v2 §5. Where this doc and a ruling disagree, the ruling wins and this doc is wrong.*
+*Owner: ux-designer · Date: 2026-11-23, revised 2026-11-24 (owner feedback pass; consistency pass by the creative director) · Status: round-2 slice rewrite (the first draft is archived at `design/backlog/first-drafts/hud.md`)*
+*Canon: owner comments C1–C5 → `design/reviews/owner-feedback-rulings.md` (OR-xx, binding), as settled by `design/reviews/owner-feedback/consistency-pass.md` → `design/creative-brief.md` v1.6 → `design/reviews/round-1/director-rulings.md` (DR-xx). Patent guardrails: `design/legal/nemesis-patent-analysis.md` v2 §5. Where this doc and a ruling disagree, the ruling wins and this doc is wrong.*
 *Companions: `design/ux/key-screens.md` (Rivals board, Rival card, Verdict and loss, Turf Board, Crew, onboarding) and `design/accessibility-requirements.md` (the project-wide floor every element here must meet).*
 
 **Scope.** The slice HUD for the three contexts of Lives 1–2: **street** (exploration), **combat** and **home**, under the **third-person camera behind the cat** (brief §4.1, DR-48). It also holds the **control map** (DR-08; UX owns the map, Combat owns the actions). It does not define any system rule: every value shown here is read from the owning system.
@@ -411,11 +411,13 @@ At the Doorstep each morning, **stamp cards unroll from scent wisps** (Art draws
 | P | Card type (v1.5) | Pictogram | Shows |
 |---|---|---|---|
 | 1 | **Wavering** (OR-11) | Turned-away chip + **two-pip morning mark** ("last warning" on the 2nd) | The posted ex-Rival recruit, its post's stamp, the fix in one line ("Bring it into the Posse, or off its post."). Always admitted; on the 2nd morning it sits first, above the raid forecast |
-| 2 | **Boss window** (OR-09) | Crown with paw-marks | "Daifuku has come down off the walls." + today's three stop landmarks; the Morning stop lit |
+| 2 | Declaration / arc closing | Storm mark / bell / paw prints off the edge | *Sworn Enemy* / *Sworn Rival* / "Wears the bell now" / "Run out of town" |
 | 3 | **Challenger arrived** (OR-16) | Stake flag | "A stranger's scent." Silhouette + the staked Patch's stamp + tape star |
-| 4 | Declaration / arc closing | Storm mark / bell / paw prints off the edge | *Sworn Enemy* / *Sworn Rival* / "Wears the bell now" / "Run out of town" |
+| 4 | **Boss window** (OR-09) | Crown with paw-marks | "Daifuku has come down off the walls." + today's three stop landmarks; the Morning stop lit |
 | 5 | **Boss anger** at Seething or Furious (OR-07) | 2–3 steam puffs | "The big wall is seething." (his own Standoff voice; never a cause other than marking) |
 | 6 | Town event, truce over, victor's plaster line | Tape star / sprig / plaster | One line, the cat's own; never a cause in terms of another cat |
+
+*One order with `nemesis-system.md` §3.13 (Nemesis owns which items are admitted and their order; UX owns the cards). Settled in the consistency pass: the two docs disagreed on where Wavering and the Declaration sat.*
 
 Deleted card types (OR-21): promoted, returned, Restless.
 
@@ -430,11 +432,11 @@ Life 1 shows one card (day 1: Tribute only; day 2: the Thorn at the gatepost). T
 |              | RAID  [Persimmon Alley] <== [Thorn]   |  tonight          |
 |              |        (paw-arrow)   (motive: grudge) |                   |
 |              +---------------------------------------+                   |
-|              | (crown) Daifuku has come down off the |                   |
-|              |  walls.  [yard wall][back wall][Den]  |                   |
-|              +---------------------------------------+                   |
 |              | (flag) [ ? ] A stranger's scent.      |                   |
 |              |        staking [Laundry Pole Yard] *  |                   |
+|              +---------------------------------------+                   |
+|              | (crown) Daifuku has come down off the |                   |
+|              |  walls.  [yard wall][back wall][Den]  |                   |
 |              +---------------------------------------+                   |
 |                (N) See the Rivals         step off to close              |
 +--------------------------------------------------------------------------+
@@ -602,6 +604,8 @@ Cut (DR-08): Whack, Bap, Righting input, hold-charge attacks, Tactics (slice), L
 - Random-pause test at 10 combatants (full-game stress test; the slice test runs at 6 enemies + Posse).
 
 ## Revision Log
+
+**2026-11-24, Consistency pass (creative director; `design/reviews/owner-feedback/consistency-pass.md`).** §5.3 Sniff card priority set to the single order shared with Nemesis §3.13 (Wavering > Declaration/arc closing > challenger > Boss window > anger > town events). On the reference path the Boss-window card first appears in the L2D4 Sniff, beside the challenger's, because the window opens on L2D3 at the Tofu Shop Step Claim Spray (F7).
 
 **2026-11-24, Owner feedback pass (2026-11-24): only the elements the rulings touch (OR-01, OR-03, OR-06, OR-07, OR-08, OR-09, OR-11, OR-13, OR-16; patent note v2 §5).**
 

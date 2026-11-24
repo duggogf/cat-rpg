@@ -1,7 +1,7 @@
 # Territory Management and the Food-Tax Economy
 
-*Owner: economy-designer (Territory & Economy) · Round 2 (vertical slice) · Date: 2026-11-23 · Iteration 3 (final fix pass) 2026-11-24 · **Owner feedback pass 2026-11-24** · Status: slice spec*
-*Canon: `design/creative-brief.md` **v1.5**; binding rulings `design/reviews/owner-feedback-rulings.md` (**OR-01…OR-21**, which win over every older ruling), then `design/reviews/round-1/director-rulings.md` (DR-01, DR-13, DR-14, DR-17–DR-19, DR-37, DR-42, DR-46, DR-47). Patent guardrails: `design/legal/nemesis-patent-analysis.md` v2 §5 (G1–G12). First draft archived at `design/backlog/first-drafts/territory-management.md`.*
+*Owner: economy-designer (Territory & Economy) · Round 2 (vertical slice) · Date: 2026-11-23 · Iteration 3 (final fix pass) 2026-11-24 · **Owner feedback pass 2026-11-24** · Consistency pass (creative director) 2026-11-24 · Status: slice spec*
+*Canon: `design/creative-brief.md` **v1.6**; binding rulings `design/reviews/owner-feedback-rulings.md` (**OR-01…OR-21**, which win over every older ruling) as settled by `design/reviews/owner-feedback/consistency-pass.md` (F1–F12), then `design/reviews/round-1/director-rulings.md` (DR-01, DR-13, DR-14, DR-17–DR-19, DR-37, DR-42, DR-46, DR-47). Patent guardrails: `design/legal/nemesis-patent-analysis.md` v2 §5 (G1–G12). First draft archived at `design/backlog/first-drafts/territory-management.md`.*
 *Scope: **the vertical slice only.** Hidamari Lane (5 Patches), Lives 1–2, about 7 in-game days. Full-game material is listed in `## Backlog (post-slice)`.*
 
 > **Patent rule for this doc (brief v1.5, OR appendix).** Nothing Mikan does to one cat, and nothing that cat becomes because of it, may change a *different* cat. Territory changes land on **Patches, posts and Morsels**, on the **calendar**, or on **newly generated cats** (Nemesis). **No fight outcome moves Scent or influence** (G5): fights matter because gang cats guard the posts you then spray. Not legal advice; counsel review still blocks scope lock and any public showing.
@@ -104,7 +104,7 @@ Influence is **a read-out, not a second number**. Per-Patch Scent stays the only
 
 **What influence drives, and what it never drives.** It opens and closes the **Boss window** (§3.5) and gates a held Den's raid admissibility (§3.7). It **never** buffs, levels or re-tasks any cat (OR-18: no buffs from influence; G5), and the Boss's level, stats, traits and rank never read it.
 
-**Worked example (OR-08; Life 2 day 3 evening):** Low Wall Corner 80, Laundry Pole Yard 66, Persimmon Alley 48, Tofu Shop Step 70 (just claimed) → 25 + 25 + 20 + 25 = **95**. Rescue-Spray Persimmon Alley to 90 → **100: full influence** (§3.5).
+**Worked example (OR-08; a player who let Persimmon Alley fade, Life 2 day 3 evening):** Low Wall Corner 80, Laundry Pole Yard 66, Persimmon Alley 48, Tofu Shop Step 70 (just claimed) → 25 + 25 + 20 + 25 = **95**. Rescue-Spray Persimmon Alley to 90 → **100: full influence** (§3.5).
 
 ### 3.3 Marking verbs
 
@@ -116,7 +116,7 @@ Influence is **a read-out, not a second number**. Per-Patch Scent stays the only
 
 Spraying is slapstick: a sparkle cloud and a pop, never liquid. There is **no daily limit** on any marking verb, and none needs one: Rubs give no Scent, and your own Spray exists only when it is needed (DR-18).
 
-**Every marking act carries its district.** Territory emits `MarkApplied(patch_id, district_id, kind ∈ {over_mark, counter_spray, claim_spray, rescue_spray}, target_clowder)` (proposed contract, §6). Nemesis reads it for **Boss anger** (OR-07: an Over-mark of a rival mark +5, a Counter-Spray of a rival post +15; Claim and Rescue Sprays are never sources). This is how Territory's sneak-versus-loud choice also sets how hard the Boss hits.
+**Every marking act carries its district.** Territory emits `MarkApplied(patch_id, district_id, kind ∈ {over_mark, counter_spray, claim_spray, rescue_spray}, target_clowder)` (brief §6.1; adopted in the consistency pass, F8). Nemesis reads it for **Boss anger** (OR-07: an Over-mark of a rival mark +5, a Counter-Spray of a rival post +15; Claim and Rescue Sprays are never sources) and, from Life 2, for the **Nose-Touch quiet-take clause** (Nemesis F4: ≥ 2 Counter-Sprays on the contested Keeper's own post close that Keeper's Nose-Touch card). This is how Territory's sneak-versus-loud choice also sets how hard the Boss hits and whether the Keeper will make peace.
 
 **The Den post cannot be marked** (no Over-mark, Counter-Spray or Spray) until the Boss has been given a Verdict; then it takes a Claim Spray (§3.5).
 
@@ -132,8 +132,8 @@ One number drives the contest: the rival Clowder's Scent on that Patch, `S_r` (a
 6. **Claim Spray** → yours at 70. From Life 2 day 2 (once Sentries are taught, §3.12), a prompt offers to leave one Posse Crew cat as Sentry (the only posting outside the Lot); the Posse runs one cat short until the Lot. A cleared post that is **not** Claim Sprayed stays keeperless, and a newcomer may move in on a town-event night (§3.7.3).
 
 **Two ways to take an outer Patch (80):**
-- **Quiet:** two unseen Over-marks (→ 60), then one Counter-Spray (→ 30): one escort wave, then the Keeper. Boss anger +25.
-- **Loud:** two Counter-Sprays (→ 50, Bristle, two waves; → 20 once the waves let you finish the hold). Boss anger +30, and more fighting.
+- **Quiet:** two unseen Over-marks (→ 60), then one Counter-Spray (→ 30): one escort wave, then the Keeper. Boss anger +25. The Keeper's Nose-Touch card stays open (if its Grudge allows).
+- **Loud:** two Counter-Sprays (→ 50, Bristle, two waves; → 20 once the waves let you finish the hold). Boss anger +30, more fighting, and **from Life 2 the Keeper will not Nose-Touch** (Nemesis F4).
 
 **Interruptions:** a Posse wipe during a contest is a loss (OR-01: the day ends, §3.9.1) and **changes no Scent**; the erosion already done stays and recovers +8 that night. Leaving a Contested Patch for 20 s, or going home, ends the contest the same way.
 
@@ -154,7 +154,7 @@ One number drives the contest: the rival Clowder's Scent on that Patch, `S_r` (a
 9. **After the claim:** the Den is the Warden's post (§3.6). A held Den is admissible to raids only while Mikan's Lane influence is **below 75** (the symmetry rule, now read off the same bar). Outer Patches are raidable as normal again, and challengers keep coming on their calendar (§3.7.2): being Boss is harder than becoming Boss. The Life goal stays met regardless (no fail state).
 10. **Full House:** holding all five Patches adds +10% Tribute on every Patch.
 
-**Pacing (sim, §4.11).** For a player who rescue-Sprays every prompt, the Claim Spray on Tofu Shop Step (Life 2 day 3) is the moment influence first reaches 100, so **Daifuku comes down on L2D3** (100% of engaged runs). Day Loop's reference attempts him on **L2D4** (the L2D3 clock is spent on Kagi's take) and, after that attempt's loss, claims on **L2D5**. A player who skipped L2D3's rescue Sprays sees the window open on L2D4 (OR-09's expectation). Flagged for Day Loop and UX (§6 note 7).
+**Pacing (sim, §4.11; reference day ruled in the consistency pass, F7).** **The window opens on L2D3, at the Tofu Shop Step Claim Spray.** A player who answered the L2D2 raid at Persimmon Alley (the forecast target: its rescue Spray is the obvious defence) holds the other three outer posts Strong on L2D3, so Kagi's post fills the bar (sim: 100% of engaged runs). Daifuku's yowl rolls down and he climbs to his Day stop, Tofu Shop's back wall; fighting him that day is optional. **The first attempt is L2D4** (Day Loop's budget; the Sniff carries the Boss-window card beside the challenger's), and after a lost attempt the claim is L2D5; a won attempt claims on L2D4. A player who let a post fade sees the window open on L2D4 morning after a rescue Spray instead: the same rule, a day later.
 
 ### 3.6 Sentries and the Warden
 
@@ -217,7 +217,7 @@ Without a Schemer posted, a raid's motive shows "?" and the player reads the for
 2. Low Wall Corner is never admissible.
 3. A Patch claimed or retaken today is immune tonight.
 4. No Patch is raided two nights running, **except a challenger's `challenge` raid on the Patch it stakes**.
-5. A held Den is admissible only while Mikan's Lane influence is below 75 (§3.5 item 9).
+5. A held Den is admissible only while Mikan's Lane influence is below 75 (§3.5 item 9). *Full game:* a **Usurper**'s `challenge` raid on the Den is admissible whatever the influence (Nemesis §3.20).
 
 **Motives** (Nemesis's list, OR-16, OR-19). Territory adds the resolution effect:
 
@@ -350,8 +350,8 @@ Rank never drops. The slice clamps follow DR-01 (2 Sentry slots, Crew cap 6). Ra
 | 2 | L1 D2 | Togemaru, the First Thorn, at Laundry Pole Yard's gatepost; a normal "fight to clear, spray to claim" contest; the three-card Verdict; Doorstep and the 1-item Sniff |
 | 3 | L2 D1 | Persimmon Alley take. The rescue Spray (Low Wall Corner and Laundry Pole Yard have dropped below Strong overnight). **The influence bar** first appears (key-screens §7.4: from L2D1). No posting yet |
 | 4 | L2 D2 | **First forecast raid** in the Sniff. **Sentries and the Turf Board**, first taught as the answer to that forecast: one posting decision, on the forecast Patch (PP-11). Cat flap (K2.3 at Dusk) and the **first Caterwaul** that Night (the presence rule) |
-| 5 | L2 D3 | **Lessons** open at the Lot. Tofu Shop Step take (Captain Kagi; Recruit costs a fair Bribe). For a player who rescue-Sprayed that morning, **the Claim Spray fills the bar and Daifuku comes down** (§3.5) |
-| 6 | L2 D4 | **"A stranger's scent":** the challenger is announced (Sniff, Rivals board Outsiders gate, Turf Board stamp, compass tick) and stakes the weakest post. **Daifuku on his patrol** (Day Loop's reference attempt; a loss plays OR-01) |
+| 5 | L2 D3 | **Lessons** open at the Lot. Tofu Shop Step take (Captain Kagi; Recruit costs a fair Bribe; a loud take closes his Nose-Touch). **The Claim Spray fills the bar and Daifuku comes down** to his Day stop (§3.5; the reference day, F7) |
+| 6 | L2 D4 | **"A stranger's scent":** the challenger is announced (Sniff, Rivals board Outsiders gate, Turf Board stamp, compass tick) and stakes the weakest post. The Sniff's Boss-window card lists today's stops; **the first attempt on Daifuku** (a loss plays OR-01) |
 | 7 | L2 D5 | The rematch at a patrol stop, the Verdict, **the Den Claim Spray** (`DistrictClaimed`). The claim-night pile is shown on the title card |
 
 UX owns the beat sheet (`ux/key-screens.md` §7.4): one headline per day, with Sentries and the Turf Board on Life 2 day 2, Lessons on Life 2 day 3, and the window and the challenger on Life 2 day 4. The Turf Board's first use stays one decision (≤ 45 s, OR-17 trims).
@@ -650,14 +650,14 @@ window_open' = true    if not claimed(d) and I(mikan, d) ≥ I_full          (af
 | Output | 0–100 | Mikan's Lane value never below 4 once LWC is his (`10/60 × 25 = 4.2`) |
 
 **Examples:**
-- Life 2 day 3 evening (OR-08): LWC 80, LPY 66, PA 48, TSS 70 → `25 + 25 + 20 + 25 = 95`. Rescue-Spray PA → 100: the window opens.
+- Life 2 day 3 evening, Persimmon Alley left to fade (OR-08): LWC 80, LPY 66, PA 48, TSS 70 → `25 + 25 + 20 + 25 = 95`. Rescue-Spray PA → 100: the window opens.
 - The window is open; a challenger's over-mark and a Scuffed take TSS from 66 to 36: `25 + 25 + 25 + 15 = 90` → stays open. A second post fading to 40 too: `25 + 25 + 16.7 + 15 = 82` → still open. Two posts at 30: `75` → open; one more point lost → closes at step 2.
 - A post Sprayed to 90 and left Unwatched (no rival neighbours): 25, 25, 25 for three nights, then 20.8, 16.7, 12.5, 8.3, 4.2, 0 (lapses on night 9).
 
 ### 4.15 Challenger pressure (OR-16; Territory's terms)
 
 ```
-arrival_1   = N3 + 2            N3 = the first night at whose step 3 Mikan holds ≥ 3 Patches in the district
+arrival_1   = N3 + 2            N3 = the first night at whose step 2 Mikan holds ≥ 3 Patches in the district (Nemesis F12's `h`)
 arrival_k   = arrival_1 + 4(k−1)   skipped while a challenger is active; ≤ 1 active per district
 target      = argmin_{p held, p ∉ {LWC, Den}} (scent_p, −base_yield_p)
 overmark_n  = 10 × [n > arrival night] × [no Goofball posted on target]
@@ -733,7 +733,7 @@ Slice values: N3 = 3 (Persimmon Alley claimed on L2D1), so arrival_1 = **night 5
 **Turf Board rules (for UX; OR-17 layout: four zones, one job each).**
 1. **Header (one line):** the district name, the **influence bar** (bell gold from the left, the gang's colour from the right, outsiders after it, the Open gap between) with **its % (one number)** and the Boss crown (lit while the window is open), then the Lot tabs (Crew · Turf · Lessons · Share). No separate Sentry counter.
 2. **Map = where. No numbers.** Five Patch stamps at fixed positions. Each stamp = landmark + owner ring + wisps + **one badge** + the seated Sentry. Badge priority: **raid or challenge tonight** > **fading** (below Strong) > Home. While the window is open, crown paw-marks sit on the three patrol stops. Neighbour links appear **only while carrying a cat**.
-3. **Tonight panel = the one decision.** It opens **focused on tonight's threatened Patch** (the forecast raid, or the challenger's stake), so the first press is "pick a cat". It shows: the threat (portraits or silhouettes; motive icon or "?"; a challenger stamp), that Patch's **Scent** and "Strong at 60", and **tomorrow's Tribute** from it. While carrying a cat: the **Repelled / Scuffed / Lost bar with percentages** (from §4.5, the same `counter`, `pair` and over-mark terms), the counter icon, the ♥/✗ neighbour link, and "Laughs off the stranger's marks" for a Goofball on a staked post. On a quiet night it lists the fading posts.
+3. **Tonight panel = the one decision.** It opens **focused on tonight's threatened Patch** (the forecast raid, or the challenger's stake), so the first press is "pick a cat". It shows: the threat (portraits or silhouettes; motive icon or "?"; a challenger stamp), that Patch's **Scent** and "Strong at 60", and **tomorrow's Tribute** from it. While carrying a cat: the **Repelled / Scuffed / Lost bar**, three segments sized by the odds with **no percentages printed** (from §4.5, the same `counter`, `pair` and over-mark terms; key-screens §5.4; consistency pass), the counter icon, the ♥/✗ neighbour link, and "Laughs off the stranger's marks" for a Goofball on a staked post. On a quiet night it lists the fading posts.
 4. **Crew strip = who.** Two Sentry pegs, then each cat's portrait, personality icon, Loyalty tier word and assignment chip (Posse / post / Lounging); **Wavering** shows the cat turned away with the fix line. Ineligible cats are greyed with the reason (Warden needs True). The strip ends with the **totals**: "Tomorrow T − upkeep = net · Stash S".
 5. **Numbers appear in exactly three places:** the header %, the Tonight panel and the totals.
 6. **The one decision a day:** who guards the threatened Patch, and so who leaves the Posse. First use (L2D2) is one decision. Target ≤ 1 min at the Lot (≤ 45 s on first use).
@@ -745,8 +745,8 @@ Slice values: N3 = 3 (Persimmon Alley claimed on L2D1), so arrival_1 = **night 5
 4. Crew should confirm that "same district" for posted pairs means both posted (§3.6).
 5. UX's beat sheet (`ux/key-screens.md` §7.4) owns the teaching order; §3.12 follows it.
 6. The owner-feedback sim `design/reviews/owner-feedback/sim/territory_economy_sim.py` (output `territory_economy_sim.out.txt`) encodes these formulas; §4.5, §4.11–4.13 cite it. The round-3 `posting_stakes_sim.py` and round-2 `territory_slice_sim.py` outputs are kept beside it as `territory_*.before.out.txt`. The Turf Board's preview bar must use the same `counter`, `pair` and over-mark terms.
-7. **Pacing flag (Day Loop, UX):** under the ruled gate the window opens at the **L2D3** Tofu Shop Step Claim Spray for a player who rescue-Sprayed that morning (sim: 100% of engaged runs), one day earlier than OR-09's pacing note. The reference attempt stays on L2D4 and the claim on L2D5. Day Loop decides whether L2D3 shows the yowl as that day's second headline or the Sniff carries it on L2D4.
-8. **Proposed contract (creative-director, brief §6.1):** `MarkApplied(patch_id, district_id, kind ∈ {over_mark, counter_spray, claim_spray, rescue_spray}, target_clowder)`, emitted by Territory, consumed by Nemesis (Boss anger, OR-07) and Audio. It is the "marking acts carry a district id" item of OR-07.
+7. **Pacing (resolved, consistency pass F7):** the reference window day is **L2D3**, at the Tofu Shop Step Claim Spray; Day Loop and UX follow it. The first attempt stays L2D4 and, after a loss, the claim L2D5.
+8. **Adopted contract (brief §6.1, consistency pass F8):** `MarkApplied(patch_id, district_id, kind ∈ {over_mark, counter_spray, claim_spray, rescue_spray}, target_clowder)`, emitted by Territory, consumed by Nemesis (Boss anger, OR-07; the Nose-Touch quiet-take count, F4) and Audio. It is the "marking acts carry a district id" item of OR-07.
 9. **Showcase seeding** (`IMPLEMENTATION-PLAN.md`, OR-21 showcase scope): the browser slice seeds its challenger on the L2D2 Sniff at Laundry Pole Yard and a snapshot influence of 95 with the gatepost below Strong. Those are showcase seeds; this doc's calendar puts the first challenger on L2D4.
 
 ---
@@ -966,3 +966,16 @@ Slice values: N3 = 3 (Persimmon Alley claimed on L2D1), so arrival_1 = **night 5
 - **Challenger and roaming Boss in the slice:** the challenger is announced in the L2D4 Sniff in **100%** of reference runs (1 per slice; 2 by day 10); the casual player sees it on day 7.4 on average. The Boss window opens in **100%** of reference runs (on L2D3); the casual player sees it by day 10 in 68%.
 - **Defence without a death spiral:** engaged player, posts only vs ignoring: staked Patch taken 5% vs 6% (the window protects it), Tribute nights 6–10 258 vs 164. Casual: posts + fights 47% vs ignores 92% taken; worst end state 3.3 Patches, influence 63. Struggler: Stash ≥ 10, ≥ 1 Patch, influence ≥ 4.
 - **Watch item:** the casual claim slips under the all-four-Strong gate (62% by day 10, 84% by day 14). Backlog lists the levers; no change made, because the gate is owner question 5's default.
+
+**2026-11-24 — Consistency pass (creative director).** Rulings in `design/reviews/owner-feedback/consistency-pass.md`.
+
+| Item | Status | How |
+|---|---|---|
+| F1 Bribe tiers | CONFIRMED | Life 1 free; from Life 2 Fair or Feast only (§3.11, §4.8 already match; the brief now matches) |
+| F3 challenger night | CONFIRMED | Night 5 (after L2D3), the L2D4 Sniff; Nemesis F12 now defines the night count |
+| F7 window day | RULED | Reference day **L2D3** at the Tofu Shop Step Claim Spray (§3.5 pacing, §3.12 rows 5–6, §6 note 7); the OR-08 worked example is relabelled as a player who let Persimmon Alley fade |
+| F8 `MarkApplied` | ADOPTED | §3.3 and §6 note 8; also feeds Nemesis's Nose-Touch quiet-take clause (F12), noted in §3.4's quiet/loud takes |
+| F10 posting stakes | ACCEPTED | +24% slice / +33% raid nights (from +34% / +45%) is still a real decision; watch the "stand out" score in playtest. No change |
+| C4 Usurper | NOTED | §3.7 admissibility: a Usurper's `challenge` on the Den ignores the influence rule (full game; Nemesis §3.20) |
+| Turf Board odds bar | FIXED | §6 rule 3: three segments with no percentages printed, matching key-screens §5.4 (UX owns the screen) |
+| Challenger `N3` | FIXED | §4.15: "step 2", matching Nemesis F12's `h` |
