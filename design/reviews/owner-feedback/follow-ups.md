@@ -10,3 +10,7 @@ Collected by the orchestrating session from reviser hand-backs, for the consiste
 | F4 | Reviser decisions needing a ruling: Soggy pauses the Fired Up buff; K1.3's Late form keeps the Call | combat/day-loop reviser | combat, narrative, sound |
 | F5 | The planned L2D4 loss is an assumption: the EV sim wipes only under very poor dodging. The showcase should stage the loss (optional Daifuku bout) rather than rely on it | combat/day-loop reviser | day-loop, implementation plan |
 | F6 | UX open items: Pause ▸ Rivals placement (A-5); the L2D1 influence-bar "look only" (A-6) | UX reviser | key-screens |
+| F7 | OR-09 roaming-boss window can open on L2D3 (not L2D4) for a player who rescue-Sprays that morning; Day Loop and key-screens assume L2D4 | territory reviser | day-loop, key-screens, territory |
+| F8 | New `MarkApplied` event (carries district) proposed for OR-07 boss anger; add to the brief's event contracts and the nemesis doc | territory reviser | creative-brief, nemesis |
+| F9 | OR-11 recruit-betrayal rate and OR-17 challenger visuals deferred from Territory to Crew and UX — confirm they landed there | territory reviser | crew, key-screens |
+| F10 | Posting stakes dropped to +24% slice / +33% raid nights (from +34% / +45%) after fights stopped moving Scent — still a real decision, but watch the "stand out" score | territory reviser | territory |
