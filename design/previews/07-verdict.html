@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="kit/kit.css">
 <style>
   body { margin: 0; background: #111; }
-  .vc { position: absolute; width: 440px; box-sizing: border-box; padding: 18px 26px 20px; }
+  .vc { position: absolute; width: 470px; box-sizing: border-box; padding: 18px 26px 20px; }
   .vc .hd { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
   .vc .hd .t { font: 800 40px/1 var(--font); color: var(--cocoa); letter-spacing: .01em; }
   .vc .hd svg { display: block; flex: none; }
@@ -14,9 +14,9 @@
   .vc .ln b { font-weight: 800; }
   .vc .risk { font: 700 28px/1.25 var(--font); color: #7E6A86; margin-top: 4px; display: flex; align-items: center; gap: 8px; }
   .vc--raised { border-color: var(--ink); border-width: 4px; box-shadow: 0 0 0 6px var(--gold), 6px 10px 0 rgba(110,106,168,.55); }
-  #v-up { left: 740px; top: 36px; }
-  #v-down { left: 740px; top: 846px; }
-  #v-left { left: 44px; top: 380px; }
+  #v-up { left: 690px; top: 30px; width: 540px; }
+  #v-down { left: 690px; top: 868px; width: 540px; }
+  #v-left { left: 40px; top: 400px; }
   #v-right { left: 1424px; top: 300px; width: 460px; padding-bottom: 22px; }
   .bribe { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 14px; }
   .bribe .opt { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 4px 10px; border: 3px solid var(--cocoa); border-radius: 22px 26px 22px 28px / 26px 22px 28px 22px; background: var(--recessed); }
@@ -31,7 +31,7 @@
   #foot-l { left: 44px; bottom: 40px; }
   #foot-r { right: 44px; bottom: 40px; display: flex; align-items: center; gap: 12px; }
   #foot-r .ring { width: 46px; height: 46px; border-radius: 50%; background: conic-gradient(var(--gold) 0 38%, var(--recessed) 38% 100%); border: 3px solid var(--cocoa); box-sizing: border-box; }
-  #title { left: 50%; top: 250px; transform: translateX(-50%); display: flex; align-items: center; gap: 14px; }
+  #title { left: 820px; top: 776px; transform: translateX(-50%); display: flex; align-items: center; gap: 14px; }
 </style>
 </head>
 <body>
@@ -68,8 +68,11 @@ s.push(K.castShadow('M300 150H1640V196H300Z', 0.45));
 let doors = ''; for (let i = 0; i < 6; i++) { const x = 520 + i * 150; doors += `<rect x="${x}" y="218" width="142" height="262" fill="#A9C4D6"/><rect x="${x}" y="218" width="142" height="262" fill="none" stroke="#7A5338" stroke-width="7"/><path d="M${x + 8} 226L${x + 70} 226L${x + 14} 330Z" fill="#E8F4FA" opacity="0.55"/><path d="M${x} 350H${x + 142}" stroke="#7A5338" stroke-width="5"/>`; }
 s.push(`<g filter="url(#k-rough)">${doors}</g>`);
 // noren curtain: three indigo panels with Scribble (human writing stays illegible)
-let noren = ''; for (let i = 0; i < 4; i++) { const x = 760 + i * 106; noren += `<path d="M${x} 196H${x + 100}V300Q${x + 50} 306 ${x} 300Z" fill="#3E4C86"/><path d="M${x + 22} 228q20 -6 30 6t28 -4M${x + 30} 256q12 8 34 -2" stroke="#F4ECDC" stroke-width="5" fill="none" stroke-linecap="round"/>`; }
-s.push(`<g filter="url(#k-rough)"><path d="M748 192H1188" stroke="#7A5338" stroke-width="8"/>${noren}</g>`);
+let noren = ''; for (let i = 0; i < 2; i++) { const x = 1196 + i * 104; noren += `<path d="M${x} 196H${x + 100}V310Q${x + 50} 316 ${x} 310Z" fill="#3E4C86"/><path d="M${x + 22} 232q20 -6 30 6t28 -4M${x + 30} 262q12 8 34 -2" stroke="#F4ECDC" stroke-width="5" fill="none" stroke-linecap="round"/>`; }
+s.push(`<g filter="url(#k-rough)"><path d="M1186 192H1414" stroke="#7A5338" stroke-width="8"/>${noren}</g>`);
+// paper lanterns under the eave (left)
+s.push(`<g filter="url(#k-rough)">${[420, 1500].map((x) => `<path d="M${x} 150V176" stroke="#5E4A3E" stroke-width="3"/><path d="M${x - 24} 196Q${x - 26} 178 ${x} 176Q${x + 26} 178 ${x + 24} 196Q${x + 26} 228 ${x} 232Q${x - 26} 228 ${x - 24} 196Z" fill="#E8604A"/><path d="M${x - 22} 190H${x + 22}M${x - 24} 204H${x + 24}M${x - 22} 218H${x + 22}" stroke="#B8402E" stroke-width="2"/><path d="M${x - 12} 176H${x + 12}M${x - 12} 232H${x + 12}" stroke="#3E2E28" stroke-width="5"/>`).join('')}</g>`);
+s.push(K.glow(420, 205, 90, 60, '#FFD9A0', 0.35) + K.glow(1500, 205, 90, 60, '#FFD9A0', 0.35));
 // signboard with Scribble
 s.push(`<g filter="url(#k-rough)"><rect x="560" y="160" width="140" height="44" fill="#F4E6CC"/><path d="M576 182q20 -10 40 2t44 -4" stroke="#6B4A35" stroke-width="5" fill="none"/></g>`);
 // potted plants, crates of soy bottles, a bench
@@ -80,9 +83,17 @@ s.push(K.surface({ pts: [[300, 482], [1640, 482], [1680, 520], [260, 520]], colo
 s.push(K.surface({ pts: [[260, 520], [1680, 520], [1680, 548], [260, 548]], color: '#A79DA6', grime: 0.1 }));
 
 /* ---------- the lane (the fight ring) ---------- */
-s.push(K.ground({ pts: [[-10, 540], [W + 10, 540], [W + 10, H + 10], [-10, H + 10]], seed: 6 }));
+s.push(K.ground({ pts: [[-10, 480], [W + 10, 480], [W + 10, H + 10], [-10, H + 10]], seed: 6 }));
 s.push(K.castShadow('M260 548H1680L1720 600H220Z', 0.35));
 s.push(K.glow(960, 760, 900, 300, '#FFF0C8', 0.45));
+// cast shadows across the lane: the shop eave (top), a pole and the garden wall (left), leaf dapple (right)
+s.push(K.castShadow('M-20 560L1940 560L1940 640Q1400 610 960 630Q500 650 -20 620Z', 0.32));
+s.push(K.glow(560, 300, 380, 200, '#FFE9C0', 0.35) + K.glow(1300, 360, 300, 160, '#FFE9C0', 0.25));
+s.push(K.flowers({ x: 160, y: 520, w: 260, h: 90, seed: 8, color: '#E58AA6' }));
+let dap = ''; const R = K.rng(12); for (let i = 0; i < 40; i++) { const x = 1300 + R() * 640, y = 820 + R() * 260, r = 10 + R() * 30; dap += `<ellipse cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" rx="${r.toFixed(0)}" ry="${(r * 0.4).toFixed(0)}"/>`; }
+
+s.push(K.grass({ x1: -20, y1: 1076, x2: 1940, y2: 1076, n: 40, h: 40, seed: 4 }));
+s.push(K.prop({ kind: 'bucket', x: 1640, y: 640, scale: 1.2 }));
 // the ring edge: scuffs and dust from the fight
 s.push(`<g filter="url(#k-rough)" fill="none" stroke="#9A8C78" stroke-width="3" opacity="0.55"><path d="M560 860q60 -20 120 6M1260 900q70 -14 120 10M400 700q40 -10 70 8"/></g>`);
 
@@ -97,14 +108,14 @@ s.push(`<g transform="translate(${kg.x - 40} ${kg.y - 186}) rotate(-20)">${K.ink
 /* ---------- Mikan and the Posse ---------- */
 const mk = { x: 1170, y: 800 };
 s.push(K.castShadow(`M${mk.x - 120} ${mk.y - 4}L${mk.x + 130} ${mk.y - 8}L${mk.x + 240} ${mk.y + 26}L${mk.x - 20} ${mk.y + 34}Z`, 0.3));
-s.push(K.cat({ ...K.CAST.oldWallCat, pose: 'front-sit', expr: 'neutral', collar: 'cord', outline: 'gold', x: 1330, y: 684, scale: 1.55 }));
-s.push(K.cat({ ...K.CAST.goofball, pose: 'front-sit', expr: 'happy', collar: 'cord', outline: 'gold', x: 1060, y: 640, scale: 1.3, flip: true }));
+s.push(K.cat({ ...K.CAST.oldWallCat, pose: 'front-sit', expr: 'neutral', collar: 'cord', outline: 'gold', x: 1372, y: 700, scale: 1.55 }));
+s.push(K.cat({ ...K.CAST.goofball, pose: 'front-sit', expr: 'happy', collar: 'cord', outline: 'gold', x: 1238, y: 640, scale: 1.22, flip: true }));
 s.push(K.cat({ ...K.CAST.mikan, pose: 'side-walk', carry: 'spring', outline: 'gold', expr: 'smug', x: mk.x, y: mk.y, scale: 2.15, flip: true }));
 s.push(K.ticks({ x: mk.x + 150, y: mk.y - 200, r: 30, n: 3, a0: -120, a1: -30, len: 12 })); // tail-beckon (Recruit preview)
 s.push(K.sparkle({ x: 690, y: 560, r: 16 }) + K.sparkle({ x: 960, y: 600, r: 10 }));
 
 /* ---------- light ---------- */
-s.push(`<rect width="${W}" height="${H}" fill="#FFF2D6" opacity="0.06"/>`);
+s.push(`<rect width="${W}" height="${H}" fill="#FFF2D6" opacity="0.06"/><radialGradient id="vg" cx="0.5" cy="0.55" r="0.72"><stop offset="0.62" stop-color="#6E6AA8" stop-opacity="0"/><stop offset="1" stop-color="#6E6AA8" stop-opacity="0.32"/></radialGradient><rect width="${W}" height="${H}" fill="url(#vg)" style="mix-blend-mode:multiply"/>`);
 
 /* ---------- UI: the four Verdicts ---------- */
 const arrow = (dir, lit) => { const r = { up: 0, right: 90, down: 180, left: 270 }[dir]; return `<svg width="52" height="52" viewBox="-26 -26 52 52"><circle r="23" fill="${lit ? C.gold : C.cream}" stroke="${lit ? C.ink : C.cocoa}" stroke-width="3"/><path d="M0 -12L11 4H4V12H-4V4H-11Z" transform="rotate(${r})" fill="${lit ? C.ink : C.cocoa}"/></svg>`; };
@@ -119,7 +130,7 @@ const ears = `<svg width="30" height="30" viewBox="-16 -16 32 32"><path d="M-14 
 
 document.getElementById('stage').innerHTML = K.svg(W, H, s.join(''), 'class="k-world"') + `
   <div class="k-panel vc" id="v-up"><div class="hd">${arrow('up')}${ic(noses)}<span class="t">Nose-Touch</span></div>
-    <div class="ln">Offer respect. They may accept.</div><div class="risk">${ears}They keep the Step. 5-day truce.</div></div>
+    <div class="ln">Offer respect. They may accept.</div><div class="risk">${ears}Keeps the Step. 5-day truce.</div></div>
   <div class="k-panel vc" id="v-left"><div class="hd">${arrow('left')}${ic(G.run)}<span class="t">Chase Off</span></div>
     <div class="ln">Gone from the Lane.<br>The Step is yours.</div><div class="risk">${tail}Comes back changed.</div></div>
   <div class="k-panel vc" id="v-down"><div class="hd">${arrow('down')}${ic(crateG)}<span class="t">Humble</span></div>
