@@ -127,3 +127,67 @@ export function shadowTint(actual, shade, albedo, shadowHex = '#6E6AA8') {
   const cos = (dev[0] * sdev[0] + dev[1] * sdev[1] + dev[2] * sdev[2]) / (Math.hypot(...dev) * Math.hypot(...sdev) || 1);
   return { shadedPx: cnt, skippedHazed: hazed, neutralPct: +(100 * neutral / Math.max(1, cnt)).toFixed(2), meanTint: mt.map((v) => +v.toFixed(3)), hueCos: +cos.toFixed(2), chromaMedian: +median(dEs).toFixed(1) };
 }
+
+/**
+ * E-5 for inked figures (art bible, rewritten 2026-11-24): the ink line carries separation.
+ *  (1) ink line vs a ring of surrounding ground ≥ 35 L*; (2) ≥ 90% of silhouette samples have a line ≥ 1.5 px;
+ *  (3) a contact blob under every grounded cat.
+ * Samples that cannot carry a line are classified and excluded, never silently dropped:
+ *  - occluded: the cat continues behind environment there (maskTop, drawn over everything, extends past the edge);
+ *  - hole: the ray re-enters the cat within 16 px (a gap inside the figure, e.g. between body and tail);
+ *  - contact: a downward edge resting on the contact blob (excluded only where the blob covers it).
+ * The walk starts 3 px inside the mask (inward pixels count only if ink-dark) because the fill mask can be a
+ * pixel or two larger than the drawn figure at ear tips.
+ */
+export function e5Ink(img, maskImg, topImg, blobImg, inkHex = '#33273B') {
+  const w = img.width, h = img.height, m = maskOf(maskImg), top = maskOf(topImg), bl = maskOf(blobImg, 60), L = Lstar(img);
+  const n = parseInt(inkHex.slice(1), 16), Lk = lab((n >> 16) & 255, (n >> 8) & 255, n & 255)[0];
+  const at = (f, x, y) => { const xi = Math.round(x), yi = Math.round(y); return xi < 0 || yi < 0 || xi >= w || yi >= h ? 0 : f[yi * w + xi]; };
+  const widths = [], cores = [], ex = { occluded: 0, hole: 0, contact: 0 }; let gaps = [];
+  for (let y = 8; y < h - 8; y++) for (let x = 8; x < w - 8; x++) {
+    const i = y * w + x; if (!m[i] || (m[i - 1] && m[i + 1] && m[i - w] && m[i + w])) continue;
+    if ((x * 7 + y * 13) % 3) continue;
+    let gx = 0, gy = 0; for (let j = -2; j <= 2; j++) for (let k = -2; k <= 2; k++) { gx += m[i + j * w + k] * k; gy += m[i + j * w + k] * j; }
+    const gl = Math.hypot(gx, gy); if (gl < 1e-3) continue; gx /= -gl; gy /= -gl;
+    if (at(top, x + gx * 3, y + gy * 3) && !at(m, x + gx * 3, y + gy * 3)) { ex.occluded++; continue; }
+    let reenter = false; for (let t = 5; t <= 16; t++) if (at(m, x + gx * t, y + gy * t)) { reenter = true; break; }
+    if (reenter) { ex.hole++; continue; }
+    const Lbg = at(L, x + gx * 8, y + gy * 8);
+    let cov = 0, core = null;
+    for (let t = -3; t <= 5; t += 0.5) {
+      const l = at(L, x + gx * t, y + gy * t);
+      const c = t < 0 ? (l < Lk + 15 ? 1 : 0) : Math.max(0, Math.min(1, (Lbg - l) / Math.max(1, Lbg - Lk)));
+      cov += c * 0.5; if (c > 0.92 && !core) core = l;
+    }
+    if (cov < 1.5 && gy > 0.6 && at(bl, x + gx * 4, y + gy * 4)) { ex.contact++; continue; }
+    widths.push(cov); if (core != null) cores.push(core);
+    if (cov < 1.5) gaps.push([x, y]);
+  }
+  // ring of ground around the figure (outside the over-everything mask), un-blurred
+  const outer = dilate(top, w, h, 24), near = dilate(top, w, h, 6); let rs = 0, rn = 0;
+  for (let i = 0; i < m.length; i++) if (outer[i] && !near[i]) { rs += L[i]; rn++; }
+  const ringL = rs / rn, lineL = median(cores);
+  // contact blobs: one per grounded figure (connected components of the over-everything mask)
+  const lab2 = new Int32Array(w * h).fill(-1), comps = [];
+  for (let s = 0; s < w * h; s++) if (top[s] && lab2[s] < 0) {
+    const st = [s], c = { n: 0, x0: w, x1: 0, y0: h, y1: 0 }; lab2[s] = comps.length;
+    while (st.length) { const q = st.pop(), qx = q % w, qy = (q / w) | 0; c.n++; c.x0 = Math.min(c.x0, qx); c.x1 = Math.max(c.x1, qx); c.y0 = Math.min(c.y0, qy); c.y1 = Math.max(c.y1, qy);
+      for (const r of [q - 1, q + 1, q - w, q + w]) if (r >= 0 && r < w * h && top[r] && lab2[r] < 0) { lab2[r] = comps.length; st.push(r); } }
+    comps.push(c);
+  }
+  const figs = comps.filter((c) => c.n > 400).map((c) => {
+    let b = 0; const yA = Math.round(c.y0 + (c.y1 - c.y0) * 0.6), yB = Math.min(h - 1, c.y1 + Math.round((c.y1 - c.y0) * 0.25) + 6);
+    for (let y = yA; y <= yB; y++) for (let x = Math.max(0, c.x0 - 10); x <= Math.min(w - 1, c.x1 + 10); x++) if (bl[y * w + x]) b++;
+    return { box: [c.x0, c.y0, c.x1, c.y1], px: c.n, blobPx: b, blob: b >= 30 };
+  });
+  const ge = widths.filter((v) => v >= 1.5).length;
+  return { samples: widths.length, fracGe15: +(ge / Math.max(1, widths.length)).toFixed(3), widthMedian: +median(widths).toFixed(2), widthP10: +pct(widths, 0.1).toFixed(2),
+    lineL: +lineL.toFixed(1), ringL: +ringL.toFixed(1), diff: +(ringL - lineL).toFixed(1), excluded: ex, gaps: gaps.length, figures: figs };
+}
+
+/** Median L* of lit, non-figure pixels in a region (lit = the shade mask's red channel low). */
+export function litGround(img, shade, catMask, [x0, y0, x1, y1]) {
+  const v = []; const m = maskOf(catMask);
+  for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) { const i = y * img.width + x; if (m[i] || shade.data[i * 4] > 40 || shade.data[i * 4 + 1] > 6) continue; v.push(lab(img.data[i * 4], img.data[i * 4 + 1], img.data[i * 4 + 2])[0]); }
+  return { px: v.length, Lmedian: +median(v).toFixed(1), Lp25: +pct(v, 0.25).toFixed(1) };
+}

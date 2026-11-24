@@ -26,9 +26,9 @@ export function fillFrag(coatGlsl, colorNames) {
   ${VARY}
   uniform vec3 uKeyDir; uniform vec3 uLitMul; uniform vec3 uShadeMul; uniform float uTerm;
   uniform vec3 uHeadC; uniform float uSpineY; uniform vec3 uCollarC; uniform vec3 uCollarAx; uniform vec3 uEar; uniform vec4 uChin;
-  uniform sampler2D uFace; uniform vec4 uFaceRect; uniform vec4 uSideRect; uniform float uFaceFrame; uniform float uFaceFrames; uniform float uFaceOn; uniform float uProfile;
+  uniform sampler2D uFace; uniform vec4 uFaceRect; uniform float uFaceFrame; uniform float uFaceFrames; uniform float uFaceOn;
   float vP; // part with legs (5) folded into body (0) for the coat functions
-  uniform float uSil; uniform vec3 uSilCol;
+  uniform float uSil; uniform vec3 uSilCol; uniform vec4 uPaws; uniform vec3 uInkF;
   ${colorNames.map((n) => `uniform vec3 c_${n};`).join('\n')}
   ${coatGlsl}
   void main() {
@@ -42,13 +42,18 @@ export function fillFrag(coatGlsl, colorNames) {
     // authored contact shade: the head's shadow on the chest/shoulders (kit: shade ellipse under the head)
     if (vP < 0.5) { vec3 d = (vRest - uChin.xyz) / vec3(uChin.w * 1.25, uChin.w * 0.7, uChin.w); if (dot(d, d) < 1.0) sh = 1.0; }
     vec3 col = base * mix(uLitMul, uShadeMul, sh);
-    // face decal: front (projected along head +Z) or profile (along X onto both cheeks); flat, never shaded
-    if (uFaceOn > 0.5 && vPart > 0.5 && vPart < 1.5) {
-      vec2 uv = vec2(-1.0); float fr = uFaceFrame;
-      if (uProfile < 0.5 && vRestN.z > 0.05 && vRest.z > uHeadC.z) uv = (vRest.xy - uFaceRect.xy) / (2.0 * uFaceRect.zw) + 0.5;
-      if (uProfile > 0.5 && abs(vRestN.x) > 0.22 && vRest.z > uHeadC.z - 0.01) { uv = (vec2(vRest.z, vRest.y) - uSideRect.xy) / (2.0 * uSideRect.zw) + 0.5; fr += 3.0; }
+    // toe splits: two short ink lines on the front of each paw
+    if (vPart > 4.5 && vRest.y < 0.03 && vRestN.z > 0.3) {
+      bool front = vRest.z > 0.0;
+      float dx = abs(vRest.x) - (front ? uPaws.x : uPaws.y);
+      float dz = vRest.z - (front ? uPaws.z : uPaws.w);
+      if (abs(abs(dx) - 0.0095) < 0.0012 && dz > 0.0 && vRest.y > 0.006) col = uInkF;
+    }
+    // face decal, projected along head +Z in rest space (one decal at every angle; flat, never shaded)
+    if (uFaceOn > 0.5 && vPart > 0.5 && vPart < 1.5 && vRestN.z > 0.05 && vRest.z > uHeadC.z) {
+      vec2 uv = (vRest.xy - uFaceRect.xy) / (2.0 * uFaceRect.zw) + 0.5;
       if (uv.x > 0.0 && uv.x < 1.0 && uv.y > 0.0 && uv.y < 1.0) {
-        vec4 f = texture2D(uFace, vec2(uv.x, (uFaceFrames - 1.0 - fr + uv.y) / uFaceFrames));
+        vec4 f = texture2D(uFace, vec2(uv.x, (uFaceFrames - 1.0 - uFaceFrame + uv.y) / uFaceFrames));
         col = mix(col, f.rgb, f.a);
       }
     }

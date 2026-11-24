@@ -10,7 +10,7 @@ const EAR_INNER = /* glsl */`
   // inner-ear pink: an inset triangle on the front face of the wedge (aux = ear-local u,v,w)
   float earInner(vec3 a, float side, float hw, float h, float tip) {
     if (a.z < 0.0) return 0.0;
-    vec2 A = vec2(-hw * 0.52, 0.006), B = vec2(hw * 0.52, 0.006), C = vec2(side * tip * 0.7, h * 0.74);
+    vec2 A = vec2(-hw * 0.6, 0.004), B = vec2(hw * 0.6, 0.004), C = vec2(side * tip * 0.7, h * 0.8);
     vec2 p = a.xy;
     float e0 = (B.x - A.x) * (p.y - A.y) - (B.y - A.y) * (p.x - A.x);
     float e1 = (C.x - B.x) * (p.y - B.y) - (C.y - B.y) * (p.x - B.x);
@@ -27,7 +27,7 @@ export const CASTS = {
     mesh: 'mikan',
     colors: { white: '#FFF8EC', ginger: '#F28C28', collar: '#D02A45', gold: '#F2B01E', ear: PINK_EAR, ink: INK, cream: '#FFF6E3' },
     eye: '#FFB52E', expr: 'neutral', lid: '#FFF8EC', lidR: '#FFF8EC', lidL: '#F28C28',
-    ear: { hw: 0.04, h: 0.072, tip: 0.012 },
+    ear: { hw: 0.047, h: 0.092, tip: 0.007 },
     glsl: EAR_INNER + /* glsl */`
   vec3 coat() {
     vec3 h = vRest - uHeadC;
@@ -65,7 +65,7 @@ export const CASTS = {
     // Wall Sitters lean to White / Cream / Silver (art bible §3.4): a silver tabby tough.
     colors: { base: '#CDD1DC', stripe: '#8E93A8', muzzle: '#EEF0F2', ear: PINK_EAR, ink: INK },
     eye: '#C9D64A', expr: 'smug', lid: '#CDD1DC', lidR: '#CDD1DC', lidL: '#CDD1DC',
-    ear: { hw: 0.038, h: 0.056, tip: 0.0 },
+    ear: { hw: 0.044, h: 0.07, tip: 0.0 },
     glsl: EAR_INNER + /* glsl */`
   vec3 coat() {
     vec3 h = vRest - uHeadC;

@@ -3,7 +3,7 @@
   "w": 1024,
   "h": 512,
   "alpha": false,
-  "bytes": 28218
+  "bytes": 26252
  },
  "fence": {
   "w": 1024,
@@ -148,5 +148,11 @@
   "h": 1024,
   "alpha": true,
   "bytes": 23540
+ },
+ "groundbits": {
+  "w": 2048,
+  "h": 512,
+  "alpha": true,
+  "bytes": 39574
  }
 }

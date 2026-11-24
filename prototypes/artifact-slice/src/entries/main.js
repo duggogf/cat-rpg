@@ -33,7 +33,7 @@ const TEX = {
   skybrush: { wrap: 'repeat' }, foliage: { alpha: true }, flowers: { alpha: true }, grass: { alpha: true }, clouds: { alpha: true },
   hillsNear: { alpha: true, wrapS: 'repeat' }, hillsFar: { alpha: true, wrapS: 'repeat' }, town: { alpha: true }, sea: { wrapS: 'repeat' },
   roof: { wrap: 'mirror' }, house: { wrap: 'mirror' }, window: {}, notice: { alpha: true },
-  stains: { alpha: true }, poster: { alpha: true }, manhole: { alpha: true }, vending: {}, aircon: {}, legs: { alpha: true }, townFar: { alpha: true },
+  stains: { alpha: true }, groundbits: { alpha: true }, poster: { alpha: true }, manhole: { alpha: true }, vending: {}, aircon: {}, legs: { alpha: true }, townFar: { alpha: true },
 };
 const W = { mirror: THREE.MirroredRepeatWrapping, repeat: THREE.RepeatWrapping };
 async function loadTextures() {
@@ -148,6 +148,16 @@ function render() {
   shadowDirty = true; // foliage sways and the dapple drifts: the sun shadow is re-rendered every frame
   if (shadowDirty) { shadow.update(renderer, [envScene, lateScene], world.casters); shadowDirty = false; lastStats.shadowCalls = shadow.calls; renderer.info.reset(); }
   cam.updateMatrixWorld();
+  if (opt.mask === 'catsTop' || opt.mask === 'blobs') {
+    renderer.setClearColor(0x000000, 1); renderer.setRenderTarget(null); renderer.clear();
+    const black = new THREE.MeshBasicMaterial({ color: 0x000000 }); envScene.overrideMaterial = black; renderer.render(envScene, cam); envScene.overrideMaterial = null;
+    if (opt.mask === 'catsTop') renderer.clearDepth();
+    const hidden = []; lateScene.traverse((o) => { if (!o.isMesh) return; const blob = o.material.transparent; const keep = isCat(o) && (opt.mask === 'blobs' ? blob : !blob); if (!keep) { hidden.push(o); o.visible = false; } });
+    const mats = new Map(); lateScene.traverse((o) => { if (o.isMesh && o.visible) { mats.set(o, o.material); o.material = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide, depthTest: opt.mask === 'blobs' }); } });
+    renderer.autoClear = false; renderer.render(lateScene, cam); renderer.autoClear = true;
+    for (const [o, m] of mats) o.material = m; hidden.forEach((o) => { o.visible = true; });
+    return;
+  }
   if (opt.mask === 'cats') {
     const black = new THREE.MeshBasicMaterial({ color: 0x000000 }); envScene.overrideMaterial = black;
     renderer.setClearColor(0x000000, 1); renderer.setRenderTarget(null); renderer.clear(); renderer.render(envScene, cam); envScene.overrideMaterial = null;
@@ -199,6 +209,17 @@ async function boot() {
     state: () => ({ phase: phaseName, camera: cam.position.toArray().map((v) => +v.toFixed(3)), yaw: rig.yaw, pitch: rig.pitch, dist: +rig.dist.toFixed(3), mikan: mikanPos.toArray(), stats: { ...lastStats, texMB: texMB() } }),
     step: (n = 1) => { for (let i = 0; i < n; i++) step(1 / 60); render(); },
     setPhase: (p) => { setPhase(p); render(); },
+    lensCheck: () => {
+      const c = cam.position, f = new THREE.Vector3(); cam.getWorldDirection(f); const t = Math.tan(cam.fov * Math.PI / 360); let worst = { frac: 0 };
+      for (const k of world.cards) {
+        const p = new THREE.Vector3(...k.p), dl = p.distanceTo(c);
+        if (dl < k.s * 0.55 + 0.35 || (dl < k.s * 1.5 + 0.2 && k.p[1] < c.y + 0.6)) continue;  // culled by the card shader
+        const ahead = p.clone().sub(c).dot(f); if (ahead <= 0.05) continue;
+        const frac = k.s / (2 * ahead * t); if (k.p[1] < c.y + 0.6 && frac > worst.frac) worst = { frac: +frac.toFixed(2), what: 'low foliage card', at: k.p };
+      }
+      for (const sft of world.soft) if (sft.obj.visible) { const dl = Math.hypot(sft.x - c.x, sft.z - c.z); if (dl < 0.8) worst = { frac: 1, what: 'prop ' + sft.obj.name, at: [sft.x, sft.z] }; }
+      return worst;
+    },
     // scripted motion for captures: walk in a world direction while the camera orbits (deterministic sim steps)
     drive: ({ x = 0, z = -1, frames = 15, yaw = 0, dt = 1 / 30 } = {}) => {
       drive.x = x; drive.z = z;

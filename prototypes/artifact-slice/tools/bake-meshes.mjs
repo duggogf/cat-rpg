@@ -42,6 +42,8 @@ for (const [name, opts] of Object.entries(CASTS)) {
       // share of it, which draws interior overlap lines without inking thin parts (ears) solid
       let th = 0.002; const n = nrm[i];
       while (th < 0.12 && f([p[0] - n[0] * th, p[1] - n[1] * th, p[2] - n[2] * th]) < 0) th += 0.002;
+      // ears never pull (their -normal ray runs into the skull and would ink the ear solid)
+      if (S.name === 'head') { let best = 1e9, bt = ''; for (const q of S.prims) { const d = prim(q, p); if (d < best) { best = d; bt = q.t; } } if (bt === 'ear') th = 0; }
       TH.push(th);
       // form normal: the SDF gradient at a coarse scale, for shading only, so the terminator is a
       // simple designed shape (no stair-steps from the decimated mesh, no kinks at junctions)

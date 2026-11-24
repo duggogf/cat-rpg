@@ -5,7 +5,7 @@
 import * as THREE from 'three';
 import { CASTS, INK } from './casts.js';
 import { fillVert, fillFrag, hullVert, hullFrag, blobVert, blobFrag } from './shaders.js';
-import { makeFaceTexture, faceRect, sideRect, FACE_FRAMES } from './face.js';
+import { makeFaceTexture, faceRect, FACE_FRAMES } from './face.js';
 import { createAnimator } from '../../anim/catAnim.js';
 
 const assets = {}; // mesh name -> { json, geometry }
@@ -80,15 +80,15 @@ export function createCatInternal({ cast = 'mikan', scale = 1.25, carry, silhoue
     uEar: { value: new THREE.Vector3(style.ear.hw * hs, style.ear.h * hs, style.ear.tip * hs) },
     uChin: { value: new THREE.Vector4(0, meta.headC[1] - 0.085 * hs, meta.headC[2] - 0.035 * hs, 0.07 * hs) },
     uFace: { value: faceTex }, uFaceRect: { value: new THREE.Vector4(meta.headC[0] + fr.x, meta.headC[1] + fr.y, fr.hw, fr.hh) },
-    uSideRect: { value: (() => { const r = sideRect(hs); return new THREE.Vector4(meta.headC[2] + r.z, meta.headC[1] + r.y, r.hz, r.hy); })() }, uProfile: { value: 0 },
     uFaceFrame: { value: 0 }, uFaceFrames: { value: FACE_FRAMES }, uFaceOn: { value: silhouette ? 0 : 1 },
-    uSil: { value: silhouette ? 1 : 0 }, uSilCol: { value: hexV(silColor) },
+    uSil: { value: silhouette ? 1 : 0 }, uSilCol: { value: hexV(silColor) }, uInkF: { value: hexV(INK) },
+    uPaws: { value: meta.paws ? new THREE.Vector4(meta.paws.xF, meta.paws.xH, meta.paws.zF, meta.paws.zH) : new THREE.Vector4(9, 9, 0, 0) },
   };
   for (const n of colorNames) U['c_' + n] = { value: hexV(style.colors[n]) };
   const fill = new THREE.ShaderMaterial({ uniforms: U, vertexShader: fillVert, fragmentShader: fillFrag(style.glsl, colorNames) });
   const HU = {
     uRes: { value: new THREE.Vector2(1920, 1080) }, uLinePx: { value: 2 },
-    uPartLine: { value: [1, 1, 1, 0.8, 0.7, 1] }, uPull: { value: 0.6 }, uPullMax: { value: 0.024 }, uInk: { value: hexV(silhouette ? silColor : INK) },
+    uPartLine: { value: [1, 1, 1, 0.8, 0.7, 1] }, uPull: { value: 0.6 }, uPullMax: { value: 0.016 }, uInk: { value: hexV(silhouette ? silColor : INK) },
   };
   const hull = new THREE.ShaderMaterial({ uniforms: HU, vertexShader: hullVert, fragmentShader: hullFrag, side: THREE.BackSide });
 
@@ -133,10 +133,11 @@ export function createCatInternal({ cast = 'mikan', scale = 1.25, carry, silhoue
 
   // ---- outline width: L-3 as revised at M0 review: 2.5 px at 1080p OUTPUT. The hull is expanded in
   // render-target pixels, so it is scaled by rtHeight / outputHeight and gets a small top-up when the
-  // render target is smaller than the output (the upscale filter eats ≈ 0.15 px per 10% of scale).
+  // render target is smaller than the output (the upscale filter eats ≈ 0.3 px per 10% of scale).
   // L-4: below 4% of screen height the line drops to 1 px and the face decals switch off.
-  let outlineK = 1, profile = 0;
-  const v2 = new THREE.Vector2(), p0 = new THREE.Vector3(), p1 = new THREE.Vector3(), hp = new THREE.Vector3(), hf = new THREE.Vector3();
+  // One face decal at every angle (owner, M0 sign-off): the lifted muzzle mesh carries the profile.
+  let outlineK = 1;
+  const v2 = new THREE.Vector2(), p0 = new THREE.Vector3(), p1 = new THREE.Vector3();
   mesh.onBeforeRender = (renderer, scene, camera) => {
     const rt = renderer.getRenderTarget();
     if (rt) v2.set(rt.width, rt.height); else renderer.getDrawingBufferSize(v2);
@@ -148,16 +149,9 @@ export function createCatInternal({ cast = 'mikan', scale = 1.25, carry, silhoue
     group.getWorldPosition(p0); p1.copy(p0); p1.y += (meta.headC[1] + 0.08 * hs) * group.scale.y;
     p0.project(camera); p1.project(camera);
     const far = Math.abs(p1.y - p0.y) * 0.5 < 0.04;
-    const outPx = (far ? 1 : 2.5) * outlineK * outH / 1080 + (1 - k) * 1.1;
+    const outPx = (far ? 1 : 2.5) * outlineK * outH / 1080 + (1 - k) * 2.2;
     HU.uLinePx.value = outPx * k;
     U.uFaceOn.value = silhouette || far ? 0 : 1;
-    // front or profile face decal from the head's yaw to the camera (hysteresis); none from behind
-    bones.head.getWorldPosition(hp);
-    hf.setFromMatrixColumn(bones.head.matrixWorld, 2).normalize();
-    const c = hf.dot(p1.copy(camera.position).sub(hp).normalize());
-    if (c < -0.45) U.uFaceOn.value = 0;
-    if (profile === 0 && c < 0.5) profile = 1; else if (profile === 1 && c > 0.6) profile = 0;
-    U.uProfile.value = profile;
   };
 
   const lookWorld0 = null; let lookWorld = lookWorld0; const lookLocal = new THREE.Vector3();

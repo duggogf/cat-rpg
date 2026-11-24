@@ -1,0 +1,10 @@
+[
+  { "Name": "daifuku", "phases": [
+      { "phase": 1, "nerve_from": 1.0, "nerve_to": 0.70, "wall_attacks": ["paw_swat", "belly_drop"], "ground_attack": "enemy_swipe", "ruffle_route": "knock_off_bucket", "waves": [], "_src": "Combat §3.13 phase 1 (100-70%)" },
+      { "phase": 2, "nerve_from": 0.70, "nerve_to": 0.35, "wall_attacks": ["paw_swat", "belly_drop"], "ground_attack": "enemy_swipe", "ruffle_route": "horn", "waves": ["tough", "tough"], "bucket_refill": true, "_src": "Combat §3.13 phase 2 (not built in M1: boss_phase_cap 1)" },
+      { "phase": 3, "nerve_from": 0.35, "nerve_to": 0.0, "wall_attacks": ["paw_swat", "belly_drop"], "ground_attack": "enemy_swipe", "ruffle_route": "ledge_junk", "waves": ["tough", "tough"], "bucket_refill": true, "_src": "Combat §3.13 phase 3 (not built in M1)" }
+    ],
+    "paw_swat_reach_m": 2.4, "wall_pace_mps": 1.2, "belly_drop_max_m": 6, "knockoff_sources": ["shove", "shoulder_check", "body_slam", "banshee_screech", "landslide"],
+    "knockoff_ruffle": true, "frazzled_stays_on_wall": true,
+    "_src": "Combat §3.13 (knock-offs deterministic; knockoff sources; Frazzled on the wall stays on the wall); pace and reach are prototype" }
+]

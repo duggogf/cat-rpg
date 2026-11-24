@@ -18,6 +18,7 @@ app.appendChild(renderer.domElement);
 const W = renderer.domElement.width, H = renderer.domElement.height;
 const scene = new THREE.Scene();
 const strip = q.get('strip') === '1';
+const turn = q.get('turn') === '1'; // front / side / back like the owner's turnaround sheet
 const phase = q.get('phase') || 'day';
 const PH = {
   day: { zen: '#3F9BE6', hor: '#A9DBF5', ground: '#C9BDA2', ground2: '#B9AC93', light: DAY_LIGHT },
@@ -27,10 +28,10 @@ const PH = {
 
 // ---- painted backdrop: sky gradient + a soft, unlined painted ground (no lighting on paint)
 function canvasTex(w, h, draw) { const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; }
-if (strip) scene.background = new THREE.Color().setStyle('#FBF1DC', THREE.SRGBColorSpace);
+if (strip || turn) scene.background = new THREE.Color().setStyle(turn ? '#F6ECD6' : '#FBF1DC', THREE.SRGBColorSpace);
 else scene.background = canvasTex(4, 256, (g, w, h) => { const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, PH.zen); gr.addColorStop(0.75, PH.hor); gr.addColorStop(1, PH.hor); g.fillStyle = gr; g.fillRect(0, 0, w, h); });
 const groundTex = canvasTex(1024, 1024, (g, w, h) => {
-  g.fillStyle = strip ? '#EADBBB' : PH.ground; g.fillRect(0, 0, w, h);
+  g.fillStyle = strip ? '#EADBBB' : turn ? '#EDE0C4' : PH.ground; g.fillRect(0, 0, w, h);
   let s = 11; const r = () => ((s = (s * 16807) % 2147483647) / 2147483647);
   for (let i = 0; i < 260; i++) { // soft paint dabs
     g.globalAlpha = 0.05 + r() * 0.07; g.fillStyle = r() < 0.5 ? PH.ground2 : '#E2D6BC';
@@ -41,7 +42,7 @@ const groundTex = canvasTex(1024, 1024, (g, w, h) => {
 groundTex.wrapS = groundTex.wrapT = THREE.RepeatWrapping; groundTex.repeat.set(6, 6);
 const ground = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), new THREE.MeshBasicMaterial({ map: groundTex }));
 ground.rotation.x = -Math.PI / 2; scene.add(ground);
-if (!strip) { // a far plaster wall card so the frame has a horizon read
+if (!strip && !turn) { // a far plaster wall card so the frame has a horizon read
   const wall = new THREE.Mesh(new THREE.PlaneGeometry(40, 0.9), new THREE.MeshBasicMaterial({ color: new THREE.Color().setStyle('#F3E3C3', THREE.SRGBColorSpace) }));
   wall.position.set(0, 0.45, -6); scene.add(wall);
 }
@@ -62,6 +63,13 @@ if (strip) {
     c.object3D.rotation.y = Math.atan2(c.object3D.position.x, -num('dist', 4.6)); // each seen square from behind
     scene.add(c.object3D); cats.push(c);
   });
+} else if (turn) {
+  // owner turnaround layout: FRONT, SIDE (facing left), BACK at the sheet's eye-level camera
+  [0, -90, 180].forEach((deg, i) => {
+    const c = createCatInternal({ cast: q.get('cast') || 'mikan', scale: 1.25, seed: 5 });
+    c.object3D.position.set((i - 1) * 0.58 + (i === 1 ? 0.03 : 0), 0, 0); c.object3D.rotation.y = deg * Math.PI / 180;
+    c.setLighting(PH.light); scene.add(c.object3D); cats.push(c);
+  });
 } else {
   const which = q.get('cast') || 'both';
   const list = which === 'both' ? ['mikan', 'wallSitter'] : [which];
@@ -80,7 +88,8 @@ for (const c of cats) { c.setGait(gait, speed); c.setOutlineScale(num('ol', 1));
 // ---- camera: third-person height by default
 const cam = new THREE.PerspectiveCamera(num('fov', 40), W / H, 0.05, 200);
 if (strip) { cam.fov = num('fov', 37); cam.updateProjectionMatrix(); cam.position.set(0, num('h', 1.0), num('dist', 4.6)); cam.lookAt(0, 0.3, 0); }
-else if (q.get('cam') === 'close') { cam.position.set(0, num('h', 0.55), num('dist', 1.5)); cam.lookAt(0, 0.28, 0); }
+else if (turn) { cam.fov = num('fov', 12.5); cam.updateProjectionMatrix(); cam.position.set(0, num('h', 0.34), num('dist', 4.6)); cam.lookAt(0, 0.2, 0); ground.visible = false; }
+  else if (q.get('cam') === 'close') { cam.position.set(0, num('h', 0.55), num('dist', 1.5)); cam.lookAt(0, 0.28, 0); }
 else { cam.position.set(0, num('h', 0.95), num('dist', 2.2)); cam.lookAt(0, 0.26, 0); }
 
 const step = 1 / 60;

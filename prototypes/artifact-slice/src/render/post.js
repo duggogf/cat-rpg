@@ -43,7 +43,8 @@ export class PaintPost {
           vec2 n = (texture2D(tNoise, q / 260.0).rg - 0.5) * 1.6 + (texture2D(tNoise, q / 70.0 + 0.37).rg - 0.5) * 0.7;
           vec2 uv = vUv + n * wob * scale * px;
           vec3 col;
-          if (kuw > 0.5) {
+          float upright = texture2D(tColor, uv).a < 0.75 ? 1.0 : 0.0;  // plaster and boards keep flat shapes and hard accents
+          if (kuw > 0.5 && upright < 0.5) {
             vec3 m[4]; float v[4];
             for (int k = 0; k < 4; k++) {
               vec2 o = vec2(k == 1 || k == 3 ? 0.0 : -1.0, k >= 2 ? 0.0 : -1.0);

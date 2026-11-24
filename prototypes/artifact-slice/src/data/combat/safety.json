@@ -1,0 +1,19 @@
+[
+  { "Name": "flashes_per_s_wcag", "value": 3, "_src": "Combat §3.17 Safety (WCAG 2.3.1, area > 20%)" },
+  { "Name": "flashes_per_s", "value": 2, "_src": "Combat §3.17 Safety: design cap 2/s" },
+  { "Name": "flashes_per_5s", "value": 6, "_src": "Combat §3.17 Safety: 6 per rolling 5 s" },
+  { "Name": "fullscreen_per_s", "value": 1, "_src": "Combat §3.17 Safety: <= 1 full-screen impact frame per second" },
+  { "Name": "global_hitstop_ms_per_s", "value": 200, "_src": "Combat §3.17 Safety: global hit-stop <= 200 ms in any rolling 1 s outside authored T5 (excess dropped)" },
+  { "Name": "shake_clamp_pct", "value": 1.8, "_src": "Combat §3.17 rule 3: summed and clamped at 1.8% of viewport height" },
+  { "Name": "shake_step_ms", "value": 33, "_src": "Combat §3.17 shake: one step per 33 ms" },
+  { "Name": "shake_decay", "value": 0.6, "_src": "Combat §3.17 shake: x0.6 decay per step" },
+  { "Name": "screen_queue_ms", "value": 170, "_src": "Combat §3.17 rule 2: equal tiers queue >= 170 ms apart" },
+  { "Name": "tough_rout_fullscreen_gap_s", "value": 1, "_src": "Combat §3.17 rule 2: Tough Rout full-screen only if none in the last 1 s" },
+  { "Name": "min_look_frames", "value": 2, "_src": "Combat §3.17 Safety: every look event >= 2 rendered frames" },
+  { "Name": "incoming_hitstop_mult", "value": 0.75, "_src": "Combat §3.17 rule 7: incoming on the controlled cat, local, 75%" },
+  { "Name": "edge_pulse", "value": { "ms": 150, "alpha": 0.35, "colour": "ink" }, "_src": "Combat §3.17 rule 7" },
+  { "Name": "ai_tier_drop", "value": 1, "_src": "Combat §3.17 rule 1: AI acting on its own renders one tier lower" },
+  { "Name": "hit_on_ai_tier_drop", "value": 2, "_src": "Combat §3.17 rule 7: hits on AI cats two tiers lower, no shake" },
+  { "Name": "lettering_min_tier", "value": 4, "_src": "Combat §3.17 DR-49: only T4 and T5, only player-authored" },
+  { "Name": "max_words_on_screen", "value": 1, "_src": "Combat §3.17 DR-49" }
+]

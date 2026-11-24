@@ -80,7 +80,7 @@ class Geo {
 /* --------------------------------------------------------------- the builder */
 export function buildWorld(L, tex) {
   const env = new THREE.Group(), backdrop = new THREE.Group(), late = new THREE.Group();
-  const colliders = [], casters = new Set();
+  const colliders = [], casters = new Set(), cards = [];
   const mesh = (geo, mat, cast = true) => { const m = new THREE.Mesh(geo, mat); env.add(m); if (cast) casters.add(m); return m; };
   const R = rng(7);
 
@@ -101,7 +101,7 @@ export function buildWorld(L, tex) {
       g.quad([x0, h(za), za], [x1, h(za), za], [x1, h(zb), zb], [x0, h(zb), zb], (P) => [P.x / 4, -P.z / 4], { nu: 8, nv: 1, ao, wobble: 0 });
     }
     const geo = g.build(); geo.attributes.color.array.forEach((v, i, a) => { }); // ao already in vertex colours
-    const m = envMat({ map: tex.ground, vertexColors: true, grain: 0.0, tint: '#FFFFFF', tintScale: 0.965 }); // lit lane kept in the walkable band (L* ≤ 80, art bible §4.2)
+    const m = envMat({ map: tex.ground, vertexColors: true, grain: 0.0, tint: '#FFFFFF', tintScale: 1.02 }); // lit lane kept in the walkable band (L* ≤ 80, art bible §4.2)
     // tint the vertex-colour darkening toward wisteria (the colour channel multiplies per channel)
     const col = geo.attributes.color;
     for (let i = 0; i < col.count; i++) { const k = 1 - col.getX(i); col.setXYZ(i, 1 - k * 0.95, 1 - k, 1 - k * 0.55); }
@@ -264,6 +264,7 @@ export function buildWorld(L, tex) {
     for (const k of L.hedges) clump(...k, 1.2);
     for (const k of townClumps) clump(...k, 0.7);
     mesh(tg.build(), envMat({ vertexColors: true, grain: 0.8 })).name = 'trunks';
+    cards.push(...items.map((it) => ({ p: it.pos, s: it.size, y: it.pos[1] })), ...L.hydrangeas.map(([x, z, s]) => ({ p: [x, s * 0.4, z], s, y: -s * 0.1 })));
     const fol = billboards(items, tex.foliage, { cols: 4, rows: 2, receive: true, holes: 0.5 }); env.add(fol); casters.add(fol); fol.name = 'foliage';
     const fl = L.hydrangeas.map(([x, z, s], i) => ({ pos: [x - s * 0.15, -s * 0.1, z], size: s, rot: 0, cell: i % 2, bright: 1 }));
     const flw = billboards(fl, tex.flowers, { cols: 2, rows: 1, cylindrical: true, rampLo: -0.6, rampHi: 0.3, keyK: 0.45 }); env.add(flw); casters.add(flw); flw.name = 'hydrangeas';
@@ -365,7 +366,7 @@ export function buildWorld(L, tex) {
       let q;
       if (face === '+x') q = [[x + e, y, z + w / 2], [x + e, y, z - w / 2], [x + e, y + h, z - w / 2], [x + e, y + h, z + w / 2]];
       if (face === '-x') q = [[x - e, y, z - w / 2], [x - e, y, z + w / 2], [x - e, y + h, z + w / 2], [x - e, y + h, z - w / 2]];
-      if (face === 'up') q = [[x - w / 2, 0.004, z + h / 2], [x + w / 2, 0.004, z + h / 2], [x + w / 2, 0.004, z - h / 2], [x - w / 2, 0.004, z - h / 2]];
+      if (face === 'up') { const yy = 0.004 + (y || 0) * 0.001; q = [[x - w / 2, yy, z + h / 2], [x + w / 2, yy, z + h / 2], [x + w / 2, yy, z - h / 2], [x - w / 2, yy, z - h / 2]]; }
       g.quad(...q, () => [0, 0]); g.uv.splice(0, 8, u0, 0, u1, 0, u0, 1, u1, 1);
       if (!dec.has(texName)) dec.set(texName, []); dec.get(texName).push(g);
     };
@@ -384,6 +385,7 @@ export function buildWorld(L, tex) {
       const st = new THREE.CylinderGeometry(0.012, 0.012, 1.15, 6); st.translate(0, 0.57, 0); st.rotateX(ang); st.translate(x, 0, z); pg.add(st, '#C79A5E');
       const br = new THREE.ConeGeometry(0.11, 0.3, 8); br.translate(0, 0.12, 0); br.rotateX(ang * 0.5); br.translate(x, 0, z); pg.add(br, '#D7B46A');
     }
+    for (const [x, z, r] of L.bricks || []) { const b = new THREE.BoxGeometry(0.21, 0.06, 0.1); b.rotateY(r); b.translate(x, 0.03, z); pg.add(b, '#B9765A'); const b2 = new THREE.BoxGeometry(0.21, 0.06, 0.1); b2.rotateY(r + 0.3); b2.translate(x + 0.03, 0.09, z + 0.01); pg.add(b2, '#C98A6A'); }
     for (const [x, y, z, w, h, d] of L.aircons || []) { const b = new THREE.BoxGeometry(w, h, d); b.translate(x, y, z); pg.add(b, '#E3DED2'); colliders.push(new THREE.Box3(new THREE.Vector3(x - w / 2, y - h / 2, z - d / 2), new THREE.Vector3(x + w / 2, y + h / 2, z + d / 2))); }
     mesh(pg.build(), envMat({ vertexColors: true, grain: 0.5 })).name = 'pipes';
     for (const gt of L.gates || []) { // wooden gate panels on the wall / fence
@@ -440,7 +442,7 @@ export function buildWorld(L, tex) {
   }
   env.add(towns);
 
-  return { env, backdrop, late, colliders, casters, soft, rings: { ringFar, sea, ringNear, sky, clouds: backdrop.getObjectByName('clouds') } };
+  return { env, backdrop, late, colliders, casters, soft, cards, rings: { ringFar, sea, ringNear, sky, clouds: backdrop.getObjectByName('clouds') } };
 }
 
 /** Soft wisteria contact blob on the ground (E-4). */

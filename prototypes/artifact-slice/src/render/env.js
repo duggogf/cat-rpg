@@ -85,7 +85,10 @@ vec3 envShade(vec3 alb, vec3 n, vec3 p, float shadowSoft, float twoSided) {
   if (twoSided > 0.5) ndl = abs(ndl) * 0.8 + 0.1;   // cloth: the sun glows through
   float ramp = smoothstep(-0.04, 0.16, ndl);          // E-1: soft terminator, ~12% of the ramp
   float vert0 = 1.0 - abs(n.y);
-  float lit = ramp * (ramp > 0.0 ? sunShadow(p, n, shadowSoft * mix(1.0, 0.4, vert0)) : 1.0);  // crisper cast light on upright planes
+  float sh = ramp > 0.0 ? sunShadow(p, n, shadowSoft * mix(1.0, 0.4, vert0)) : 1.0;
+  sh = mix(sh, smoothstep(0.32, 0.68, sh), step(0.5, vert0));
+  sh = mix(1.0, sh, smoothstep(0.08, 0.3, ndl));  // grazing sun: the shadow map would smear into soft bands; keep the plane one flat tone  // shaped, hard-edged cast light on upright planes (no soft bands)
+  float lit = ramp * sh;
   float vert = 1.0 - abs(n.y);
   vec3 b = bounce * vert * (1.0 - smoothstep(0.0, 1.7, p.y));
   // the painter lifts shaded upright planes (sky fill), warmest at the foot (lane bounce)
@@ -131,7 +134,7 @@ void main() {
   vec3 col = envShade(alb, n, vP, shadowSoft, twoSided);
   if (glass > 0.0 && debugMode < 0.5) { float g = smoothstep(0.04, 0.12, t.b - t.r) * step(dot(t.rgb, vec3(0.333)), 0.6); col = mix(col, lamp, g * windowGlow * glass); }
   if (emit > 0.0 && debugMode < 0.5) { float g = step(0.8, dot(t.rgb, vec3(0.333))); col = mix(col, t.rgb * vec3(1.0, 0.97, 0.9), g * emit * max(windowGlow, 0.25)); }
-  gl_FragColor = vec4(col, blend > 0.5 ? t.a : 1.0);
+  gl_FragColor = vec4(col, blend > 0.5 ? t.a : (abs(n.y) < 0.5 ? 0.5 : 1.0));
 }`;
 
 /** Standard painted environment material. o: {map, tint, grain, alphaCut, side, vertexColors, shadowSoft} */
@@ -156,7 +159,8 @@ uniform float cylindrical, cols, rows, time, wind, sway;
 varying vec2 vUv; varying vec3 vN; varying vec3 vP; varying float vBright; varying vec3 vCtr; varying vec2 vV;
 void main() {
   // camera-soft: a card the lens is about to pass through is dropped (never a screen-filling blob)
-  if (distance(iPos, cameraPosition) < iParam.x * 0.55 + 0.35) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); return; }
+  float dl = distance(iPos, cameraPosition);
+  if (dl < iParam.x * 0.55 + 0.35 || (dl < iParam.x * 1.5 + 0.2 && iPos.y < cameraPosition.y + 0.6)) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); return; }
   vec2 corner = position.xy;
   float c = cos(iParam.y), s = sin(iParam.y);
   vec2 off = vec2(c * corner.x - s * corner.y, s * corner.x + c * corner.y) * iParam.x;

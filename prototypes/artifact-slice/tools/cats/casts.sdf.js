@@ -27,50 +27,50 @@ export function buildCast(o) {
   const bx = B.bx, by = B.by, lg = B.leg, hs = B.head, ln = B.len;
   const pos = {};
   // ---- skeleton (rest = standing, legs straight down, tail straight back)
-  const legTop = 0.1 * lg + 0.018;       // shoulder / hip pivot height
+  const legTop = 0.112 * lg + 0.018;       // shoulder / hip pivot height
   const knee = 0.052 * lg + 0.006;
   const spineY = legTop + 0.03 * by;
-  const zF = 0.07 * ln, zH = -0.085 * ln;   // front / hind leg z
+  const zF = 0.062 * ln, zH = -0.072 * ln;   // front / hind leg z
   const xF = 0.036 * bx, xH = 0.046 * bx;
   pos.root = [0, 0, 0];
   pos.hips = [0, spineY, -0.04 * ln];
   pos.chest = [0, spineY + 0.008, 0.035 * ln];
   pos.neck = [0, spineY + 0.035, zF + 0.012];
-  const headC = [0, spineY + 0.136 * hs + 0.006, zF + 0.066 * hs]; // chestnut centre
+  const headC = [0, spineY + 0.122 * hs + 0.006, zF + 0.078 * hs]; // chestnut centre
   pos.head = [0, headC[1] - 0.06 * hs, headC[2] - 0.025 * hs];   // pivot low and behind: nods read well
-  const rump = [0, spineY + 0.014, -0.128 * ln * (0.85 + 0.15 * bx)];
+  const rump = [0, spineY + 0.014, -0.112 * ln * (0.85 + 0.15 * bx)];
   const tailLen = { pom: 0.06, stub: 0.1, whip: 0.34, ringed: 0.31, plume: 0.33 }[o.tail || 'whip'];
   const seg = tailLen / 6;
   for (let i = 0; i < 6; i++) pos['tail' + (i + 1)] = [0, rump[1], rump[2] + 0.02 - i * seg];
   pos.fUL = [xF, legTop + 0.005, zF]; pos.fLL = [xF, knee, zF + 0.004];
   pos.fUR = [-xF, legTop + 0.005, zF]; pos.fLR = [-xF, knee, zF + 0.004];
-  pos.hUL = [xH, legTop + 0.01, zH]; pos.hLL = [xH, knee, zH - 0.006];
-  pos.hUR = [-xH, legTop + 0.01, zH]; pos.hLR = [-xH, knee, zH - 0.006];
+  pos.hUL = [xH, legTop + 0.01, zH + 0.008]; pos.hLL = [xH, 0.062 * lg, zH - 0.05]; // hLL = the hock (a heel point behind the thigh)
+  pos.hUR = [-xH, legTop + 0.01, zH + 0.008]; pos.hLR = [-xH, 0.062 * lg, zH - 0.05];
 
   // ---- ears (wedges in a local frame; base sits in the skull top)
   const earShape = {
-    standard: { hw: 0.04, h: 0.072, tip: 0.012, th: 0.02 },
+    standard: { hw: 0.047, h: 0.092, tip: 0.007, th: 0.022 },
     tall: { hw: 0.036, h: 0.088, tip: 0.008, th: 0.018 },
-    round: { hw: 0.038, h: 0.056, tip: 0.0, th: 0.022 },
+    round: { hw: 0.044, h: 0.07, tip: 0.0, th: 0.022 },
   }[o.ears || 'standard'];
   const ears = [1, -1].map((s) => {
-    const base = [headC[0] + s * 0.056 * hs, headC[1] + 0.046 * hs, headC[2] - 0.006 * hs];
+    const base = [headC[0] + s * 0.057 * hs, headC[1] + 0.046 * hs, headC[2] - 0.016 * hs];
     pos[s > 0 ? 'earL' : 'earR'] = base;
-    const up = v3.norm([s * 0.36, 1, -0.12]);
-    const F = frame(base, up, [s * 0.5, 0, 1]);
+    const up = v3.norm([s * 0.42, 1, -0.16]);
+    const F = frame(base, up, [s * 0.62, 0, 1]);
     const E = earShape, sc = hs;
     return { t: 'ear', F, A: [-E.hw * sc, -0.01], B: [E.hw * sc, -0.01], C: [s * E.tip * sc, E.h * sc],
-      hw: E.hw * sc, th: E.th * sc, rr: o.ears === 'round' ? 0.011 : 0.0085, cup: 0.005, bone: s > 0 ? 'earL' : 'earR', k: 0.016, side: s };
+      hw: E.hw * sc, th: E.th * sc, rr: o.ears === 'round' ? 0.01 : 0.005, cup: 0.011, bone: s > 0 ? 'earL' : 'earR', k: 0.016, side: s };
   });
 
   // ---- torso shell: a bean (round rump, deep chest), thick neck. Legs are a SEPARATE shell so
   // their hull draws the drawn-cel overlap line where a leg crosses the body (AD fix 4).
   const body = [];
   const P = (x) => body.push(x);
-  const tr = 0.066 * by;
-  P({ t: 'ell', c: [0, spineY + 0.006, rump[2] + 0.058], r: [0.07 * bx, 0.07 * by, 0.068], bone: 'hips', k: 0 });
+  const tr = 0.072 * by;
+  P({ t: 'ell', c: [0, spineY + 0.006, rump[2] + 0.06], r: [0.072 * bx, 0.075 * by, 0.07], bone: 'hips', k: 0 });
   P({ t: 'cap', a: [0, spineY + 0.004, rump[2] + 0.06], b: [0, spineY + 0.01, zF - 0.01], ra: tr, rb: tr * 1.02, bone: 'hips', k: 0.03 });
-  P({ t: 'ell', c: [0, spineY + 0.014, zF + 0.004], r: [0.068 * bx, 0.082 * by, 0.066], bone: 'chest', k: 0.035 });
+  P({ t: 'ell', c: [0, spineY + 0.0, zF + 0.026], r: [0.072 * bx, 0.092 * by, 0.072], bone: 'chest', k: 0.035 }); // full chest, pushed forward
   const nA = [0, spineY + 0.03, zF + 0.008], nB = [0, headC[1] - 0.042 * hs, headC[2] - 0.03 * hs];
   P({ t: 'cap', a: nA, b: nB, ra: 0.056 * bx, rb: 0.05 * bx, bone: 'neck', k: 0.03 });
 
@@ -80,12 +80,18 @@ export function buildCast(o) {
     const U = front ? (s > 0 ? 'fUL' : 'fUR') : (s > 0 ? 'hUL' : 'hUR');
     const L = front ? (s > 0 ? 'fLL' : 'fLR') : (s > 0 ? 'hLL' : 'hLR');
     const top = pos[U], kn = pos[L];
-    const r0 = (front ? 0.029 : 0.031) * Math.sqrt(bx), r1 = (front ? 0.026 : 0.027) * Math.sqrt(bx);
-    const pawZ = kn[2] + 0.008;
-    legsP.push({ t: 'cap', a: [top[0], top[1] + 0.012, top[2]], b: kn, ra: r0, rb: r1, bone: U, k: 0.02 });
-    if (!front) legsP.push({ t: 'ell', c: [s * (xH + 0.008), legTop + 0.008, zH + 0.008], r: [0.042 * bx, 0.058 * by, 0.062 * by], bone: U, k: 0.03 });
-    legsP.push({ t: 'cap', a: kn, b: [kn[0], 0.026, pawZ - 0.004], ra: r1, rb: r1 * 0.96, bone: L, k: 0.008 });
-    legsP.push({ t: 'ell', c: [kn[0] * 1.02, 0.018, pawZ + 0.006], r: [r1 * 1.12, 0.018, r1 * 1.38], bone: L, k: 0.014 });
+    if (front) { // sturdy column, big round paw
+      const r0 = 0.034 * Math.sqrt(bx), r1 = 0.03 * Math.sqrt(bx), pawZ = kn[2] + 0.008;
+      legsP.push({ t: 'cap', a: [top[0], top[1] + 0.012, top[2]], b: kn, ra: r0, rb: r1, bone: U, k: 0.02 });
+      legsP.push({ t: 'cap', a: kn, b: [kn[0], 0.026, pawZ - 0.004], ra: r1, rb: r1, bone: L, k: 0.008 });
+      legsP.push({ t: 'ell', c: [kn[0] * 1.03, 0.02, pawZ + 0.01], r: [r1 * 1.25, 0.02, r1 * 1.45], bone: L, k: 0.012 });
+    } else {   // round thigh -> shin angled back to a visible hock -> upright foot -> big paw
+      const x = s * xH, kb = Math.sqrt(bx);
+      legsP.push({ t: 'ell', c: [s * (xH + 0.013), legTop + 0.0, zH + 0.022], r: [0.049 * bx, 0.064 * by, 0.064 * by], bone: U, k: 0 });
+      legsP.push({ t: 'cap', a: [x, legTop - 0.03, zH + 0.02], b: kn, ra: 0.03 * kb, rb: 0.016 * kb, bone: U, k: 0.022 });
+      legsP.push({ t: 'cap', a: kn, b: [x, 0.026, zH - 0.022], ra: 0.017 * kb, rb: 0.022 * kb, bone: L, k: 0.006 });
+      legsP.push({ t: 'ell', c: [x * 1.03, 0.02, zH - 0.01], r: [0.033 * kb, 0.02, 0.04 * kb], bone: L, k: 0.012 });
+    }
   };
   for (const s of [1, -1]) { leg(s, true); leg(s, false); }
 
@@ -93,11 +99,12 @@ export function buildCast(o) {
   const head = [];
   const H = (x) => head.push(x);
   const hc = headC;
-  H({ t: 'ell', c: hc, r: [0.094 * hs, 0.074 * hs, 0.075 * hs], bone: 'head', k: 0 });
-  for (const s of [1, -1]) H({ t: 'ell', c: [hc[0] + s * 0.052 * hs, hc[1] - 0.024 * hs, hc[2] + 0.004], r: [0.06 * hs * (o.build === 'round' ? 1.08 : 1), 0.047 * hs, 0.058 * hs], bone: 'head', k: 0.03 });
-  H({ t: 'ell', c: [hc[0], hc[1] - 0.029 * hs, hc[2] + 0.06 * hs], r: [0.04 * hs, 0.028 * hs, 0.036 * hs], bone: 'head', k: 0.02 });
-  H({ t: 'sph', c: [hc[0], hc[1] - 0.017 * hs, hc[2] + 0.09 * hs], r: 0.011 * hs, bone: 'head', k: 0.012 });
-  H({ t: 'ell', c: [hc[0], hc[1] - 0.052 * hs, hc[2] + 0.042 * hs], r: [0.024 * hs, 0.015 * hs, 0.02 * hs], bone: 'head', k: 0.016 });
+  H({ t: 'ell', c: hc, r: [0.094 * hs, 0.076 * hs, 0.086 * hs], bone: 'head', k: 0 }); // round from the side too
+  for (const s of [1, -1]) H({ t: 'ell', c: [hc[0] + s * 0.052 * hs, hc[1] - 0.024 * hs, hc[2] + 0.012], r: [0.06 * hs * (o.build === 'round' ? 1.08 : 1), 0.047 * hs, 0.064 * hs], bone: 'head', k: 0.03 });
+  // lifted muzzle: a small stop under the brow (low blend), the nose tip the most forward point, chin tucked back
+  H({ t: 'ell', c: [hc[0], hc[1] - 0.04 * hs, hc[2] + 0.06 * hs], r: [0.037 * hs, 0.026 * hs, 0.034 * hs], bone: 'head', k: 0.016 });
+  H({ t: 'ell', c: [hc[0], hc[1] - 0.029 * hs, hc[2] + 0.092 * hs], r: [0.014 * hs, 0.01 * hs, 0.011 * hs], bone: 'head', k: 0.012 }); // small upturned nose tip
+  H({ t: 'ell', c: [hc[0], hc[1] - 0.062 * hs, hc[2] + 0.054 * hs], r: [0.022 * hs, 0.013 * hs, 0.018 * hs], bone: 'head', k: 0.012 });
   for (const e of ears) H(e);
 
   // ---- tail shell
@@ -135,17 +142,18 @@ export function buildCast(o) {
   if (o.collar) {
     const axis = v3.norm(v3.sub(nB, nA));
     const cc = v3.add(nA, v3.mul(v3.sub(nB, nA), 0.5));
-    const R = 0.053 * bx + 0.002;
+    const R = 0.054 * bx + 0.002;
     collar = { c: cc, axis };
-    shells.push({ name: 'collar', part: PART.collar, cell: 0.0022, sigma: 0.01, prims: [{ t: 'tor', c: cc, axis, R, r: 0.0095, bone: 'neck', k: 0 }] });
+    shells.push({ name: 'collar', part: PART.collar, cell: 0.0022, sigma: 0.01, prims: [{ t: 'tor', c: cc, axis, R, r: 0.011, bone: 'neck', k: 0 }] });
     const f = v3.norm(v3.sub([0, 0, 1], v3.mul(axis, axis[2])));
-    const front = v3.add(v3.add(cc, v3.mul(f, R + 0.013)), [0, -0.012, 0]);
+    const front = v3.add(v3.add(cc, v3.mul(f, R + 0.012)), [0, -0.019, 0.017]); // hangs proud of the full chest
     shells.push({ name: 'bell', part: PART.bell, cell: 0.0018, sigma: 0.01, prims: [{ t: 'sph', c: front, r: 0.0165, bone: 'neck', k: 0 }] });
   }
   return {
     bones: BONES.map((n) => ({ name: n, parent: PARENT[n] || null, pos: pos[n] })),
     shells,
     meta: {
+      paws: { xF: xF * 1.03, xH: xH * 1.03, zF: pos.fLL[2] + 0.018, zH: zH - 0.01 },
       headC, hs, rump, spineY, ears: ears.map((e) => ({ o: e.F.o, u: e.F.u, v: e.F.v, w: e.F.w, A: e.A, B: e.B, C: e.C, th: e.th, side: e.side })),
       tailLen, legTop, zF, zH, xF, xH, collar,
     },

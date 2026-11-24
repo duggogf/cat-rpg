@@ -1,0 +1,5 @@
+[
+  { "Name": "Bruiser", "nerve": 1.30, "bite": 1.00, "hide": 1.25, "voice": 0.75, "zip": 0.70, "type": "thump", "resists": "thump", "weak_to": "fang", "finisher": "shove", "tag_in_strike": "body_slam", "_src": "Crew §3.6 Style weights; Combat §3.8 matchups; §3.2 finisher; §3.3 Tag-In strike" },
+  { "Name": "Scrapper", "nerve": 1.00, "bite": 1.20, "hide": 0.90, "voice": 0.75, "zip": 1.15, "type": "claw", "resists": "claw", "weak_to": "thump", "finisher": "flurry", "tag_in_strike": "cut_through", "_src": "Crew §3.6; Combat §3.8, §3.2, §3.3" },
+  { "Name": "Yowler", "nerve": 0.90, "bite": 0.75, "hide": 0.95, "voice": 1.35, "zip": 1.05, "type": "yowl", "resists": "yowl", "weak_to": "claw", "finisher": "yowl_cone", "tag_in_strike": "yowl_pop", "_src": "Crew §3.6; Combat §3.8, §3.2, §3.3" }
+]

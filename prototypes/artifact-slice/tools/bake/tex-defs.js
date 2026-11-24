@@ -23,13 +23,12 @@
     inner += `<path d="M120 60h220v180h-220z" fill="#EFE1CC" opacity="0.5" filter="url(#k-soft2)"/>`;
     inner += `<path d="M640 230h260v210h-260z" fill="#E2CDB4" opacity="0.4" filter="url(#k-soft2)"/>`;
     inner += `<path d="M420 120h120v300h-120z" fill="#C6B8C0" opacity="0.28" filter="url(#k-soft)"/>`;
-    inner += K.texture(-40, -10, W + 80, H + 20, 'brush-v', 0.08) + K.texture(-40, -10, W + 80, H + 20, 'mottle', 0.18);
-    { const R = K.rng(77); let st = ''; // rain streaks running down from the coping
-      for (let i = 0; i < 16; i++) { const x = R() * W, w = 6 + R() * 22, h = 60 + R() * 170; st += `<path d="M${x.toFixed(0)} -4h${w.toFixed(0)}l-${(w * 0.3).toFixed(0)} ${h.toFixed(0)}h-${(w * 0.5).toFixed(0)}z" fill="#A89AA6" opacity="${(0.12 + R() * 0.16).toFixed(2)}"/>`; }
-      inner += `<g filter="url(#k-soft)">${st}</g>`;
+    inner += K.texture(-40, -10, W + 80, H + 20, 'mottle', 0.16);
+    { const R = K.rng(77); let st = ''; // rain stains under the coping as flat, hard-edged value shapes (no vertical brush)
+      for (let i = 0; i < 7; i++) { const x = R() * W, w = 30 + R() * 60, h = 50 + R() * 110; st += `<path d="M${x.toFixed(0)} -4h${w.toFixed(0)}q-6 ${(h * 0.6).toFixed(0)} -${(w * 0.25).toFixed(0)} ${h.toFixed(0)}q-${(w * 0.2).toFixed(0)} 12 -${(w * 0.4).toFixed(0)} 0q-4 -${(h * 0.5).toFixed(0)} -${(w * 0.35).toFixed(0)} -${h.toFixed(0)}z" fill="#C9BCC4" opacity="${(0.28 + R() * 0.14).toFixed(2)}"/>`; }
+      inner += `<g filter="url(#k-rough)">${st}</g>`;
       let mo = ''; for (let i = 0; i < 70; i++) { const x = R() * W, y = H * (0.8 + R() * 0.1), r = 6 + R() * 16; mo += `<ellipse cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" rx="${(r * 1.6).toFixed(0)}" ry="${r.toFixed(0)}" fill="${R() < 0.5 ? '#8FAE6A' : '#6F9A5A'}" opacity="${(0.35 + R() * 0.3).toFixed(2)}"/>`; }
       inner += `<g filter="url(#k-leaf-fine)">${mo}</g>`; }
-    inner += `<g fill="none" stroke="#9A8C9C" stroke-width="2.5" opacity="0.6" filter="url(#k-rough)"><path d="M300 0l10 46l-8 38l14 50"/><path d="M820 20l6 22l-5 18l9 30"/></g>`;
     let s = K.surface({ pts: q, color: C.plaster, top: K.mix(C.plaster, '#FFFFFF', 0.18), bottom: K.mix(C.plaster, '#D9BF98', 0.35), grime: 0.32, inner });
     // base course (kit wall: lower ~10%)
     s += K.surface({ pts: [[-40, H * 0.88], [W + 40, H * 0.88], [W + 40, H + 10], [-40, H + 10]], color: K.mix(C.plaster, '#9A8C86', 0.45), grime: 0.25, texOpacity: 0.4 });
@@ -257,6 +256,19 @@
   T.aircon = { w: 256, h: 192, svg: () => svg(256, 192, `<g filter="url(#k-rough)"><rect x="0" y="0" width="256" height="192" fill="#E9E5DA"/><circle cx="96" cy="96" r="70" fill="#8E96A6"/><circle cx="96" cy="96" r="58" fill="#5F6778"/><path d="M38 96h116M96 38v116M55 55l82 82M137 55l-82 82" stroke="#A9B0BE" stroke-width="5"/><rect x="184" y="30" width="52" height="132" fill="#D6D1C4"/></g>` + K.texture(0, 0, 256, 192, 'grain', 0.2)) };
   /* The passer-by, as a cat sees them: legs, hem, shoes, shopping (inked; M0 stand-in card). */
   T.legs = { w: 512, h: 1024, alpha: true, svg: () => svg(512, 1024, K.human({ pose: 'walk', palette: 'street', garment: 'skirt', carry: 'bag', x: 250, y: 1010, scale: 1.9, flip: true, shadow: false, lw: 4 })) };
+
+
+  /* Ground bits (top-down, alpha), 4 cells of 512: leaf litter, cracks, a puddle, a sandy patch with pebbles. */
+  T.groundbits = { w: 2048, h: 512, alpha: true, svg: () => {
+    const R = K.rng(31); let s = '';
+    let lv = ''; for (let i = 0; i < 26; i++) { const x = 256 + (R() - 0.5) * 380, y = 256 + (R() - 0.5) * 300, r = 10 + R() * 16; lv += `<ellipse cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" rx="${r.toFixed(0)}" ry="${(r * 0.5).toFixed(0)}" fill="${['#9DB45E', '#C9A85A', '#7FA052', '#B98A4E'][Math.floor(R() * 4)]}" transform="rotate(${Math.round(R() * 180)} ${x.toFixed(0)} ${y.toFixed(0)})"/>`; }
+    s += `<g filter="url(#k-dab)">${lv}</g>`;
+    s += `<g filter="url(#k-rough)" fill="none" stroke="#8E8070" stroke-width="5" opacity="0.75"><path d="M560 120l70 60l-20 70l90 80l40 90"/><path d="M630 180l80 -20l60 40"/><path d="M700 330l-60 50"/></g>`;
+    s += `<g filter="url(#k-rough)"><ellipse cx="1280" cy="256" rx="210" ry="120" fill="#9AAFC4" opacity="0.85"/><ellipse cx="1250" cy="236" rx="150" ry="70" fill="#C8DCEB" opacity="0.8"/><path d="M1150 230q80 -30 170 -10" stroke="#FFFFFF" stroke-width="8" opacity="0.7" fill="none"/><ellipse cx="1280" cy="256" rx="226" ry="134" fill="none" stroke="#8E8474" stroke-width="10" opacity="0.4"/></g>`;
+    let pb = ''; for (let i = 0; i < 60; i++) { const x = 1792 + (R() - 0.5) * 360, y = 256 + (R() - 0.5) * 300; pb += `<ellipse cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" rx="${(3 + R() * 8).toFixed(0)}" ry="${(2 + R() * 5).toFixed(0)}" fill="${R() < 0.5 ? '#8F8470' : '#F1E8D2'}"/>`; }
+    s += `<g filter="url(#k-rough)"><ellipse cx="1792" cy="256" rx="200" ry="130" fill="#E9DCBE" opacity="0.7"/></g><g filter="url(#k-dab)">${pb}</g>`;
+    return svg(2048, 512, s);
+  } };
 
   window.TEX = T;
 })();

@@ -1,0 +1,19 @@
+[
+  { "Name": "sandbox_lane", "origin": [0, 0, 12], "ring_center": [0, 0], "ring_radius_m": 5.0,
+    "high_roads": [ { "id": "lane_wall", "a": [-4.4, -4], "b": [-4.4, 4], "y": 1.5, "width": 0.3, "drop_side": [1, 0] } ],
+    "props": [ { "id": "bucket", "kind": "water_bucket", "fear": "water", "pos": [2.8, -2.2], "radius": 0.4, "splash_m": 1.5, "uses": 1 } ],
+    "spawns": { "posse": [[0, 2.5], [-1.2, 3.0], [1.2, 3.0], [0, 3.8]], "enemy": [[0, -2.5], [-1.5, -2.2], [1.5, -2.2], [-0.8, -3.6], [0.8, -3.6], [0, -4.2]], "guest_edge": [4.6, 0] },
+    "_src": "plan §2.5 sandbox chapter (with the bucket); Combat §3.14 ring about 10 m with >= 2 props and a High Road ledge; Combat §3.9 bucket. Local metres on the ground plane (x right, z along the lane, y up); origin places the ring in the M0 lane frame (src/world/lane.json). Geometry is prototype" },
+  { "Name": "gatepost", "origin": [0, 0, 24], "ring_center": [0, 0], "ring_radius_m": 5.0,
+    "high_roads": [ { "id": "fence_top", "a": [4.4, -4], "b": [4.4, 4], "y": 1.3, "width": 0.1, "drop_side": [-1, 0] } ],
+    "props": [ { "id": "bucket", "kind": "water_bucket", "fear": "water", "pos": [-2.6, 1.8], "radius": 0.4, "splash_m": 1.5, "uses": 1 } ],
+    "spawns": { "posse": [[0, 2.5], [-1.2, 3.0], [1.2, 3.0], [0, 3.8]], "enemy": [[0, -2.5], [1.4, -2.8], [-1.4, -2.8]], "guest_edge": [-4.8, -1.0] },
+    "_src": "plan §2.2 11:15 the challenger at the gatepost with the bucket and a Relay; geometry prototype" },
+  { "Name": "wash_tub_kit", "origin": [0, 0, 30], "ring_center": [0, 0.5], "ring_radius_m": 5.0,
+    "high_roads": [ { "id": "yard_wall", "a": [-4.5, -2.5], "b": [4.5, -2.5], "y": 1.5, "width": 0.3, "drop_side": [0, 1], "boss_wall": true } ],
+    "props": [ { "id": "wash_tub", "kind": "water_bucket", "fear": "water", "pos": [0, -1.55], "radius": 0.55, "splash_m": 1.5, "uses": 1, "refill_each_phase": true } ],
+    "boss_stop": { "pos": [0, -2.5], "pace_x": [-3.5, 3.5] },
+    "kit": { "noise_prop": [3.2, -1.8], "ledge_junk": [-2.5, -2.5], "crumble_ends": [[-4.5, -3.6], [3.6, 4.5]], "wave_entries": [[-5, 1], [5, 1]] },
+    "spawns": { "posse": [[0, 2.8], [-1.3, 3.2], [1.3, 3.2], [0, 4.0]], "enemy": [[0, -2.5]], "guest_edge": [5.0, 1.0] },
+    "_src": "Combat §3.13 Morning stop: Laundry Pole Yard's yard wall over the wash tub (a wall segment with a High Road knock-off edge, the water prop below it, phase 2-3 dressing); plan §2.1 / §2.2 branch D. Wall height 1.5 m matches the M0 walls; geometry prototype" }
+]
