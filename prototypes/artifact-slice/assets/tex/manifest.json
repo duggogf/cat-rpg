@@ -1,0 +1,110 @@
+{
+ "wall": {
+  "w": 1024,
+  "h": 512,
+  "alpha": false,
+  "bytes": 28030
+ },
+ "fence": {
+  "w": 1024,
+  "h": 512,
+  "alpha": true,
+  "bytes": 29194
+ },
+ "ground": {
+  "w": 1024,
+  "h": 1024,
+  "alpha": false,
+  "bytes": 89046
+ },
+ "garden": {
+  "w": 512,
+  "h": 512,
+  "alpha": false,
+  "bytes": 14796
+ },
+ "grain": {
+  "w": 512,
+  "h": 512,
+  "alpha": false,
+  "bytes": 41468
+ },
+ "skybrush": {
+  "w": 512,
+  "h": 512,
+  "alpha": false,
+  "bytes": 8790
+ },
+ "foliage": {
+  "w": 2048,
+  "h": 1024,
+  "alpha": true,
+  "bytes": 117922
+ },
+ "flowers": {
+  "w": 1024,
+  "h": 512,
+  "alpha": true,
+  "bytes": 29372
+ },
+ "grass": {
+  "w": 512,
+  "h": 128,
+  "alpha": true,
+  "bytes": 7956
+ },
+ "clouds": {
+  "w": 2048,
+  "h": 1024,
+  "alpha": true,
+  "bytes": 39192
+ },
+ "hillsNear": {
+  "w": 4096,
+  "h": 1024,
+  "alpha": true,
+  "bytes": 71940
+ },
+ "hillsFar": {
+  "w": 4096,
+  "h": 256,
+  "alpha": true,
+  "bytes": 25614
+ },
+ "town": {
+  "w": 2048,
+  "h": 512,
+  "alpha": true,
+  "bytes": 63348
+ },
+ "sea": {
+  "w": 2048,
+  "h": 256,
+  "alpha": false,
+  "bytes": 14046
+ },
+ "roof": {
+  "w": 512,
+  "h": 512,
+  "alpha": false,
+  "bytes": 12786
+ },
+ "house": {
+  "w": 512,
+  "h": 512,
+  "alpha": false,
+  "bytes": 15870
+ },
+ "window": {
+  "w": 256,
+  "h": 256,
+  "alpha": false,
+  "bytes": 2848
+ },
+ "notice": {
+  "w": 256,
+  "h": 320,
+  "alpha": true,
+  "bytes": 3438
+ }
+}
