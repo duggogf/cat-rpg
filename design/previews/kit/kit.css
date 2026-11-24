@@ -1,0 +1,126 @@
+/* Cat RPG — preview art kit: palette, type and the rounded cream-and-brown UI.
+ * Static mock screenshots only. Values are the art bible's (design/art/art-bible.md §4, §7).
+ * UI shape grammar: panels/balloons = BEAN, buttons/dots = POM, portraits = CHESTNUT, warnings = WEDGE band.
+ * UI is flat print: opaque, no gradients, no translucency, no painted texture. */
+
+@font-face { font-family: 'M PLUS Rounded 1c'; font-weight: 500; src: url('fonts/m-plus-rounded-1c-latin-500-normal.woff2') format('woff2'); }
+@font-face { font-family: 'M PLUS Rounded 1c'; font-weight: 700; src: url('fonts/m-plus-rounded-1c-latin-700-normal.woff2') format('woff2'); }
+@font-face { font-family: 'M PLUS Rounded 1c'; font-weight: 800; src: url('fonts/m-plus-rounded-1c-latin-800-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Dela Gothic One'; font-weight: 400; src: url('fonts/dela-gothic-one-latin-400-normal.woff2') format('woff2'); }
+
+:root {
+  /* core 12 */
+  --ink: #33273B;            /* every line, body text */
+  --cream: #FFF6E3;          /* UI ground, balloons, dust, rims */
+  --cocoa: #6B4A35;          /* frames, headers, primary buttons */
+  --ginger: #F28C28;         /* Mikan only */
+  --crimson: #D02A45;        /* collar, Bond, confirm (Cream text only) */
+  --gold: #F2B01E;           /* Bell Clowder / everything that is the player's */
+  --haru: #FFD23F;           /* Haru; home only */
+  --wisteria: #6E6AA8;       /* the shadow family; no grey shadows */
+  --sky: #3F9BE6;
+  --green: #5A9E4B;
+  --sage: #A8C878;           /* Wall Sitters */
+  --magenta: #FF3D8B;        /* Frazzled, red telegraph */
+  /* lane swatches */
+  --plaster: #F3E3C3; --lane: #B9AC93; --hydrangea: #7E8FD8; --roof: #6F8296; --wood: #C28A52;
+  --laundry: #FFFDF4; --lamp: #FFD98A; --sky-horizon: #A9DBF5; --cloud-shade: #C9D8F0; --white-shade: #D8D2EA;
+  /* semantic */
+  --nerve: #5CC46B; --pad: #F6809A; --static: #FFE14A; --claw: #39C6F0; --claw-core: #EAFBFF;
+  --yowl: #B9A0FF; --purr: #FFB3C1; --fish: #9CC7E0;
+  /* UI */
+  --recessed: #F4E6C8; --disabled: #8C7A70; --positive: #5CC46B;
+  --frame: 3px;
+  --drop: 3px 4px 0 rgba(110, 106, 168, .55), 4px 6px 2px rgba(110, 106, 168, .25);
+  --font: 'M PLUS Rounded 1c', 'Inter', sans-serif;
+  /* bean radii: soft, asymmetric capsules */
+  --bean: 44px 52px 46px 56px / 50px 44px 54px 46px;
+  --bean-sm: 22px 28px 24px 30px / 26px 22px 28px 24px;
+}
+
+.k-stage { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: #111; font-family: var(--font); color: var(--ink); }
+.k-stage > svg.k-world { position: absolute; inset: 0; display: block; }
+.k-abs { position: absolute; }
+
+/* ---- type (floor 28 px at 1080p) ---- */
+.k-h { font: 800 44px/1.1 var(--font); color: var(--cocoa); letter-spacing: .01em; }
+.k-body { font: 500 32px/1.3 var(--font); color: var(--ink); }
+.k-small { font: 700 28px/1.2 var(--font); color: var(--cocoa); }
+
+/* ---- bean panel ---- */
+.k-panel { background: var(--cream); border: var(--frame) solid var(--cocoa); border-radius: var(--bean); box-shadow: var(--drop); padding: 26px 36px; box-sizing: border-box; }
+.k-panel--recessed { background: var(--recessed); box-shadow: none; }
+.k-panel--sm { border-radius: var(--bean-sm); padding: 12px 22px; }
+.k-panel > .k-h + * { margin-top: 10px; }
+.k-row { display: flex; align-items: center; gap: 14px; }
+
+/* ---- name ribbon: speaker's Clowder colour, Ink text, folded over the balloon's top edge (no brown pills) ---- */
+.k-ribbon { position: relative; display: inline-flex; align-items: center; gap: 10px; height: 46px; padding: 0 30px 0 22px; font: 800 28px/1 var(--font); color: var(--ink);
+  background: var(--k-clowder, var(--gold)); border: var(--frame) solid var(--ink);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 15px) 50%, 100% 100%, 0 100%); border-right-width: 0; }
+.k-ribbon::after { content: ''; position: absolute; right: 0; top: -3px; bottom: -3px; width: 18px; background: var(--ink);
+  clip-path: polygon(100% 0, calc(100% - 3.6px) 0, calc(100% - 18px) 50%, calc(100% - 3.6px) 100%, 100% 100%, calc(100% - 15px) 50%); }
+.k-ribbon--sage { --k-clowder: var(--sage); } .k-ribbon--gold { --k-clowder: var(--gold); } .k-ribbon--stray { --k-clowder: var(--cream); }
+.k-ribbon svg { display: block; }
+
+/* ---- bark balloon: opaque Paper Cream bean, Cocoa frame, wedge tail ---- */
+.k-bubble { position: relative; display: inline-block; max-width: 760px; background: var(--cream); border: var(--frame) solid var(--cocoa); border-radius: var(--bean); box-shadow: var(--drop); padding: 30px 40px 26px; font: 500 32px/1.3 var(--font); color: var(--ink); box-sizing: border-box; }
+.k-bubble > .k-ribbon { position: absolute; left: 34px; top: -26px; }
+.k-bubble::before, .k-bubble::after { content: ''; position: absolute; left: var(--tail-x, 96px); width: 44px; height: 40px; clip-path: polygon(0 0, 100% 0, 18% 100%); }
+.k-bubble::before { bottom: -38px; background: var(--cocoa); }
+.k-bubble::after { bottom: -29px; margin-left: 3.5px; width: 37px; height: 34px; background: var(--cream); }
+.k-bubble--up::before, .k-bubble--up::after { transform: scaleY(-1); bottom: auto; }
+.k-bubble--up::before { top: -38px; } .k-bubble--up::after { top: -29px; }
+.k-bubble--right::before, .k-bubble--right::after { left: auto; right: var(--tail-x, 96px); transform: scaleX(-1); }
+.k-bubble--notail::before, .k-bubble--notail::after { display: none; }
+
+/* ---- pom buttons and prompt glyphs ---- */
+.k-btn { display: inline-flex; align-items: center; justify-content: center; min-width: 56px; height: 56px; padding: 0 16px; box-sizing: border-box; border-radius: 30px 28px 31px 27px / 28px 31px 27px 30px;
+  background: var(--cream); border: var(--frame) solid var(--cocoa); font: 800 28px/1 var(--font); color: var(--cocoa); box-shadow: 0 4px 0 var(--cocoa); }
+.k-btn--primary { background: var(--cocoa); color: var(--cream); box-shadow: 0 4px 0 var(--ink); padding: 0 34px; border-color: var(--ink); }
+.k-btn--confirm { background: var(--crimson); color: var(--cream); border-color: var(--ink); box-shadow: 0 4px 0 var(--ink); padding: 0 34px; }
+.k-btn--focus { background: var(--gold); color: var(--ink); border-color: var(--ink); box-shadow: 0 4px 0 var(--ink); padding: 0 34px; }
+.k-btn--disabled { background: var(--recessed); color: var(--disabled); border-color: var(--disabled); box-shadow: none; padding: 0 34px; }
+.k-key { min-width: 52px; height: 52px; border-radius: 14px 16px 15px 17px; }
+
+/* world-anchored prompt: glyph + verb pictogram on a small bean */
+.k-prompt { display: inline-flex; align-items: center; gap: 10px; padding: 8px 18px 8px 10px; background: var(--cream); border: var(--frame) solid var(--cocoa); border-radius: 40px 44px 42px 46px / 44px 40px 46px 42px; box-shadow: var(--drop); font: 800 28px/1 var(--font); color: var(--ink); }
+.k-prompt svg { display: block; }
+.k-prompt--hold::after { content: ''; width: 34px; height: 12px; border-radius: 8px; border: 2.5px solid var(--cocoa); background: linear-gradient(90deg, var(--gold) 58%, var(--recessed) 58%); }
+
+/* ---- gauges ---- */
+.k-gauge { position: relative; width: 300px; height: 24px; background: var(--recessed); border: var(--frame) solid var(--ink); border-radius: 14px 16px 13px 17px; overflow: hidden; box-sizing: border-box; }
+.k-gauge > i { display: block; height: 100%; width: var(--v, 60%); background: var(--k-fill, var(--nerve)); border-right: var(--frame) solid var(--ink); border-radius: 0 9px 9px 0; }
+.k-gauge--low > i { background: repeating-linear-gradient(-55deg, var(--cream) 0 5px, var(--ink) 5px 7.5px); }
+.k-gauge--zoomies { --k-fill: var(--gold); }
+.k-gauge--frazzle { --k-fill: var(--static); height: 28px; border: 0; border-radius: 0; background: var(--ink); padding: 0;
+  clip-path: polygon(0 18%, 4% 0, 8% 18%, 12% 0, 16% 18%, 20% 0, 24% 18%, 28% 0, 32% 18%, 36% 0, 40% 18%, 44% 0, 48% 18%, 52% 0, 56% 18%, 60% 0, 64% 18%, 68% 0, 72% 18%, 76% 0, 80% 18%, 84% 0, 88% 18%, 92% 0, 96% 18%, 100% 0, 100% 82%, 96% 100%, 92% 82%, 88% 100%, 84% 82%, 80% 100%, 76% 82%, 72% 100%, 68% 82%, 64% 100%, 60% 82%, 56% 100%, 52% 82%, 48% 100%, 44% 82%, 40% 100%, 36% 82%, 32% 100%, 28% 82%, 24% 100%, 20% 82%, 16% 100%, 12% 82%, 8% 100%, 4% 82%, 0 100%); }
+.k-gauge--frazzle::before { content: ''; position: absolute; inset: 5px 4px; background: var(--recessed); }
+.k-gauge--frazzle > i { position: absolute; left: 4px; top: 5px; bottom: 5px; height: auto; width: calc(var(--v, 60%) - 8px); border: 0; border-radius: 0; }
+/* Pounce Gauge: a row of paw-pads */
+.k-pads { display: inline-flex; gap: 6px; align-items: center; }
+.k-pads svg { display: block; }
+
+/* ---- pill badge ---- */
+.k-pill { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 18px; border-radius: 22px 20px 23px 19px; background: var(--cocoa); color: var(--cream); font: 800 28px/1 var(--font); }
+.k-pill--gold { background: var(--gold); color: var(--ink); border: 2.5px solid var(--ink); }
+.k-pill--sage { background: var(--sage); color: var(--ink); border: 2.5px solid var(--ink); }
+.k-pill--cream { background: var(--cream); color: var(--cocoa); border: var(--frame) solid var(--cocoa); }
+.k-pill--crimson { background: var(--crimson); color: var(--cream); }
+
+/* ---- Patch tag (TL): stamp + emblem + wisps, no number ---- */
+.k-patchtag { display: inline-flex; align-items: center; gap: 14px; padding: 10px 26px 10px 14px; background: var(--cream); border: var(--frame) solid var(--cocoa); border-radius: 38px 46px 40px 50px / 44px 38px 48px 40px; box-shadow: var(--drop); font: 800 30px/1 var(--font); color: var(--cocoa); }
+.k-patchtag svg { display: block; }
+
+/* ---- wedge-ended band (Standoff name-card, warnings) ---- */
+.k-band { display: inline-flex; align-items: center; gap: 18px; height: 84px; padding: 0 70px 0 40px; background: var(--ink); color: var(--cream); font: 800 44px/1 var(--font); clip-path: polygon(0 0, 100% 0, calc(100% - 44px) 100%, 0 100%); }
+
+/* drowsy end-of-phase vignette: soft CREAM edge, never dark */
+.k-drowsy { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 72% 78% at 50% 52%, rgba(255, 246, 227, 0) 62%, rgba(255, 246, 227, .5) 100%); }
+
+/* ---- model-sheet scaffolding (sheet.html only) ---- */
+.k-sheet { width: 1920px; margin: 0; background: #EFE4CB; font-family: var(--font); color: var(--ink); padding: 40px 48px 56px; box-sizing: border-box; }
+.k-sheet h1 { font: 800 54px/1 var(--font); color: var(--cocoa); margin: 0 0 6px; }
+.k-sheet h2 { font: 800 30px/1 var(--font); color: var(--cream); background: var(--cocoa); display: inline-block; padding: 8px 22px; border-radius: 20px 24px 21px 26px; margin: 34px 0 14px; }
+.k-sheet .lab { font: 700 18px/1.2 var(--font); color: var(--cocoa); }
+.k-sheet .cell { background: #FBF3DF; border-radius: 26px; }

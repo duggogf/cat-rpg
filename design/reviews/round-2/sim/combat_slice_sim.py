@@ -25,6 +25,7 @@ AI_FILL = 0.5
 TAG_PERIOD, TAG_MV, TAG_FZ, TAG_GRANT = 10.0, 1.5, 20.0, 25.0
 R_RANK = {"tough": 1.0, "captain": 0.20, "boss": 0.15}
 FRAZ_S, FRAZ_DMG = 6.0, 1.5
+WALL_S = 8.0                       # assumed time Daifuku stays on his wall before a knock-off
 QUICK_PILE_S, FULL_PILE_S, PILE_BASE, PILE_K = 1.2, 2.5, 2.0, 1.0
 RUFFLE_S, RUFFLE_CD = 4.0, 6.0
 
@@ -133,6 +134,7 @@ def run(kind, model, n_toughs=0, tough_style_nerve=1.0, captain_nerve=1.0, boss_
     stats = dict(frazzles=0, moves=0, paws_earned=0.0, first_paw=[None] * 4, fz_per_phase=[0, 0, 0],
                  zoomies_fz_events=0)
     tag_clock = 0.0; ruffle_clock = 0.0
+    earned = [0.0] * 4                     # passive+hit income per cat (excl. grants), for first-Paw time
     active = [0, 1, 2, 3] if kind != "tough_focus" else [0, 1]
     overhead = {"tough_focus": 1.0, "tough_alone": 1.0, "group": 3.0, "captain": 2.0, "boss": 3.0}[kind]
 
@@ -223,7 +225,8 @@ def run(kind, model, n_toughs=0, tough_style_nerve=1.0, captain_nerve=1.0, boss_
         # --- Frazzle window handling (leaders): dump Paws, then Pile-On ---
         if e["fraz"] > 0 and e["rank"] in ("captain", "boss"):
             T_rem = e["fraz"]
-            if e["nerve"] <= pile_on_value(T_rem) * 1.0 or sum(paws) < 100:
+            # F5(c) policy: dump banked Paws while >= 4.5 s remain, then cash in
+            if e["nerve"] <= pile_on_value(T_rem) or sum(paws) < 100 or T_rem <= 4.5:
                 val = pile_on_value(T_rem)
                 deal(e, val / FRAZ_DMG, "pileon")   # deal() re-applies the x1.5
                 t += FULL_PILE_S; e["fraz"] = 0.0; e["fz"] = 0.0
@@ -250,7 +253,8 @@ def run(kind, model, n_toughs=0, tough_style_nerve=1.0, captain_nerve=1.0, boss_
         for i in active:
             inc = paw_rate(UP_CTRL, 1.0) if i == 0 else paw_rate(UP_AI, AI_FILL)
             before = paws[i]; paws[i] = min(200, paws[i] + inc * step); stats["paws_earned"] += (paws[i] - before) / 100
-            if stats["first_paw"][i] is None and paws[i] >= 100: stats["first_paw"][i] = round(t, 1)
+            earned[i] += inc * step
+            if stats["first_paw"][i] is None and earned[i] >= 100: stats["first_paw"][i] = round(t, 1)
         # Tag-Ins
         if m.tag_period:
             tag_clock += step
@@ -268,7 +272,7 @@ def run(kind, model, n_toughs=0, tough_style_nerve=1.0, captain_nerve=1.0, boss_
         # Boss knock-off cycle (8 s wall, knock-off, 6 s ground)
         if kind == "boss" and e["fraz"] <= 0:
             boss_clock += step
-            if boss_state == "wall" and boss_clock >= 8.0:
+            if boss_state == "wall" and boss_clock >= WALL_S:
                 boss_state = "ground"; boss_clock = 0.0
                 add_fz(e, 0.0, flat=30.0)          # knock-off 20 + bucket 10
                 ruffle(e)
@@ -376,5 +380,23 @@ def main():
         if var == "doc" and label in ("Tough, focused (in a group)", "2 Toughs", "3 Toughs", "4 Toughs"):
             print(f"  {label}: {r['moves']} Moves castable; first Paw per cat (s): {r['first_paw']}")
 
+def sensitivity():
+    global WALL_S
+    print("\n== Sensitivity: Daifuku vs time between knock-offs (wall time before each knock-off) ==")
+    for w in (8.0, 12.0, 16.0, 24.0, 1e9):
+        WALL_S = w
+        r = run("boss", Model("slice", "bruiser"))
+        lab = "never knocked off" if w > 1e6 else f"wall {w:.0f} s"
+        print(f"  {lab:18s}: {r['time']:6.1f} s, Frazzles per phase {r['fz_per_phase']}")
+    WALL_S = 8.0
+    print("\n== Sensitivity: Bruiser Captain (x1.3) vs Captain Frazzle resistance r_rank ==")
+    for rr in (0.20, 0.25, 0.30):
+        R_RANK["captain"] = rr
+        r = run("captain", Model("slice", "bruiser"), captain_nerve=1.3)
+        r2 = run("captain", Model("slice", "yowler"), captain_nerve=0.9)
+        print(f"  r_rank {rr:.2f}: Bruiser Captain {r['time']:5.1f} s ({r['frazzles']} Frz) | Yowler Captain {r2['time']:5.1f} s")
+    R_RANK["captain"] = 0.20
+
 if __name__ == "__main__":
+    sensitivity()
     main()

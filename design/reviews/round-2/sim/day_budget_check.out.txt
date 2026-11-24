@@ -1,0 +1,9 @@
+| Day | Typical total (min) | Heavy total (min) | Encounter minutes typical / heavy | vs DR-16 (<= 25 median, 30 cap) |
+|---|---|---|---|---|
+| L1D1 tutorial (day-loop §3.10) | 17.4 | 17.4 | 4.4 / 4.4 | fits |
+| L1D2 Thorn + LPY take | 18.4 | 22.9 | 3.9 / 6.1 | fits |
+| L2D1 PA take, Ambush, Turf Board first use | 21.1 | 25.3 | 5.4 / 7.8 | fits |
+| L2D2 flap, first Night, raid + Caterwaul | 21.6 | 28.1 | 5.4 / 8.2 | fits |
+| L2D3 TSS take, first Lessons, out all Night | 24.4 | 28.5 | 6.5 / 9.2 | fits |
+| L2D3 same, home by Dusk | 20.4 | 24.4 | 5.4 / 8.2 | fits |
+| L2D4 Daifuku (wipe -> Dusk jump) | 12.8 | 15.2 | 3.6 / 5.0 | fits |

@@ -21,7 +21,8 @@ Policies: chase, humble, mixed, pacifist, lose40 (mixed + 40% of days end in a w
 Observations only.  Usage: python3 -I nemesis_slice_sim.py
 """
 import random, statistics as st, sys
-FIX = "--fix" in sys.argv   # proposed fixes N3/N4 (lead re-naming, Humbled lead, simmer 8)
+FIX2 = "--fix2" in sys.argv   # N3 as recommended: Humbled lead stays lead (its uprising is the scripted raid), arc = 3 enc + 1 mark + any Verdict state
+FIX = "--fix" in sys.argv or FIX2   # proposed fixes N3/N4 (lead re-naming, Humbled lead, simmer 8)
 SIMMER = 8 if FIX else 2
 from collections import Counter
 
@@ -186,7 +187,8 @@ class World:
     # ---------- the director's daily placements ----------
     def lead_placement(s):
         L = s.lead
-        if L is None or s.arc or L.state not in ("Seated", "Roaming") or s.day < 3: return
+        if L is None or s.arc or s.day < 3: return
+        if L.state not in ("Seated", "Roaming") and not (FIX2 and L.state == "Humbled"): return   # crate challenge
         if s.day <= L.truce_until: return
         opener = "rival_ambush" if (L.g >= 50 and s.rng.random() < 0.5) else None
         s.fight(L, opener=opener if opener else None)
@@ -223,7 +225,7 @@ class World:
         elif d == 3:
             s.lead_placement(); s.tracked_wave([s.lead]); s.keeper_fight("Tough1")
         elif d == 4:
-            if s.raid_req and rng.random() < 0.6 and s.raid_req.state in ("Seated", "Roaming"):
+            if s.raid_req and rng.random() < 0.6 and (s.raid_req.state in ("Seated", "Roaming") or (FIX2 and s.raid_req.state == "Humbled")):
                 s.fight(s.raid_req)
             elif not s.arc: s.lead_placement()
             s.tracked_wave([]); s.tracked_wave([])
@@ -232,6 +234,7 @@ class World:
         elif d == 5:
             s.lead_placement(); s.tracked_wave([s.lead]); s.keeper_fight("Kagi")
         elif d in (6, 7):
+            if s.lead is not s.by["Daifuku"]: s.lead_placement()   # §3.7 presence guarantee holds every day
             D = s.by["Daifuku"]
             if D.state == "Seated":
                 if rng.random() < 0.5 and d == 6:
@@ -321,21 +324,23 @@ class World:
         s.max_nem = max(s.max_nem, len(s.slot_holders))
         # arc lead resolution / achievement
         if FIX and not s.arc and (L is None or L.state == "Gone"):
-            pool = [c for c in s.active() if c.enc >= 1]
+            pool = [c for c in s.active() if c.enc >= 1] or ([c for c in s.seated() if c.rank == "Tough"] if FIX2 else [])
             s.lead = max(pool, key=s.arc_score) if pool else None; L = s.lead
         if L and not s.arc:
-            if L.state == "Crew" or (L.friend and L.enc < 3) or (FIX and L.state == "Humbled" and L.enc < 3):
+            if L.state == "Crew" or (L.friend and L.enc < 3) or (FIX and not FIX2 and L.state == "Humbled" and L.enc < 3):
                 if L.enc < 3:
                     s.lead_role = "resolved"
                     pool = [c for c in (s.active() if FIX else s.seated()) if c.enc >= 1 and c is not L]
+                    if FIX2 and not pool:   # name a stranger rather than nobody
+                        pool = [c for c in s.seated() if c.rank == "Tough" and c is not L]
                     s.lead = max(pool, key=s.arc_score) if pool else None
                     s.lead_role = "lead"
             L = s.lead
-            if L and L.enc >= 3 and L.marks >= 1 and ("arc" in s.slot_holders or L.friend or L.recruited_after3):
+            if L and L.enc >= 3 and L.marks >= 1 and (FIX2 or "arc" in s.slot_holders or L.friend or L.recruited_after3):
                 s.arc = True; s.arc_day = d
         # 3f raid request for tomorrow (≤1): first = arc lead on night 3
         s.raid_req = None
-        if d == 3 and s.lead and s.lead.state in ("Seated", "Roaming"):
+        if d == 3 and s.lead and (s.lead.state in ("Seated", "Roaming") or (FIX2 and s.lead.state == "Humbled")):
             s.raid_req = s.lead
         elif d >= 4:
             req = [c for c in s.active() if c.g >= 60 and d > c.truce_until]
@@ -399,7 +404,7 @@ def report(days, label, n=500):
 
 
 if __name__ == "__main__":
-    print("Variant:", "PROPOSED FIXES (lead re-named nightly from active cats; Humbled lead with <3 enc resolves; simmer +8)" if FIX else "AS WRITTEN")
+    print("Variant:", "FIX2 = recommended N3 (Humbled lead stays lead: its uprising is the scripted first raid and the presence guarantee places it as a crate-challenge Standoff; arc = >=3 enc + >=1 mark, any Verdict state) + nightly re-naming + simmer 8" if FIX2 else "PROPOSED FIXES (lead re-named nightly from active cats; Humbled lead with <3 enc resolves; simmer +8)" if FIX else "AS WRITTEN")
     v = report(7, "Slice (Lives 1-2)")
     print("\nLife-1 remembered-rival callback (Thorn has Memory of Mikan at the day-2 placement):",
           ", ".join(f"{p} {v[p]['_l1cb']:.0%}" for p in v))
