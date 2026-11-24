@@ -23,7 +23,12 @@ const K = Kit, C = K.C, W = 1920, H = 1080, HZ = 560, F = 1100, CX = 820, EYE = 
 const P = (X, Y, d) => [CX + X * F / d, HZ - (Y - EYE) * F / d];
 const pd = (pts) => 'M' + pts.map((p) => { const q = P(...p); return q[0].toFixed(1) + ' ' + q[1].toFixed(1); }).join('L') + 'Z';
 const G = { lw: 2.5, ol: K.OUTLINES.ink };
-const paint = (pts, color, o) => K.surface(Object.assign({ d: pd(pts), box: (() => { const q = pts.map((p) => P(...p)); const xs = q.map((p) => p[0]), ys = q.map((p) => p[1]); return { x: Math.min(...xs), y: Math.min(...ys), w: Math.max(...xs) - Math.min(...xs), h: Math.max(...ys) - Math.min(...ys) }; })(), color, grime: 0, tex: 'brush', texOpacity: 0.22, wobble: true }, o || {}));
+let _pid = 0;
+/** Painted, unlined surface: vertical gradient + brush grain + hand wobble (E-1/E-2). */
+const paint = (pts, color, o) => { o = o || {}; const q = pts.map((p) => P(...p)); const ys = q.map((p) => p[1]), xs = q.map((p) => p[0]);
+  const y0 = Math.min(...ys), y1 = Math.max(...ys), x0 = Math.min(...xs), x1 = Math.max(...xs), id = 'pg' + (++_pid), d = pd(pts);
+  const g = `<linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="0" y1="${y0}" x2="0" y2="${y1}"><stop offset="0" stop-color="${o.top || K.mix(color, '#FFFFFF', 0.12)}"/><stop offset="0.55" stop-color="${color}"/><stop offset="1" stop-color="${o.bottom || K.mix(color, '#2A2040', 0.2)}"/></linearGradient>`;
+  return `<g filter="url(#k-rough)">${g}<path d="${d}" fill="url(#${id})"/>${K.clipTo(d, K.texture(x0 - 10, y0 - 10, x1 - x0 + 20, y1 - y0 + 20, o.tex || 'brush', o.texOpacity == null ? 0.2 : o.texOpacity) + K.texture(x0 - 10, y0 - 10, x1 - x0 + 20, y1 - y0 + 20, 'grain', 0.12))}</g>`; };
 const s = [];
 const LW = -1.45, RW = 1.35, BW = 4.2;   // left wall, right wall (X), back wall (d)
 
@@ -56,7 +61,7 @@ s.push(`<linearGradient id="dusk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" s
 s.push(`<path d="${pd([[LW, 2.25, gz0], [LW, 2.25, gz1], [LW, 0.05, gz1], [LW, 0.05, gz0]])}" fill="url(#dusk)"/>`);
 { const a = P(LW, 0.5, 2.6); s.push(K.glow(a[0] + 10, a[1] - 10, 150, 120, '#FFE2A8', 0.9)); }                      // the low sun
 s.push(`<path d="${pd([[LW, 0.55, gz0], [LW, 0.55, gz1], [LW, 0.05, gz1], [LW, 0.05, gz0]])}" fill="#5A4E86"/>`);           // garden wall, blue
-{ const a = P(LW, 1.1, 3.2); s.push(K.foliage({ x: a[0], y: a[1], w: 170, h: 200, seed: 7, far: true, tones: { dark: '#3E3A6A', mid: '#575086', light: '#7A6EA6' } })); }
+{ const q = [[LW, 0.55, 2.55], [LW, 0.82, 2.62], [LW, 1.0, 2.8], [LW, 1.06, 3.05], [LW, 0.98, 3.3], [LW, 0.86, 3.5], [LW, 0.7, 3.7], [LW, 0.55, 3.85]].map((p) => P(...p)); s.push(`<path d="${K.blob(q, true, 0.5)}" fill="#4E4680" filter="url(#k-leaf)"/>`); }
 let gf = ''; for (let i = 0; i <= 4; i++) { const z = gz0 + (gz1 - gz0) * i / 4; gf += `<path d="${pd([[LW, 2.25, z - 0.025], [LW, 2.25, z + 0.025], [LW, 0.05, z + 0.025], [LW, 0.05, z - 0.025]])}" fill="#4A3040"/>`; }
 gf += `<path d="${pd([[LW, 1.02, gz0], [LW, 1.02, gz1], [LW, 0.98, gz1], [LW, 0.98, gz0]])}" fill="#4A3040"/>`;
 s.push(`<g filter="url(#k-rough)">${gf}</g>`);
@@ -72,21 +77,22 @@ s.push(`<path d="${pd([[LW, 0.06, BW - 0.01], [RW, 0.06, BW - 0.01], [RW, 0, BW 
 
 /* right wall + the upright piano against it, keyboard facing us-left (painted case; lid and keys inked) */
 s.push(paint([[RW, 2.6, 0.6], [RW, 2.6, BW], [RW, 0, BW], [RW, 0, 0.6]], '#6E5E84', { top: '#5A4E74', bottom: '#7A6890' }));
-const PF = 0.72, KF = 0.58, PZ0 = 1.3, PZ1 = 2.85;   // piano front face X, key front X, near/far ends (d)
+const PF = 0.72, KF = 0.58, PZ0 = 0.85, PZ1 = 2.4;   // piano front face X, key front X, near/far ends (d)
 // case: near side panel, front faces, top
 s.push(paint([[PF, 1.26, PZ0], [RW, 1.26, PZ0], [RW, 0, PZ0], [PF, 0, PZ0]], '#5A3436', { top: '#6E4240', bottom: '#3E2430', tex: 'brush-v', texOpacity: 0.3 }));
 s.push(paint([[PF, 1.26, PZ0], [PF, 1.26, PZ1], [PF, 0.8, PZ1], [PF, 0.8, PZ0]], '#4E2E34', { top: '#5E3838', bottom: '#40262E', tex: 'brush-v', texOpacity: 0.25 }));
-s.push(paint([[PF - 0.06, 0.62, PZ0 + 0.06], [PF - 0.06, 0.62, PZ1 - 0.06], [PF - 0.06, 0.04, PZ1 - 0.06], [PF - 0.06, 0.04, PZ0 + 0.06]], '#40262E', { top: '#4A2C32', bottom: '#2E1C28', tex: 'brush-v', texOpacity: 0.25 }));
+s.push(paint([[PF - 0.04, 0.63, PZ0], [PF - 0.04, 0.63, PZ1], [PF - 0.04, 0, PZ1], [PF - 0.04, 0, PZ0]], '#46283A', { top: '#5A3440', bottom: '#2E1C2C', tex: 'brush-v', texOpacity: 0.25 }));
+s.push(`<path d="${pd([[PF - 0.041, 0.5, PZ0 + 0.2], [PF - 0.041, 0.5, PZ1 - 0.15], [PF - 0.041, 0.14, PZ1 - 0.15], [PF - 0.041, 0.14, PZ0 + 0.2]])}" fill="none" stroke="#6A4250" stroke-width="3" opacity="0.7"/>`);
 // the keybed slab under the keys
 s.push(paint([[KF - 0.03, 0.7, PZ0], [KF - 0.03, 0.7, PZ1], [KF - 0.03, 0.62, PZ1], [KF - 0.03, 0.62, PZ0]], '#5E3A3A', { tex: 'brush', texOpacity: 0.2 }));
 // legs at the treble and bass ends
-[PZ0 + 0.04, PZ1 - 0.04].forEach((d) => s.push(paint([[KF + 0.01, 0.62, d - 0.035], [KF + 0.01, 0.62, d + 0.035], [KF + 0.02, 0.03, d + 0.035], [KF + 0.02, 0.03, d - 0.035]], '#4A2C32', { tex: 'brush-v' })));
+
 // music stand + the Scribble score with a pencil circle on one bar
-{ const sp = [[PF - 0.05, 1.12, 1.75], [PF - 0.05, 1.12, 2.45], [PF - 0.11, 0.84, 2.45], [PF - 0.11, 0.84, 1.75]];
+{ const sp = [[PF - 0.05, 1.12, 1.45], [PF - 0.05, 1.12, 2.15], [PF - 0.11, 0.84, 2.15], [PF - 0.11, 0.84, 1.45]];
   s.push(K.inked(pd(sp), '#F4EAD8', 2));
   let sm = ''; const R = K.rng(17);
-  for (let r = 0; r < 7; r++) { const y = 1.08 - r * 0.033; let d = 1.8; while (d < 2.4) { const l = 0.03 + R() * 0.07, a = P(PF - 0.06 - r * 0.008, y, d), b = P(PF - 0.06 - r * 0.008, y, Math.min(2.42, d + l)); sm += `<path d="M${a[0].toFixed(1)} ${a[1].toFixed(1)}L${b[0].toFixed(1)} ${b[1].toFixed(1)}" stroke="#8C8098" stroke-width="1.4" stroke-linecap="round"/>`; d += l + 0.02; } }
-  const pc = P(PF - 0.08, 1.0, 2.05); sm += `<ellipse cx="${pc[0]}" cy="${pc[1]}" rx="12" ry="9" fill="none" stroke="#8C8098" stroke-width="1.8"/>`;
+  for (let r = 0; r < 7; r++) { const y = 1.08 - r * 0.033; let d = 1.5; while (d < 2.1) { const l = 0.03 + R() * 0.07, a = P(PF - 0.06 - r * 0.008, y, d), b = P(PF - 0.06 - r * 0.008, y, Math.min(2.12, d + l)); sm += `<path d="M${a[0].toFixed(1)} ${a[1].toFixed(1)}L${b[0].toFixed(1)} ${b[1].toFixed(1)}" stroke="#8C8098" stroke-width="1.4" stroke-linecap="round"/>`; d += l + 0.02; } }
+  const pc = P(PF - 0.08, 1.0, 1.75); sm += `<ellipse cx="${pc[0]}" cy="${pc[1]}" rx="12" ry="9" fill="none" stroke="#8C8098" stroke-width="1.8"/>`;
   s.push(sm); }
 // fallboard (open), keys: inked — the only inked parts of the piano (L-1)
 s.push(K.inked(pd([[PF - 0.13, 0.83, PZ0 + 0.07], [PF - 0.13, 0.83, PZ1 - 0.07], [PF - 0.15, 0.745, PZ1 - 0.07], [PF - 0.15, 0.745, PZ0 + 0.07]]), '#4A2A2E', 2));
@@ -99,65 +105,65 @@ s.push(keys);
 // shadow pooled under the piano (Shadow Wisteria, never grey)
 s.push(K.castShadow(pd([[PF - 0.3, 0, PZ0], [RW, 0, PZ0], [RW, 0, PZ1 + 0.2], [PF - 0.3, 0, PZ1 + 0.2]]), 0.5, 'soft2'));
 // the pedals, brass, catching a little light
-[1.95, 2.05, 2.15].forEach((d) => s.push(K.inked(pd([[KF - 0.02, 0.07, d - 0.025], [KF - 0.02, 0.07, d + 0.025], [KF - 0.14, 0.06, d + 0.02], [KF - 0.14, 0.06, d - 0.02]]), '#C99A4A', 1.6)));
+[1.38, 1.48, 1.58].forEach((d) => s.push(K.inked(pd([[KF - 0.02, 0.07, d - 0.025], [KF - 0.02, 0.07, d + 0.025], [KF - 0.14, 0.06, d + 0.02], [KF - 0.14, 0.06, d - 0.02]]), '#C99A4A', 1.6)));
 
-/* the piano bench (painted wood), Haru sitting side-on to us */
-const BX0 = -0.25, BX1 = 0.25, BD0 = 1.7, BD1 = 2.25, BY = 0.47;
-s.push(K.castShadow(pd([[BX0 - 0.1, 0, BD0 - 0.1], [BX1 + 0.1, 0, BD0 - 0.1], [BX1 + 0.3, 0, BD1 + 0.2], [BX0, 0, BD1 + 0.2]]), 0.5, 'soft2'));
-[[BX0 + 0.04, BD0 + 0.04], [BX1 - 0.04, BD0 + 0.04], [BX0 + 0.04, BD1 - 0.04], [BX1 - 0.04, BD1 - 0.04]].sort((a, b) => b[1] - a[1]).forEach(([x, d]) => s.push(paint([[x - 0.025, BY - 0.05, d], [x + 0.025, BY - 0.05, d], [x + 0.025, 0, d], [x - 0.025, 0, d]], '#5A3A38', { tex: 'brush-v', top: '#6E4A42', bottom: '#4A2E30' })));
-s.push(paint([[BX0, BY - 0.06, BD0], [BX1, BY - 0.06, BD0], [BX1, BY, BD0], [BX0, BY, BD0]], '#6A4440', { top: '#8A5E50', bottom: '#5A3A38' }));
+/* the piano bench (painted wood), Haru sitting side-on to us; we look up at its underside */
+const BX0 = -0.32, BX1 = 0.24, BD0 = 1.15, BD1 = 1.55, BY = 0.47;
+s.push(K.castShadow(pd([[BX0 - 0.1, 0, BD0 - 0.05], [BX1 + 0.1, 0, BD0 - 0.05], [BX1 + 0.35, 0, BD1 + 0.2], [BX0 + 0.1, 0, BD1 + 0.2]]), 0.5, 'soft2'));
+const benchLeg = (x, d) => paint([[x - 0.025, BY - 0.05, d], [x + 0.025, BY - 0.05, d], [x + 0.025, 0, d], [x - 0.025, 0, d]], '#5A3A44', { tex: 'brush-v', top: '#6E4A4C', bottom: '#3E2838' });
+s.push(benchLeg(BX0 + 0.04, BD1 - 0.04) + benchLeg(BX1 - 0.04, BD1 - 0.04));
+s.push(paint([[BX0, BY - 0.05, BD0], [BX1, BY - 0.05, BD0], [BX1, BY - 0.05, BD1], [BX0, BY - 0.05, BD1]], '#3E2A3C', { top: '#4A3242', bottom: '#33243A' }));   // underside, in shade
 
-/* =============================== Haru: legs, hem, hands (inked cels) =============================== */
+/* =============================== Haru: legs, hem, hands (inked cels, hand-drawn on the projected anchors) =============================== */
 const HP = { skin: '#F6D2B0', card: C.haru, cardS: '#E9B428', skirt: '#4E6A9A', sock: C.haru };
-const A = (X, Y, d) => P(X, Y, d);
-// far (right) leg: shin down to the foot resting on the soft pedal, partly behind the near leg
-{ const k = A(0.44, 0.5, 2.08), an = A(0.47, 0.09, 2.08), ft = A(0.56, 0.04, 2.08);
-  s.push(K.celGroup({ parts: [{ d: K.tube([k, [(k[0] + an[0]) / 2 + 3, (k[1] + an[1]) / 2], an], [46, 40, 30], { capRound: 0.5 }), fill: HP.skin }], shadeAll: true }, G));
-  s.push(K.celGroup({ parts: [{ d: K.tube([[an[0] - 1, an[1] - 34], an], [32, 30], { capRound: 0.4 }), fill: HP.sock }, { d: K.blob([[an[0] - 16, an[1] - 6], [an[0] + 10, an[1] - 12], [ft[0] + 18, ft[1] - 8], [ft[0] + 22, ft[1] + 2], [an[0] - 14, an[1] + 10]], true, 0.5), fill: HP.sock }], shadeAll: true }, G)); }
-// skirt over the thighs, hem at the knee; near leg: knee, shin, yellow sock, foot flat on the boards
-{ const hip = A(-0.02, 0.52, 1.95), kn = A(0.42, 0.52, 1.92), an = A(0.45, 0.09, 1.9), ft = A(0.58, 0.03, 1.9);
-  s.push(K.celGroup({ parts: [{ d: K.tube([kn, [(kn[0] + an[0]) / 2 + 4, (kn[1] + an[1]) / 2], an], [52, 44, 34], { capRound: 0.5 }), fill: HP.skin }], shade: K.tube([[kn[0] - 14, kn[1] + 10], [an[0] - 10, an[1]]], [14, 10]), lines: [K.blob([[kn[0] + 12, kn[1] + 4], [kn[0] + 16, kn[1] + 18]], false)] }, G));
-  s.push(K.celGroup({ parts: [{ d: K.tube([[an[0] - 1, an[1] - 40], an], [36, 34], { capRound: 0.4 }), fill: HP.sock }, { d: K.blob([[an[0] - 18, an[1] - 8], [an[0] + 12, an[1] - 14], [ft[0] + 20, ft[1] - 8], [ft[0] + 24, ft[1] + 3], [an[0] - 16, an[1] + 12]], true, 0.5), fill: HP.sock }], shade: K.blob([[an[0] - 18, an[1] + 4], [ft[0] + 24, ft[1]], [ft[0] + 24, ft[1] + 6], [an[0] - 18, an[1] + 14]], true, 0.3) }, G));
-  // the skirt: navy-blue pleats from the seat to just past the knee
-  const sk = [[hip[0] - 40, hip[1] - 80], [kn[0] - 30, kn[1] - 46], [kn[0] + 30, kn[1] - 30], [kn[0] + 34, kn[1] + 22], [kn[0] - 10, kn[1] + 30], [(hip[0] + kn[0]) / 2, kn[1] + 26], [hip[0] - 30, hip[1] + 40]];
-  s.push(K.celGroup({ parts: [{ d: K.blob(sk, true, 0.35), fill: HP.skirt }], shade: K.blob([[hip[0] - 60, hip[1] + 10], [kn[0] + 40, kn[1] + 4], [kn[0] + 40, kn[1] + 40], [hip[0] - 60, hip[1] + 50]], true, 0.2), lines: [K.blob([[kn[0] - 60, kn[1] - 30], [kn[0] - 50, kn[1] + 28]], false), K.blob([[kn[0] - 110, kn[1] - 34], [kn[0] - 104, kn[1] + 24]], false)] }, G)); }
-// her torso rises out of frame; only the cardigan's lower back and hip show above the bench
-{ const t = [A(-0.2, 0.5, 2.0), A(0.18, 0.5, 1.95), A(0.16, 0.85, 1.95), A(0.12, 1.4, 1.95), A(-0.22, 1.4, 2.0), A(-0.24, 0.85, 2.0)];
-  s.push(K.celGroup({ parts: [{ d: K.blob(t, true, 0.35), fill: HP.card }], shade: K.blob([A(-0.24, 0.5, 2.0), A(-0.08, 0.5, 2.0), A(-0.1, 1.4, 2.0), A(-0.26, 1.4, 2.0)], true, 0.2), lines: [K.blob([A(-0.02, 0.62, 1.98), A(0.0, 0.9, 1.97)], false)] }, G));
-  s.push(K.celGroup({ parts: [{ d: K.blob([A(-0.2, 0.58, 2.0), A(0.18, 0.58, 1.95), A(0.18, 0.5, 1.95), A(-0.2, 0.5, 2.0)], true, 0.2), fill: HP.cardS }] }, G)); }
-// far hand still resting on the keys: the Piece has paused mid-phrase
-{ const w = A(0.45, 0.82, 2.05), h0 = A(0.62, 0.745, 2.08);
-  s.push(K.celGroup({ parts: [{ d: K.tube([A(0.15, 1.05, 2.02), A(0.32, 0.86, 2.04), w], [62, 54, 44], { capRound: 0.3 }), fill: HP.card }], shadeAll: true }, G));
-  s.push(K.celGroup({ parts: [{ d: K.blob([[w[0] - 4, w[1] - 14], [h0[0] + 6, h0[1] - 12], [h0[0] + 12, h0[1] + 2], [h0[0] - 4, h0[1] + 6], [w[0] - 2, w[1] + 12]], true, 0.5), fill: HP.skin }], shadeAll: true, lines: [K.blob([[h0[0] - 6, h0[1] - 8], [h0[0] - 2, h0[1] + 4]], false)] }, G)); }
-// near arm: down out of the top of frame, foreshortened toward us, the hand open, palm-down, slowing above Mikan
-const hand = { x: 780, y: 470 };
-s.push(K.celGroup({ parts: [{ d: K.tube([[1040, -30], [980, 120], [890, 300], [826, 418]], [120, 128, 116, 92], { capRound: 0.3 }), fill: HP.card }],
-  shade: K.tube([[1080, -30], [1024, 120], [934, 300], [866, 420]], [40, 44, 40, 30]), lines: ['M952 200Q930 230 942 262', 'M900 330Q884 352 896 372'] }, G));
-s.push(K.celGroup({ parts: [{ d: K.tube([[842, 392], [816, 438]], [98, 90], { capRound: 0.2 }), fill: HP.cardS }], lines: ['M800 412L842 380', 'M808 426L852 396', 'M816 440L860 410'] }, G));
-// the hand: back of the hand toward us, fingers relaxed and spread a little, tips just curling down
-s.push(K.celGroup({ parts: [
-  { d: 'M776 430C800 418 836 426 852 446C866 466 866 490 854 506C844 520 828 528 812 532C800 536 770 536 752 530C732 522 720 506 724 490C728 470 750 440 776 430Z', fill: HP.skin },
-  { d: 'M738 496C722 506 704 522 700 540C698 552 708 556 718 548C728 538 742 524 752 516Z', fill: HP.skin },
-  { d: 'M760 524C752 540 748 560 752 574C756 584 768 582 772 572C776 558 778 544 780 530Z', fill: HP.skin },
-  { d: 'M790 530C788 548 790 570 798 582C804 590 816 586 816 576C816 562 812 546 810 530Z', fill: HP.skin },
-  { d: 'M824 524C830 540 838 558 848 568C856 576 866 570 862 560C858 546 850 530 842 516Z', fill: HP.skin },
-  { d: 'M852 484C868 488 884 498 892 512C898 522 890 530 880 524C870 516 860 506 848 500Z', fill: HP.skin }],
-  shade: 'M700 520C740 528 800 540 870 530L900 560L700 600Z', lines: ['M770 500Q784 512 796 514', 'M812 500Q824 506 830 516'] }, G));
+// far (right) leg: shin to the foot resting on the soft pedal
+s.push(K.celGroup({ parts: [{ d: K.tube([[1170, 372], [1196, 560], [1214, 706]], [56, 48, 36], { capRound: 0.5 }), fill: HP.skin }], shadeAll: true }, G));
+s.push(K.celGroup({ parts: [{ d: K.tube([[1210, 664], [1214, 712]], [40, 38], { capRound: 0.4 }), fill: HP.sock }, { d: 'M1194 704C1220 696 1260 700 1296 712C1310 718 1306 732 1292 734C1260 736 1222 734 1196 728Z', fill: HP.sock }], shadeAll: true }, G));
+// near leg: knee, shin, yellow sock, foot flat on the boards
+s.push(K.celGroup({ parts: [{ d: K.tube([[1112, 390], [1140, 580], [1160, 740]], [70, 60, 44], { capRound: 0.5 }), fill: HP.skin }], shade: K.tube([[1088, 400], [1118, 580], [1142, 740]], [20, 16, 12]), lines: ['M1136 410Q1146 426 1140 444'] }, G));
+s.push(K.celGroup({ parts: [{ d: K.tube([[1156, 690], [1162, 748]], [48, 46], { capRound: 0.4 }), fill: HP.sock }, { d: 'M1134 742C1164 730 1214 734 1258 750C1274 756 1272 774 1254 776C1214 780 1170 778 1136 770Z', fill: HP.sock }], shade: 'M1130 760C1180 766 1230 768 1276 764V790H1130Z', lines: ['M1146 744Q1166 750 1184 744'] }, G));
+// the skirt: navy pleats over the thighs from the bench to just past the knee
+s.push(K.celGroup({ parts: [{ d: 'M640 300C760 296 980 306 1110 330C1170 342 1196 372 1186 404C1150 418 1100 412 1060 420C1010 412 960 422 910 416C850 424 790 418 730 422C680 420 640 400 628 370C622 340 626 316 640 300Z', fill: HP.skirt }],
+  shade: 'M600 380C760 392 1000 398 1200 392V440H600Z', lines: ['M1060 336Q1072 380 1060 420', 'M960 320Q968 372 958 418', 'M860 316Q862 370 852 420', 'M760 312Q756 368 744 420'] }, G));
+// her torso: the cardigan leans in toward the keys and rises out of the top of frame
+s.push(K.celGroup({ parts: [{ d: 'M650 330C640 230 652 120 690 30C704 0 716 -20 728 -40L992 -40C980 -10 972 30 960 80C944 160 930 240 932 320C840 336 740 338 650 330Z', fill: HP.card }],
+  shade: 'M630 -40H760C730 60 712 180 716 334L630 334Z', lines: ['M842 40C832 120 828 220 836 320', 'M900 200Q916 230 910 262'] }, G));
+s.push(K.celGroup({ parts: [{ d: 'M650 300C740 308 840 308 934 296L932 336C840 344 740 344 650 336Z', fill: HP.cardS }], lines: [690, 730, 770, 810, 850, 890].map((x) => `M${x} 304V340`) }, G));
+// far arm out to the keys; the hand rests there, still (the Piece has paused mid-phrase)
+s.push(K.celGroup({ parts: [{ d: K.tube([[960, 40], [1080, 150], [1196, 226]], [96, 84, 70], { capRound: 0.3 }), fill: HP.card }], shadeAll: true }, G));
+s.push(K.celGroup({ parts: [{ d: K.tube([[1188, 218], [1216, 236]], [74, 70], { capRound: 0.2 }), fill: HP.cardS }] }, G));
+s.push(K.celGroup({ parts: [{ d: 'M1214 214C1240 206 1270 212 1290 228C1300 238 1296 252 1284 254C1270 258 1248 258 1232 254C1216 250 1204 238 1206 226Z', fill: HP.skin }], shadeAll: true, lines: ['M1252 240Q1258 248 1254 256', 'M1270 238Q1276 246 1272 254'] }, G));
+// the near bench legs come down in front of her legs (painted)
+s.push(benchLeg(BX0 + 0.04, BD0 + 0.04) + benchLeg(BX1 - 0.04, BD0 + 0.04));
+s.push(paint([[BX0, BY, BD0], [BX1, BY, BD0], [BX1, BY - 0.05, BD0], [BX0, BY - 0.05, BD0]], '#6A4448', { top: '#8A5A54', bottom: '#5A3A42' }));
 
+// near arm: from her shoulder straight down in front of her, the forearm turning toward us
+s.push(K.celGroup({ parts: [{ d: K.tube([[880, -40], [872, 110], [840, 260], [806, 372]], [120, 116, 108, 92], { capRound: 0.3 }), fill: HP.card }],
+  shade: K.tube([[918, -40], [912, 110], [880, 260], [846, 372]], [40, 40, 36, 30]), lines: ['M884 170Q866 196 874 226', 'M852 286Q838 306 846 330'] }, G));
+s.push(K.celGroup({ parts: [{ d: K.tube([[816, 346], [798, 398]], [100, 92], { capRound: 0.2 }), fill: HP.cardS }], lines: ['M774 364L828 330', 'M780 380L838 346', 'M786 396L846 362'] }, G));
+// the hand: open, palm-down, slowing just above Mikan's head — back of the hand toward us, fingers soft
+s.push(K.celGroup({ parts: [
+  { d: 'M766 390C792 380 830 388 846 410C860 432 860 458 848 474C838 488 820 496 804 500C790 504 760 504 742 498C722 490 712 474 716 458C722 436 742 400 766 390Z', fill: HP.skin },
+  { d: 'M730 464C712 474 694 490 690 508C688 520 698 524 708 516C718 506 732 492 742 484Z', fill: HP.skin },
+  { d: 'M752 492C744 508 740 528 744 542C748 552 760 550 764 540C768 526 770 512 772 498Z', fill: HP.skin },
+  { d: 'M784 498C782 516 784 538 792 550C798 558 810 554 810 544C810 530 806 514 804 498Z', fill: HP.skin },
+  { d: 'M818 492C824 508 832 526 842 536C850 544 860 538 856 528C852 514 844 498 836 484Z', fill: HP.skin },
+  { d: 'M846 450C862 456 878 466 886 480C892 490 884 498 874 492C864 484 854 474 842 468Z', fill: HP.skin }],
+  shade: 'M690 492C740 500 800 510 870 498L900 540L690 580Z', lines: ['M762 468Q776 480 788 482', 'M804 466Q816 474 822 484'] }, G));
 /* =============================== Mikan, at her feet on the boards =============================== */
-const mk = { x: 812, y: 922, sc: 2.95 };
+const mk = { x: 800, y: 900, sc: 3.0 };
 // the low Dusk light lies across the boards in long window-pane bars, one of them over Mikan
 const bar = (d0, d1, z0, z1) => { const a = P(LW, 0, z0), b = P(LW, 0, z1), c = P(RW * 0.9, 0, d1), e = P(RW * 0.9, 0, d0); return `M${a[0]} ${a[1]}L${b[0]} ${b[1]}L${c[0]} ${c[1]}L${e[0]} ${e[1]}Z`; };
-s.push(`<g style="mix-blend-mode:screen" filter="url(#k-soft)" opacity="0.85"><path d="${bar(0.9, 1.25, 1.8, 2.2)}" fill="#F7A45A" opacity="0.55"/><path d="${bar(1.45, 1.75, 2.3, 2.7)}" fill="#F7A45A" opacity="0.4"/><path d="${bar(2.0, 2.3, 2.8, 3.2)}" fill="#F7A45A" opacity="0.3"/><path d="${bar(2.6, 2.85, 3.3, 3.75)}" fill="#F7A45A" opacity="0.22"/></g>`);
-s.push(K.castShadow(`M${mk.x - 60} ${mk.y - 4}L${mk.x + 70} ${mk.y - 8}L${mk.x + 300} ${mk.y + 30}L${mk.x + 200} ${mk.y + 52}Z`, 0.45));
+s.push(`<g style="mix-blend-mode:screen" filter="url(#k-soft)"><path d="${bar(0.86, 1.08, 1.8, 2.25)}" fill="#F7A45A" opacity="0.5"/><path d="${bar(1.3, 1.55, 2.4, 2.8)}" fill="#F7A45A" opacity="0.36"/><path d="${bar(1.9, 2.15, 2.95, 3.3)}" fill="#F7A45A" opacity="0.26"/><path d="${bar(2.55, 2.75, 3.45, 3.8)}" fill="#F7A45A" opacity="0.2"/></g>`);
+s.push(K.castShadow(`M${mk.x - 60} ${mk.y - 4}L${mk.x + 70} ${mk.y - 8}L${mk.x + 320} ${mk.y + 34}L${mk.x + 210} ${mk.y + 56}Z`, 0.45));
 s.push(K.cat({ ...K.CAST.mikan, pose: 'front-sit', expr: 'sleepy', x: mk.x, y: mk.y, scale: mk.sc }));
-// warm light lands on Mikan's sunward (left) side; the far side stays in cool room shade
-s.push(`<g style="mix-blend-mode:multiply" opacity="0.32"><path d="M${mk.x + 10} ${mk.y - 360}H${mk.x + 160}V${mk.y + 10}H${mk.x + 10}Z" fill="#7A6AB8" filter="url(#k-soft)"/></g>`);
-s.push(`<g style="mix-blend-mode:screen" opacity="0.5"><ellipse cx="${mk.x - 70}" cy="${mk.y - 150}" rx="90" ry="200" fill="#FFB870" filter="url(#k-soft2)"/></g>`);
-// the bell: one small glint (the four-point sparkle the bible allows; no flash)
-s.push(K.sparkle({ x: mk.x - 14, y: mk.y - 158, r: 10, lw: 2 }));
+// warm light on Mikan's sunward (left) side; the far side in cool room shade (light, not an effect)
+s.push(`<g style="mix-blend-mode:multiply" opacity="0.3"><path d="M${mk.x + 20} ${mk.y - 360}H${mk.x + 170}V${mk.y + 10}H${mk.x + 20}Z" fill="#7A6AB8" filter="url(#k-soft)"/></g>`);
+s.push(`<g style="mix-blend-mode:screen" opacity="0.45"><ellipse cx="${mk.x - 80}" cy="${mk.y - 150}" rx="80" ry="190" fill="#FFB870" filter="url(#k-soft2)"/></g>`);
+s.push(K.sparkle({ x: mk.x - 14, y: mk.y - 160, r: 10, lw: 2 }));
 
 /* =============================== atmosphere =============================== */
+s.push(`<g style="mix-blend-mode:screen" filter="url(#k-soft2)"><path d="M1120 340L1560 40L1620 120L1180 400Z" fill="#F7A45A" opacity="0.35"/><ellipse cx="1250" cy="236" rx="120" ry="60" fill="#FFC27A" opacity="0.35"/></g>`);
 // a warm shaft of dusk air from the glass, very soft; cool violet in the corners (never black)
 s.push(`<path d="M120 300L420 260L1150 900L700 1080L0 1080Z" fill="#FFC27A" opacity="0.08" filter="url(#k-soft3)" style="mix-blend-mode:screen"/>`);
 s.push(`<radialGradient id="vig" cx="0.42" cy="0.6" r="0.78"><stop offset="0.5" stop-color="#4A3E7A" stop-opacity="0"/><stop offset="1" stop-color="#4A3E7A" stop-opacity="0.55"/></radialGradient><rect width="${W}" height="${H}" fill="url(#vig)" style="mix-blend-mode:multiply"/>`);

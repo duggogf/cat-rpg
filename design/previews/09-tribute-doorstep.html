@@ -22,6 +22,7 @@
 <body>
 <div class="k-stage" id="stage"></div>
 <script src="kit/kit.js"></script>
+<script src="rival-helpers.js"></script>
 <script>
 /* FRAME 09 — TRIBUTE AT THE DOORSTEP. Life 2, Morning. Home camera at its upper (threshold) values,
  * low in the lane outside Haru's low garden wall, looking in through the gate. Mikan sits on the
@@ -182,7 +183,7 @@ ui += `<div class="k-abs sniff">
   <div class="card">${K.ui.icon({ name: 'fish', size: 58 })}<span class="lab">Doorstep pile</span><span style="flex:1"></span><span class="big">× 39</span><span class="pop">+3</span></div>
   <div class="card"><span class="lab">Raid</span><span style="display:inline-flex;align-items:center;gap:6px;padding:4px 14px 4px 6px;border:3px solid var(--cocoa);border-radius:20px;background:var(--recessed);font-size:28px">${K.ui.icon({ name: 'bell', size: 30 })}Tofu Shop Step</span>
     <svg width="64" height="34" viewBox="0 0 64 34"><path d="M60 17H14" stroke="${C.ink}" stroke-width="5" stroke-linecap="round"/><path d="M20 6L4 17L20 28Z" fill="${C.sage}" stroke="${C.ink}" stroke-width="3" stroke-linejoin="round"/></svg>
-    ${K.ui.portrait({ cat: { coat: 'charcoal', pattern: 'tabby', ears: 'tall', eye: 'yellowgreen', expr: 'angry', scars: ['notch'] }, size: 64, ring: '#7FA34A' })}<span class="night">tonight</span></div>
+    ${K.ui.portrait({ cat: { ...RV.CAST.togemaru, expr: 'angry' }, size: 64, ring: '#7FA34A' })}<span class="night">tonight</span></div>
 </div>`;
 // tally pops over the new arrivals
 ui += `<div class="bub gold" style="left:${pn[0] - 210}px;top:${pn[1] - 150}px">${K.ui.icon({ name: 'fish', size: 36 })}+3</div>`;

@@ -23,6 +23,7 @@
   .stamp .rw .fish { display: inline-flex; align-items: center; gap: 2px; color: var(--cocoa); }
   .stamp.sel { border-color: var(--ink); box-shadow: 0 0 0 5px var(--gold), 0 0 0 8px var(--ink), var(--drop); }
   .stamp.den { border-color: var(--ink); }
+  .stamp.mini { padding: 5px 14px 5px 8px; border-radius: 24px 28px 25px 29px; }
   .num { font: 800 30px/1 var(--font); }
   .crack { display: inline-flex; align-items: center; gap: 4px; padding: 2px 10px 2px 6px; border-radius: 14px; background: var(--ink); color: var(--cream); font: 800 28px/1 var(--font); }
 
@@ -65,11 +66,13 @@
 <body>
 <div class="k-stage" id="stage"></div>
 <script src="kit/kit.js"></script>
+<script src="rival-helpers.js"></script>
 <script>
 /* FRAME 08 — THE TURF BOARD. Life 2, the Lot at Dusk. The view from the kei-truck roof: the Lane's
  * painted map is pinned to the Lot's weathered plank fence, Crew portraits hang from clothes-pegs.
  * State shown: all four outer Patches held, the Den OPEN (3/4), Pon (Goofball) posted at Laundry Pole
- * Yard, a Wall Sitter Captain (Goma) forecast to raid Tofu Shop Step tonight, and the player carrying
+ * Yard, Togemaru (the Lane's Nemesis, rival-helpers.js design) forecast to raid Tofu Shop Step tonight; Kagi
+ * (recruited at the Verdict, frame 07) is in the Posse. The player is carrying
  * Hige (Stalwart) over that Patch: the drop preview is open. Numbers: territory-management.md §3.1/§3.2. */
 const K = Kit, C = K.C, W = 1920, H = 1080;
 const s = [];
@@ -101,10 +104,9 @@ const CREW = {
   hige: { name: 'Hige', pers: 'Stalwart', cat: { ...K.CAST.oldWallCat, carry: 'post', expr: 'neutral' } },
   pon: { name: 'Pon', pers: 'Goofball', cat: { ...K.CAST.goofball } },
   kinako: { name: 'Kinako', pers: 'Fraidy', cat: { ...K.CAST.fraidy } },
-  kagi: { name: 'Kagi', pers: 'Schemer', cat: { ...K.CAST.schemer } },
-  toge: { name: 'Togemaru', pers: 'Braggart', cat: { ...K.CAST.braggart } },
+  kagi: { name: 'Kagi', pers: 'Schemer', cat: { ...RV.CAST.kagi } },
 };
-const GOMA = { coat: 'charcoal', pattern: 'tabby', ears: 'tall', build: 'standard', eye: 'yellowgreen', expr: 'angry', tail: 'whip', scars: ['notch'] };
+const TOGE = { ...RV.CAST.togemaru, expr: 'angry' };   // the Nemesis: same design as frames 05–06
 const portrait = (cat, size, ring) => K.ui.portrait({ cat, size, ring: ring || C.cocoa });
 
 /* =====================================================================================
@@ -202,8 +204,9 @@ const PATCH = {
 };
 const smooth = (pts) => K.blob(pts, true, 0.25);
 const terr = (pts, col, op, sel) => `<path d="${smooth(pts)}" fill="${col}" opacity="${op}" style="mix-blend-mode:${sel ? 'screen' : 'multiply'}"/>`;
-map += terr(PATCH.DEN, '#C9DCA0', 0.32) + terr(PATCH.TSS, '#FFE7A3', 0.5, true);
-const border = (pts, col) => `<path d="${smooth(pts)}" fill="none" stroke="${C.cream}" stroke-width="9" stroke-linejoin="round" opacity="0.85"/><path d="${smooth(pts)}" fill="none" stroke="${col}" stroke-width="5" stroke-dasharray="2 13" stroke-linecap="round" stroke-linejoin="round"/>`;
+['LPY', 'PA', 'LWC', 'TSS'].forEach((k) => { map += `<path d="${smooth(PATCH[k])}" fill="${C.gold}" opacity="${k === 'TSS' ? 0.42 : 0.32}"/>`; });
+map += `<path d="${smooth(PATCH.DEN)}" fill="#C9DCA0" opacity="0.55"/>`;
+const border = (pts, col) => `<path d="${smooth(pts)}" fill="none" stroke="${C.cream}" stroke-width="10" stroke-linejoin="round" opacity="0.9"/><path d="${smooth(pts)}" fill="none" stroke="${col}" stroke-width="4.5" stroke-linejoin="round"/>`;
 ['LPY', 'PA', 'LWC', 'TSS'].forEach((k) => { map += border(PATCH[k], C.gold); });
 map += border(PATCH.DEN, '#7FA34A');
 // the selected Patch gets a thick bell-gold edge
@@ -230,20 +233,21 @@ Object.keys(post).forEach((k) => {
   map += K.scentWisps({ x: x + 2, y: y - (k === 'PA' ? 64 : k === 'LPY' ? 56 : 40), count: n, h: k === 'TSS' ? 34 : 46, color: col, seed: x });
 });
 // TSS is below Strong: its wisps droop — add a little cracked stamp
-// tiny diorama cats: Pon guarding the gatepost, Daifuku loafing on his wall, Goma prowling the Den's edge
+// tiny diorama cats: Pon guarding the gatepost, Daifuku loafing on his wall, Togemaru prowling the Den's edge
 map += K.cat({ ...CREW.pon.cat, pose: 'front-sit', x: 354, y: 424, scale: 0.4, lw: 2 });
 map += K.cat({ ...K.CAST.daifuku, pose: 'loaf', outline: 'sage', x: 980, y: 232, scale: 0.62, lw: 2 });
-map += K.cat({ ...GOMA, pose: 'side-walk', outline: 'sage', x: 1196, y: 314, scale: 0.42, flip: true, lw: 2 });
+map += K.cat({ ...TOGE, pose: 'side-walk', outline: 'sage', x: 1196, y: 314, scale: 0.42, flip: true, lw: 2 });
 // Mikan, home: a tiny cat on Haru's wall in the lit window's warmth
 map += K.cat({ ...K.CAST.mikan, pose: 'loaf', x: 230, y: 668, scale: 0.36, lw: 2 });
 
-/* ---------- the raid forecast: a paw-print trail from Goma down to the Tofu Shop Step post ---------- */
+/* ---------- the raid forecast: a paw-print trail from Togemaru down to the Tofu Shop Step post ---------- */
 const trail = [[1180, 330], [1210, 380], [1214, 430], [1180, 476], [1140, 500]];
 let paws = ''; const tp = K.blob(trail, false);
 for (let i = 0; i < 6; i++) { const t = (i + 0.5) / 6, idx = t * (trail.length - 1), a = trail[Math.floor(idx)], b = trail[Math.min(trail.length - 1, Math.floor(idx) + 1)], f = idx % 1; const x = a[0] + (b[0] - a[0]) * f + (i % 2 ? 9 : -9), y = a[1] + (b[1] - a[1]) * f; const ang = Math.atan2(b[1] - a[1], b[0] - a[0]) * 180 / Math.PI + 90; paws += `<g transform="translate(${x} ${y}) rotate(${ang}) scale(0.8)">${K.ui.paw({ size: 40, fill: '#A8C878', stroke: '#33273B' }).replace(/<svg[^>]*>/, '').replace('</svg>', '')}</g>`; }
 map += `<g>${paws}</g>`;
 map += `<path d="M1150 494l-26 12l8 -26z" fill="${C.sage}" stroke="${C.ink}" stroke-width="2.5" stroke-linejoin="round"/>`;
 
+map += RV.storm({ x: 1288, y: 330, s: 0.42 });
 /* ---------- the heart-link: Hige (carried) ♥ Pon (posted) — bonded Sentries, +1 Loyalty each night ---------- */
 map += `<path d="M1040 420Q700 330 372 380" fill="none" stroke="${C.cream}" stroke-width="10" stroke-linecap="round" opacity="0.9"/><path d="M1040 420Q700 330 372 380" fill="none" stroke="${C.crimson}" stroke-width="5" stroke-dasharray="1 13" stroke-linecap="round"/>`;
 
@@ -275,11 +279,12 @@ ui += `<div class="k-abs k-panel k-panel--sm tb-sentries"><span class="k-small">
 // Patch stamps
 const wisps = (n, col) => K.ui.wispRow({ n, color: col || C.gold, size: 30 });
 const stamp = (x, y, html, cls) => `<div class="stamp ${cls || ''}" style="left:${x}px;top:${y}px">${html}</div>`;
-ui += stamp(930, 128, `<div class="nm">${brickIco(30)}Den: Daifuku’s Wall</div><div class="rw">${wisps(3, C.sage)}<span class="num">88</span><span class="chip" style="height:36px;background:${C.cream}">Open</span></div>`, 'den');
-ui += stamp(200, 166, `<div class="nm">${bellIco(28)}Laundry Pole Yard${shieldIco(30)}</div><div class="rw">${wisps(3)}<span class="num">72</span><span class="fish">${fishIco(30)}10</span></div>`);
-ui += stamp(700, 586, `<div class="nm">${bellIco(28)}Persimmon Alley${shieldIco(30)}</div><div class="rw">${wisps(3)}<span class="num">66</span><span class="fish">${fishIco(30)}12</span></div>`);
+const mini = (x, y, ico, n, num, col, extra) => stamp(x, y, `<div class="rw" style="margin-top:0">${ico}${wisps(n, col)}<span class="num">${num}</span>${extra || ''}</div>`, 'mini');
+ui += mini(872, 130, brickIco(30), 3, 88, C.sage, `<span class="chip" style="height:36px;background:${C.cream}">Open</span>`);
+ui += mini(240, 444, bellIco(28), 3, 72);
+ui += mini(772, 596, bellIco(28), 3, 66);
+ui += mini(410, 640, bellIco(28), 4, 91, C.gold, `<span class="chip" style="height:36px">Home</span>`);
 ui += stamp(1176, 596, `<div class="nm">${bellIco(28)}Tofu Shop Step${shieldIco(30)}</div><div class="rw">${wisps(2)}<span class="num">54</span><span class="crack">${K.ui.wispRow({ n: 1, max: 1, color: C.cream, size: 24 })}raidable</span></div>`, 'sel');
-ui += stamp(380, 498, `<div class="nm">${bellIco(28)}Low Wall Corner</div><div class="rw">${wisps(4)}<span class="num">91</span><span class="fish">${fishIco(30)}8</span><span class="chip" style="height:36px">Home</span></div>`);
 // Den-open shields on the held outer Patches
 
 
@@ -287,25 +292,25 @@ ui += stamp(380, 498, `<div class="nm">${bellIco(28)}Low Wall Corner</div><div c
 const peg = (rot) => `<svg width="22" height="44" viewBox="0 0 22 44" style="position:absolute;left:50%;top:-30px;margin-left:-11px;transform:rotate(${rot || 0}deg)"><path d="M3 2h16v30q0 8 -8 10q-8 -2 -8 -10z" fill="#D8B27E" stroke="${C.ink}" stroke-width="2.5"/><path d="M11 4v34" stroke="${C.ink}" stroke-width="2"/><rect x="2" y="14" width="18" height="6" rx="2" fill="#9AA6B0" stroke="${C.ink}" stroke-width="2"/></svg>`;
 ui += at(374, 312, `<div style="position:relative">${portrait(CREW.pon.cat, 92, C.gold)}${peg(-6)}<div style="position:absolute;right:-16px;bottom:-6px">${pIcon('Goofball', 40)}</div></div>`);
 // Keeper of the Den and the raider
-ui += at(1116, 132, `<div style="position:relative">${portrait({ ...K.CAST.daifuku, scale: 0.86, y: 98 }, 76, '#7FA34A')}</div>`);
-ui += at(1222, 340, `<div style="position:relative">${portrait({ ...GOMA }, 80, '#7FA34A')}<div style="position:absolute;left:-118px;top:16px" class="crack">${moonIco(26)}tonight</div></div>`);
+ui += at(1100, 128, `<div style="position:relative">${portrait({ ...K.CAST.daifuku, scale: 0.86, y: 98 }, 72, '#7FA34A')}</div>`);
+ui += at(1222, 340, `<div style="position:relative">${portrait(TOGE, 80, '#7FA34A')}<div style="position:absolute;left:-118px;top:16px" class="crack">${moonIco(26)}tonight</div></div>`);
 // the carried Hige, tilted, with the paw cursor
 ui += at(990, 330, `<div style="position:relative;transform:rotate(-9deg)">${portrait(CREW.hige.cat, 124, C.gold)}<div style="position:absolute;right:-14px;bottom:2px">${pIcon('Stalwart', 46)}</div></div>`);
 ui += at(1090, 418, K.ui.paw({ size: 54, fill: C.gold }), '', 'transform:rotate(-20deg)');
 // the heart on the link, mid-way
-ui += at(672, 340, `<div style="display:flex;align-items:center;gap:6px;background:${C.cream};border:3px solid ${C.cocoa};border-radius:22px;padding:3px 12px 3px 6px;box-shadow:var(--drop);font:800 28px/1 var(--font);color:${C.crimson}">${heartIco(30)}+1</div>`);
+ui += at(680, 336, `<div style="display:flex;align-items:center;justify-content:center;width:52px;height:52px;background:${C.cream};border:3px solid ${C.cocoa};border-radius:50%;box-shadow:var(--drop)">${heartIco(34)}</div>`);
 
 /* ---------- side panel: the selected Patch + the drop preview ---------- */
 ui += `<div class="k-abs k-panel side">
   <div class="hd">${post.TSS ? `<svg width="58" height="58" viewBox="1080 494 60 60" style="flex:none">${post.TSS(1108, 548)}</svg>` : ''}<div><div class="k-h">Tofu Shop Step</div><div style="display:flex;gap:8px;margin-top:8px"><span class="chip">${bellIco(26)}Yours</span><span class="chip">Back Door</span></div></div></div>
   <div class="row"><span class="lab">Scent</span>${wisps(2)}<div class="scentbar"><i></i><u></u></div><span class="num">54</span></div>
   <div class="row" style="margin-top:-4px;padding-left:64px;color:var(--cocoa);white-space:nowrap">Strong at 60<span style="flex:1"></span><span class="chip">${shieldIco(28)}Den open</span></div>
-  <div class="row"><span class="lab">Tonight</span>${portrait(GOMA, 60, '#7FA34A')}<span style="font-weight:800">Goma</span>${K.ui.paw({ size: 30, fill: C.sage })}<span class="chip">motive ?</span></div>
+  <div class="row"><span class="lab">Tonight</span>${portrait(TOGE, 60, '#7FA34A')}<span class="k-ribbon k-ribbon--sage" style="height:40px">Togemaru</span><span class="chip">?</span></div>
   <div class="row"><span class="lab">Tribute</span>${fishIco(34)}<span class="num">13</span><span style="color:var(--cocoa)">tomorrow</span></div>
   <div class="preview" style="margin-top:14px"><span class="k-ribbon k-ribbon--gold tag" style="height:40px;font-size:28px">Post here?</span>
-    <div class="row" style="margin-top:10px">${portrait(CREW.hige.cat, 70, C.gold)}<div><div style="font:800 32px/1 var(--font)">Hige</div><div style="display:flex;gap:6px;align-items:center;margin-top:4px;color:var(--cocoa)">${pIcon('Stalwart', 32)}Stalwart · Anchor</div></div></div>
+    <div class="row" style="margin-top:10px">${portrait(CREW.hige.cat, 70, C.gold)}<div><span class="k-ribbon k-ribbon--gold" style="height:40px">Hige</span><div style="display:flex;gap:6px;align-items:center;margin-top:4px;color:var(--cocoa)">${pIcon('Stalwart', 32)}Stalwart · Anchor</div></div></div>
     <div class="row">Holds like a wall.</div>
-    <div class="row"><span class="fit">${[1, 1, 1, 1, 0].map((f) => K.ui.paw({ size: 28, fill: f ? C.gold : C.recessed })).join('')}</span><span>Good vs Goma</span></div>
+    <div class="row"><span class="fit">${[1, 1, 1, 1, 0].map((f) => K.ui.paw({ size: 28, fill: f ? C.gold : C.recessed })).join('')}</span><span>Good vs Togemaru</span></div>
     <div class="row">${heartIco(30)}<span>Pon at Laundry Pole Yard</span></div>
   </div>
   <div style="display:flex;gap:12px;margin-top:auto"><span class="k-btn k-btn--confirm" style="padding:0 22px">${K.ui.faceButtons({ size: 40, lit: 's' })}&nbsp;Post Hige</span><span class="k-btn" style="padding:0 18px">${K.ui.faceButtons({ size: 40, lit: 'e' })}&nbsp;Back</span></div>
@@ -314,24 +319,22 @@ ui += `<div class="k-abs k-panel side">
 /* ---------- the Crew on the clothes-line ---------- */
 const crewCard = (x, key, status, cls, rot) => { const c = CREW[key], ghost = cls === 'ghost';
   const pill = status === 'posse' ? `<span class="pill-s posse">${bellIco(26)}Posse</span>` : status === 'posted' ? `<span class="pill-s posted">Posted</span>` : `<span class="pill-s carry">Carrying</span>`;
-  return `<div class="crew ${cls || ''}" style="left:${x}px;transform:rotate(${rot || 0}deg)"><div class="card" style="position:relative">${peg(0)}${ghost ? `<div style="width:84px;height:84px;flex:none;display:flex;align-items:center;justify-content:center;opacity:.5">${K.ui.paw({ size: 50, fill: C.recessed })}</div>` : `<div style="flex:none">${portrait(c.cat, 84, status === 'posse' ? C.gold : C.cocoa)}</div>`}<div class="tx"><div class="nm">${ghost ? 'Hige' : c.name}</div>${ghost ? '' : `<div class="pers" style="display:flex;align-items:center;gap:4px">${pIcon(c.pers, 30)}${c.pers}</div>`}<div class="st">${pill}</div></div></div></div>`; };
+  return `<div class="crew ${cls || ''}" style="left:${x}px;transform:rotate(${rot || 0}deg)"><div class="card" style="position:relative">${peg(0)}${ghost ? `<div style="width:84px;height:84px;flex:none;display:flex;align-items:center;justify-content:center;opacity:.5">${K.ui.paw({ size: 50, fill: C.recessed })}</div>` : `<div style="flex:none">${portrait(c.cat, 84, status === 'posse' ? C.gold : C.cocoa)}</div>`}<div class="tx"><span class="k-ribbon ${ghost ? 'k-ribbon--stray' : 'k-ribbon--gold'}" style="height:38px;font-size:28px;padding:0 26px 0 14px">${ghost ? 'Hige' : c.name}</span>${ghost ? '' : `<div class="pers" style="display:flex;align-items:center;gap:4px">${pIcon(c.pers, 30)}${c.pers}</div>`}<div class="st">${pill}</div></div></div></div>`; };
 ui += crewCard(30, 'hige', 'carry', 'ghost', -2);
-ui += crewCard(294, 'pon', 'posted', '', 1.5);
-ui += crewCard(558, 'kagi', 'posse', '', -1);
-ui += crewCard(822, 'kinako', 'posse', '', 2);
-ui += crewCard(1086, 'toge', 'posse', '', -1.5);
+ui += crewCard(352, 'kagi', 'posse', '', 1.5);
+ui += crewCard(674, 'kinako', 'posse', '', -1);
+ui += crewCard(996, 'pon', 'posted', '', 2);
 // social marks between neighbours on the line
 const mark = (x, html) => at(x, 834, `<div style="background:${C.cream};border-radius:50%;padding:3px;box-shadow:var(--drop)">${html}</div>`);
-ui += mark(524, heartIco(32)) + mark(788, heartIco(32)) + mark(1050, clawX(34));
-// Togemaru: a Lesson is ready ("!")
-ui += at(1080, 852, `<span class="k-btn k-btn--focus" style="min-width:44px;height:44px;padding:0;font-size:28px">!</span>`);
+ui += mark(296, clawX(34)) + mark(618, heartIco(32)) + mark(940, heartIco(32));
 
 // footer: tomorrow's Tribute
 ui += `<div class="k-abs k-panel foot">
   <div class="eq"><small>Tomorrow</small>${fishIco(38)}43 <small>− upkeep</small>4 <small>=</small> <span style="color:var(--cocoa)">39</span></div>
   <div class="eq"><small>Stash</small>${fishIco(34)}128<span style="flex:1"></span><span class="chip">${bellIco(26)}4 / 5 Patches</span></div>
 </div>`;
-ui += `<div class="k-abs hints"><span><span class="k-btn k-key">S</span>Pick up</span><span><span class="k-btn k-key">N</span>Cat card</span><span><span class="k-btn k-key">W</span>Unpost</span><span><span class="k-btn k-key">V</span>Legend</span><span><span class="k-btn k-key">E</span>Leave</span></div>`;
+const fb = (l) => K.ui.faceButtons({ size: 44, lit: l });
+ui += `<div class="k-abs hints"><span>${fb('s')}Pick up</span><span>${fb('n')}Cat card</span><span>${fb('w')}Unpost</span><span><span class="k-btn k-key" style="min-width:64px;font-size:22px">View</span>Legend</span><span>${fb('e')}Leave</span></div>`;
 
 document.getElementById('stage').innerHTML = K.svg(W, H, s.join(''), 'class="k-world"') + ui;
 </script>
