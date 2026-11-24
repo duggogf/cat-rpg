@@ -14,20 +14,35 @@
   .bar .gold { position: absolute; left: 0; top: 0; bottom: 0; width: 82%; background: var(--gold); border-right: var(--frame) solid var(--ink); }
   .bar .fade { position: absolute; left: 82%; top: 0; bottom: 0; width: 6%; background: repeating-linear-gradient(-55deg, var(--gold) 0 6px, var(--recessed) 6px 11px); border-right: 2px dashed var(--ink); }
   .pct { font: 800 32px/1 var(--font); color: var(--ink); min-width: 74px; text-align: right; }
-  .tabs { display: flex; align-items: center; gap: 8px; }
-  .tab { height: 48px; padding: 0 20px; display: inline-flex; align-items: center; border-radius: 26px 24px 27px 23px; font: 800 28px/1 var(--font); color: var(--cocoa); }
+  .hdr { height: 96px !important; }
+  .bar .sage { position: absolute; left: 88%; right: 0; top: 0; bottom: 0; background: var(--sage); }
+  .strip { display: flex; align-items: center; gap: 4px; }
+  .scn { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 4px 4px 2px; }
+  .tab { height: 40px; padding: 0 14px; display: inline-flex; align-items: center; border-radius: 22px 20px 23px 19px; font: 800 28px/1 var(--font); color: var(--cocoa); }
   .tab.on { background: var(--cocoa); color: var(--cream); }
+  .dots { display: flex; gap: 3px; height: 12px; }
+  .dots i { width: 11px; height: 11px; border-radius: 50% 50% 46% 46%; box-sizing: border-box; }
+  .dots .m { background: var(--gold); border: 2px solid var(--ink); }
+  .dots .s { background: var(--ink); opacity: .55; }
+  .dots .e { border: 2px dashed var(--cocoa); }
+  .xtag { position: absolute; top: 74px; left: 50%; transform: translateX(-50%) rotate(-3deg); display: flex; align-items: center; gap: 6px; height: 48px; padding: 0 14px 0 4px; background: var(--cream); border: 3px solid var(--ink); border-radius: 10px 14px 12px 16px; box-shadow: 3px 4px 0 rgba(110,106,168,.6); font: 800 28px/1 var(--font); color: var(--ink); white-space: nowrap; }
+  .xtag svg { display: block; }
   .sh { min-width: 48px; height: 44px; font-size: 22px; padding: 0 8px; }
   /* left fact column */
-  .facts { left: 36px; top: 120px; display: flex; flex-direction: column; gap: 10px; }
+  .facts { left: 36px; top: 132px; display: flex; flex-direction: column; gap: 10px; }
   .fact { display: flex; flex-direction: column; gap: 6px; }
   .fact .lab { font: 800 32px/1 var(--font); color: var(--cream); text-shadow: 0 2px 0 var(--ink), 2px 0 0 var(--ink), -2px 0 0 var(--ink), 0 -2px 0 var(--ink), 2px 3px 0 var(--ink); }
+  .post { display: inline-block; width: 34px; height: 34px; border-radius: 12px 14px 11px 15px; border: 3px solid var(--ink); } .post.gold { background: var(--gold); } .post.fade { background: repeating-linear-gradient(-55deg, var(--gold) 0 5px, var(--cream) 5px 9px); } .post.sage { background: var(--sage); }
   .fact .val { display: inline-flex; align-items: center; gap: 8px; width: max-content; padding: 6px 16px 6px 10px; background: var(--cream); border: 3px solid var(--cocoa); border-radius: 18px 22px 19px 23px; box-shadow: var(--drop); font: 700 28px/1 var(--font); color: var(--ink); }
   .fact .val b { font-weight: 800; }
   /* name ribbon + role tag, in-world */
   .nt { position: absolute; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 0; }
   .nt .k-ribbon { height: 40px; font-size: 28px; padding: 0 26px 0 14px; }
-  .nt .role { margin-top: -2px; padding: 4px 12px 5px; background: var(--cream); border: 3px solid var(--cocoa); border-radius: 6px 8px 10px 8px; font: 700 24px/1 var(--font); color: var(--cocoa); box-shadow: 2px 3px 0 rgba(110,106,168,.5); }
+  .nt .rib { position: relative; display: flex; align-items: center; }
+  .gtag { position: absolute; left: 50%; top: -40px; transform: translateX(-30%) rotate(-4deg); display: flex; align-items: center; gap: 4px; height: 36px; padding: 0 10px 0 4px; background: var(--cream); border: 3px solid var(--ink); border-radius: 8px 12px 10px 12px; box-shadow: 2px 3px 0 rgba(110,106,168,.6); font: 800 26px/1 var(--font); color: var(--ink); white-space: nowrap; }
+  .gtag svg { display: block; }
+  .nt .role { margin-top: -2px; padding: 4px 12px 5px; background: var(--cream); border: 3px solid var(--cocoa); border-radius: 6px 8px 10px 8px; font: 700 26px/1 var(--font); color: var(--cocoa); box-shadow: 2px 3px 0 rgba(110,106,168,.5); display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+  .nt .role svg { display: block; }
   .nt--boss .k-ribbon { height: 48px; font-size: 32px; }
   .nt--sil .k-ribbon { --k-clowder: #CFC6D6; }
   .nt--dim { opacity: .45; }
@@ -43,7 +58,7 @@
   #card .r1 { display: flex; align-items: center; gap: 16px; padding: 8px 24px 0; font: 700 28px/1 var(--font); color: var(--ink); }
   #card .r1 > span { display: inline-flex; align-items: center; gap: 8px; }
   #card .r1 .sep { width: 3px; height: 30px; background: #D9C3A0; }
-  #card .hist { padding: 6px 24px 0; display: flex; flex-direction: column; gap: 2px; }
+  #card .hist { padding: 8px 24px 0; display: flex; flex-direction: column; gap: 2px; }
   #card .row { display: flex; align-items: center; gap: 8px; font: 500 28px/1.15 var(--font); color: var(--ink); white-space: nowrap; }
   #card .day { font: 800 24px/1 var(--font); color: var(--cocoa); width: 36px; }
   #card .ties svg { display: block; flex: none; } #card .ties { position: absolute; left: 24px; right: 20px; bottom: 12px; display: flex; align-items: center; gap: 8px; padding-top: 8px; border-top: 3px dotted #D9C3A0; font: 700 28px/1 var(--font); color: var(--ink); white-space: nowrap; }
@@ -71,8 +86,8 @@ const R = (x1, y1, t) => [VX + (x1 - VX) * t, VY + (y1 - VY) * t];
 const poly = (pts) => 'M' + pts.map((p) => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join('L') + 'Z';
 
 /* ---------- sky slit between the roofs, laundry and wires ---------- */
-s.push(K.sky({ w: W, h: 420, phase: 'day', zenith: '#58A6E6', horizon: '#FFE6B8' }));
-s.push(K.cloud({ x: 980, y: 300, w: 520, h: 260, seed: 5, shade: '#E4C8D0', light: '#FFF6E8' }));
+s.push(K.sky({ w: W, h: 420, phase: 'dusk', zenith: '#6A5CAE', horizon: '#FFB066' }));
+s.push(K.cloud({ x: 980, y: 300, w: 520, h: 260, seed: 5, shade: '#C08CA8', light: '#FFD8B0' }));
 s.push(K.glow(960, 260, 700, 300, '#FFE2A8', 0.6));
 // far trees and a roof beyond the porch
 s.push(K.foliage({ x: 820, y: 220, w: 300, h: 200, seed: 61, tones: { dark: '#3F7A5A', mid: '#5E9A62', light: '#9CC67C', hi: '#E8D88A' } }));
@@ -137,94 +152,101 @@ s.push(`<path d="M800 392L1120 392L1700 1110L280 1110Z" fill="#FFF0C8" opacity="
 s.push(K.castShadow('M-40 1110L712 596L780 600L360 1110Z', 0.38));
 s.push(K.castShadow('M1208 596L1960 880L1960 1110L1500 1110Z', 0.22));
 
-/* ---------- the gang, staged by standing ---------- */
-const POS = {
-  daifuku: [960, 386], kagi: [852, 616], ohagi: [1078, 616], goma: [650, 762], togemaru: [1236, 792], sil: [796, 384], sasa: [930, 1016], kuri: [1440, 1000],
-};
-// dashed arrows: who answers to whom (drawn first, under the cats)
-const arrow = (a, b, bend) => { const [x1, y1] = a, [x2, y2] = b, mx = (x1 + x2) / 2 + (bend || 0), my = (y1 + y2) / 2; const ang = Math.atan2(y2 - my, x2 - mx) * 180 / Math.PI;
-  return `<path d="M${x1} ${y1}Q${mx} ${my} ${x2} ${y2}" fill="none" stroke="${C.cream}" stroke-width="10" stroke-linecap="round" opacity="0.9"/><path d="M${x1} ${y1}Q${mx} ${my} ${x2} ${y2}" fill="none" stroke="${C.ink}" stroke-width="4" stroke-dasharray="12 10" stroke-linecap="round"/>` +
-    `<g transform="translate(${x2} ${y2}) rotate(${ang})"><path d="M-16 -11L4 0L-16 11" fill="none" stroke="${C.cream}" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M-16 -11L4 0L-16 11" fill="none" stroke="${C.ink}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></g>`; };
-s.push(arrow([880, 520], [930, 420], -10) + arrow([1052, 520], [990, 420], 10));                       // Captains -> Boss
-s.push(arrow([700, 690], [800, 600], -12) + arrow([1204, 660], [1110, 590], 12));                      // Goma -> Kagi, Togemaru -> Ohagi
-s.push(arrow([1010, 830], [1060, 650], 30) + arrow([1400, 840], [1300, 660], 10));                     // Sasa -> Ohagi, Kuri -> Togemaru
+/* ---------- Dusk grade over the set (before the cats) ---------- */
+s.push(`<rect width="${W}" height="${H}" fill="#F2A27A" opacity="0.22" style="mix-blend-mode:multiply"/>`);
+s.push(K.glow(960, 330, 520, 300, '#FFCF8A', 0.45));
 
-// Daifuku on his cushion, crown above, steam puffs (Seething)
+/* ---------- the gang, staged by fixed role (Boss on the perch, Captains on the steps, Toughs on the path) ---------- */
+const POS = { daifuku: [960, 386], kagi: [852, 616], ohagi: [1078, 616], goma: [650, 762], togemaru: [1236, 792], sasa: [930, 1016], kuri: [1440, 1000] };
 const [dx, dy] = POS.daifuku;
-s.push(K.glow(dx, dy - 80, 220, 140, '#FFF4D8', 0.7));
-s.push(`<ellipse cx="${dx}" cy="${dy + 2}" rx="118" ry="16" fill="none" stroke="${C.cream}" stroke-width="7"/>`);  // focus rim
+// dashed arrows: each member -> its Boss only; same-side arrows merge into one line up the steps
+const dash = (d, head) => `<path d="${d}" fill="none" stroke="${C.cream}" stroke-width="10" stroke-linecap="round" opacity="0.9"/><path d="${d}" fill="none" stroke="${C.ink}" stroke-width="4" stroke-dasharray="12 10" stroke-linecap="round"/>`;
+const head = (x, y, ang) => `<g transform="translate(${x} ${y}) rotate(${ang})"><path d="M-16 -11L4 0L-16 11" fill="none" stroke="${C.cream}" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M-16 -11L4 0L-16 11" fill="none" stroke="${C.ink}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></g>`;
+const JL = [904, 536], JR = [1016, 536];
+s.push(dash(`M${JL[0]} ${JL[1]}Q900 470 934 418`) + head(934, 418, -62) + dash(`M${JR[0]} ${JR[1]}Q1020 470 986 418`) + head(986, 418, -118));
+s.push(dash(`M860 520Q880 540 ${JL[0]} ${JL[1]}`) + dash(`M690 672Q760 560 ${JL[0]} ${JL[1]}`) + dash(`M880 830Q850 640 ${JL[0]} ${JL[1]}`));
+s.push(dash(`M1066 520Q1040 540 ${JR[0]} ${JR[1]}`) + dash(`M1206 668Q1130 560 ${JR[0]} ${JR[1]}`) + dash(`M1400 840Q1200 640 ${JR[0]} ${JR[1]}`));
+
+// Daifuku on his cushion (focused/hovered): cream rim, crown, steam puffs (Seething)
+s.push(K.glow(dx, dy - 80, 220, 140, '#FFF0C8', 0.7));
+s.push(`<ellipse cx="${dx}" cy="${dy + 2}" rx="118" ry="16" fill="none" stroke="${C.cream}" stroke-width="7"/>`);
 s.push(K.inked(K.blob(K.xf([[-90, 0], [-84, -16], [0, -22], [84, -16], [90, 0], [70, 10], [0, 14], [-70, 10]], { x: dx, y: dy })), '#8E6EB8', 2.5));
 s.push(K.cat({ ...RV.CAST.daifuku, pose: 'loaf', expr: 'angry', x: dx, y: dy - 8, scale: 1.6, shadow: false }));
 s.push(`<g transform="translate(${dx + 58} ${dy - 118}) rotate(14)">${K.inked('M0 0Q14 -16 30 -10Q21 5 0 0Z', '#7DB857', 2.2)}</g>`);
 s.push(`<g transform="translate(${dx} ${dy - 146})">${K.inked('M-26 10L-26 -10L-13 0L0 -18L13 0L26 -10L26 10Z', C.gold, 2.6)}</g>`);
 s.push(K.dustCloud({ x: dx - 112, y: dy - 150, r: 24, puffs: 4, seed: 2 }) + K.dustCloud({ x: dx + 116, y: dy - 162, r: 28, puffs: 4, seed: 7 }));
 s.push(`<g fill="none" stroke="${C.ink}" stroke-width="3" stroke-linecap="round"><path d="M${dx - 104} ${dy - 122}q-8 10 0 20q8 10 0 18"/><path d="M${dx + 106} ${dy - 130}q8 10 0 20q-8 10 0 18"/></g>`);
-// Captains
+s.push(`<g transform="translate(${dx + 150} ${dy - 40}) rotate(-20)">${K.inked(K.ell(0, 8, 17, 14), C.pad, 2.6)}${[[-14, -10], [-5, -17], [5, -17], [14, -10]].map(([x, y]) => K.inked(K.ell(x, y, 5.5, 6.5), C.pad, 2.2)).join('')}</g>`);
+// Captains on the steps
 s.push(K.cat({ ...RV.CAST.kagi, pose: 'side-walk', expr: 'smug', x: POS.kagi[0], y: POS.kagi[1], scale: 1.0 }));
 s.push(`<g transform="translate(${POS.kagi[0] + 42} ${POS.kagi[1] - 100}) rotate(-20)">${K.inked('M-4 -14H4V9H-4Z', '#F2D8A0', 1.8)}</g>`);
 s.push(K.cat({ ...RV.CAST.ohagi, pose: 'front-sit', x: POS.ohagi[0], y: POS.ohagi[1], scale: 1.1, flip: true }));
 s.push(`<g transform="translate(${POS.ohagi[0]} ${POS.ohagi[1] - 66})"><path d="M-12 -9Q0 4 12 -9" stroke="${C.ink}" stroke-width="2" fill="none"/>${K.inked(K.ell(0, 2, 7, 7), '#D8B04A', 1.8)}</g>`);
-// the unmet one (silhouette)
-s.push(sil(K.cat({ ...RV.CAST.hanpen, pose: 'front-sit', x: POS.sil[0], y: POS.sil[1], scale: 0.95, shadow: false })));
-// Toughs
+// unmet cats wait in the shade along the walls (not on a spot)
+s.push(K.castShadow('M650 520L760 520L780 600L640 610Z', 0.4) + K.castShadow('M1460 540L1580 530L1600 700L1440 710Z', 0.35));
+s.push(sil(K.cat({ ...RV.CAST.hanpen, pose: 'front-sit', x: 706, y: 586, scale: 0.82, shadow: false })) + sil(K.cat({ ...RV.CAST.nori, pose: 'front-sit', x: 1520, y: 600, scale: 0.9, shadow: false, flip: true })));
+s.push([[706, 476], [1520, 476]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="17" fill="${C.cream}" stroke="${C.ink}" stroke-width="2.5"/><text x="${x}" y="${y + 9}" text-anchor="middle" font-family="'M PLUS Rounded 1c'" font-weight="800" font-size="26" fill="${C.cocoa}">?</text>`).join(''));
+// Toughs on the path
 s.push(K.cat({ ...RV.CAST.goma, pose: 'loaf', expr: 'angry', x: POS.goma[0], y: POS.goma[1], scale: 1.45 }));
 const tg = { x: POS.togemaru[0], y: POS.togemaru[1], sc: 1.5 };
 s.push(RV.hackles({ x: tg.x, y: tg.y, scale: tg.sc, rim: C.sage }));
 s.push(RV.notched(K.cat({ ...RV.CAST.togemaru, pose: 'front-sit', expr: 'angry', outline: 'ink', x: tg.x, y: tg.y, scale: tg.sc, flip: true }), [RV.frontNotch(tg.x, tg.y, tg.sc, 'l')], { rim: C.cream }));
 s.push(RV.storm({ x: tg.x + 6, y: tg.y - 244, s: 0.9 }));
 s.push(K.cat({ ...RV.CAST.sasa, pose: 'front-sit', expr: 'happy', carry: 'spring', x: POS.sasa[0], y: POS.sasa[1], scale: 1.8 }));
+s.push(`<g transform="translate(${POS.sasa[0] - 70} ${POS.sasa[1] - 210}) rotate(-8)"><path d="M-28 -8H28V8H-28Z" fill="#F6E7B8" opacity="0.92"/><path d="M0 -7l2.4 5l5.6 .7l-4 4l1 5.5l-5 -2.6l-5 2.6l1 -5.5l-4 -4l5.6 -.7z" fill="${C.gold}" stroke="${C.ink}" stroke-width="1.5"/></g>`); // tape star: new
 s.push(K.cat({ ...RV.CAST.kuri, pose: 'side-walk', expr: 'shock', x: POS.kuri[0], y: POS.kuri[1], scale: 1.6, flip: true }));
-// Hige (Crew) at the alley mouth, looking in: the hovered Boss's only outside tie
-s.push(K.castShadow('M1560 1040L1760 1030L1900 1080L1600 1090Z', 0.3));
-s.push(K.cat({ ...K.CAST.oldWallCat, pose: 'front-sit', expr: 'neutral', collar: 'cord', outline: 'gold', x: 1700, y: 1000, scale: 1.9, flip: true }));
-// paw-pad cursor on the hovered Boss
-s.push(`<g transform="translate(${dx + 150} ${dy - 40}) rotate(-20)">${K.inked(K.ell(0, 8, 17, 14), C.pad, 2.6)}${[[-14, -10], [-5, -17], [5, -17], [14, -10]].map(([x, y]) => K.inked(K.ell(x, y, 5.5, 6.5), C.pad, 2.2)).join('')}</g>`);
-// tie thread to Hige
-s.push(`<path d="M${dx + 60} ${dy - 30}Q1500 420 1690 820" fill="none" stroke="${C.cream}" stroke-width="3.5" stroke-dasharray="10 9" stroke-linecap="round" opacity="0.85"/>`);
 
-/* ---------- grade: warm late light + a soft violet edge ---------- */
-s.push(`<radialGradient id="vg" cx="0.5" cy="0.42" r="0.75"><stop offset="0.55" stop-color="#6E6AA8" stop-opacity="0"/><stop offset="1" stop-color="#6E6AA8" stop-opacity="0.3"/></radialGradient><rect width="${W}" height="${H}" fill="url(#vg)" style="mix-blend-mode:multiply"/>`);
+/* ---------- grade: soft violet edge ---------- */
+s.push(`<radialGradient id="vg" cx="0.5" cy="0.42" r="0.75"><stop offset="0.55" stop-color="#6E5AA0" stop-opacity="0"/><stop offset="1" stop-color="#6E5AA0" stop-opacity="0.34"/></radialGradient><rect width="${W}" height="${H}" fill="url(#vg)" style="mix-blend-mode:multiply"/>`);
 
 /* ---------- UI ---------- */
 const ink = C.ink, st2 = `stroke="${ink}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"`;
 const crownSvg = (n) => `<svg width="${n}" height="${n * 0.8}" viewBox="-19 -15 38 30"><path d="M-16 10L-16 -6L-7 2L0 -11L7 2L16 -6L16 10Z" fill="${C.gold}" stroke="${ink}" stroke-width="2.6" stroke-linejoin="round"/></svg>`;
 const pawRow = (bell) => `<svg width="${bell ? 52 : 40}" height="26" viewBox="${bell ? -26 : -20} -13 ${bell ? 52 : 40} 26">${[-12, 0, 12].map((x) => `<ellipse cx="${x}" cy="4" rx="5" ry="4.2" fill="${C.pad}" ${st2}/><circle cx="${x - 3.5}" cy="-3.5" r="2.4" fill="${C.pad}" ${st2}/><circle cx="${x + 3.5}" cy="-3.5" r="2.4" fill="${C.pad}" ${st2}/>`).join('')}${bell ? `<circle cx="22" cy="2" r="6" fill="${C.gold}" ${st2}/>` : ''}</svg>`;
 const puffs = (n) => `<svg width="64" height="30" viewBox="0 0 64 30">${[0, 1, 2].map((i) => `<circle cx="${12 + i * 20}" cy="15" r="9" fill="${i < n ? C.cream : 'none'}" stroke="${i < n ? ink : '#B8A890'}" stroke-width="2.5" stroke-dasharray="${i < n ? '' : '3 3'}"/>`).join('')}</svg>`;
-const stp = (g, c) => RV.stamp(g, { size: 40, color: c || C.cream });
+const stp = (g, c, n) => RV.stamp(g, { size: n || 40, color: c || C.cream });
 const brick = `<svg width="42" height="32" viewBox="-24 -17 48 34"><path d="M-21 -14h42v28h-42z" fill="${C.cream}" stroke="${ink}" stroke-width="3"/><path d="M-21 0h42M0 -14v14M-10 0v14M11 0v14" stroke="${ink}" stroke-width="3" fill="none"/></svg>`;
-const eye = `<path d="M-14 0Q0 -12 14 0Q0 12 -14 0Z" fill="${C.cream}" ${st2}/><circle r="4.5" fill="${ink}"/>`;
-const spray = `<path d="${K.blob(K.pomPts(0, 2, 12, 7, 0.16))}" fill="${C.gold}" ${st2}/>`;
-const nt = (k, name, role, dy, cls) => `<div class="nt ${cls || ''}" style="left:${POS[k][0]}px;top:${POS[k][1] + dy}px"><span class="k-ribbon k-ribbon--sage">${name}</span><span class="role">${role}</span></div>`;
+// Style icons (role tag): Bruiser fist, Scrapper claw, Yowler sound arc
+const STY = {
+  fist: `<svg width="26" height="26" viewBox="-13 -13 26 26"><path d="M-9 -2Q-9 -9 -2 -9H5Q10 -9 10 -3V3Q10 9 3 9H-4Q-9 9 -9 3Z" fill="${C.cream}" ${st2}/><path d="M-3 -9V-1M3 -9V-1" fill="none" ${st2}/></svg>`,
+  claw: `<svg width="26" height="26" viewBox="-13 -13 26 26"><path d="M-9 9L-2 -10M-1 10L6 -9M7 9L11 -4" fill="none" stroke="${ink}" stroke-width="3.2" stroke-linecap="round"/></svg>`,
+  arc: `<svg width="26" height="26" viewBox="-13 -13 26 26"><path d="M-8 -6Q-2 0 -8 6M-2 -10Q7 0 -2 10M4 -12Q15 0 4 12" fill="none" stroke="${ink}" stroke-width="2.8" stroke-linecap="round"/></svg>`,
+};
+const gang = `<span class="gtag">${pawRow()}Gang</span>`;
+const nt = (x, y, name, role, sty) => `<div class="nt" style="left:${x}px;top:${y}px"><span class="rib"><span class="k-ribbon k-ribbon--sage">${name}</span>${gang}</span><span class="role">${role}${STY[sty]}</span></div>`;
+const dots = (met, sil, empty) => `<span class="dots">${'<i class="m"></i>'.repeat(met)}${'<i class="s"></i>'.repeat(sil)}${empty ? '<i class="e"></i>' : ''}</span>`;
+const scene = (name, d, on, extra) => `<span class="scn${on ? ' on' : ''}"><span class="tab${on ? ' on' : ''}">${name}</span>${d}${extra || ''}</span>`;
 const toge = K.ui.portrait({ size: 44, ring: '#7FA34A', cat: { ...RV.CAST.togemaru, expr: 'angry' } });
+const hige = K.ui.portrait({ size: 40, ring: C.gold, cat: { ...K.CAST.oldWallCat } });
+const post = (cls) => `<i class="post ${cls}"></i>`;
 
 document.getElementById('stage').innerHTML = K.svg(W, H, s.join(''), 'class="k-world"') + `
   <div class="k-abs k-panel k-panel--sm hdr">
     <span class="k-h">Hidamari Lane</span>
-    <div class="infl">${K.ui.icon({ name: 'bell', size: 40 })}<div class="bar"><i class="gold"></i><i class="fade"></i></div>${crownSvg(46)}<span class="pct">88%</span></div>
-    <div class="tabs"><span class="k-btn k-key sh">L1</span><span class="tab">Crew</span><span class="tab">Turf</span><span class="tab on">Rivals</span><span class="tab">Lessons</span><span class="k-btn k-key sh">R1</span></div>
+    <div class="infl">${K.ui.icon({ name: 'bell', size: 40 })}<div class="bar"><i class="gold"></i><i class="fade"></i><i class="sage"></i></div>${crownSvg(46)}</div>
+    <div class="strip"><span class="k-btn k-key sh">L1</span>
+      ${scene('Lane', dots(7, 2), true)}${scene('Arcade', dots(0, 3))}${scene('Shiosai', dots(0, 3))}${scene('Summit', dots(0, 2))}${scene('Outsiders', dots(0, 0, 1))}
+      ${scene('Bell', dots(5, 0), false, `<span class="xtag">${hige}${pawRow(1)}Old Gang</span>`)}
+      <span class="k-btn k-key sh">R1</span></div>
   </div>
   <div class="k-abs facts">
-    <div class="fact"><span class="lab">Raid tonight</span><span class="val">${toge}<b>Togemaru</b> + ?</span></div>
-    <div class="fact"><span class="lab">Scent</span><span class="val">${RV.stamp(spray, { size: 34, color: C.cream })}<b>48</b> · Strong at 60</span></div>
-    <div class="fact"><span class="lab">Objective</span><span class="val">${crownSvg(34)}Fill the Lane: he'll roam</span></div>
+    <div class="fact"><span class="lab">Tonight</span><span class="val">${RV.stamp(`<path d="M4 -12A12 12 0 1 0 12 4A9 9 0 1 1 4 -12Z" fill="${C.cream}" ${st2}/>`, { size: 36, color: '#4A3F6E' })}${toge}<b>Togemaru</b> → Persimmon Alley</span></div>
+    <div class="fact"><span class="lab">Your posts</span><span class="val">${post('gold')}${post('gold')}${post('fade')}${post('sage')}</span></div>
+    <div class="fact"><span class="lab">The Boss</span><span class="val">${puffs(2)}<b>Seething</b></span></div>
+    <div class="fact"><span class="lab">Objective</span><span class="val">${crownSvg(34)}Fill the bar: he comes down.</span></div>
   </div>
-  <div class="nt nt--boss" style="left:${dx}px;top:104px"><span class="k-ribbon k-ribbon--sage">DAIFUKU</span><span class="role">Boss of Hidamari Lane</span></div>
-  ${nt('kagi', 'Kagi', 'Lieutenant', 14)}${nt('ohagi', 'Ohagi', 'Enforcer', 14)}
-  ${nt('goma', 'Goma', 'Sentry', -176)}${nt('togemaru', 'Togemaru', 'Brawler', 14)}
-  <div class="nt nt--sil" style="left:744px;top:250px"><span class="k-ribbon">?</span><span class="role">Not met</span></div>
-  <div class="nt" style="left:1104px;top:900px"><span class="k-ribbon k-ribbon--sage">Sasa</span><span class="role">Scout</span></div><div class="nt" style="left:1500px;top:842px"><span class="k-ribbon k-ribbon--sage">Kuri</span><span class="role">Patrol</span></div>
-  <div class="rtag" style="left:1700px;top:722px">${pawRow(1)}Old Gang</div>
+  <div class="nt nt--boss" style="left:${dx}px;top:118px"><span class="k-ribbon k-ribbon--sage">DAIFUKU</span><span class="role">Boss of Hidamari Lane</span></div>
+  ${nt(806, 640, 'Kagi', 'Captain · Sneak', 'arc')}${nt(1124, 640, 'Ohagi', 'Captain · Shield', 'fist')}
+  ${nt(540, 586, 'Goma', 'Enforcer', 'fist')}${nt(1420, 690, 'Togemaru', 'Brawler', 'claw')}
+  ${nt(1110, 900, 'Sasa', 'Prankster', 'claw')}${nt(1600, 860, 'Kuri', 'Lookout', 'arc')}
   <div class="k-abs k-panel" id="card">
     <div class="head">${K.ui.portrait({ size: 80, ring: ink, bg: '#F7C99A', cat: { ...RV.CAST.daifuku, expr: 'angry', scale: 0.9 } })}${brick}
       <div><div class="nm">DAIFUKU</div><div class="tt">Boss of Hidamari Lane</div></div>${crownSvg(38)}</div>
-    <div class="r1"><span>${stp(RV.GLYPH.ear)}Brooder</span><span class="sep"></span><span>${puffs(2)}Seething</span><span class="sep"></span><span style="font-size:26px;color:#6E5A78">Fired Up next fight</span></div>
-    <div class="hist">
-      <div class="row">${stp(eye)}<span class="day">D2</span>A bell on my wall? Go home.</div>
-      <div class="row">${stp(spray)}<span class="day">D4</span>Again. My Lane reeks of bell.</div>
-    </div>
+    <div class="r1"><span>${stp(`<path d="M-10 14V-6Q-10 -14 0 -14Q10 -14 10 -6" fill="none" stroke="${ink}" stroke-width="5" stroke-linecap="round"/><path d="M-10 14V-6Q-10 -14 0 -14Q10 -14 10 -6" fill="none" stroke="#CDD1DC" stroke-width="2.4" stroke-linecap="round"/>`)}Brooder</span><span class="sep"></span>${stp(RV.GLYPH.hackles)}${stp(RV.GLYPH.earsBack)}<span class="sep"></span><span>${puffs(2)}Seething</span></div>
+    <div class="hist"><div class="row"><span class="day">D4</span>"Come back when the Lane smells of you, Collar."</div></div>
     <div class="ties"><b>Ties</b> ${pawRow()} Gang: Kagi, Ohagi +4 &nbsp;${pawRow(1)} Old Gang: Hige</div>
   </div>
-  <div class="k-abs" id="help"><span class="k-prompt">${K.ui.faceButtons({ size: 44, lit: 'n' })}Last night</span><span class="k-prompt">${K.ui.faceButtons({ size: 44, lit: 's' })}Cat card</span><span class="k-prompt">${K.ui.faceButtons({ size: 44, lit: 'e' })}Back</span></div>`;
+  <div class="k-abs" id="help"><span class="k-prompt">${K.ui.faceButtons({ size: 42, lit: 'n' })}Last night</span><span class="k-prompt">${K.ui.faceButtons({ size: 42, lit: 's' })}Card</span><span class="k-prompt">${K.ui.faceButtons({ size: 42, lit: 'w' })}Go to</span><span class="k-prompt">${K.ui.faceButtons({ size: 42, lit: 'e' })}Back</span></div>`;
 </script>
 </body>
 </html>
