@@ -70,14 +70,13 @@ const eyes = (x, y, sc, col, mood) => { const e = (ex) => mood === 'happy' ? `<p
 const COAT = { mikan: { fur: '#FFF8EC', pad: C.pad }, mikanG: { fur: C.ginger }, goof: { fur: '#FFF8EC', patch: '#C98A4A', patch2: '#514D60' }, gin: { fur: '#CDD1DC' }, kin: { fur: '#E3C39A', point: '#5E4636' }, toge: { fur: '#F4DDAA' } };
 
 // behind the cloud
-s.push(ear(cc.x - 250, cc.y - 200, -20, '#ECD3A8', C.purr).replace('scale', 'scale') + ear(cc.x - 190, cc.y - 222, 6, '#ECD3A8', C.purr));   // Kinako's huge ears, hiding in the boil
-s.push(K.ticks({ x: cc.x - 220, y: cc.y - 250, r: 50, n: 3, a0: -160, a1: -20, len: 14, lw: 4 }));   // ...and trembling
+s.push(ear(cc.x - 230, cc.y - 290, -20, '#ECD3A8', C.purr).replace('scale', 'scale') + ear(cc.x - 170, cc.y - 305, 6, '#ECD3A8', C.purr));   // Kinako's huge ears, hiding in the boil
+s.push(K.ticks({ x: cc.x - 200, y: cc.y - 340, r: 50, n: 3, a0: -160, a1: -20, len: 14, lw: 4 }));   // ...and trembling
 s.push(K.celGroup({ parts: [{ d: K.tube([[cc.x + 260, cc.y - 120], [cc.x + 350, cc.y - 200], [cc.x + 430, cc.y - 230], [cc.x + 480, cc.y - 300]], [26, 28, 26, 18], { zig: 6, per: 5 }), fill: '#ECD3A8' }], shade: '' }, { lw: 3.5, ol: K.OUTLINES.ink }));    // Kinako's tail, bottle-brushed with fright
-s.push(coatPaw(cc.x - 90, cc.y - 200, -8, 110, CREW.hige.coat.base, C.pad, 1.15));    // Hige's big grey paw, planted high and steady
+s.push(coatPaw(cc.x - 290, cc.y - 190, -30, 100, CREW.hige.coat.base, C.pad, 1.15));    // Hige's big grey paw, planted high and steady
 s.push(ear(cc.x + 260, cc.y - 190, 30, CREW.hige.coat.base, C.purr));               // Hige's torn ear
 // heads popping out of the boil (bodies hidden by the cloud drawn over them)
-s.push(`<g transform="translate(${cc.x + 20} ${cc.y - 150}) rotate(-6)">${K.cat({ ...K.CAST.mikan, pose: 'front-sit', expr: 'smug', outline: 'gold', x: 0, y: 0, scale: 3.0, shadow: false, lw: 4 })}</g>`);
-s.push(`<g transform="translate(${cc.x - 330} ${cc.y - 60}) rotate(140)">${K.cat({ ...CREW.pon, pose: 'front-sit', expr: 'neutral', outline: 'gold', x: 0, y: 0, scale: 1.8, shadow: false, lw: 4 })}</g>`);
+s.push(`<g transform="translate(${cc.x + 20} ${cc.y - 150}) rotate(-6)">${K.cat({ ...K.CAST.mikan, pose: 'front-sit', expr: 'angry', outline: 'gold', x: 0, y: 0, scale: 3.0, shadow: false, lw: 4 })}</g>`);
 s.push(pomTail(cc.x + 330, cc.y + 10, 40));                                                                   // Mikan's pom tail
 
 /* ---------- THE CLOUD: big scalloped cel, Paper Cream, lavender shade, 5 px Ink line ---------- */
@@ -94,12 +93,15 @@ s.push(pomTail(cc.x + 330, cc.y + 10, 40));                                     
 s.push(coatPaw(cc.x - 300, cc.y + 150, -100, 90, COAT.mikan.fur, C.pad, 1.0));     // Mikan's white sock paw, swiping out left
 s.push(coatPaw(cc.x + 280, cc.y + 120, 100, 90, COAT.goof.patch, C.pad, 1.0));   // Goofball's marmalade paw
 s.push(coatPaw(cc.x + 20, cc.y + 230, 172, 60, '#ECD3A8', C.pad, 0.95));     // Kinako's foot kicking down
-// Mikan's fist-pump paw, punched up out of the cloud
-s.push(coatPaw(cc.x + 175, cc.y - 150, 24, 120, '#FFF8EC', C.pad, 1.15));
+// Pon tumbling out tail-first, upside down and delighted (Goofball flourish)
+s.push(`<g transform="translate(${cc.x - 400} ${cc.y - 250}) rotate(200)">${K.cat({ ...CREW.pon, pose: 'front-sit', expr: 'neutral', outline: 'gold', x: 0, y: 0, scale: 1.7, shadow: false, lw: 4 })}</g>`);
+s.push(K.ticks({ x: cc.x - 480, y: cc.y - 120, r: 70, n: 3, a0: 120, a1: 200, len: 18, lw: 4.5 }));
+// Mikan's fist-pump paw beside her face
+s.push(coatPaw(cc.x + 150, cc.y - 250, 18, 50, '#FFF8EC', C.pad, 1.1));
 // a second flying tuft (Hige's grey)
 s.push(`<g transform="translate(${cc.x - 470} ${cc.y + 200}) rotate(150)">${K.inked('M0 0q20 -24 46 -20q-16 6 -18 16q14 -10 30 -4q-22 6 -30 22q-12 -10 -28 -14z', CREW.hige.coat.base, 3)}</g>`);
 s.push(star(cc.x - 120, cc.y - 420, 34, C.staticYellow, 10) + star(cc.x - 420, cc.y - 200, 26, cream, -10) + star(cc.x + 440, cc.y + 120, 30, C.staticYellow, 20) + star(cc.x - 360, cc.y + 260, 22, cream, 0) + star(cc.x + 380, cc.y - 120, 18, cream, 30));
-s.push(padGlyph(cc.x - 470, cc.y + 40, 2.0, -20) + padGlyph(cc.x + 300, cc.y + 300, 1.6, 24) + padGlyph(cc.x - 40, cc.y - 430, 1.4, -8));
+s.push(padGlyph(cc.x - 470, cc.y + 40, 2.0, -20) + padGlyph(cc.x + 300, cc.y + 300, 1.6, 24) + padGlyph(cc.x - 330, cc.y - 400, 1.4, -8));
 // a flying tuft (Togemaru's black-and-tan fur)
 s.push(`<g transform="translate(${cc.x + 420} ${cc.y - 330}) rotate(-30)">${K.inked('M0 0q20 -24 46 -20q-16 6 -18 16q14 -10 30 -4q-22 6 -30 22q-12 -10 -28 -14z', '#C98A4A', 3)}</g>`);
 // chevron ticks + the controlled cat's bell bobbing on top
@@ -127,7 +129,7 @@ function sfx(o) {
   const off = o.size * 0.045;
   return `<g class="k-vfx k-sfx" transform="translate(${o.x} ${o.y}) rotate(${o.rot}) translate(${-x / 2} 0)" font-family="'Dela Gothic One',sans-serif" filter="url(#k-dry)">${layer(o.color, o.size * 0.07, off, off)}${layer(cream, o.size * 0.085, 0, 0)}</g>`;
 }
-s.push(sfx({ text: 'KA-BLAM!', x: 500, y: 225, size: 185, rot: -9, grow: 1.35, seed: 5 }));
+s.push(sfx({ text: 'KA-BLAM!', x: 560, y: 225, size: 185, rot: -9, grow: 1.35, seed: 5 }));
 
 document.getElementById('stage').innerHTML = K.svg(W, H, s.join(''), 'class="k-world"');
 </script>
