@@ -5,20 +5,21 @@
 // Tail carriage is a pose layer per personality (art bible §3.3), so it works on any tail.
 
 const D = Math.PI / 180;
-/** Per-bone [pitch, yaw] in degrees for tail1..tail6 (pitch + = up, yaw + = to the cat's right). */
 export const CARRIAGES = {
-  // Braggart: straight up, tip hooked forward like a flag
-  flag: { bones: [[74, 4], [10, 3], [4, 2], [6, 0], [34, 0], [52, 0]], sway: 5, speed: 1.1, tip: 0.6 },
+  // [pitch, yaw] per bone; pitch + = up/forward curl, yaw + = toward the cat's LEFT (+X).
+  // From behind, each carriage must leave the body silhouette differently (kit CARRY_BACK).
+  // Braggart: straight up, leaning out, tip hooked forward like a flag
+  flag: { bones: [[72, 26], [12, -4], [6, -6], [8, -8], [36, -10], [54, -6]], sway: 5, speed: 1.1, tip: 0.6 },
   // Brooder: low, level with the hocks, dead still apart from one slow tip flick
-  anchor: { bones: [[-52, 0], [16, 0], [16, 0], [12, 0], [8, 0], [6, 0]], sway: 1.5, speed: 0.35, tip: 1 },
-  // Schemer: horizontal, tip twitching fast
-  blade: { bones: [[8, 0], [-3, 0], [-2, 0], [0, 0], [0, 0], [0, 0]], sway: 3, speed: 3.6, tip: 1 },
-  // Fraidy: tucked low and curved under
-  comma: { bones: [[-70, -18], [-20, -14], [-16, -16], [-14, -18], [-10, -20], [-10, -14]], sway: 1.5, speed: 1.6, tip: 0.6 },
+  anchor: { bones: [[-42, -42], [18, -10], [14, -8], [10, -6], [8, 0], [6, 0]], sway: 1.5, speed: 0.35, tip: 1 },
+  // Schemer: horizontal, swept out to the side, tip twitching fast
+  blade: { bones: [[8, 44], [-3, 12], [-2, 6], [0, 4], [0, 0], [0, 0]], sway: 3, speed: 3.6, tip: 1 },
+  // Fraidy: tucked low and curved under, the tip curling up
+  comma: { bones: [[-62, 40], [-16, 22], [-10, 22], [12, 26], [26, 30], [30, 20]], sway: 1.5, speed: 1.6, tip: 0.6 },
   // Stalwart: upright and straight, steady, no sway
-  post: { bones: [[86, 0], [2, 0], [0, 0], [0, 0], [0, 0], [-2, 0]], sway: 0, speed: 0, tip: 0 },
-  // Goofball: up with a loose wobbling curl, never still
-  spring: { bones: [[58, -12], [16, -14], [10, -10], [-34, -8], [-52, 0], [-58, 0]], sway: 9, speed: 2.4, tip: 0.3 },
+  post: { bones: [[86, -12], [2, 0], [0, 0], [0, 0], [0, 0], [-2, 0]], sway: 0, speed: 0, tip: 0 },
+  // Goofball: up with a loose wobbling curl to the side, never still
+  spring: { bones: [[52, -34], [14, -8], [12, -6], [16, 30], [20, 44], [16, 44]], sway: 9, speed: 2.4, tip: 0.3 },
   // Mikan's pom: a perky stub
   pom: { bones: [[30, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]], sway: 6, speed: 1.6, tip: 0 },
 };

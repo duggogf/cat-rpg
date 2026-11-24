@@ -57,7 +57,7 @@ export function buildCast(o) {
     const base = [headC[0] + s * 0.056 * hs, headC[1] + 0.046 * hs, headC[2] - 0.006 * hs];
     pos[s > 0 ? 'earL' : 'earR'] = base;
     const up = v3.norm([s * 0.36, 1, -0.12]);
-    const F = frame(base, up, [s * 0.32, 0, 1]);
+    const F = frame(base, up, [s * 0.5, 0, 1]);
     const E = earShape, sc = hs;
     return { t: 'ear', F, A: [-E.hw * sc, -0.01], B: [E.hw * sc, -0.01], C: [s * E.tip * sc, E.h * sc],
       hw: E.hw * sc, th: E.th * sc, rr: o.ears === 'round' ? 0.011 : 0.006, cup: 0.005, bone: s > 0 ? 'earL' : 'earR', k: 0.016, side: s };
@@ -132,7 +132,7 @@ export function buildCast(o) {
   if (o.collar) {
     const axis = v3.norm([0, 0.97, 0.24]);
     const cc = [0, headC[1] - 0.1 * hs, headC[2] - 0.036];
-    shells.push({ name: 'collar', part: PART.collar, cell: 0.0024, sigma: 0.01, prims: [{ t: 'tor', c: cc, axis, R: 0.054 * bx, r: 0.0095, bone: 'neck', k: 0 }] });
+    shells.push({ name: 'collar', part: PART.collar, cell: 0.0024, sigma: 0.01, prims: [{ t: 'tor', c: cc, axis, R: 0.058 * bx, r: 0.011, bone: 'neck', k: 0 }] });
     const front = v3.add(cc, [0, -0.026, 0.05 * bx + 0.01]);
     shells.push({ name: 'bell', part: PART.bell, cell: 0.0018, sigma: 0.01, prims: [{ t: 'sph', c: front, r: 0.0165, bone: 'neck', k: 0 }] });
   }

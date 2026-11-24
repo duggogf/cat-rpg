@@ -68,7 +68,7 @@ export function prim(P, p) {
       const d2 = sdTri2(l[0], l[1], P.A, P.B, P.C) + P.rr;
       // a gentle cup: the face is pushed back toward the middle of the ear
       const cup = P.cup ? P.cup * Math.max(0, 1 - (l[0] * l[0]) / (P.hw * P.hw)) : 0;
-      const dz = Math.abs(l[2] + cup) - P.th * 0.5;
+      const dz = Math.abs(l[2] + cup) - P.th * 0.5 * (1 - 0.55 * Math.max(0, Math.min(1, l[1] / P.C[1])));
       const ox = Math.max(d2, 0), oz = Math.max(dz, 0);
       return Math.hypot(ox, oz) + Math.min(Math.max(d2, dz), 0) - P.rr;
     }

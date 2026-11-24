@@ -34,7 +34,8 @@ const groundTex = canvasTex(1024, 1024, (g, w, h) => {
   let s = 11; const r = () => ((s = (s * 16807) % 2147483647) / 2147483647);
   for (let i = 0; i < 260; i++) { // soft paint dabs
     g.globalAlpha = 0.05 + r() * 0.07; g.fillStyle = r() < 0.5 ? PH.ground2 : '#E2D6BC';
-    g.beginPath(); g.ellipse(r() * w, r() * h, 20 + r() * 70, 10 + r() * 30, r() * 3, 0, Math.PI * 2); g.fill();
+    const x = r() * w, y = r() * h, a = 20 + r() * 70, b = 10 + r() * 30, ro = r() * 3;
+    for (const ox of [-w, 0, w]) for (const oy of [-h, 0, h]) { g.beginPath(); g.ellipse(x + ox, y + oy, a, b, ro, 0, Math.PI * 2); g.fill(); }
   }
 });
 groundTex.wrapS = groundTex.wrapT = THREE.RepeatWrapping; groundTex.repeat.set(6, 6);
