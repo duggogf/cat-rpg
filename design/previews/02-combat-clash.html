@@ -27,8 +27,8 @@
   .hisspom { position: absolute; right: -30px; top: -20px; }
   #zoomies { right: 40px; bottom: 34px; }
   #ribbon { left: 50%; top: 22px; transform: translateX(-50%); }
-  .idr { display: flex; align-items: center; gap: 16px; height: 74px; padding: 0 74px 0 30px; background: var(--sage); border: 4px solid var(--ink); border-right: 0;
-         clip-path: polygon(22px 0, 100% 0, calc(100% - 40px) 100%, 0 100%); font: 800 40px/1 var(--font); color: var(--ink); position: relative; }
+  /* name card = the kit ribbon (Clowder colour, Ink text, folded wedge end), sized up for the combat banner */
+  .idr.k-ribbon { height: 64px; font-size: 38px; gap: 14px; padding: 0 46px 0 20px; }
   .idr small { font: 700 26px/1 var(--font); color: var(--ink); opacity: .9; }
   .idr-wrap { position: relative; filter: drop-shadow(3px 4px 0 rgba(110,106,168,.55)); }
   .idr-edge { position: absolute; inset: 0; pointer-events: none; }
@@ -55,6 +55,64 @@ const P = (X, Y, d) => [CX + X * F / d, HZ + (CH - Y) * F / d];
 const cs = (d) => 1.62 * 6.4 / d;                 // cat scale at depth d (cats are drawn ~2x life for read; kit units)
 const s = [];
 const pt = (p) => p[0].toFixed(1) + ' ' + p[1].toFixed(1);
+
+/* ---- canon slice crew (design/gdd/crew-and-progression.md §3.3 "Look"), as kit cat() options ---- */
+const CREW = {
+  pon: { ...K.CAST.goofball },                                                   // small round calico, half-folded ear, tail up (Goofball)
+  hige: { coat: { base: '#8E93A8', patch: '#5C5F72' }, pattern: 'solid', tail: 'whip', ears: 'standard', build: 'round', scars: ['notch'], eye: 'yellowgreen', carry: 'post', expr: 'neutral' }, // big grey tom, torn ear (Stalwart)
+  kinako: { coat: { base: '#ECD3A8' }, pattern: 'solid', tail: 'whip', ears: 'tall', build: 'long', eye: 'amber', carry: 'comma', expr: 'shock' }, // pale fawn, huge ears, half-crouched (Fraidy)
+  toge: { coat: { base: '#C98A4A', patch: '#37323F' }, pattern: 'saddle', tail: 'plume', ears: 'standard', build: 'long', eye: 'amber', carry: 'flag', expr: 'smug' }, // lean black-and-tan tom (Braggart)
+};
+
+/* ---- LOCAL POSE: Mikan's Pounce lunge (the kit's side-pounce is a straight plank; this one stretches and reaches).
+ * Kit palette + celGroup; side head geometry copied from the kit's sideHead() so she stays on model.
+ * Arched spine, forepaws reaching with claws out, hind legs splayed pushing off, pom flying, ears pinned forward.
+ * Local units ~ kit units (cat ~105 tall), facing right; origin = body centre. */
+function mikanLunge(o) {
+  const G = { lw: o.lw || 3.5, ol: K.OUTLINES.gold }, B = '#FFF8EC', GI = C.ginger, blob = K.blob, ell = K.ell, tube = K.tube, xf = K.xf;
+  let s = '';
+  // far limbs (shaded whole)
+  s += K.celGroup({ parts: [
+    { d: tube([[-34, -2], [-60, -20], [-88, -34]], [20, 15, 12]), fill: B }, { d: ell(-94, -36, 11, 7.5, -28), fill: B },
+    { d: tube([[30, -12], [58, -30], [84, -46]], [15, 13, 11]), fill: B }, { d: ell(90, -49, 11, 7.5, -32), fill: B },
+  ], shadeAll: true }, G);
+  // pom tail flying up behind the rump
+  s += K.celGroup({ parts: [{ d: tube([[-46, -18], [-56, -32]], [11, 10]), fill: B }, { d: blob(K.pomPts(-63, -42, 14, 7, 0.14, 0.3)), fill: GI }], shade: ell(-58, -37, 8, 8) }, G);
+  // head: far ear first
+  const HT = { x: 66, y: -38, s: 1.08, r: 6 };
+  const pin = (pts) => xf(pts, { r: 22, x: 0, y: 0 }).map((p, i) => [p[0] - 2, p[1] + 3, pts[i][2]]);
+  const far = pin([[3, -21], [10, -34], [16, -40, 1], [20, -29], [21.5, -15]]), near = pin([[-17, -15], [-16, -31], [-10, -42, 1], [-1, -31], [6, -20]]);
+  const skull = [[-23, 5], [-24, -8], [-16, -19.5], [0, -24], [14, -21.5], [22.5, -13], [25.5, -5], [30.5, 1], [30, 7.5], [23, 13], [10, 17], [-7, 17], [-18, 13]];
+  const tr = `translate(${HT.x} ${HT.y}) rotate(${HT.r}) scale(${HT.s})`;
+  s += K.celGroup({ parts: [{ d: blob(xf(far, HT)), fill: GI }], shadeAll: true }, G);
+  // body + near limbs
+  const body = [[-54, -4], [-50, -22], [-32, -36], [-6, -43], [20, -41], [40, -33], [52, -19], [52, -3], [40, 8], [16, 8], [-6, 3], [-28, 8], [-46, 8]];
+  s += K.celGroup({ parts: [
+    { d: blob(body), fill: B },
+    { d: tube([[36, -6], [64, -14], [94, -24]], [18, 14.5, 12.5]), fill: B }, { d: ell(100, -26, 12, 8, -16), fill: B },
+    { d: tube([[-40, 0], [-64, 12], [-96, 16]], [25, 17, 13]), fill: B }, { d: ell(-103, 16, 12, 8, 8), fill: B },
+  ], shade: blob([[-62, 2], [-30, 5], [-6, 0], [30, 4], [58, -4], [64, 30], [-62, 30]]),
+    lines: [blob([[-50, -14], [-36, -6], [-40, 6]], false), blob([[30, -16], [38, -6]], false)],
+    extra: `<g fill="${C.pad}"><ellipse cx="-107" cy="16" rx="4.5" ry="6"/><circle cx="-100" cy="9" r="2.2"/><circle cx="-99" cy="16" r="2.2"/><circle cx="-100" cy="23" r="2.2"/></g>`
+      + `<path d="M106 -34l9 -5M109 -27l10 -2M108 -20l9 2" stroke="${C.ink}" stroke-width="2.6" stroke-linecap="round"/>` }, G);
+  // collar
+  const band = blob([[44, -40], [50, -28], [54, -14]], false);
+  s += `<path d="${band}" fill="none" stroke="${C.ink}" stroke-width="10.6" stroke-linecap="round"/><path d="${band}" fill="none" stroke="${C.crimson}" stroke-width="6.4" stroke-linecap="round"/>`;
+  // head (skull + near ear), cap and eye patch, angry snarl
+  const faceD = `<g transform="${tr}"><path d="M5.5 -14.5L20.5 -10L20.5 -5Z" fill="${GI}"/>`
+    + `<ellipse cx="13" cy="-4.5" rx="5.4" ry="6.6" fill="#FFB52E" stroke="${C.ink}" stroke-width="1.5" vector-effect="non-scaling-stroke"/><ellipse cx="14.3" cy="-4.1" rx="2.3" ry="4.9" fill="${C.ink}"/><circle cx="11.4" cy="-7.3" r="1.7" fill="#fff"/>`
+    + `<path d="M5.5 -14.5L20.5 -10L20.5 -6.5Z" fill="${GI}"/>` + K.inkLine('M6 -14L20 -5.6', 2.2)
+    + `<path d="M27.8 -1.6Q31.2 -1.2 30.9 1.8Q28.8 2.6 27.2 0.6Z" fill="${C.pad}" stroke="${C.ink}" stroke-width="1.25" vector-effect="non-scaling-stroke"/>`
+    + `<path d="M29 4.6L16 6Q17 15 24 16.6Q28 12 29 4.6Z" fill="#B8344E" stroke="${C.ink}" stroke-width="1.5" stroke-linejoin="round" vector-effect="non-scaling-stroke"/><path d="M26.6 5L25.2 9.8L23.6 5.4Z M19.8 13.8L21.2 9.6L22.8 14.8Z" fill="#fff" stroke="${C.ink}" stroke-width="1" vector-effect="non-scaling-stroke"/>`
+    + K.inkLine('M20 2.6L3 0.6M20 5.6L4 9', 1.25) + K.inkLine('M27 3L44 -1M27 5L43 8.4', 1.25)
+    + `<path d="${blob(xf(near, { s: 0.5, x: -5.6, y: -12.5 }))}" fill="${C.purr}"/></g>`;
+  s += K.celGroup({ parts: [{ d: blob(xf(near, HT)), fill: B }, { d: blob(xf(skull, HT)), fill: B }],
+    overlays: [{ d: blob([[-34, -7], [-12, -4], [0, -9], [12, -5], [36, -11], [36, -60], [-34, -60]]), fill: GI, tr }, { d: ell(12.5, -6, 12, 12), fill: GI, tr }],
+    shade: { d: blob([[-26, 9], [-8, 12.5], [12, 12], [25, 7.5], [36, 16], [20, 26], [-26, 26]]), tr }, extra: faceD }, G);
+  // bell
+  s += `<g transform="translate(56 -12)"><circle r="6.5" fill="${C.gold}" stroke="${C.ink}" stroke-width="1.8"/><path d="M-3.6 1.3H3.6M0 1.3V5" stroke="${C.ink}" stroke-width="1.25" fill="none"/><circle cx="-2" cy="-2.2" r="1.5" fill="${C.cream}"/></g>`;
+  return `<g class="k-cat" transform="translate(${o.x} ${o.y}) rotate(${o.rot || 0}) scale(${o.scale})">${s}</g>`;
+}
 
 /* ================= painted world: the Lot ================= */
 s.push(K.sky({ w: W, h: 460, phase: 'day', zenith: '#4A9FE4', horizon: '#CFE6F0' }));
@@ -123,7 +181,16 @@ s.push(K.foliage({ x: 40, y: 440, w: 220, h: 140, seed: 62, tones: { dark: '#2F6
   s.push(K.prop({ kind: 'bucket', x: p[0], y: p[1], scale: 1.25 }));
 }
 
-/* ---------- light: warm sun from the left, wisteria shadows to the right ---------- */
+/* ---------- light: warm late-Day sun from the upper left; wisteria shadows fall toward camera-right ---------- */
+// the fence throws a band of shade on the Lot's back edge, broken by sun through the board gaps
+{ const a = fq[3], b = fq[2]; let gaps = ''; for (let i = 1; i < 18; i++) { const t = i / 18, x = a[0] + (b[0] - a[0]) * t, y = a[1] + (b[1] - a[1]) * t, h = 70 - t * 30; gaps += `<path d="M${x} ${y + 4}l10 0l${h * 0.9 + 10} ${h}l-12 0z" fill="#FFF0CC" opacity="0.5"/>`; }
+  s.push(K.castShadow(`M${a[0]} ${a[1] - 2}L${b[0]} ${b[1] - 2}L${b[0] + 60} ${b[1] + 44}L${a[0] + 90} ${a[1] + 82}Z`, 0.5) + `<g filter="url(#k-soft)">${gaps}</g>`); }
+// the cluttered edge sits in shade; the clear 10 m ring is the lit stage
+s.push(`<radialGradient id="ringlit" cx="1010" cy="660" r="900" gradientUnits="userSpaceOnUse" gradientTransform="translate(1010 660) scale(1 0.42) translate(-1010 -660)"><stop offset="0.38" stop-color="${C.wisteria}" stop-opacity="0"/><stop offset="0.75" stop-color="${C.wisteria}" stop-opacity="0.32"/><stop offset="1" stop-color="${C.wisteria}" stop-opacity="0.5"/></radialGradient><rect x="-60" y="${gTop}" width="${W + 120}" height="${H - gTop + 60}" fill="url(#ringlit)" style="mix-blend-mode:multiply"/>`);
+s.push(K.glow(1010, 650, 640, 190, '#FFF4D2', 0.5));
+// cast shadows of the fighters, all to the lower right (one sun)
+const csh = (x, y, w, len) => K.castShadow(`M${x - w} ${y - 4}L${x + w} ${y - 6}L${x + w + len} ${y + len * 0.28}L${x - w + len * 0.7} ${y + len * 0.34}Z`, 0.42);
+s.push(csh(P(-3.4, 0, 10.2)[0], P(-3.4, 0, 10.2)[1], 50, 130) + csh(P(-5.9, 0, 11.6)[0], P(-5.9, 0, 11.6)[1], 40, 110) + csh(P(4.6, 0, 9.6)[0], P(4.6, 0, 9.6)[1], 50, 130) + csh(P(3.1, 0, 8.6)[0], P(3.1, 0, 8.6)[1], 55, 150) + csh(1150, 646, 70, 190));
 s.push(K.glow(700, 560, 900, 260, '#FFF0C8', 0.22));
 
 /* ================= the brawl ================= */
@@ -139,13 +206,13 @@ const br = { x: P(-3.4, 0, 10.2)[0], y: P(-3.4, 0, 10.2)[1] };
 s.push(K.cat({ ...K.CAST.brooder, pose: 'hiss', outline: 'sage', expr: 'hiss', x: br.x, y: br.y, scale: cs(10.2) }));
 // goofball, nose-down dive (side-pounce rotated), local streak behind
 s.push(K.speedLines({ mode: 'parallel', x: br.x + 380, y: br.y - 330, w: 200, h: 80, angle: 128, count: 9, seed: 4 }));
-s.push(`<g transform="translate(${br.x + 90} ${br.y - 128}) rotate(-38)">${K.cat({ ...K.CAST.goofball, pose: 'side-pounce', outline: 'gold', flip: true, expr: 'happy', x: 0, y: 64, scale: cs(9.8), shadow: false })}</g>`);
+s.push(`<g transform="translate(${br.x + 90} ${br.y - 128}) rotate(-38)">${K.cat({ ...CREW.pon, pose: 'side-pounce', outline: 'gold', flip: true, expr: 'happy', x: 0, y: 64, scale: cs(9.8), shadow: false })}</g>`);
 s.push(K.impactBurst({ x: br.x + 18, y: br.y - 88, r: 30, points: 8, seed: 3 }));
 s.push(chevron(br.x + 96, br.y - 252, 0.9));
 // fraidy: at the brooder's back, tail tucked, mid-Skitter
 const fr = { x: P(-5.9, 0, 11.6)[0], y: P(-5.9, 0, 11.6)[1] };
 s.push(K.speedLines({ mode: 'parallel', x: fr.x - 170, y: fr.y - 70, w: 130, h: 50, angle: 0, count: 6, seed: 8 }));
-s.push(K.cat({ ...K.CAST.fraidy, pose: 'hiss', outline: 'gold', flip: false, x: fr.x, y: fr.y, scale: cs(11.2) * 0.98 }));
+s.push(K.cat({ ...CREW.kinako, pose: 'hiss', outline: 'gold', flip: false, x: fr.x, y: fr.y, scale: cs(11.2) * 0.98 }));
 s.push(chevron(fr.x - 4, fr.y - 132, 0.8));
 s.push(dustRing(br.x + 10, br.y + 4, 92, 4, 21));
 
@@ -153,7 +220,7 @@ s.push(dustRing(br.x + 10, br.y + 4, 92, 4, 21));
 const sch = { x: P(4.6, 0, 9.6)[0], y: P(4.6, 0, 9.6)[1] };
 const stw = { x: P(3.1, 0, 8.6)[0], y: P(3.1, 0, 8.6)[1] };
 s.push(K.cat({ ...K.CAST.schemer, pose: 'hiss', outline: 'sage', flip: true, x: sch.x, y: sch.y, scale: cs(9.6) }));
-s.push(K.cat({ ...K.CAST.stalwart, pose: 'hiss', outline: 'gold', expr: 'angry', x: stw.x, y: stw.y, scale: cs(8.6) }));
+s.push(K.cat({ ...CREW.hige, pose: 'hiss', outline: 'gold', expr: 'angry', x: stw.x, y: stw.y, scale: cs(8.6) * 1.1 }));
 s.push(K.impactBurst({ x: (sch.x + stw.x) / 2 + 40, y: sch.y - 34, r: 30, points: 9, star: true, seed: 6 }));
 s.push(chevron(stw.x + 20, stw.y - 150, 0.85));
 s.push(dustRing((sch.x + stw.x) / 2, sch.y + 8, 100, 3, 33));
@@ -179,22 +246,22 @@ s.push(`<g opacity="1">${K.slashArc({ x: hit.x - 60, y: hit.y + 240, r: 318, a0:
 s.push(dustRing(tg.x + 20, tg.y + 22, 150, 5, 41));
 // Togemaru takes the hit: the Frazzling hit puffs him on contact (zigzag silhouette, spiral eyes, Magenta line), knocked back and up
 s.push(K.shadow({ x: tg.x + 20, y: tg.y, rx: 80, ry: 15, opacity: 0.45 }));
-s.push(`<g transform="translate(${tg.x} ${tg.y - 30}) rotate(19)">${K.cat({ ...K.CAST.braggart, pose: 'frazzled', x: 0, y: 0, scale: cs(7.2) * 1.3, shadow: false, lw: 3.5 })}</g>`);
+s.push(`<g transform="translate(${tg.x} ${tg.y - 30}) rotate(19)">${K.cat({ ...CREW.toge, pose: 'frazzled', x: 0, y: 0, scale: cs(7.2) * 1.3, shadow: false, lw: 3.5 })}</g>`);
 s.push(K.frazzleOrbit({ x: tg.x + 40, y: tg.y - 222, r: 78 }));
 s.push(K.ticks({ x: tg.x + 40, y: tg.y - 150, r: 120, n: 4, a0: -70, a1: 0, len: 22, lw: 4 }));
 [[1250, 430, 30], [1290, 520, 70], [1210, 380, -20], [1300, 460, 40]].forEach(([x, y, r], i) => s.push(`<path d="M${x} ${y}l${16 + i * 3} -6l-6 ${12 + i}z" transform="rotate(${r} ${x} ${y})" fill="#F4DDAA" stroke="${ink}" stroke-width="2.5" stroke-linejoin="round"/>`));
 // impact burst at the contact point (T4: largest type drawing)
-s.push(K.impactBurst({ x: hit.x, y: hit.y, r: 78, points: 12, color: C.claw, seed: 9, inner: 0.5 }));
-s.push(nicks(hit.x + 2, hit.y + 2, 1.25, 28));
+s.push(K.impactBurst({ x: hit.x, y: hit.y, r: 104, points: 12, color: C.claw, seed: 9, inner: 0.5 }));
+s.push(nicks(hit.x + 2, hit.y + 2, 1.6, 28));
 s.push(sparkTiny(hit.x - 108, hit.y - 70, 18, 10) + sparkTiny(hit.x + 120, hit.y + 70, 14, 0) + sparkTiny(hit.x + 30, hit.y - 132, 12, 20));
 // dust ring + trail under the hit
 
 // Mikan: local streak behind her, then the cat (gold keyline + cream rim), bell tick overhead
 s.push(K.speedLines({ mode: 'parallel', x: mk.x - 500, y: mk.y + 40, w: 330, h: 150, angle: -30, count: 13, seed: 5 }));
 // Tag-In window: bell-gold spark ring popping around the controlled cat's shoulders (outward wedges, Ink line)
-{ const c = { x: mk.x + 96, y: mk.y - 196 }; let g = ''; for (let i = 0; i < 9; i++) { const a = i / 9 * Math.PI * 2 + 0.3, r0 = 118, r1 = r0 + 34 + (i % 2) * 12, w = 0.1; const P0 = [c.x + Math.cos(a - w) * r0, c.y + Math.sin(a - w) * r0 * 0.85], P1 = [c.x + Math.cos(a) * r1, c.y + Math.sin(a) * r1 * 0.85], P2 = [c.x + Math.cos(a + w) * r0, c.y + Math.sin(a + w) * r0 * 0.85]; g += `<path d="M${pt(P0)}L${pt(P1)}L${pt(P2)}Z" fill="${gold}" stroke="${ink}" stroke-width="3" stroke-linejoin="round"/>`; } s.push(`<g>${g}</g>`); }
-s.push(`<g transform="translate(${mk.x} ${mk.y}) rotate(-8)">${K.cat({ ...K.CAST.mikan, pose: 'side-pounce', outline: 'gold', expr: 'angry', x: 0, y: 0, scale: 1.98, shadow: false, lw: 3.5 })}</g>`);
-s.push(bellTick(mk.x - 6, mk.y - 300, 1.15));
+{ const c = { x: 866, y: 592 }; let g = ''; const ro = -22 * Math.PI / 180, E = (a, r) => { const x = Math.cos(a) * r * 1.35, y = Math.sin(a) * r * 0.62; return [c.x + x * Math.cos(ro) - y * Math.sin(ro), c.y + x * Math.sin(ro) + y * Math.cos(ro)]; }; for (let i = 0; i < 10; i++) { const a = i / 10 * Math.PI * 2 + 0.3, r0 = 168, r1 = r0 + 30, w = 0.07; const P0 = E(a - w, r0), P1 = E(a, r1), P2 = E(a + w, r0); g += `<path d="M${pt(P0)}L${pt(P1)}L${pt(P2)}Z" fill="${gold}" stroke="${ink}" stroke-width="3" stroke-linejoin="round"/>`; } s.push(`<g>${g}</g>`); }
+s.push(mikanLunge({ x: 846, y: 640, rot: -22, scale: 2.05 }));
+s.push(bellTick(918, 392, 1.15));
 
 // the ONE lettered word (T4 ≈ 12% of height): Frazzling hit -> pop/burst family. Offset away from Mikan, tilted along the hit.
 s.push(sfx({ text: 'FWOOMP!', x: 1470, y: 300, size: 118, rot: -11, color: C.claw, grow: 1.4, seed: 3 }));
@@ -214,8 +281,8 @@ function sfx(o) {
 s.push(K.grass({ x1: 1480, y1: 1090, x2: 1720, y2: 1086, n: 10, h: 120, seed: 21 }));
 s.push(K.grass({ x1: 560, y1: 1094, x2: 760, y2: 1090, n: 7, h: 80, seed: 23 }));
 
-/* ================= camera: hit-stop hold, 6% punch-in, stepped shake offset, slight dutch ================= */
-const CAM = { rot: -2.2, s: 1.075, dx: -16, dy: 9 };
+/* ================= camera: hit-stop hold, 6% punch-in, stepped shake offset, no roll ================= */
+const CAM = { rot: 0, s: 1.09, dx: -18, dy: 10 };   // shake is translation only (camera §3.6): no roll
 const camT = `translate(${CX + CAM.dx} ${540 + CAM.dy}) rotate(${CAM.rot}) scale(${CAM.s}) translate(${-CX} -540)`;
 const toScreen = (x, y) => { const a = CAM.rot * Math.PI / 180, X = (x - CX) * CAM.s, Y = (y - 540) * CAM.s; return [CX + CAM.dx + X * Math.cos(a) - Y * Math.sin(a), 540 + CAM.dy + X * Math.sin(a) + Y * Math.cos(a)]; };
 
@@ -236,7 +303,7 @@ const cuke = `<svg width="34" height="34" viewBox="-17 -17 34 34"><path d="M-12 
 
 const eb = toScreen(tg.x - 92, tg.y - 236);
 const hud = `
-  <div class="k-abs" id="ribbon"><div class="idr-wrap"><div class="idr">${brick}TOGEMARU <small>the First Thorn</small>${claw}${claw}</div></div>
+  <div class="k-abs" id="ribbon"><div class="idr-wrap"><span class="k-ribbon k-ribbon--sage idr">${brick}TOGEMARU <small>the First Thorn</small>${claw}${claw}</span></div>
     <div class="stamps"><span class="stamp">${cuke}</span><span class="stamp">?</span></div></div>
   <div class="k-abs ebar" style="left:${eb[0].toFixed(0)}px; top:${eb[1].toFixed(0)}px">
     <div class="ebar-row"><svg width="22" height="18" viewBox="-12 -9 24 18"><path d="M-10 -7h20v14h-20z" fill="${C.sage}" stroke="${ink}" stroke-width="2.5"/><path d="M-10 0h20M0 -7v7" stroke="${ink}" stroke-width="2"/></svg><div class="k-gauge" style="--v:58%"><i></i></div></div>
@@ -244,9 +311,9 @@ const hud = `
   </div>
   <div class="k-abs" id="plates">
     ${plate({ ctrl: true, dir: 'n', name: 'Mikan', cat: K.CAST.mikan, nerve: 82, paws: [100, 64] })}
-    ${plate({ tag: true, dir: 'w', name: 'Mochi', cat: K.CAST.goofball, nerve: 70, paws: [100, 20], bell: true })}
-    ${plate({ tag: true, dir: 's', name: 'Gin', cat: K.CAST.stalwart, nerve: 91, paws: [45, 0], bell: false })}
-    ${plate({ tag: true, dir: 'e', name: 'Kinako', cat: K.CAST.fraidy, nerve: 48, paws: [100, 0], bell: true })}
+    ${plate({ tag: true, dir: 'w', name: 'Pon', cat: CREW.pon, nerve: 70, paws: [100, 20], bell: true })}
+    ${plate({ tag: true, dir: 's', name: 'Hige', cat: CREW.hige, nerve: 91, paws: [45, 0], bell: false })}
+    ${plate({ tag: true, dir: 'e', name: 'Kinako', cat: CREW.kinako, nerve: 48, paws: [100, 0], bell: true })}
   </div>
   <div class="k-abs" id="zoomies">${zoom(0.62)}</div>`;
 

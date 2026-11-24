@@ -1,4 +1,20 @@
-/* Cat RPG preview frames 05-07 (Rivals): local helpers layered on top of kit/kit.js.
+/* REFERENCE DESIGNS — use these in every frame (spread RV.CAST.togemaru / RV.CAST.kagi into Kit.cat()).
+ *
+ * TOGEMARU, the First Thorn (Tough, Braggart, Wall Sitters: Sage outline; Bell-Gold never, he is not Posse)
+ *  - Coat: lean black tom (#37323F) with warm tan (#D9A060) muzzle, chest bib, paws and tail tip.
+ *  - Pattern: 'tuxedo' (black base, tan where a tuxedo is white); build 'long'; eyes yellow-green.
+ *  - Ears: 'standard', pointed; spiky cheek ruff / raised hackles (RV.hackles) on front views.
+ *  - Tail: 'plume', black with a tan tip, carried high like a flag ('flag').
+ *  - Scars: a deep V notch in the outer edge of his right ear (viewer's right; RV.notched + RV.frontNotch).
+ *
+ * KAGI, Captain of Tofu Shop Step (Captain, Schemer, Wall Sitters: Sage outline)
+ *  - Coat: pale silver (#CDD1DC) with slate-grey (#7D8397) stripes.
+ *  - Pattern: 'tabby' (bold bands on back, tail and crown); build 'long'; narrow yellow-green eyes, smug.
+ *  - Ears: 'tall'; regalia: a cream clothes-peg clipped to one ear.
+ *  - Tail: 'whip', ringed by the tabby bands, held level and twitching ('blade').
+ *  - Scars: none yet (clean coat; any future Scar is history from Mikan).
+ *
+ * Cat RPG preview frames 05-07 (Rivals): local helpers layered on top of kit/kit.js.
  * Not part of the shared kit (kit/ is read-only for these frames). Everything here uses the kit's
  * palette, outline engine and blob/tube helpers so the frames stay in the same visual language.
  *

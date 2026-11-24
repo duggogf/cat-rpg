@@ -4,223 +4,166 @@
 <meta charset="utf-8">
 <title>Cat RPG — Frame 10: Home, Evening (mock screenshot)</title>
 <link rel="stylesheet" href="kit/kit.css">
-<style>
-  body { margin: 0; background: #111; }
-  .puff { position: absolute; }
-</style>
+<style> body { margin: 0; background: #111; } </style>
 </head>
 <body>
 <div class="k-stage" id="stage"></div>
 <script src="kit/kit.js"></script>
 <script>
-/* FRAME 10 — HOME, EVENING ("A Tuesday in Life 2", storyboard B shots 8–9, narrative §3.8).
- * The Main Room at Dusk. Haru at the upright piano plays a slow bass under Mikan's footsteps while
- * Mikan walks the treble keys. Her face stays out of frame (camera §3.9 face-out rule): she is
- * shoulders-down, back three-quarters to us — hands, yellow socks on the pedal, the hem of her skirt.
- * In the far doorway Gran's plum slippers have stopped under the noren, turned toward them, and stayed.
- * Near-zero HUD: one bouncing tone puff over Mikan (hud.md §5.1). No text anywhere.
- * Camera: piano verb follow, ~0.85 m up at the treble end, yawed toward the bass end.
- * World: back wall is z=0, x runs along the keyboard (bass at small x), y up, metres. */
-const K = Kit, C = K.C, W = 1920, H = 1080;
-const CAM = { x: 1.85, y: 0.9, z: 2.05 }, TGT = { x: 1.85 - 0.375 * 3, z: 2.05 - 0.927 * 3 }, F = 1080, CX = 1000, HZ = 250;
-const fl = Math.hypot(TGT.x - CAM.x, TGT.z - CAM.z), fx = (TGT.x - CAM.x) / fl, fz = (TGT.z - CAM.z) / fl, rxv = -fz, rzv = fx;
-const P3 = (x, y, z) => { const dx = x - CAM.x, dz = z - CAM.z, sx = dx * rxv + dz * rzv, d = dx * fx + dz * fz; return [CX + sx * F / d, HZ - (y - CAM.y) * F / d, d]; };
-const pd = (pts) => 'M' + pts.map((p) => { const q = P3(...p); return q[0].toFixed(1) + ' ' + q[1].toFixed(1); }).join('L') + 'Z';
-const P2 = (x, y, z) => P3(x, y, z).slice(0, 2);
-const sc = (x, y, z) => F / P3(x, y, z)[2];        // px per metre at that point
-const ink = (d, fill, w) => K.inked(d, fill, w || 2.5);
-const s = [];
+/* FRAME 10 — HOME, EVENING ("A Tuesday in Life 2", narrative §3.8 B, shots 9–10).
+ * The pause in the music. Haru stops the Piece, leaves one hand resting on the keys, and her other
+ * hand comes down slowly, palm-down, toward Mikan (art bible §5.5: hands are the faces). Mikan sits on
+ * the floorboards at her feet, slow-blinking up at it. Low Dusk light from the veranda glass lies
+ * across the boards and across Mikan; the rest of the room is cool and quiet. Gran's plum slippers
+ * have stopped in the far doorway. No VFX, no glow shapes, no text, no HUD (hud.md §5.1).
+ * Camera: Home rig at cat height, 0.3 m over the floorboards (camera §3.9, art bible §6.3).
+ * Ink only what acts: Haru, Mikan, the piano lid and keys. Room, furniture and floor are painted.
+ * Perspective: horizon y=560 (eye 0.3 m), focal 1100 px, centre x=820. X right, Y up, d away (m). */
+const K = Kit, C = K.C, W = 1920, H = 1080, HZ = 560, F = 1100, CX = 820, EYE = 0.3;
+const P = (X, Y, d) => [CX + X * F / d, HZ - (Y - EYE) * F / d];
+const pd = (pts) => 'M' + pts.map((p) => { const q = P(...p); return q[0].toFixed(1) + ' ' + q[1].toFixed(1); }).join('L') + 'Z';
 const G = { lw: 2.5, ol: K.OUTLINES.ink };
+const paint = (pts, color, o) => K.surface(Object.assign({ d: pd(pts), box: (() => { const q = pts.map((p) => P(...p)); const xs = q.map((p) => p[0]), ys = q.map((p) => p[1]); return { x: Math.min(...xs), y: Math.min(...ys), w: Math.max(...xs) - Math.min(...xs), h: Math.max(...ys) - Math.min(...ys) }; })(), color, grime: 0, tex: 'brush', texOpacity: 0.22, wobble: true }, o || {}));
+const s = [];
+const LW = -1.45, RW = 1.35, BW = 4.2;   // left wall, right wall (X), back wall (d)
 
-/* =============================== the room =============================== */
-// Room: left wall x = -1.0 (the veranda glass doors), back wall z = 0, the inner doorway right of the piano.
-s.push(`<rect width="${W}" height="${H}" fill="#5A3A30"/>`);
-const wallUp = (pts) => K.surface({ d: pd(pts), box: { x: -200, y: -400, w: 2400, h: 1300 }, color: '#EBC898', top: '#D9AE7E', bottom: '#F4D4A2', grime: 0.05, tex: 'brush', texOpacity: 0.12, wobble: false });
-const wallLo = (pts) => K.surface({ d: pd(pts), box: { x: -200, y: 100, w: 2400, h: 900 }, color: '#8A5A3A', top: '#9C6A44', bottom: '#6E4630', grime: 0.15, tex: 'brush-v', texOpacity: 0.3, wobble: false });
-s.push(wallUp([[-1, 2.6, 0], [2.9, 2.6, 0], [2.9, 0.92, 0], [-1, 0.92, 0]]) + wallLo([[-1, 0.92, 0], [2.9, 0.92, 0], [2.9, 0, 0], [-1, 0, 0]]));
-s.push(`<path d="${pd([[-1, 0.955, 0], [2.9, 0.955, 0], [2.9, 0.905, 0], [-1, 0.905, 0]])}" fill="#5E3E2C"/>`);
-// left wall: glass doors onto the veranda at dusk
-s.push(wallUp([[-1, 2.6, 1.9], [-1, 2.6, 0], [-1, 0, 0], [-1, 0, 1.9]]));
-const vz0 = 0.12, vz1 = 1.85;
-s.push(`<linearGradient id="dusk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5E5498"/><stop offset="0.45" stop-color="#A47AAE"/><stop offset="0.78" stop-color="#F2A066"/><stop offset="1" stop-color="#F9C482"/></linearGradient>`);
-s.push(`<path d="${pd([[-1, 2.3, vz1], [-1, 2.3, vz0], [-1, 0.06, vz0], [-1, 0.06, vz1]])}" fill="url(#dusk)"/>`);
-{ const a = P2(-1, 0.9, 0.5); s.push(K.foliage({ x: a[0] - 30, y: a[1] - 40, w: 260, h: 260, seed: 7, far: true, tones: { dark: '#3E3A6A', mid: '#545084', light: '#6E68A0' } })); }
-s.push(`<path d="${pd([[-1, 0.62, vz1], [-1, 0.62, vz0], [-1, 0.06, vz0], [-1, 0.06, vz1]])}" fill="#5A548A"/>`);    // the garden wall, blue at dusk
-// the Veranda Lamp, lit at every Dusk (C5): a warm bulb and its circle on the boards outside
-{ const L = P2(-1, 1.62, 0.9); s.push(K.glow(L[0], L[1], 90, 110, '#FFD98A', 0.95) + `<circle cx="${L[0]}" cy="${L[1]}" r="10" fill="#FFF0C0"/>`); const Lp = P2(-1, 0.1, 0.9); s.push(K.glow(Lp[0], Lp[1], 120, 50, '#FFD98A', 0.8)); }
-let vf = ''; for (let i = 0; i <= 3; i++) { const z = vz0 + (vz1 - vz0) * i / 3; vf += `<path d="${pd([[-1, 2.3, z + 0.03], [-1, 2.3, z - 0.03], [-1, 0.06, z - 0.03], [-1, 0.06, z + 0.03]])}" fill="#6B4430"/>`; }
-vf += `<path d="${pd([[-1, 1.08, vz1], [-1, 1.08, vz0], [-1, 1.03, vz0], [-1, 1.03, vz1]])}" fill="#6B4430"/>`;
-s.push(`<g filter="url(#k-rough)">${vf}</g>`);
-// the corner post where the two walls meet
-s.push(`<path d="${pd([[-1, 2.6, 0.06], [-0.94, 2.6, 0], [-0.94, 0, 0], [-1, 0, 0.06]])}" fill="#6B4430"/>`);
+/* =============================== the room, painted =============================== */
+s.push(`<rect width="${W}" height="${H}" fill="#3A3458"/>`);
+// back wall: plaster above a wood wainscot, in cool dusk shade
+s.push(paint([[LW, 2.6, BW], [RW, 2.6, BW], [RW, 0.9, BW], [LW, 0.9, BW]], '#9A8AA6', { top: '#7C6E92', bottom: '#AE9AAE' }));
+s.push(paint([[LW, 0.9, BW], [RW, 0.9, BW], [RW, 0, BW], [LW, 0, BW]], '#5E4458', { tex: 'brush-v', texOpacity: 0.3 }));
+// the far doorway: the kitchen beyond is lit, warm; Gran's plum slippers have stopped on the sill
+const dX0 = -0.85, dX1 = -0.1;
+s.push(`<path d="${pd([[dX0, 1.85, BW], [dX1, 1.85, BW], [dX1, 0, BW], [dX0, 0, BW]])}" fill="#E8A866"/>`);
+s.push(`<path d="${pd([[dX0, 1.85, BW + 1.2], [dX1, 1.85, BW + 1.2], [dX1, 0, BW + 1.2], [dX0, 0, BW + 1.2]])}" fill="#F6C384"/>`);
+s.push(`<path d="${pd([[dX0, 0, BW], [dX1, 0, BW], [dX1, 0, BW + 1.2], [dX0, 0, BW + 1.2]])}" fill="#D99A5C"/>`);
+s.push(`<path d="${pd([[dX0 - 0.06, 1.92, BW], [dX1 + 0.06, 1.92, BW], [dX1 + 0.06, 1.85, BW], [dX0 - 0.06, 1.85, BW]])}" fill="#4A3040"/>` + `<path d="${pd([[dX0 - 0.06, 1.85, BW], [dX0, 1.85, BW], [dX0, 0, BW], [dX0 - 0.06, 0, BW]])}" fill="#4A3040"/><path d="${pd([[dX1, 1.85, BW], [dX1 + 0.06, 1.85, BW], [dX1 + 0.06, 0, BW], [dX1, 0, BW]])}" fill="#4A3040"/>`);
+// noren hanging in the doorway to knee height (plain, no writing)
+s.push(`<g filter="url(#k-rough)"><path d="${pd([[dX0, 1.84, BW - 0.01], [(dX0 + dX1) / 2 - 0.01, 1.84, BW - 0.01], [(dX0 + dX1) / 2 - 0.02, 0.9, BW - 0.01], [dX0, 0.93, BW - 0.01]])}" fill="#3E5384"/><path d="${pd([[(dX0 + dX1) / 2 + 0.01, 1.84, BW - 0.01], [dX1, 1.84, BW - 0.01], [dX1, 0.92, BW - 0.01], [(dX0 + dX1) / 2 + 0.02, 0.9, BW - 0.01]])}" fill="#364A78"/></g>`);
+// Gran, beneath the noren: ankles, the plum cross-hatched hem, plum slippers turned toward the piano
+{ const k = F / (BW - 0.05) / 330; const leg = (x) => K.inked(pd([[x - 0.045, 0.62, BW - 0.05], [x + 0.045, 0.62, BW - 0.05], [x + 0.04, 0.06, BW - 0.05], [x - 0.04, 0.06, BW - 0.05]]), '#C9B4A4', 1.8);
+  s.push(leg(-0.6) + leg(-0.38));
+  const slip = (x, rot) => { const p = P(x, 0.03, BW - 0.05); return `<g transform="translate(${p[0]} ${p[1]}) rotate(${rot}) scale(${k})">${K.inked('M-34 0Q-38 -18 -16 -20H26Q48 -18 50 0Q8 7 -34 0Z', '#8E4A7B', 2)}${K.inkLine('M-14 -18Q8 -34 30 -18', 1.6)}</g>`; };
+  s.push(slip(-0.6, 6) + slip(-0.37, 10));
+  s.push(K.celGroup({ parts: [{ d: pd([[-0.72, 0.92, BW - 0.06], [-0.24, 0.92, BW - 0.06], [-0.24, 0.6, BW - 0.06], [-0.72, 0.6, BW - 0.06]]), fill: '#8E4A7B' }], shade: pd([[-0.4, 0.92, BW - 0.06], [-0.24, 0.92, BW - 0.06], [-0.24, 0.6, BW - 0.06], [-0.4, 0.6, BW - 0.06]]) }, { lw: 1.8, ol: K.OUTLINES.ink }));
+  let hatch = ''; for (let i = 0; i < 8; i++) { const a = P(-0.7 + i * 0.06, 0.68, BW - 0.06); hatch += `M${a[0]} ${a[1]}l6 9M${a[0] + 6} ${a[1]}l-6 9`; } s.push(`<path d="${hatch}" stroke="#B070A0" stroke-width="1.5" opacity="0.8"/>`); }
+s.push(K.glow(P(-0.47, 0.5, BW)[0], P(-0.47, 0.5, BW)[1], 160, 200, '#FFC98A', 0.35));
 
-// a picture on the back wall (C13: pictures, no captions): a crayon kitten drawing, ginger
-{ const q = [[-0.62, 1.66, 0], [-0.18, 1.66, 0], [-0.18, 1.3, 0], [-0.62, 1.3, 0]], qi = [[-0.59, 1.63, 0], [-0.21, 1.63, 0], [-0.21, 1.33, 0], [-0.59, 1.33, 0]];
-  s.push(`<g filter="url(#k-rough)"><path d="${pd(q)}" fill="#6B4430"/><path d="${pd(qi)}" fill="#FFF8E8"/></g>`);
-  const u = P2(-0.4, 1.48, 0), k = sc(-0.4, 1.48, 0) / 900;
-  s.push(`<g transform="translate(${u[0]} ${u[1]}) scale(${k})" opacity="0.9" fill="none" stroke="#F2A040" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"><ellipse rx="44" ry="32"/><path d="M-36 -18l8 -30l18 18M36 -18l-8 -30l-18 18"/><path d="M44 10q30 -4 30 -30"/><circle cx="-14" cy="-4" r="3" fill="#33273B" stroke="none"/><circle cx="14" cy="-4" r="3" fill="#33273B" stroke="none"/><path d="M-60 60q20 -20 40 0q20 -20 40 0" stroke="#7E8FD8"/></g>`); }
+// left wall with the veranda glass doors: dusk outside, the sun low over the garden wall
+s.push(paint([[LW, 2.6, 1.0], [LW, 2.6, BW], [LW, 0, BW], [LW, 0, 1.0]], '#7E6E92', { top: '#685A80', bottom: '#8E7C9C' }));
+const gz0 = 1.7, gz1 = 3.9;
+s.push(`<linearGradient id="dusk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5E5498"/><stop offset="0.42" stop-color="#B07AA8"/><stop offset="0.74" stop-color="#F7A45A"/><stop offset="1" stop-color="#FFD08A"/></linearGradient>`);
+s.push(`<path d="${pd([[LW, 2.25, gz0], [LW, 2.25, gz1], [LW, 0.05, gz1], [LW, 0.05, gz0]])}" fill="url(#dusk)"/>`);
+{ const a = P(LW, 0.5, 2.6); s.push(K.glow(a[0] + 10, a[1] - 10, 150, 120, '#FFE2A8', 0.9)); }                      // the low sun
+s.push(`<path d="${pd([[LW, 0.55, gz0], [LW, 0.55, gz1], [LW, 0.05, gz1], [LW, 0.05, gz0]])}" fill="#5A4E86"/>`);           // garden wall, blue
+{ const a = P(LW, 1.1, 3.2); s.push(K.foliage({ x: a[0], y: a[1], w: 170, h: 200, seed: 7, far: true, tones: { dark: '#3E3A6A', mid: '#575086', light: '#7A6EA6' } })); }
+let gf = ''; for (let i = 0; i <= 4; i++) { const z = gz0 + (gz1 - gz0) * i / 4; gf += `<path d="${pd([[LW, 2.25, z - 0.025], [LW, 2.25, z + 0.025], [LW, 0.05, z + 0.025], [LW, 0.05, z - 0.025]])}" fill="#4A3040"/>`; }
+gf += `<path d="${pd([[LW, 1.02, gz0], [LW, 1.02, gz1], [LW, 0.98, gz1], [LW, 0.98, gz0]])}" fill="#4A3040"/>`;
+s.push(`<g filter="url(#k-rough)">${gf}</g>`);
+// the Veranda Lamp's warm bulb, just lit outside the glass (C5)
+{ const a = P(LW - 0.4, 1.7, 2.1); s.push(K.glow(a[0], a[1], 50, 50, '#FFD98A', 0.9) + `<circle cx="${a[0]}" cy="${a[1]}" r="6" fill="#FFF0C0"/>`); }
 
-// the inner doorway right of the piano; Gran stopped beneath the noren, plum slippers turned toward the piano
-const dx0 = 1.66, dx1 = 2.36;
-s.push(`<path d="${pd([[dx0, 1.86, 0], [dx1, 1.86, 0], [dx1, 0, 0], [dx0, 0, 0]])}" fill="#4A3230"/>`);
-{ const k = P2(2.1, 0.7, -0.6); s.push(K.glow(k[0], k[1], 140, 220, '#FFC98A', 0.55)); }      // the kitchen beyond, lit
-s.push(`<path d="${pd([[dx0 - 0.05, 1.92, 0], [dx1 + 0.05, 1.92, 0], [dx1 + 0.05, 1.84, 0], [dx0 - 0.05, 1.84, 0]])}" fill="#5E3E2C"/>`);
-s.push(`<path d="${pd([[dx0 - 0.05, 1.86, 0.01], [dx0, 1.86, 0.01], [dx0, 0, 0.01], [dx0 - 0.05, 0, 0.01]])}" fill="#6B4430"/>`);
-const g = (x, y) => P2(x, y, 0.04);
-const legQ = (x) => { const a = g(x - 0.05, 0.62), b = g(x + 0.05, 0.62), c = g(x + 0.042, 0.07), d = g(x - 0.042, 0.07); return `M${a[0]} ${a[1]}L${b[0]} ${b[1]}L${c[0]} ${c[1]}L${d[0]} ${d[1]}Z`; };
-s.push(ink(legQ(1.9), '#E2CDB6', 2.2) + ink(legQ(2.1), '#D8C2AA', 2.2));
-{ const k = sc(2.1, 0, 0.04) / 330;
-  const slip = (x, rot) => { const p = g(x, 0.03); return `<g transform="translate(${p[0]} ${p[1]}) rotate(${rot}) scale(${k})">${ink('M-34 0Q-38 -18 -16 -20H26Q48 -18 50 0Q8 7 -34 0Z', '#8E4A7B', 2.4)}${K.inkLine('M-14 -18Q8 -34 30 -18', 2)}<path d="M-30 -2Q8 4 46 -2" stroke="#6E3560" stroke-width="3" fill="none"/></g>`; };
-  s.push(slip(1.89, -12) + slip(2.11, -8)); }
-// plum cross-hatched apron edge just below the noren (her textile motif)
-{ const a = g(1.76, 1.0), b = g(2.24, 1.0), c = g(2.25, 0.58), d = g(1.76, 0.6);
-  s.push(K.celGroup({ parts: [{ d: `M${a[0]} ${a[1]}L${b[0]} ${b[1]}L${c[0]} ${c[1]}Q${(c[0] + d[0]) / 2} ${c[1] + 10} ${d[0]} ${d[1]}Z`, fill: '#8E4A7B' }], shade: `M${b[0] - 30} ${b[1]}H${b[0] + 10}V${c[1] + 20}H${b[0] - 30}Z` }, { lw: 2.4, ol: K.OUTLINES.ink }));
-  let hatch = ''; for (let i = 0; i < 9; i++) { const x = d[0] + 10 + (c[0] - d[0] - 20) * i / 8, y = d[1] - 22; hatch += `M${x} ${y}l9 14M${x + 9} ${y}l-9 14`; }
-  s.push(`<path d="${hatch}" stroke="#B070A0" stroke-width="2" opacity="0.8"/>`); }
-// the noren: two indigo panels to just above the knee, plain pale band (no writing)
-{ const n0 = g(dx0 - 0.02, 1.84), n1 = g(dx1 + 0.02, 1.84), n2 = g(dx1 + 0.02, 0.92), n3 = g(dx0 - 0.02, 0.95), m0 = g((dx0 + dx1) / 2, 1.84), m1 = g((dx0 + dx1) / 2, 0.93);
-  s.push(`<g filter="url(#k-rough)"><path d="M${n0[0]} ${n0[1]}L${m0[0] - 3} ${m0[1]}L${m1[0] - 5} ${m1[1]}Q${(m1[0] + n3[0]) / 2} ${m1[1] + 10} ${n3[0]} ${n3[1]}Z" fill="#3E5384"/><path d="M${m0[0] + 3} ${m0[1]}L${n1[0]} ${n1[1]}L${n2[0]} ${n2[1]}Q${(m1[0] + n2[0]) / 2} ${n2[1] + 12} ${m1[0] + 5} ${m1[1]}Z" fill="#34477A"/>`
-    + `<path d="M${n0[0]} ${n0[1] + 50}L${n1[0]} ${n1[1] + 50}L${n1[0]} ${n1[1] + 72}L${n0[0]} ${n0[1] + 72}Z" fill="#E9DFC8" opacity="0.85"/></g>`); }
+/* floor: warm cedar boards running away from us, in cool shade, brush-textured */
+s.push(paint([[LW, 0, 0.55], [RW, 0, 0.55], [RW, 0, BW], [LW, 0, BW]], '#8A6058', { top: '#6E5064', bottom: '#9A6A56', tex: 'brush', texOpacity: 0.3 }));
+{ let b = ''; for (let i = 0; i <= 18; i++) { const X = LW + i * 0.155, a = P(X, 0, BW), c = P(X, 0, 0.55); b += `<path d="M${a[0].toFixed(1)} ${a[1].toFixed(1)}L${c[0].toFixed(1)} ${c[1].toFixed(1)}" stroke="#4E3A50" stroke-width="2" opacity="0.45"/><path d="M${(a[0] + 2).toFixed(1)} ${a[1].toFixed(1)}L${(c[0] + 5).toFixed(1)} ${c[1].toFixed(1)}" stroke="#C9967A" stroke-width="1.6" opacity="0.25"/>`; }
+  const R = K.rng(8); for (let k = 0; k < 16; k++) { const X = LW + Math.floor(R() * 18) * 0.155, d = 0.8 + R() * 3.2, a = P(X, 0, d), c = P(X + 0.155, 0, d); b += `<path d="M${a[0].toFixed(1)} ${a[1].toFixed(1)}L${c[0].toFixed(1)} ${c[1].toFixed(1)}" stroke="#4E3A50" stroke-width="1.6" opacity="0.4"/>`; }
+  s.push(`<g filter="url(#k-rough)">${b}</g>`); }
+s.push(`<path d="${pd([[LW, 0.06, BW - 0.01], [RW, 0.06, BW - 0.01], [RW, 0, BW - 0.01], [LW, 0, BW - 0.01]])}" fill="#3E2E40"/>`);
 
-{ const a = P2(dx0, 1.9, 0.02), b = P2(dx1, 0, 0.02); s.push(`<rect x="${a[0] - 10}" y="${a[1]}" width="${b[0] - a[0] + 20}" height="${b[1] - a[1]}" fill="#6E5A9A" opacity="0.28" style="mix-blend-mode:multiply"/>`); }
-/* floor: warm boards, lamplit (kept in front of the camera: z ≤ 1.5) */
-s.push(`<path d="${pd([[-1, 0, 0], [2.9, 0, 0], [2.9, 0, 1.25], [-1, 0, 1.6]])}" fill="#B07448"/>`);
-let boards = ''; for (let i = 0; i <= 26; i++) { const x = -1 + i * 0.15, a = P2(x, 0, 0), b = P2(x, 0, 1.55); boards += `<path d="M${a[0].toFixed(1)} ${a[1].toFixed(1)}L${b[0].toFixed(1)} ${b[1].toFixed(1)}" stroke="#7A4E34" stroke-width="2.4" opacity="0.6"/><path d="M${(a[0] + 4).toFixed(1)} ${a[1].toFixed(1)}L${(b[0] + 4).toFixed(1)} ${b[1].toFixed(1)}" stroke="#E2A874" stroke-width="2" opacity="0.35"/>`; }
-{ const R = K.rng(11); for (let k = 0; k < 22; k++) { const x = -1 + Math.floor(R() * 26) * 0.15, z = 0.1 + R() * 1.3; const a = P2(x, 0, z), b = P2(x + 0.15, 0, z); boards += `<path d="M${a[0].toFixed(1)} ${a[1].toFixed(1)}L${b[0].toFixed(1)} ${b[1].toFixed(1)}" stroke="#7A4E34" stroke-width="2" opacity="0.5"/>`; } }
-s.push(`<g filter="url(#k-rough)">${boards}</g>`);
-s.push(K.clipTo(pd([[-1, 0, 0], [2.9, 0, 0], [2.9, 0, 1.25], [-1, 0, 1.6]]), K.texture(0, 400, W, 680, 'brush', 0.22) + K.texture(0, 400, W, 680, 'grain', 0.18)));
-// dusk-violet spill from the glass onto the boards
-s.push(`<path d="${pd([[-1, 0, vz0], [-1, 0, vz1], [-0.2, 0, vz1], [-0.3, 0, vz0]])}" fill="#9A80C8" opacity="0.28" filter="url(#k-soft2)"/>`);
-s.push(`<path d="${pd([[-1, 0.07, 0.005], [2.9, 0.07, 0.005], [2.9, 0, 0.005], [-1, 0, 0.005]])}" fill="#5E3E2C"/>`);
-
-/* =============================== the upright piano =============================== */
-const PX0 = 0, PX1 = 1.5;
-const BODY = '#6A3A2C', BODYD = '#4E2A22', BODYL = '#8A5040';
-// side panel (treble end faces the camera), upper body front, top
-s.push(`<path d="${pd([[PX0, 1.26, 0.32], [PX1, 1.26, 0.32], [PX1, 0.74, 0.32], [PX0, 0.74, 0.32]])}" fill="${BODY}"/>`);
-s.push(`<path d="${pd([[PX0, 1.28, 0.0], [PX1, 1.28, 0.0], [PX1, 1.28, 0.34], [PX0, 1.28, 0.34]])}" fill="${BODYL}"/>`);
-// lamp sheen on the polished front
-s.push(`<path d="${pd([[0.2, 1.22, 0.33], [0.62, 1.22, 0.33], [0.5, 0.8, 0.33], [0.1, 0.8, 0.33]])}" fill="#FFD9A0" opacity="0.18" filter="url(#k-soft)"/>`);
-// lower front panel and the pedals
-s.push(`<path d="${pd([[PX0 + 0.08, 0.62, 0.4], [PX1 - 0.08, 0.62, 0.4], [PX1 - 0.08, 0.05, 0.4], [PX0 + 0.08, 0.05, 0.4]])}" fill="${BODYD}"/>`);
-s.push(`<path d="${pd([[0.3, 0.5, 0.405], [1.2, 0.5, 0.405], [1.2, 0.16, 0.405], [0.3, 0.16, 0.405]])}" fill="none" stroke="#7A4A38" stroke-width="3"/>`);
-// music stand + sheet music (Scribble, a pencil circle on one bar)
-const ms = [[0.38, 1.12, 0.36], [1.02, 1.12, 0.36], [1.02, 0.84, 0.42], [0.38, 0.84, 0.42]];
-s.push(ink(pd(ms), '#FFF8EA', 2.2) + ink(pd([[0.52, 1.1, 0.365], [0.92, 1.1, 0.365], [0.92, 0.86, 0.415], [0.52, 0.86, 0.415]]).replace(/Z$/, 'Z'), '#F6EEDC', 1.6));
-{ // the score is Scribble (art bible §6.5): thin orderly strokes that resemble no script and no notation
+/* right wall + the upright piano against it, keyboard facing us-left (painted case; lid and keys inked) */
+s.push(paint([[RW, 2.6, 0.6], [RW, 2.6, BW], [RW, 0, BW], [RW, 0, 0.6]], '#6E5E84', { top: '#5A4E74', bottom: '#7A6890' }));
+const PF = 0.72, KF = 0.58, PZ0 = 1.3, PZ1 = 2.85;   // piano front face X, key front X, near/far ends (d)
+// case: near side panel, front faces, top
+s.push(paint([[PF, 1.26, PZ0], [RW, 1.26, PZ0], [RW, 0, PZ0], [PF, 0, PZ0]], '#5A3436', { top: '#6E4240', bottom: '#3E2430', tex: 'brush-v', texOpacity: 0.3 }));
+s.push(paint([[PF, 1.26, PZ0], [PF, 1.26, PZ1], [PF, 0.8, PZ1], [PF, 0.8, PZ0]], '#4E2E34', { top: '#5E3838', bottom: '#40262E', tex: 'brush-v', texOpacity: 0.25 }));
+s.push(paint([[PF - 0.06, 0.62, PZ0 + 0.06], [PF - 0.06, 0.62, PZ1 - 0.06], [PF - 0.06, 0.04, PZ1 - 0.06], [PF - 0.06, 0.04, PZ0 + 0.06]], '#40262E', { top: '#4A2C32', bottom: '#2E1C28', tex: 'brush-v', texOpacity: 0.25 }));
+// the keybed slab under the keys
+s.push(paint([[KF - 0.03, 0.7, PZ0], [KF - 0.03, 0.7, PZ1], [KF - 0.03, 0.62, PZ1], [KF - 0.03, 0.62, PZ0]], '#5E3A3A', { tex: 'brush', texOpacity: 0.2 }));
+// legs at the treble and bass ends
+[PZ0 + 0.04, PZ1 - 0.04].forEach((d) => s.push(paint([[KF + 0.01, 0.62, d - 0.035], [KF + 0.01, 0.62, d + 0.035], [KF + 0.02, 0.03, d + 0.035], [KF + 0.02, 0.03, d - 0.035]], '#4A2C32', { tex: 'brush-v' })));
+// music stand + the Scribble score with a pencil circle on one bar
+{ const sp = [[PF - 0.05, 1.12, 1.75], [PF - 0.05, 1.12, 2.45], [PF - 0.11, 0.84, 2.45], [PF - 0.11, 0.84, 1.75]];
+  s.push(K.inked(pd(sp), '#F4EAD8', 2));
   let sm = ''; const R = K.rng(17);
-  for (let r = 0; r < 7; r++) { const y = 1.085 - r * 0.033, zz = 0.365 + r * 0.008; let x = 0.42;
-    while (x < 0.97) { const l = 0.025 + R() * 0.06; const a = P2(x, y, zz), b = P2(Math.min(0.98, x + l), y, zz), m = P2(x + l / 2, y + 0.006 * (R() > 0.5 ? 1 : -1), zz);
-      sm += `<path d="M${a[0].toFixed(1)} ${a[1].toFixed(1)}Q${m[0].toFixed(1)} ${m[1].toFixed(1)} ${b[0].toFixed(1)} ${b[1].toFixed(1)}" stroke="#7A7090" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-dasharray="${4 + R() * 6} ${2 + R() * 2}"/>`; x += l + 0.012; } }
-  const pc = P2(0.8, 1.02, 0.38); sm += `<ellipse cx="${pc[0]}" cy="${pc[1]}" rx="30" ry="13" fill="none" stroke="#8E86A4" stroke-width="2.2" transform="rotate(-6 ${pc[0]} ${pc[1]})"/>`;
+  for (let r = 0; r < 7; r++) { const y = 1.08 - r * 0.033; let d = 1.8; while (d < 2.4) { const l = 0.03 + R() * 0.07, a = P(PF - 0.06 - r * 0.008, y, d), b = P(PF - 0.06 - r * 0.008, y, Math.min(2.42, d + l)); sm += `<path d="M${a[0].toFixed(1)} ${a[1].toFixed(1)}L${b[0].toFixed(1)} ${b[1].toFixed(1)}" stroke="#8C8098" stroke-width="1.4" stroke-linecap="round"/>`; d += l + 0.02; } }
+  const pc = P(PF - 0.08, 1.0, 2.05); sm += `<ellipse cx="${pc[0]}" cy="${pc[1]}" rx="12" ry="9" fill="none" stroke="#8C8098" stroke-width="1.8"/>`;
   s.push(sm); }
-// fallboard (open) — inked
-s.push(ink(pd([[0.1, 0.83, 0.43], [1.4, 0.83, 0.43], [1.4, 0.745, 0.45], [0.1, 0.745, 0.45]]), '#5A3026', 2.2));
-s.push(`<path d="${pd([[0.12, 0.82, 0.431], [1.38, 0.82, 0.431], [1.38, 0.81, 0.433], [0.12, 0.81, 0.433]])}" fill="#C27A5A" opacity="0.6"/>`);
-// key slip under the keys, cheek blocks, the side panel last (it is nearest)
-s.push(ink(pd([[0.06, 0.71, 0.64], [1.44, 0.71, 0.64], [1.44, 0.63, 0.64], [0.06, 0.63, 0.64]]), BODY, 2.2));
-// keys: white key tops + fronts, black keys — inked (Mikan can act on them)
-const KX0 = 0.12, KX1 = 1.38, NW = 36, kw = (KX1 - KX0) / NW, KY = 0.72;
-let keys = ink(pd([[KX0, KY, 0.47], [KX1, KY, 0.47], [KX1, KY, 0.635], [KX0, KY, 0.635]]), '#FFFCF4', 2.2);
-keys += ink(pd([[KX0, KY, 0.635], [KX1, KY, 0.635], [KX1, KY - 0.018, 0.635], [KX0, KY - 0.018, 0.635]]), '#E4DCEC', 2);
-for (let i = 1; i < NW; i++) { const x = KX0 + i * kw, a = P2(x, KY, 0.47), b = P2(x, KY, 0.635), c = P2(x, KY - 0.018, 0.635); keys += `<path d="M${a[0].toFixed(1)} ${a[1].toFixed(1)}L${b[0].toFixed(1)} ${b[1].toFixed(1)}L${c[0].toFixed(1)} ${c[1].toFixed(1)}" stroke="${C.ink}" stroke-width="1.25" fill="none"/>`; }
+// fallboard (open), keys: inked — the only inked parts of the piano (L-1)
+s.push(K.inked(pd([[PF - 0.13, 0.83, PZ0 + 0.07], [PF - 0.13, 0.83, PZ1 - 0.07], [PF - 0.15, 0.745, PZ1 - 0.07], [PF - 0.15, 0.745, PZ0 + 0.07]]), '#4A2A2E', 2));
+const KZ0 = PZ0 + 0.08, KZ1 = PZ1 - 0.08, NW = 30, kw = (KZ1 - KZ0) / NW, KY = 0.72;
+let keys = K.inked(pd([[KF, KY, KZ0], [KF, KY, KZ1], [KF - 0.02, KY - 0.02, KZ1], [KF - 0.02, KY - 0.02, KZ0]]), '#E6DCEA', 2) + K.inked(pd([[KF, KY, KZ0], [PF - 0.15, KY, KZ0], [PF - 0.15, KY, KZ1], [KF, KY, KZ1]]), '#FBF6EE', 2);
+for (let i = 1; i < NW; i++) { const d = KZ0 + i * kw, a = P(KF - 0.02, KY - 0.02, d), b = P(KF, KY, d), c = P(PF - 0.15, KY, d); keys += `<path d="M${a[0].toFixed(1)} ${a[1].toFixed(1)}L${b[0].toFixed(1)} ${b[1].toFixed(1)}L${c[0].toFixed(1)} ${c[1].toFixed(1)}" stroke="${C.ink}" stroke-width="1.1" fill="none"/>`; }
 const BK = [1, 1, 0, 1, 1, 1, 0];
-for (let i = 0; i < NW - 1; i++) { if (!BK[i % 7]) continue; const x = KX0 + (i + 1) * kw; keys += ink(pd([[x - kw * 0.3, KY + 0.012, 0.47], [x + kw * 0.3, KY + 0.012, 0.47], [x + kw * 0.3, KY + 0.012, 0.56], [x - kw * 0.3, KY + 0.012, 0.56]]), '#2E2430', 1.5) + `<path d="${pd([[x - kw * 0.3, KY + 0.012, 0.56], [x + kw * 0.3, KY + 0.012, 0.56], [x + kw * 0.3, KY, 0.565], [x - kw * 0.3, KY, 0.565]])}" fill="#1E1820"/>`; }
+for (let i = 0; i < NW - 1; i++) { if (!BK[i % 7]) continue; const d = KZ0 + (i + 1) * kw; keys += K.inked(pd([[KF + 0.05, KY + 0.012, d - kw * 0.3], [KF + 0.05, KY + 0.012, d + kw * 0.3], [PF - 0.15, KY + 0.012, d + kw * 0.3], [PF - 0.15, KY + 0.012, d - kw * 0.3]]), '#2A2230', 1.2); }
 s.push(keys);
-// cheek blocks
-s.push(ink(pd([[1.38, 0.79, 0.44], [1.5, 0.79, 0.44], [1.5, 0.79, 0.65], [1.38, 0.79, 0.65]]), BODYL, 2.2) + ink(pd([[1.38, 0.79, 0.65], [1.5, 0.79, 0.65], [1.5, 0.63, 0.65], [1.38, 0.63, 0.65]]), BODY, 2.2));
-s.push(ink(pd([[0.0, 0.79, 0.44], [0.12, 0.79, 0.44], [0.12, 0.79, 0.65], [0.0, 0.79, 0.65]]), BODYL, 2.2));
-// the nearest side panel of the piano (painted, polished, a warm lamp reflection running down it)
-{ const d = pd([[PX1, 1.28, 0.0], [PX1, 1.28, 0.34], [PX1, 0.79, 0.34], [PX1, 0.79, 0.65], [PX1, 0.62, 0.65], [PX1, 0.62, 0.42], [PX1, 0.0, 0.42], [PX1, 0.0, 0.0]]); s.push(`<linearGradient id="side" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7E4636"/><stop offset="1" stop-color="#4A2820"/></linearGradient><path d="${d}" fill="url(#side)"/>` + K.clipTo(d, K.texture(900, -100, 800, 1000, 'brush-v', 0.25))); }
-s.push(`<path d="${pd([[PX1 + 0.001, 1.2, 0.08], [PX1 + 0.001, 1.2, 0.14], [PX1 + 0.001, 0.1, 0.5], [PX1 + 0.001, 0.1, 0.42]])}" fill="#FFCFA0" opacity="0.22" filter="url(#k-soft)"/>`);
-// toe block + caster under the treble end
+// shadow pooled under the piano (Shadow Wisteria, never grey)
+s.push(K.castShadow(pd([[PF - 0.3, 0, PZ0], [RW, 0, PZ0], [RW, 0, PZ1 + 0.2], [PF - 0.3, 0, PZ1 + 0.2]]), 0.5, 'soft2'));
+// the pedals, brass, catching a little light
+[1.95, 2.05, 2.15].forEach((d) => s.push(K.inked(pd([[KF - 0.02, 0.07, d - 0.025], [KF - 0.02, 0.07, d + 0.025], [KF - 0.14, 0.06, d + 0.02], [KF - 0.14, 0.06, d - 0.02]]), '#C99A4A', 1.6)));
 
-[PX1 - 0.05, PX0 + 0.05].forEach((x) => { s.push(`<path d="${pd([[x - 0.035, 0.62, 0.6], [x + 0.035, 0.62, 0.6], [x + 0.03, 0.04, 0.6], [x - 0.03, 0.04, 0.6]])}" fill="#5A3026"/><path d="${pd([[x - 0.045, 0.035, 0.62], [x + 0.045, 0.035, 0.62], [x + 0.045, 0, 0.62], [x - 0.045, 0, 0.62]])}" fill="#4A2820"/><path d="${pd([[x - 0.035, 0.62, 0.6], [x - 0.012, 0.62, 0.6], [x - 0.012, 0.04, 0.6], [x - 0.03, 0.04, 0.6]])}" fill="#A86A50" opacity="0.5"/>`); });
-s.push(K.castShadow(pd([[-0.1, 0, 0], [PX1 + 0.1, 0, 0], [PX1 + 0.25, 0, 0.75], [-0.1, 0, 0.75]]), 0.45, 'soft2'));
-// pedals (brass)
-[0.62, 0.75, 0.88].forEach((x) => { s.push(ink(pd([[x - 0.025, 0.07, 0.4], [x + 0.025, 0.07, 0.4], [x + 0.02, 0.06, 0.55], [x - 0.02, 0.06, 0.55]]), '#D9A84A', 1.8)); });
+/* the piano bench (painted wood), Haru sitting side-on to us */
+const BX0 = -0.25, BX1 = 0.25, BD0 = 1.7, BD1 = 2.25, BY = 0.47;
+s.push(K.castShadow(pd([[BX0 - 0.1, 0, BD0 - 0.1], [BX1 + 0.1, 0, BD0 - 0.1], [BX1 + 0.3, 0, BD1 + 0.2], [BX0, 0, BD1 + 0.2]]), 0.5, 'soft2'));
+[[BX0 + 0.04, BD0 + 0.04], [BX1 - 0.04, BD0 + 0.04], [BX0 + 0.04, BD1 - 0.04], [BX1 - 0.04, BD1 - 0.04]].sort((a, b) => b[1] - a[1]).forEach(([x, d]) => s.push(paint([[x - 0.025, BY - 0.05, d], [x + 0.025, BY - 0.05, d], [x + 0.025, 0, d], [x - 0.025, 0, d]], '#5A3A38', { tex: 'brush-v', top: '#6E4A42', bottom: '#4A2E30' })));
+s.push(paint([[BX0, BY - 0.06, BD0], [BX1, BY - 0.06, BD0], [BX1, BY, BD0], [BX0, BY, BD0]], '#6A4440', { top: '#8A5E50', bottom: '#5A3A38' }));
 
-// Haru's school bag in its spot by the door, slumped, the new ginger-cat charm on its zip (today's find)
-{ const b0 = P2(1.7, 0, 0.3), bs = sc(1.7, 0, 0.3) / 560;
-  s.push(K.shadow({ x: b0[0] + 10, y: b0[1], rx: 110 * bs * 1.3, ry: 12 }));
-  s.push(`<g transform="translate(${b0[0]} ${b0[1]}) scale(${bs})">${K.celGroup({ parts: [{ d: K.blob([[-66, 0], [-74, -66], [-62, -120], [58, -128], [70, -70], [64, 0]], true, 0.4), fill: '#3A486E' }, { d: K.blob([[-56, -80], [56, -86], [60, -44], [-60, -40]], true, 0.3), fill: '#46567E' }], shade: 'M24 -150H96V10H24Z', lines: ['M-64 -104Q0 -112 62 -110'] }, G)}${K.inkLine('M-36 -120Q-22 -180 22 -180Q52 -176 42 -124', 7)}${K.inkLine('M-36 -120Q-22 -180 22 -180Q52 -176 42 -124', 3.5, '#2A3658')}`
-    + `<g transform="translate(36 -104)">${K.inkLine('M0 0V24', 1.8)}${K.celGroup({ parts: [{ d: K.blob([[-13, 36], [-14, 25], [-11, 18], [-13, 7, 1], [-4, 14], [4, 14], [13, 7, 1], [11, 18], [14, 25], [13, 36], [0, 40]], true, 0.5), fill: C.ginger }], overlays: [{ d: 'M-15 29Q0 33 15 29V44H-15Z', fill: '#FFF8EC' }] }, { lw: 2, ol: K.OUTLINES.ink })}<circle cx="-4.5" cy="27" r="1.6" fill="${C.ink}"/><circle cx="4.5" cy="27" r="1.6" fill="${C.ink}"/><circle cx="0" cy="44" r="4" fill="#E9C24A" stroke="${C.ink}" stroke-width="1.5"/></g></g>`); }
-/* =============================== Haru (shoulders down, back three-quarters) =============================== */
-const HP = { skin: '#F6D2B0', skinS: '#E2B092', card: C.haru, cardS: '#E9B428', skirt: '#8FA7C9', skirtS: '#7186AE', sock: C.haru, hair: '#3A2C34' };
-const tube3 = (pts, wm) => K.tube(pts.map((p) => P2(...p)), pts.map((p, i) => wm[i] * sc(...p)), { capRound: 0.4 });
-// piano bench (painted wood, its top inked edge since a cat hops onto it)
-const BZ0 = 0.86, BZ1 = 1.22, BX0 = 0.18, BX1 = 1.0, BY = 0.48;
-s.push(K.castShadow(pd([[BX0 - 0.05, 0, BZ0 - 0.05], [BX1 + 0.1, 0, BZ0 - 0.05], [BX1 + 0.18, 0, BZ1 + 0.1], [BX0, 0, BZ1 + 0.1]]), 0.45, 'soft2'));
-[[BX0 + 0.04, BZ0 + 0.04], [BX1 - 0.04, BZ0 + 0.04], [BX1 - 0.04, BZ1 - 0.04], [BX0 + 0.04, BZ1 - 0.04]].forEach(([x, z]) => { s.push(ink(pd([[x - 0.02, BY - 0.04, z], [x + 0.02, BY - 0.04, z], [x + 0.02, 0, z], [x - 0.02, 0, z]]), '#5A3026', 2)); });
-// Haru is hand-drawn in screen space over the projected anchors (knee ≈ 713,524; ankle ≈ 765,750; hand on the keys ≈ 820,340).
-// Order: shins behind the bench → bench → skirt → cardigan back → sleeve → hand.
-const shin = (pts, ws, fill, shade) => K.celGroup({ parts: [{ d: K.tube(pts, ws, { capRound: 0.5 }), fill }], shade: shade || null, shadeAll: !shade }, G);
-// far (left) shin, mostly hidden
-s.push(shin([[548, 512], [566, 620], [584, 712]], [50, 42, 34], HP.skin));
-s.push(K.celGroup({ parts: [{ d: K.tube([[580, 680], [585, 724]], [36, 34], { capRound: 0.4 }), fill: HP.sock }, { d: K.blob([[566, 716], [604, 712], [640, 722], [646, 738], [610, 744], [570, 738]], true, 0.5), fill: HP.sock }], shadeAll: true }, G));
-// near (right) shin + yellow sock, the ball of the foot on the sustain pedal
-s.push(K.celGroup({ parts: [{ d: K.tube([[700, 520], [728, 630], [758, 724]], [62, 52, 40], { capRound: 0.5 }), fill: HP.skin }], shade: K.tube([[684, 520], [712, 630], [744, 724]], [20, 16, 12]), lines: [K.blob([[716, 560], [724, 580]], false)] }, G));
-s.push(K.celGroup({ parts: [{ d: K.tube([[750, 690], [760, 742]], [44, 42], { capRound: 0.4 }), fill: HP.sock }, { d: K.blob([[742, 732], [786, 726], [826, 738], [834, 756], [796, 764], [748, 758]], true, 0.5), fill: HP.sock }], shade: K.blob([[742, 744], [834, 750], [834, 766], [742, 766]], true, 0.2), lines: ['M752 728Q770 734 784 728'] }, G));
-// piano bench top + near legs
-s.push(ink(pd([[BX0, BY, BZ0], [BX1, BY, BZ0], [BX1, BY, BZ1], [BX0, BY, BZ1]]), '#7A4A34', 2.2) + ink(pd([[BX0, BY, BZ1], [BX1, BY, BZ1], [BX1, BY - 0.05, BZ1], [BX0, BY - 0.05, BZ1]]), '#5A3026', 2) + ink(pd([[BX1, BY, BZ0], [BX1, BY, BZ1], [BX1, BY - 0.05, BZ1], [BX1, BY - 0.05, BZ0]]), '#6A3A2C', 2));
-s.push(`<path d="${pd([[BX0 + 0.1, BY + 0.001, BZ1 - 0.06], [BX1 - 0.1, BY + 0.001, BZ1 - 0.06], [BX1 - 0.2, BY + 0.001, BZ0 + 0.1], [BX0 + 0.2, BY + 0.001, BZ0 + 0.1]])}" fill="#FFC98A" opacity="0.18"/>`);
-// skirt: soft pleats spread on the bench, the hem falling over its far edge toward the knees
-s.push(K.celGroup({ parts: [{ d: 'M258 470C330 476 520 480 612 478C650 492 690 512 716 540C700 552 672 548 650 556C620 548 590 560 560 552C520 566 470 560 430 568C380 570 330 566 286 560C262 540 252 506 258 470Z', fill: HP.skirt }],
-  shade: 'M240 460H400V580H240Z', lines: ['M420 486Q440 520 430 566', 'M520 484Q548 520 560 552', 'M612 480Q636 516 650 554', 'M340 484Q344 520 330 566'] }, G));
-// the cardigan: a soft, slightly hunched back leaning in to the keys; the shoulders crop out at the top
-s.push(K.celGroup({ parts: [{ d: 'M266 -20C252 110 236 250 244 372C248 424 256 462 268 494C380 504 500 506 606 498C618 452 632 380 642 300C652 200 662 90 672 -20Z', fill: HP.card }],
-  shade: 'M200 -40C300 -40 330 -40 344 -20C328 120 318 300 334 520L200 520Z',
-  lines: ['M470 -10C462 140 466 320 480 470', 'M300 300Q322 330 316 380', 'M590 260Q606 300 596 340', 'M380 120Q420 150 470 140'] }, G));
-s.push(K.celGroup({ parts: [{ d: 'M262 452C380 462 500 464 612 456L606 500C500 508 380 506 268 498Z', fill: HP.cardS }], lines: [300, 340, 380, 420, 460, 500, 540, 580].map((x) => `M${x} ${458 + (x - 260) * 0.0}V${502}`) }, G));
-// the dark ends of her bob, just in at the top edge (her face stays out of frame)
+/* =============================== Haru: legs, hem, hands (inked cels) =============================== */
+const HP = { skin: '#F6D2B0', card: C.haru, cardS: '#E9B428', skirt: '#4E6A9A', sock: C.haru };
+const A = (X, Y, d) => P(X, Y, d);
+// far (right) leg: shin down to the foot resting on the soft pedal, partly behind the near leg
+{ const k = A(0.44, 0.5, 2.08), an = A(0.47, 0.09, 2.08), ft = A(0.56, 0.04, 2.08);
+  s.push(K.celGroup({ parts: [{ d: K.tube([k, [(k[0] + an[0]) / 2 + 3, (k[1] + an[1]) / 2], an], [46, 40, 30], { capRound: 0.5 }), fill: HP.skin }], shadeAll: true }, G));
+  s.push(K.celGroup({ parts: [{ d: K.tube([[an[0] - 1, an[1] - 34], an], [32, 30], { capRound: 0.4 }), fill: HP.sock }, { d: K.blob([[an[0] - 16, an[1] - 6], [an[0] + 10, an[1] - 12], [ft[0] + 18, ft[1] - 8], [ft[0] + 22, ft[1] + 2], [an[0] - 14, an[1] + 10]], true, 0.5), fill: HP.sock }], shadeAll: true }, G)); }
+// skirt over the thighs, hem at the knee; near leg: knee, shin, yellow sock, foot flat on the boards
+{ const hip = A(-0.02, 0.52, 1.95), kn = A(0.42, 0.52, 1.92), an = A(0.45, 0.09, 1.9), ft = A(0.58, 0.03, 1.9);
+  s.push(K.celGroup({ parts: [{ d: K.tube([kn, [(kn[0] + an[0]) / 2 + 4, (kn[1] + an[1]) / 2], an], [52, 44, 34], { capRound: 0.5 }), fill: HP.skin }], shade: K.tube([[kn[0] - 14, kn[1] + 10], [an[0] - 10, an[1]]], [14, 10]), lines: [K.blob([[kn[0] + 12, kn[1] + 4], [kn[0] + 16, kn[1] + 18]], false)] }, G));
+  s.push(K.celGroup({ parts: [{ d: K.tube([[an[0] - 1, an[1] - 40], an], [36, 34], { capRound: 0.4 }), fill: HP.sock }, { d: K.blob([[an[0] - 18, an[1] - 8], [an[0] + 12, an[1] - 14], [ft[0] + 20, ft[1] - 8], [ft[0] + 24, ft[1] + 3], [an[0] - 16, an[1] + 12]], true, 0.5), fill: HP.sock }], shade: K.blob([[an[0] - 18, an[1] + 4], [ft[0] + 24, ft[1]], [ft[0] + 24, ft[1] + 6], [an[0] - 18, an[1] + 14]], true, 0.3) }, G));
+  // the skirt: navy-blue pleats from the seat to just past the knee
+  const sk = [[hip[0] - 40, hip[1] - 80], [kn[0] - 30, kn[1] - 46], [kn[0] + 30, kn[1] - 30], [kn[0] + 34, kn[1] + 22], [kn[0] - 10, kn[1] + 30], [(hip[0] + kn[0]) / 2, kn[1] + 26], [hip[0] - 30, hip[1] + 40]];
+  s.push(K.celGroup({ parts: [{ d: K.blob(sk, true, 0.35), fill: HP.skirt }], shade: K.blob([[hip[0] - 60, hip[1] + 10], [kn[0] + 40, kn[1] + 4], [kn[0] + 40, kn[1] + 40], [hip[0] - 60, hip[1] + 50]], true, 0.2), lines: [K.blob([[kn[0] - 60, kn[1] - 30], [kn[0] - 50, kn[1] + 28]], false), K.blob([[kn[0] - 110, kn[1] - 34], [kn[0] - 104, kn[1] + 24]], false)] }, G)); }
+// her torso rises out of frame; only the cardigan's lower back and hip show above the bench
+{ const t = [A(-0.2, 0.5, 2.0), A(0.18, 0.5, 1.95), A(0.16, 0.85, 1.95), A(0.12, 1.4, 1.95), A(-0.22, 1.4, 2.0), A(-0.24, 0.85, 2.0)];
+  s.push(K.celGroup({ parts: [{ d: K.blob(t, true, 0.35), fill: HP.card }], shade: K.blob([A(-0.24, 0.5, 2.0), A(-0.08, 0.5, 2.0), A(-0.1, 1.4, 2.0), A(-0.26, 1.4, 2.0)], true, 0.2), lines: [K.blob([A(-0.02, 0.62, 1.98), A(0.0, 0.9, 1.97)], false)] }, G));
+  s.push(K.celGroup({ parts: [{ d: K.blob([A(-0.2, 0.58, 2.0), A(0.18, 0.58, 1.95), A(0.18, 0.5, 1.95), A(-0.2, 0.5, 2.0)], true, 0.2), fill: HP.cardS }] }, G)); }
+// far hand still resting on the keys: the Piece has paused mid-phrase
+{ const w = A(0.45, 0.82, 2.05), h0 = A(0.62, 0.745, 2.08);
+  s.push(K.celGroup({ parts: [{ d: K.tube([A(0.15, 1.05, 2.02), A(0.32, 0.86, 2.04), w], [62, 54, 44], { capRound: 0.3 }), fill: HP.card }], shadeAll: true }, G));
+  s.push(K.celGroup({ parts: [{ d: K.blob([[w[0] - 4, w[1] - 14], [h0[0] + 6, h0[1] - 12], [h0[0] + 12, h0[1] + 2], [h0[0] - 4, h0[1] + 6], [w[0] - 2, w[1] + 12]], true, 0.5), fill: HP.skin }], shadeAll: true, lines: [K.blob([[h0[0] - 6, h0[1] - 8], [h0[0] - 2, h0[1] + 4]], false)] }, G)); }
+// near arm: down out of the top of frame, foreshortened toward us, the hand open, palm-down, slowing above Mikan
+const hand = { x: 780, y: 470 };
+s.push(K.celGroup({ parts: [{ d: K.tube([[1040, -30], [980, 120], [890, 300], [826, 418]], [120, 128, 116, 92], { capRound: 0.3 }), fill: HP.card }],
+  shade: K.tube([[1080, -30], [1024, 120], [934, 300], [866, 420]], [40, 44, 40, 30]), lines: ['M952 200Q930 230 942 262', 'M900 330Q884 352 896 372'] }, G));
+s.push(K.celGroup({ parts: [{ d: K.tube([[842, 392], [816, 438]], [98, 90], { capRound: 0.2 }), fill: HP.cardS }], lines: ['M800 412L842 380', 'M808 426L852 396', 'M816 440L860 410'] }, G));
+// the hand: back of the hand toward us, fingers relaxed and spread a little, tips just curling down
+s.push(K.celGroup({ parts: [
+  { d: 'M776 430C800 418 836 426 852 446C866 466 866 490 854 506C844 520 828 528 812 532C800 536 770 536 752 530C732 522 720 506 724 490C728 470 750 440 776 430Z', fill: HP.skin },
+  { d: 'M738 496C722 506 704 522 700 540C698 552 708 556 718 548C728 538 742 524 752 516Z', fill: HP.skin },
+  { d: 'M760 524C752 540 748 560 752 574C756 584 768 582 772 572C776 558 778 544 780 530Z', fill: HP.skin },
+  { d: 'M790 530C788 548 790 570 798 582C804 590 816 586 816 576C816 562 812 546 810 530Z', fill: HP.skin },
+  { d: 'M824 524C830 540 838 558 848 568C856 576 866 570 862 560C858 546 850 530 842 516Z', fill: HP.skin },
+  { d: 'M852 484C868 488 884 498 892 512C898 522 890 530 880 524C870 516 860 506 848 500Z', fill: HP.skin }],
+  shade: 'M700 520C740 528 800 540 870 530L900 560L700 600Z', lines: ['M770 500Q784 512 796 514', 'M812 500Q824 506 830 516'] }, G));
 
-// near (right) sleeve: shoulder → elbow → wrist, a full knit sleeve with a yellow cuff
-s.push(K.celGroup({ parts: [{ d: K.tube([[612, 30], [690, 150], [742, 236], [794, 312]], [124, 110, 96, 80], { capRound: 0.3 }), fill: HP.card }], shade: K.tube([[600, 40], [676, 160], [728, 246], [778, 318]], [44, 38, 32, 26]), lines: ['M700 198Q722 210 740 204', 'M664 120Q690 140 712 132'] }, G));
-s.push(K.celGroup({ parts: [{ d: K.tube([[778, 296], [806, 334]], [82, 76], { capRound: 0.25 }), fill: HP.cardS }], lines: ['M770 310L792 290', 'M782 322L806 300', 'M794 336L818 314'] }, G));
-// the hand: a relaxed arch, fingertips down onto the keys (hands are the faces)
-s.push(K.celGroup({ parts: [{ d: 'M796 318C812 308 840 310 862 320C876 328 884 340 884 350C878 356 868 356 862 350C858 356 846 358 840 352C834 358 822 358 818 350C812 354 800 352 798 344C790 336 788 326 796 318Z', fill: HP.skin }, { d: 'M800 334C792 340 790 352 796 358C804 360 810 354 812 346Z', fill: HP.skin }],
-  shade: 'M786 340C800 344 830 346 884 344L884 362L786 362Z', lines: ['M840 330Q846 340 840 352', 'M862 330Q866 340 862 350', 'M818 332Q822 342 818 350'] }, G));
-/* =============================== Mikan on the treble keys =============================== */
-const mkp = P2(1.27, KY + 0.004, 0.56), mks = sc(1.27, KY, 0.56) / 520;
-s.push(K.cat({ ...K.CAST.mikan, pose: 'side-walk', x: mkp[0], y: mkp[1], scale: mks, flip: true, shadow: true }));
-// a key dips under the forepaw
-s.push(`<path d="${pd([[1.13, KY - 0.004, 0.5], [1.165, KY - 0.004, 0.5], [1.165, KY - 0.004, 0.635], [1.13, KY - 0.004, 0.635]])}" fill="${C.wisteria}" opacity="0.25"/>`);
+/* =============================== Mikan, at her feet on the boards =============================== */
+const mk = { x: 812, y: 922, sc: 2.95 };
+// the low Dusk light lies across the boards in long window-pane bars, one of them over Mikan
+const bar = (d0, d1, z0, z1) => { const a = P(LW, 0, z0), b = P(LW, 0, z1), c = P(RW * 0.9, 0, d1), e = P(RW * 0.9, 0, d0); return `M${a[0]} ${a[1]}L${b[0]} ${b[1]}L${c[0]} ${c[1]}L${e[0]} ${e[1]}Z`; };
+s.push(`<g style="mix-blend-mode:screen" filter="url(#k-soft)" opacity="0.85"><path d="${bar(0.9, 1.25, 1.8, 2.2)}" fill="#F7A45A" opacity="0.55"/><path d="${bar(1.45, 1.75, 2.3, 2.7)}" fill="#F7A45A" opacity="0.4"/><path d="${bar(2.0, 2.3, 2.8, 3.2)}" fill="#F7A45A" opacity="0.3"/><path d="${bar(2.6, 2.85, 3.3, 3.75)}" fill="#F7A45A" opacity="0.22"/></g>`);
+s.push(K.castShadow(`M${mk.x - 60} ${mk.y - 4}L${mk.x + 70} ${mk.y - 8}L${mk.x + 300} ${mk.y + 30}L${mk.x + 200} ${mk.y + 52}Z`, 0.45));
+s.push(K.cat({ ...K.CAST.mikan, pose: 'front-sit', expr: 'sleepy', x: mk.x, y: mk.y, scale: mk.sc }));
+// warm light lands on Mikan's sunward (left) side; the far side stays in cool room shade
+s.push(`<g style="mix-blend-mode:multiply" opacity="0.32"><path d="M${mk.x + 10} ${mk.y - 360}H${mk.x + 160}V${mk.y + 10}H${mk.x + 10}Z" fill="#7A6AB8" filter="url(#k-soft)"/></g>`);
+s.push(`<g style="mix-blend-mode:screen" opacity="0.5"><ellipse cx="${mk.x - 70}" cy="${mk.y - 150}" rx="90" ry="200" fill="#FFB870" filter="url(#k-soft2)"/></g>`);
+// the bell: one small glint (the four-point sparkle the bible allows; no flash)
+s.push(K.sparkle({ x: mk.x - 14, y: mk.y - 158, r: 10, lw: 2 }));
 
-/* =============================== the music: soft coloured shapes =============================== */
-// Haru's bass: big, slow, round Haru-yellow shapes rising from her hand; Mikan's steps: small pale bell-cream drops.
-// They are painted light, not inked VFX (the house has no VFX: art bible §6.3); they braid together over the keys.
-const note = (x, y, r, col, op, stem) => `<g opacity="${op}"><ellipse cx="${x}" cy="${y}" rx="${r}" ry="${r * 0.82}" fill="${col}" transform="rotate(-18 ${x} ${y})"/>${stem ? `<path d="M${x + r * 0.8} ${y - 2}q${r * 0.3} ${-r * 1.6} ${r * 1.4} ${-r * 2.2}" stroke="${col}" stroke-width="${r * 0.32}" fill="none" stroke-linecap="round"/>` : ''}<ellipse cx="${x - r * 0.3}" cy="${y - r * 0.3}" rx="${r * 0.32}" ry="${r * 0.22}" fill="#FFFFFF" opacity="0.55" transform="rotate(-18 ${x} ${y})"/></g>`;
-let notes = '';
-const hh = P2(0.94, 0.86, 0.6);
-const haruPath = [[846, 286], [822, 206], [858, 136], [828, 68], [880, 14]];
-[[0, 26, 0.95, true], [1, 34, 0.9, false], [2, 30, 0.8, true], [3, 38, 0.65, false], [4, 28, 0.45, true]].forEach(([i, r, op, st]) => { const [x, y] = haruPath[i]; notes += K.glow(x, y, r * 2.2, r * 2, '#FFE7A3', 0.35) + note(x, y, r, C.haru, op, st); });
-const mikPath = [[mkp[0] + 60, mkp[1] - 110], [mkp[0] + 120, mkp[1] - 180], [mkp[0] + 80, mkp[1] - 250], [mkp[0] + 20, mkp[1] - 300], [mkp[0] - 50, mkp[1] - 350]];
-[[0, 14, 0.95], [1, 12, 0.85], [2, 16, 0.8], [3, 11, 0.65], [4, 13, 0.5]].forEach(([i, r, op]) => { const [x, y] = mikPath[i]; notes += K.glow(x, y, r * 2.4, r * 2.2, '#FFF1D6', 0.4) + note(x, y, r, '#FFE2BC', op, i % 2 === 0); });
-// where the two lines meet, a soft warm bloom (the duet)
-notes += K.glow((haruPath[4][0] + mikPath[4][0]) / 2, (haruPath[4][1] + mikPath[4][1]) / 2 - 10, 220, 140, '#FFE7B8', 0.45);
-notes += note((haruPath[4][0] + mikPath[4][0]) / 2 - 20, (haruPath[4][1] + mikPath[4][1]) / 2 - 10, 18, C.haru, 0.6, true) + note((haruPath[4][0] + mikPath[4][0]) / 2 + 26, (haruPath[4][1] + mikPath[4][1]) / 2 - 30, 11, '#FFE2BC', 0.6, true);
-s.push(`<g filter="url(#k-soft)" opacity="0.6">${notes}</g><g>${notes}</g>`);
+/* =============================== atmosphere =============================== */
+// a warm shaft of dusk air from the glass, very soft; cool violet in the corners (never black)
+s.push(`<path d="M120 300L420 260L1150 900L700 1080L0 1080Z" fill="#FFC27A" opacity="0.08" filter="url(#k-soft3)" style="mix-blend-mode:screen"/>`);
+s.push(`<radialGradient id="vig" cx="0.42" cy="0.6" r="0.78"><stop offset="0.5" stop-color="#4A3E7A" stop-opacity="0"/><stop offset="1" stop-color="#4A3E7A" stop-opacity="0.55"/></radialGradient><rect width="${W}" height="${H}" fill="url(#vig)" style="mix-blend-mode:multiply"/>`);
+s.push(K.texture(0, 0, W, H, 'grain', 0.12));
 
-/* =============================== light =============================== */
-// the pendant lamp above (out of frame): a warm pool around the bench and the keys
-s.push(K.glow(P2(0.9, 0, 0.9)[0], P2(0.9, 0, 0.9)[1], 640, 220, '#FFC98A', 0.5));
-s.push(K.glow(P2(0.9, 0.9, 0.6)[0], P2(0.9, 0.9, 0.6)[1] - 120, 760, 480, '#FFD9A0', 0.32));
-// dusk-violet in the corners, never black (warm memory, soft contrast)
-s.push(`<radialGradient id="vig" cx="0.55" cy="0.45" r="0.75"><stop offset="0.55" stop-color="#7A4E8C" stop-opacity="0"/><stop offset="1" stop-color="#7A4E8C" stop-opacity="0.5"/></radialGradient><rect width="${W}" height="${H}" fill="url(#vig)" style="mix-blend-mode:multiply"/>`);
-s.push(K.texture(0, 0, W, H, 'grain', 0.1));
-
-s.push(K.glow(760, -40, 900, 380, '#FFD9A0', 0.35) + K.glow(640, 860, 700, 200, '#FFC98A', 0.35));
-s.push(`<path d="M640 -20C650 90 642 200 632 300C626 380 614 450 606 498" fill="none" stroke="#FFF2C8" stroke-width="7" opacity="0.6" filter="url(#k-soft)"/>`);
-s.push(K.glow(mkp[0], mkp[1] - 60, 200, 140, '#FFE7B8', 0.35));
-/* =============================== HUD: one tone puff over Mikan, nothing else =============================== */
-// Bouncing tone puff (= a bright, excited voice, felt by the cat; never a word)
-const puff = `<svg width="110" height="96" viewBox="-55 -52 110 96" overflow="visible"><path d="${K.blob(K.pomPts(0, -4, 36, 9, 0.12))}" fill="${C.wisteria}" opacity="0.5" transform="translate(3 4)"/><path d="${K.blob(K.pomPts(0, -4, 36, 9, 0.12))}" fill="${C.cream}" stroke="${C.cocoa}" stroke-width="3.5"/>`
-  + `<g stroke="${C.ink}" stroke-width="2.6" fill="${C.cream}"><path d="M-26 12q6 -18 13 -4M-6 4q7 -24 14 -8" fill="none" stroke-dasharray="3 5" stroke-linecap="round"/><circle cx="-24" cy="12" r="6.5" fill="${C.gold}"/><circle cx="-4" cy="2" r="7.5" fill="${C.gold}"/><circle cx="17" cy="-12" r="8.5" fill="${C.gold}"/></g><path d="M8 -26l4 -8M20 -30l1 -9M30 -24l6 -6" stroke="${C.ink}" stroke-width="2.6" stroke-linecap="round"/></svg>`;
-
-const ZM = 1.12, ZX = 900, ZY = 360, Z = (x, y) => [ZX + (x - ZX) * ZM, ZY + (y - ZY) * ZM];
-const pz = Z(mkp[0] - 30, mkp[1] - mks * 120);
-document.getElementById('stage').innerHTML = K.svg(W, H, `<g transform="translate(${ZX * (1 - ZM)} ${ZY * (1 - ZM)}) scale(${ZM})">${s.join('')}</g>`, 'class="k-world"')
-  + `<div class="puff" style="left:${pz[0] - 30}px;top:${pz[1] - 120}px">${puff}</div>`;
+document.getElementById('stage').innerHTML = K.svg(W, H, s.join(''), 'class="k-world"');
 </script>
 </body>
 </html>

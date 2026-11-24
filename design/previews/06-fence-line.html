@@ -10,12 +10,12 @@
   .tag.k-ribbon { font: 800 24px/1 var(--font); height: 36px; }
   .tag-nem { height: 46px !important; font-size: 28px !important; }
   /* compact Standoff name-card, slid up from the bottom edge for the focused cat */
-  #card { left: 700px; top: 792px; width: 820px; height: 262px; padding: 0; overflow: visible; }
+  #card { left: 40px; top: 790px; width: 820px; height: 262px; padding: 0; overflow: visible; }
   #card .head { position: relative; display: flex; align-items: center; gap: 16px; margin: -30px 0 0 -16px; height: 92px; padding: 0 70px 0 18px; width: max-content;
-    background: var(--ink); color: var(--cream); clip-path: polygon(0 0, 100% 0, calc(100% - 40px) 100%, 0 100%); }
-  #card .head::after { content: ''; position: absolute; left: 0; right: 44px; bottom: 8px; height: 5px; background: var(--gold); }
-  #card .head .nm { font: 400 40px/1 'Dela Gothic One', var(--font); letter-spacing: .03em; }
-  #card .head .tt { font: 800 28px/1.05 var(--font); color: var(--sage); margin-top: 4px; }
+    background: var(--sage); color: var(--ink); border: 4px solid var(--ink); border-right: 0; box-sizing: border-box; clip-path: polygon(0 0, 100% 0, calc(100% - 40px) 100%, 0 100%); }
+  
+  #card .head .nm { font: 800 44px/1 var(--font); letter-spacing: .02em; }
+  #card .head .tt { font: 700 28px/1.05 var(--font); color: var(--ink); margin-top: 4px; }
   #card .head .pips { display: flex; gap: 0; margin-left: 4px; align-self: flex-start; margin-top: 14px; }
   #card .nemesis { position: absolute; right: 22px; top: 12px; display: flex; align-items: center; gap: 8px; height: 46px; padding: 0 18px 0 6px; border-radius: 26px 22px 24px 20px; background: var(--ink); font: 800 28px/1 var(--font); color: var(--cream); }
   #card .body { display: flex; gap: 22px; padding: 10px 26px 0 26px; }
@@ -101,10 +101,6 @@ s.push(K.glow(1100, 760, 520, 120, '#FFD2A0', 0.35));
 let scr = ''; for (let i = 0; i < 4; i++) scr += `<path d="M${454 + (i % 2) * 6} ${614 + i * 14}q30 -5 64 0" stroke="#7A6E86" stroke-width="2.6" fill="none" stroke-dasharray="${10 + i * 2} 5 6 4" opacity="0.7"/>`;
 s.push(`<g filter="url(#k-rough)"><rect x="440" y="600" width="96" height="74" fill="#F2E8D6" opacity="0.85"/>${scr}<path d="M120 520l12 40l-8 30l14 40M1300 800l10 30l-8 22" stroke="#A88E98" stroke-width="2.5" fill="none" opacity="0.7"/></g>`);
 // wall dressing: a wooden garden gate in the Captains' wall, ivy off Daifuku's wall, drainpipe, tile base, cast shadows
-s.push(`<g filter="url(#k-rough)"><path d="M520 1000V740Q600 700 680 740V1000Z" fill="#8A5E48"/><path d="M528 1000V746Q600 710 672 746V1000Z" fill="#B07A56"/>
-  <path d="M552 760V1000M576 748V1000M600 742V1000M624 748V1000M648 760V1000" stroke="#8A5E48" stroke-width="4"/><path d="M528 820H672M528 930H672" stroke="#8A5E48" stroke-width="6"/>
-  <circle cx="650" cy="880" r="6" fill="#E8C36A"/><path d="M510 740Q600 690 690 740" stroke="#6E6382" stroke-width="10" fill="none"/></g>`);
-s.push(K.castShadow('M520 1000V740Q600 700 680 740V1000Z', 0.18));
 s.push(`<g filter="url(#k-rough)"><path d="M286 372V1000" stroke="#9C8C9C" stroke-width="12"/><path d="M286 372V1000" stroke="#C9B9C2" stroke-width="4" transform="translate(-3 0)"/><path d="M276 960h22v20h-22z" fill="#9C8C9C"/></g>`);
 s.push(K.foliage({ x: 70, y: 470, w: 180, h: 200, seed: 33, tones: { dark: '#3E5458', mid: '#5E7656', light: '#8FA05E', hi: '#D8B070' } }));
 s.push(K.foliage({ x: 20, y: 600, w: 110, h: 220, seed: 34, tones: { dark: '#3E5458', mid: '#5E7656', light: '#8FA05E', hi: '#D8B070' } }));
@@ -117,13 +113,14 @@ s.push(K.grass({ x1: 310, y1: 504, x2: 700, y2: 504, n: 10, h: 18, seed: 3 }) + 
 
 /* ---------- the Bell section: the Lot's fence, the kei truck, Mikan's gatepost ---------- */
 s.push(`<g filter="url(#k-rough)"><path d="M1680 690H1960V880H1680Z" fill="#F4ECE0"/><path d="M1700 706H1800V770H1700Z" fill="#8FA7C9"/><path d="M1706 712L1752 712L1712 760Z" fill="#E6F0FA" opacity="0.6"/><path d="M1680 860H1960V900H1680Z" fill="#D9CDBE"/></g>`);
-s.push(K.fence({ quad: [[1520, 780], [1940, 780], [1940, GY], [1520, GY]], n: 13, seed: 5 }));
+s.push(K.surface({ pts: [[1520, 784], [1940, 784], [1940, GY], [1520, GY]], color: '#B98A5E', grime: 0.3, tex: 'brush-v', texOpacity: 0.45 }));
+{ let bd = ''; for (let x = 1520; x < 1940; x += 34) bd += `<path d="M${x} 790V${GY}" stroke="#8E6448" stroke-width="3" opacity="0.6"/><path d="M${x + 4} 790V${GY}" stroke="#D8AE80" stroke-width="2" opacity="0.5"/>`; s.push(`<g filter="url(#k-rough)">${bd}<path d="M1520 820H1940M1520 940H1940" stroke="#8E6448" stroke-width="6" opacity="0.55"/><path d="M1520 784H1940V792H1520Z" fill="#FFCF96" opacity="0.7"/></g>`); }
 s.push(K.surface({ pts: [[1624, 664], [1680, 664], [1680, GY], [1624, GY]], color: '#C9A47A', grime: 0.3, tex: 'brush-v', texOpacity: 0.3 }));
 s.push(`<path d="M1618 650H1686V668H1618Z" fill="#F6E2C0" filter="url(#k-rough)"/>`);
 s.push(K.foliage({ x: 1580, y: 990, w: 260, h: 90, seed: 31, tones: { dark: '#3E5458', mid: '#5E7656', light: '#9AA05E', hi: '#EBB878' } }));
 
 /* ---------- the Undermark: one fish crate per held Patch, at the foot of the wall ---------- */
-s.push(RV.crate({ x: 440, y: GY + 18, s: 1.05 }) + RV.crate({ x: 610, y: GY + 22, s: 1.05, color: '#BE9866' }));
+s.push(RV.crate({ x: 1130, y: GY + 18, s: 1.05 }) + RV.crate({ x: 1300, y: GY + 22, s: 1.05, color: '#BE9866' }));
 
 /* ---------- cats (one disposition pose each) ---------- */
 const cats = [];
@@ -137,31 +134,31 @@ s.push(`<g transform="translate(478 386) rotate(-20)">${K.inked('M-4 -16H4V10H-4
 put({ ...RV.CAST.ohagi, pose: 'front-sit', x: 610, y: 504, scale: 1.3 });                                // Respectful: upright, facing
 s.push(`<g transform="translate(610 434)"><path d="M-14 -10Q0 4 14 -10" stroke="${C.ink}" stroke-width="2" fill="none"/>${K.inked(K.ell(0, 2, 8, 8), '#D8B04A', 1.8)}<circle cx="0" cy="2" r="4" fill="#F2D27A"/></g>`); // bottle-cap pendant
 // Toughs, seat 1..5
-put({ ...RV.CAST.goma, pose: 'front-sit', expr: 'angry', x: 782, y: 600, scale: 1.12 });                 // Bitter: glare
+put({ ...RV.CAST.goma, pose: 'loaf', expr: 'angry', x: 782, y: 600, scale: 1.18 });                 // Bitter: glare
 s.push(K.ticks({ x: 822, y: 586, r: 22, n: 3, a0: -80, a1: 10, len: 10 }));
 put({ ...RV.CAST.sasa, pose: 'back', carry: 'spring', x: 946, y: 630, scale: 1.1 });                       // Indifferent: back turned
 put({ ...RV.CAST.kuri, pose: 'side-walk', expr: 'shock', x: 1104, y: 660, scale: 1.08 });               // Wary: side-on
 // seat 4: Togemaru (Nemesis, focused: lifted 4 px, Bell-Gold rim)
 const tg = { x: 1274, y: 686, sc: 1.32 };
-s.push(K.glow(tg.x, tg.y - 70, 120, 110, '#FFE7A8', 0.6));
-s.push(RV.hackles({ x: tg.x, y: tg.y, scale: tg.sc, rim: C.gold }));
-s.push(RV.notched(K.cat({ ...RV.CAST.togemaru, pose: 'front-sit', expr: 'angry', outline: 'gold', x: tg.x, y: tg.y, scale: tg.sc }), [RV.frontNotch(tg.x, tg.y, tg.sc, 'r')], { rim: C.cream }));
+s.push(K.glow(tg.x, tg.y - 70, 130, 120, '#FFF2D0', 0.7));
+s.push(`<ellipse cx="${tg.x}" cy="${tg.y - 2}" rx="96" ry="16" fill="none" stroke="${C.cream}" stroke-width="7"/><ellipse cx="${tg.x}" cy="${tg.y - 2}" rx="116" ry="22" fill="none" stroke="${C.cream}" stroke-width="3" opacity="0.6"/>`);
+s.push(RV.hackles({ x: tg.x, y: tg.y, scale: tg.sc, rim: C.sage }));
+s.push(RV.notched(K.cat({ ...RV.CAST.togemaru, pose: 'front-sit', expr: 'angry', outline: 'sage', x: tg.x, y: tg.y, scale: tg.sc }), [RV.frontNotch(tg.x, tg.y, tg.sc, 'r')], { rim: C.sage }));
+s.push(`<g transform="translate(${tg.x - 30} ${tg.y + 52}) rotate(-12)">${K.inked(K.ell(0, 8, 17, 14), C.pad, 2.6)}${[[-14, -10], [-5, -17], [5, -17], [14, -10]].map(([x, y]) => K.inked(K.ell(x, y, 5.5, 6.5), C.pad, 2.2)).join('')}</g>`); // paw-pad cursor
 put({ ...RV.CAST.hanpen, pose: 'loaf', expr: 'sleepy', x: 1438, y: 720, scale: 1.05 });                  // under truce: nose up, paws tucked
 s.push(RV.leafSprig({ x: 1462, y: 634, s: 1.2, rot: 10 }));
 // Undermark resident (Humbled, Restless: puffed tail, crate rattles)
-put({ ...K.CAST.brooder, pose: 'loaf', expr: 'angry', scars: ['notch', 'puff'], x: 440, y: GY - 48, scale: 0.98 });
-s.push(K.ticks({ x: 440, y: GY - 10, r: 70, n: 2, a0: 160, a1: 190, len: 12 }) + K.ticks({ x: 440, y: GY - 10, r: 70, n: 2, a0: -10, a1: 20, len: 12 }));
+put({ ...K.CAST.brooder, pose: 'loaf', expr: 'angry', scars: ['notch', 'puff'], x: 1130, y: GY - 48, scale: 0.98 });
+s.push(K.ticks({ x: 1130, y: GY - 10, r: 70, n: 2, a0: 160, a1: 190, len: 12 }) + K.ticks({ x: 1130, y: GY - 10, r: 70, n: 2, a0: -10, a1: 20, len: 12 }));
 // Roamer on the wire
 put({ ...RV.CAST.nori, pose: 'side-walk', expr: 'smug', x: 1060, y: 288, scale: 0.95, flip: true, shadow: false });
 // Bell section: Mikan on the gatepost (Clout height), Crew ex-Rivals on the Bell fence
 put({ ...K.CAST.mikan, pose: 'front-sit', expr: 'happy', x: 1652, y: 654, scale: 1.12 });
 s.push(`<g transform="translate(1726 598) rotate(10)"><circle r="24" fill="${C.cream}" stroke="${C.ink}" stroke-width="3"/><circle r="19" fill="none" stroke="${C.gold}" stroke-width="3" stroke-dasharray="4 3"/><g transform="scale(1.05)">${RV.GLYPH.bell}</g></g>`); // Clout stamp
-put({ ...K.CAST.oldWallCat, pose: 'loaf', collar: 'cord', x: 1776, y: 784, scale: 1.0 });
-put({ ...K.CAST.goofball, pose: 'front-sit', collar: 'cord', x: 1872, y: 784, scale: 0.98, flip: true });
 
 /* ---------- relationship marks ---------- */
 s.push(RV.storm({ x: tg.x + 6, y: tg.y - 214, s: 1.15, aim: [1606, 572] }));                         // the Nemesis, glaring at Mikan's seat
-s.push(`<g transform="translate(814 504)" opacity="0.95">${K.inked(K.blob(K.pomPts(0, 0, 16, 5, 0.18)), '#6E6382', 2)}<path d="M-8 -2q4 -5 8 0t8 0" stroke="${C.cream}" stroke-width="2.4" fill="none"/></g>`); // Bitter grumble cloud
+s.push(`<g transform="translate(800 486) scale(1.4)" opacity="0.95">${K.inked(K.blob(K.pomPts(0, 0, 16, 5, 0.18)), '#6E6382', 2)}<path d="M-8 -2q4 -5 8 0t8 0" stroke="${C.cream}" stroke-width="2.4" fill="none"/></g>`); // Bitter grumble cloud
 s.push(`<g transform="translate(1274 702) rotate(-8)"><path d="M-30 -9H30V9H-30Z" fill="#F6E7B8" opacity="0.92"/><path d="M0 -8l2.6 5.4l6 .8l-4.3 4.2l1 6l-5.3 -2.8l-5.3 2.8l1 -6l-4.3 -4.2l6 -.8z" fill="${C.gold}" stroke="${C.ink}" stroke-width="1.6"/></g>`); // paper-tape star: promoted overnight
 
 /* ---------- foreground: weeds (parallax layer) + light ---------- */
@@ -171,8 +168,9 @@ s.push(`<rect width="${W}" height="${H}" fill="#FFB070" opacity="0.08" style="mi
 
 /* ---------- UI: name ribbons (in-world), compact card for the focused cat ---------- */
 const tag = (x, y, name, cls) => `<span class="k-ribbon ${cls || 'k-ribbon--sage'} tag" style="left:${x}px;top:${y}px">${name}</span>`;
-const storm = RV.stamp(`<path d="M-4 0L-10 12H-3L-6 20L6 6H0L4 0Z" fill="${C.staticYellow}" stroke="${C.ink}" stroke-width="2"/><path d="${K.blob(K.pomPts(0, -6, 11, 5, 0.16))}" fill="#4A3F55"/>`, { size: 36, color: C.cream, ring: C.gold });
-const pip = (on) => `<svg width="22" height="30" viewBox="-11 -15 22 30"><path d="M-5 12L2 -12" stroke="${on ? C.sage : '#6E6382'}" stroke-width="5" stroke-linecap="round"/></svg>`;
+const storm = RV.stamp(`<path d="M-4 0L-10 12H-3L-6 20L6 6H0L4 0Z" fill="${C.staticYellow}" stroke="${C.ink}" stroke-width="2"/><path d="${K.blob(K.pomPts(0, -6, 11, 5, 0.16))}" fill="#4A3F55"/>`, { size: 36, color: C.cream, ring: C.magenta });
+const pip = (on) => `<svg width="22" height="30" viewBox="-11 -15 22 30"><path d="M-5 12L2 -12" stroke="${C.ink}" stroke-width="${on ? 5 : 3}" opacity="${on ? 1 : 0.35}" stroke-linecap="round"/></svg>`;
+const brick = `<svg width="42" height="32" viewBox="-24 -17 48 34"><path d="M-21 -14h42v28h-42z" fill="${C.cream}" stroke="${C.ink}" stroke-width="3"/><path d="M-21 0h42M0 -14v14M-10 0v14M11 0v14" stroke="${C.ink}" stroke-width="3" fill="none"/></svg>`;
 const st = (g, c) => RV.stamp(g, { size: 48, color: c || C.recessed });
 document.getElementById('stage').innerHTML = K.svg(W, H, s.join(''), 'class="k-world"') + `
   ${tag(156, 384, 'Daifuku')}
@@ -181,7 +179,7 @@ document.getElementById('stage').innerHTML = K.svg(W, H, s.join(''), 'class="k-w
   ${tag(1060, 304, 'Nori', 'k-ribbon--stray')}
   ${tag(1652, 672, 'Mikan', 'k-ribbon--gold')}
   <div class="k-abs k-panel" id="card">
-    <div class="head">${K.ui.portrait({ size: 84, ring: C.gold, bg: '#F7C99A', cat: { ...RV.CAST.togemaru, expr: 'angry' } })}
+    <div class="head">${K.ui.portrait({ size: 84, ring: C.ink, bg: '#F7C99A', cat: { ...RV.CAST.togemaru, expr: 'angry' } })}${brick}
       <div><div class="nm">TOGEMARU</div><div class="tt">the First Thorn · Bell-Ringer</div></div>
       <div class="pips">${pip(true)}${pip(false)}${pip(false)}</div></div>
     <div class="nemesis">${storm}Nemesis</div>

@@ -98,6 +98,7 @@ s.push(K.prop({ kind: 'bucket', x: 1640, y: 640, scale: 1.2 }));
 s.push(`<g filter="url(#k-rough)" fill="none" stroke="#9A8C78" stroke-width="3" opacity="0.55"><path d="M560 860q60 -20 120 6M1260 900q70 -14 120 10M400 700q40 -10 70 8"/></g>`);
 
 /* ---------- the Routed Captain, flattened in the dust ---------- */
+s.push(K.castShadow('M620 760L1000 750L1180 840L760 860Z', 0.32) + K.castShadow('M540 660L680 655L760 700L600 708Z', 0.3) + K.castShadow('M1300 700L1440 696L1540 740L1380 748Z', 0.3));
 const kg = { x: 820, y: 742 };
 s.push(K.dustCloud({ x: kg.x - 170, y: kg.y - 20, r: 46, puffs: 5, seed: 3 }) + K.dustCloud({ x: kg.x + 150, y: kg.y - 6, r: 36, puffs: 4, seed: 5 }));
 s.push(K.shadow({ x: kg.x, y: kg.y, rx: 170, ry: 18, opacity: 0.4 }));
@@ -109,7 +110,7 @@ s.push(`<g transform="translate(${kg.x - 40} ${kg.y - 186}) rotate(-20)">${K.ink
 const mk = { x: 1170, y: 800 };
 s.push(K.castShadow(`M${mk.x - 120} ${mk.y - 4}L${mk.x + 130} ${mk.y - 8}L${mk.x + 240} ${mk.y + 26}L${mk.x - 20} ${mk.y + 34}Z`, 0.3));
 s.push(K.cat({ ...K.CAST.oldWallCat, pose: 'front-sit', expr: 'neutral', collar: 'cord', outline: 'gold', x: 1372, y: 700, scale: 1.55 }));
-s.push(K.cat({ ...K.CAST.goofball, pose: 'front-sit', expr: 'happy', collar: 'cord', outline: 'gold', x: 1238, y: 640, scale: 1.22, flip: true }));
+s.push(K.cat({ ...K.CAST.goofball, pose: 'front-sit', expr: 'happy', collar: 'cord', outline: 'gold', x: 610, y: 650, scale: 1.22 }));
 s.push(K.cat({ ...K.CAST.mikan, pose: 'side-walk', carry: 'spring', outline: 'gold', expr: 'smug', x: mk.x, y: mk.y, scale: 2.15, flip: true }));
 s.push(K.ticks({ x: mk.x + 150, y: mk.y - 200, r: 30, n: 3, a0: -120, a1: -30, len: 12 })); // tail-beckon (Recruit preview)
 s.push(K.sparkle({ x: 690, y: 560, r: 16 }) + K.sparkle({ x: 960, y: 600, r: 10 }));

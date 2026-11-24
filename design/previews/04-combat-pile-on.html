@@ -22,6 +22,14 @@
 const K = Kit, C = K.C, W = 1920, H = 1080, ink = C.ink, gold = C.gold, cream = C.cream;
 const s = [];
 const pt = (p) => p[0].toFixed(1) + ' ' + p[1].toFixed(1);
+
+/* ---- canon slice crew (design/gdd/crew-and-progression.md §3.3 "Look"), as kit cat() options ---- */
+const CREW = {
+  pon: { ...K.CAST.goofball },                                                   // small round calico, half-folded ear, tail up (Goofball)
+  hige: { coat: { base: '#8E93A8', patch: '#5C5F72' }, pattern: 'solid', tail: 'whip', ears: 'standard', build: 'round', scars: ['notch'], eye: 'yellowgreen', carry: 'post', expr: 'neutral' }, // big grey tom, torn ear (Stalwart)
+  kinako: { coat: { base: '#ECD3A8' }, pattern: 'solid', tail: 'whip', ears: 'tall', build: 'long', eye: 'amber', carry: 'comma', expr: 'shock' }, // pale fawn, huge ears, half-crouched (Fraidy)
+  toge: { coat: { base: '#C98A4A', patch: '#37323F' }, pattern: 'saddle', tail: 'plume', ears: 'standard', build: 'long', eye: 'amber', carry: 'flag', expr: 'smug' }, // lean black-and-tan tom (Braggart)
+};
 const cc = { x: 950, y: 715 };     // cloud centre
 
 /* ---------- the Lot, glimpsed under the closing halftone wipe (lower right) ---------- */
@@ -34,11 +42,11 @@ lot += K.prop({ kind: 'bucket', x: 1700, y: 880, scale: 1.4 });
 lot += K.grass({ x1: 1300, y1: 1000, x2: 1920, y2: 960, n: 20, h: 60, seed: 9 });
 // halftone mask: dots grow toward the panel (upper left), solid scene only in the far corner
 let dots = ''; for (let y = 560; y < 1120; y += 34) for (let x = 1100; x < 1960; x += 34) { const t = Math.max(0, Math.min(1, ((x - 1180) / 700 + (y - 620) / 420) / 1.25)); const r = 24 * t; if (r > 1.2) dots += `<circle cx="${x + ((y / 34) % 2 ? 17 : 0)}" cy="${y}" r="${r.toFixed(1)}" fill="#fff"/>`; }
-s.push(`<mask id="ht"><rect width="${W}" height="${H}" fill="#000"/>${dots}</mask>`);
+// (the halftone entry wipe has finished: the panel now runs edge to edge)
+if (0) s.push(`<mask id="ht"><rect width="${W}" height="${H}" fill="#000"/>${dots}</mask>`);
 
 /* ---------- flat panel: static Bell-Gold, value-matched; full-field Ink lines converging on the cloud ---------- */
 s.push(`<rect width="${W}" height="${H}" fill="#EDB436"/>`);
-s.push(`<g mask="url(#ht)">${lot}</g>`);
 { const R = K.rng(17); let g = ''; const n = 120; for (let i = 0; i < n; i++) { const a = (i + R() * 0.8) / n * Math.PI * 2, r0 = 470 + R() * 260, wd = 0.006 + R() * 0.02, r1 = 1500; g += `<path d="M${pt([cc.x + Math.cos(a) * r0, cc.y + Math.sin(a) * r0 * 0.8])}L${pt([cc.x + Math.cos(a - wd) * r1, cc.y + Math.sin(a - wd) * r1])}L${pt([cc.x + Math.cos(a + wd) * r1, cc.y + Math.sin(a + wd) * r1])}Z" fill="${ink}"/>`; } s.push(`<g opacity="0.92">${g}</g>`); }
 
 /* ---------- final-beat burst: the local Cream flash, limited to the effect shape (Ink line, damage-neutral) ---------- */
@@ -62,12 +70,14 @@ const eyes = (x, y, sc, col, mood) => { const e = (ex) => mood === 'happy' ? `<p
 const COAT = { mikan: { fur: '#FFF8EC', pad: C.pad }, mikanG: { fur: C.ginger }, goof: { fur: '#FFF8EC', patch: '#C98A4A', patch2: '#514D60' }, gin: { fur: '#CDD1DC' }, kin: { fur: '#E3C39A', point: '#5E4636' }, toge: { fur: '#F4DDAA' } };
 
 // behind the cloud
-s.push(tailOut([[cc.x - 230, cc.y - 120], [cc.x - 330, cc.y - 220], [cc.x - 300, cc.y - 330], [cc.x - 380, cc.y - 390]], [30, 34, 36, 26], COAT.goof.patch2));     // Goofball's plume, springing up
-s.push(tailOut([[cc.x + 250, cc.y - 160], [cc.x + 330, cc.y - 250], [cc.x + 420, cc.y - 290], [cc.x + 470, cc.y - 360]], [20, 18, 16, 12], COAT.kin.point));    // Kinako's whip, bottle-brushed
-s.push(coatPaw(cc.x - 150, cc.y - 200, -14, 120, COAT.gin.fur, C.pad, 1.0));    // Gin's paw, raised high
+s.push(ear(cc.x - 250, cc.y - 200, -20, '#ECD3A8', C.purr).replace('scale', 'scale') + ear(cc.x - 190, cc.y - 222, 6, '#ECD3A8', C.purr));   // Kinako's huge ears, hiding in the boil
+s.push(K.ticks({ x: cc.x - 220, y: cc.y - 250, r: 50, n: 3, a0: -160, a1: -20, len: 14, lw: 4 }));   // ...and trembling
+s.push(K.celGroup({ parts: [{ d: K.tube([[cc.x + 260, cc.y - 120], [cc.x + 350, cc.y - 200], [cc.x + 430, cc.y - 230], [cc.x + 480, cc.y - 300]], [26, 28, 26, 18], { zig: 6, per: 5 }), fill: '#ECD3A8' }], shade: '' }, { lw: 3.5, ol: K.OUTLINES.ink }));    // Kinako's tail, bottle-brushed with fright
+s.push(coatPaw(cc.x - 90, cc.y - 200, -8, 110, CREW.hige.coat.base, C.pad, 1.15));    // Hige's big grey paw, planted high and steady
+s.push(ear(cc.x + 260, cc.y - 190, 30, CREW.hige.coat.base, C.purr));               // Hige's torn ear
 // heads popping out of the boil (bodies hidden by the cloud drawn over them)
-s.push(`<g transform="translate(${cc.x + 70} ${cc.y - 200}) rotate(8)">${K.cat({ ...K.CAST.mikan, pose: 'front-sit', expr: 'angry', outline: 'gold', x: 0, y: 0, scale: 2.3, shadow: false, lw: 4 })}</g>`);
-s.push(`<g transform="translate(${cc.x - 380} ${cc.y + 30}) rotate(-50)">${K.cat({ ...K.CAST.goofball, pose: 'front-sit', expr: 'happy', outline: 'gold', x: 0, y: 0, scale: 1.9, shadow: false, lw: 4 })}</g>`);
+s.push(`<g transform="translate(${cc.x + 20} ${cc.y - 150}) rotate(-6)">${K.cat({ ...K.CAST.mikan, pose: 'front-sit', expr: 'smug', outline: 'gold', x: 0, y: 0, scale: 3.0, shadow: false, lw: 4 })}</g>`);
+s.push(`<g transform="translate(${cc.x - 330} ${cc.y - 60}) rotate(140)">${K.cat({ ...CREW.pon, pose: 'front-sit', expr: 'neutral', outline: 'gold', x: 0, y: 0, scale: 1.8, shadow: false, lw: 4 })}</g>`);
 s.push(pomTail(cc.x + 330, cc.y + 10, 40));                                                                   // Mikan's pom tail
 
 /* ---------- THE CLOUD: big scalloped cel, Paper Cream, lavender shade, 5 px Ink line ---------- */
@@ -83,26 +93,28 @@ s.push(pomTail(cc.x + 330, cc.y + 10, 40));                                     
 // in front of / through the cloud
 s.push(coatPaw(cc.x - 300, cc.y + 150, -100, 90, COAT.mikan.fur, C.pad, 1.0));     // Mikan's white sock paw, swiping out left
 s.push(coatPaw(cc.x + 280, cc.y + 120, 100, 90, COAT.goof.patch, C.pad, 1.0));   // Goofball's marmalade paw
-s.push(coatPaw(cc.x + 20, cc.y + 230, 172, 60, COAT.kin.point, '#B58A7A', 0.95));     // Kinako's seal-point foot kicking down
-s.push(eyes(cc.x + 150, cc.y + 90, 1.7, '#5BB4F0', 'angry'));      // Gin, glaring out of the boil
-s.push(eyes(cc.x - 120, cc.y + 150, 1.4, '#5BB4F0', 'happy'));      // Kinako, eyes screwed shut
+s.push(coatPaw(cc.x + 20, cc.y + 230, 172, 60, '#ECD3A8', C.pad, 0.95));     // Kinako's foot kicking down
+// Mikan's fist-pump paw, punched up out of the cloud
+s.push(coatPaw(cc.x + 175, cc.y - 150, 24, 120, '#FFF8EC', C.pad, 1.15));
+// a second flying tuft (Hige's grey)
+s.push(`<g transform="translate(${cc.x - 470} ${cc.y + 200}) rotate(150)">${K.inked('M0 0q20 -24 46 -20q-16 6 -18 16q14 -10 30 -4q-22 6 -30 22q-12 -10 -28 -14z', CREW.hige.coat.base, 3)}</g>`);
 s.push(star(cc.x - 120, cc.y - 420, 34, C.staticYellow, 10) + star(cc.x - 420, cc.y - 200, 26, cream, -10) + star(cc.x + 440, cc.y + 120, 30, C.staticYellow, 20) + star(cc.x - 360, cc.y + 260, 22, cream, 0) + star(cc.x + 380, cc.y - 120, 18, cream, 30));
 s.push(padGlyph(cc.x - 470, cc.y + 40, 2.0, -20) + padGlyph(cc.x + 300, cc.y + 300, 1.6, 24) + padGlyph(cc.x - 40, cc.y - 430, 1.4, -8));
-// a flying tuft (Togemaru's cream tabby fur)
-s.push(`<g transform="translate(${cc.x + 420} ${cc.y - 330}) rotate(-30)">${K.inked('M0 0q20 -24 46 -20q-16 6 -18 16q14 -10 30 -4q-22 6 -30 22q-12 -10 -28 -14z', COAT.toge.fur, 3)}</g>`);
+// a flying tuft (Togemaru's black-and-tan fur)
+s.push(`<g transform="translate(${cc.x + 420} ${cc.y - 330}) rotate(-30)">${K.inked('M0 0q20 -24 46 -20q-16 6 -18 16q14 -10 30 -4q-22 6 -30 22q-12 -10 -28 -14z', '#C98A4A', 3)}</g>`);
 // chevron ticks + the controlled cat's bell bobbing on top
 s.push(chevron(cc.x - 250, cc.y - 250, 1.4, -24) + chevron(cc.x - 120, cc.y - 300, 1.4, -6) + chevron(cc.x + 300, cc.y - 230, 1.4, 18));
-s.push(bellTick(cc.x + 225, cc.y - 470, 1.5, 16));
-s.push(K.ticks({ x: cc.x + 225, y: cc.y - 480, r: 56, n: 3, a0: -150, a1: -30, len: 18, lw: 4.5 }));
+s.push(bellTick(cc.x + 150, cc.y - 560, 1.5, 16));
+s.push(K.ticks({ x: cc.x + 150, y: cc.y - 570, r: 56, n: 3, a0: -150, a1: -30, len: 18, lw: 4.5 }));
 
 /* ---------- Togemaru, ROUTED: the take smeared into a bolt, up and out to the right ---------- */
-const tg = { x: 1520, y: 400 };
+const tg = { x: 1660, y: 310 };
 // three shrinking dust puffs behind him
-s.push(`<g transform="translate(${tg.x - 40} ${tg.y}) rotate(-24)">${K.speedLines({ mode: 'parallel', x: -470, y: -110, w: 330, h: 120, angle: 0, count: 14, seed: 3, color: ink })}</g>`);
-s.push(K.dustCloud({ x: 1230, y: 500, r: 64, puffs: 5, seed: 31, lw: 4 }) + K.dustCloud({ x: 1340, y: 450, r: 46, puffs: 4, seed: 32, lw: 3.5 }) + K.dustCloud({ x: 1420, y: 420, r: 30, puffs: 4, seed: 33, lw: 3 }));
-s.push(`<g transform="translate(${tg.x} ${tg.y}) rotate(-18) scale(1.28 0.92)">${K.cat({ ...K.CAST.braggart, pose: 'side-pounce', outline: 'sage', expr: 'shock', x: 0, y: 70, scale: 1.75, shadow: false, lw: 3.5 })}</g>`);
-s.push(K.ticks({ x: tg.x + 120, y: tg.y - 90, r: 60, n: 4, a0: -110, a1: -20, len: 20, lw: 4.5 }));
-s.push(`<path d="M${tg.x + 40} ${tg.y - 150}q-12 16 -12 26a12 12 0 0 0 24 0q0 -10 -12 -26z" fill="${cream}" stroke="${ink}" stroke-width="3.5"/>`);
+s.push(`<g transform="translate(${tg.x - 40} ${tg.y}) rotate(-24)">${K.speedLines({ mode: 'parallel', x: -380, y: -80, w: 260, h: 90, angle: 0, count: 14, seed: 3, color: ink })}</g>`);
+s.push(K.dustCloud({ x: 1300, y: 460, r: 52, puffs: 5, seed: 31, lw: 4 }) + K.dustCloud({ x: 1420, y: 400, r: 38, puffs: 4, seed: 32, lw: 3.5 }) + K.dustCloud({ x: 1520, y: 356, r: 26, puffs: 4, seed: 33, lw: 3 }));
+s.push(`<g transform="translate(${tg.x} ${tg.y}) rotate(-18) scale(1.28 0.92)">${K.cat({ ...CREW.toge, pose: 'side-pounce', outline: 'sage', expr: 'shock', x: 0, y: 70, scale: 1.15, shadow: false, lw: 3.5 })}</g>`);
+s.push(K.ticks({ x: tg.x + 80, y: tg.y - 60, r: 44, n: 4, a0: -110, a1: -20, len: 20, lw: 4.5 }));
+s.push(`<path d="M${tg.x + 30} ${tg.y - 100}q-12 16 -12 26a12 12 0 0 0 24 0q0 -10 -12 -26z" fill="${cream}" stroke="${ink}" stroke-width="3.5"/>`);
 // small spinning star where he stood
 s.push(star(cc.x + 470, cc.y - 40, 26, C.staticYellow, 25) + K.ticks({ x: cc.x + 470, y: cc.y - 40, r: 36, n: 3, a0: 200, a1: 300, len: 12, lw: 3.5 }));
 
@@ -115,7 +127,7 @@ function sfx(o) {
   const off = o.size * 0.045;
   return `<g class="k-vfx k-sfx" transform="translate(${o.x} ${o.y}) rotate(${o.rot}) translate(${-x / 2} 0)" font-family="'Dela Gothic One',sans-serif" filter="url(#k-dry)">${layer(o.color, o.size * 0.07, off, off)}${layer(cream, o.size * 0.085, 0, 0)}</g>`;
 }
-s.push(sfx({ text: 'KA-BLAM!', x: 600, y: 250, size: 190, rot: -9, grow: 1.35, seed: 5 }));
+s.push(sfx({ text: 'KA-BLAM!', x: 500, y: 225, size: 185, rot: -9, grow: 1.35, seed: 5 }));
 
 document.getElementById('stage').innerHTML = K.svg(W, H, s.join(''), 'class="k-world"');
 </script>

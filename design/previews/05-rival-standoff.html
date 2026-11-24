@@ -50,15 +50,10 @@ s.push(`<rect x="0" y="660" width="${W}" height="${H - 660}" fill="#5C4E80"/>`);
 const ridge = (x0, x1, y, h, c) => K.roof({ quad: [[x0 + 30, y], [x1 - 30, y], [x1, y + h], [x0, y + h]], rows: 3, cols: Math.round((x1 - x0) / 40), color: c || '#5A5088' }) + `<path d="M${x0 + 30} ${y}H${x1 - 30}V${y + 5}H${x0 + 30}Z" fill="#FFC27E"/>`;
 s.push(ridge(-40, 420, 640, 70, '#52487E') + ridge(380, 760, 660, 60) + ridge(1080, 1500, 650, 64, '#52487E') + ridge(1460, 1960, 636, 72));
 s.push(`<g filter="url(#k-rough)">${[[60, 724], [210, 730], [470, 736], [1150, 730], [1560, 724], [1760, 730]].map(([x, y]) => `<rect x="${x}" y="${y}" width="54" height="34" fill="#FFD27E"/><path d="M${x + 27} ${y}V${y + 34}" stroke="#6E4A64" stroke-width="4"/>`).join('')}</g>`);
-s.push(`<rect x="0" y="704" width="${W}" height="130" fill="#7A6498" opacity="0.5"/>`);
 s.push(K.pole({ x: 1880, y: 860, h: 860, w: 36 }) + K.wires({ pts: [[-20, 150], [1880, 70]], sag: 120, width: 2.5, color: '#3E3258' }) + K.wires({ pts: [[-20, 200], [1880, 110]], sag: 130, width: 2, color: '#3E3258' }));
 
-/* ---------- the followers: two Toughs on a ridge behind Togemaru (outside the light: dimmed) ---------- */
-s.push(K.cat({ ...RV.CAST.kuri, pose: 'front-sit', expr: 'angry', outline: 'sage', x: 1640, y: 650, scale: 1.25 }));
-s.push(K.cat({ ...RV.CAST.sasa, pose: 'front-sit', expr: 'smug', outline: 'sage', x: 1790, y: 642, scale: 1.2, flip: true }));
-
 /* ---------- the High Road: the wall top as a lit stage across the frame ---------- */
-s.push(K.surface({ pts: [[-20, 900], [W + 20, 900], [W + 20, H + 20], [-20, H + 20]], color: '#7E6492', grime: 0.2 })); // wall face, in shade
+s.push(K.surface({ pts: [[-20, 900], [W + 20, 900], [W + 20, H + 20], [-20, H + 20]], color: '#5C4676', grime: 0.2 })); // wall face, in shade
 s.push(K.wall({ quad: [[-20, 858], [W + 20, 858], [W + 20, 904], [-20, 904]], color: '#F2CDA6', top: '#FFE2B8', bottom: '#E3B08C', grime: 0.05, copingH: 0, base: false }));
 s.push(`<path d="M-20 856H${W + 20}V864H-20Z" fill="#FFF0C8"/>`);
 s.push(K.castShadow(`M-20 904H${W + 20}V960H-20Z`, 0.45));
@@ -70,10 +65,14 @@ s.push(K.foliage({ x: 1700, y: 1050, w: 560, h: 240, seed: 75, tones: { dark: '#
 s.push(`<radialGradient id="dimg" cx="0.47" cy="0.62" r="0.62"><stop offset="0.45" stop-color="#3E2E66" stop-opacity="0"/><stop offset="1" stop-color="#3E2E66" stop-opacity="0.5"/></radialGradient><rect width="${W}" height="${H}" fill="#3E2E66" opacity="0.15" style="mix-blend-mode:multiply"/><rect width="${W}" height="${H}" fill="url(#dimg)" style="mix-blend-mode:multiply"/>`);
 
 /* ---------- Standoff bands: Bell-Gold behind Mikan, Frazzle Magenta behind the Nemesis ---------- */
-const band = (x, y, w, h, fill, line, seed, skew) => `<path d="M${x + skew} ${y}H${x + w + skew}L${x + w} ${y + h}H${x}Z" fill="${fill}" stroke="${C.ink}" stroke-width="3"/>` +
-  `<g>${K.clipTo(`M${x + skew} ${y}H${x + w + skew}L${x + w} ${y + h}H${x}Z`, K.speedLines({ mode: 'parallel', x: x - 20, y: y + 4, w: w + 80, h: h - 8, angle: 0, count: 15, color: line, seed }))}</g>`;
-s.push(band(-40, 560, 780, 250, C.gold, C.cream, 3, 30));
-s.push(band(1000, 360, 960, 420, C.magenta, C.cream, 7, -40));
+const band = (x, y, w, h, fill, line, seed, skew) => { const d = `M${x + skew} ${y}H${x + w + skew - 60}L${x + w + skew} ${y + h * 0.5}L${x + w - 40} ${y + h}H${x - 30}L${x + 40} ${y + h * 0.5}Z`;
+  return `<path d="${d}" fill="${fill}" fill-opacity="0.9" stroke="${C.ink}" stroke-width="3"/>` + `<g>${K.clipTo(d, K.speedLines({ mode: 'parallel', x: x - 20, y: y + 4, w: w + 80, h: h - 8, angle: 0, count: 17, color: line, seed }))}</g>`; };
+s.push(band(-80, 590, 820, 220, C.gold, C.cream, 3, 30));
+s.push(band(1010, 400, 900, 360, C.magenta, C.cream, 7, -40));
+
+/* ---------- the followers: two Toughs on a ridge behind Togemaru (outside the light: dimmed) ---------- */
+s.push(`<g style="filter:brightness(0.78) saturate(0.85)">` + K.cat({ ...RV.CAST.kuri, pose: 'front-sit', expr: 'angry', outline: 'sage', x: 1770, y: 650, scale: 1.2 }));
+s.push(K.cat({ ...RV.CAST.sasa, pose: 'front-sit', expr: 'smug', outline: 'sage', x: 1880, y: 642, scale: 1.15, flip: true }) + '</g>');
 
 /* ---------- the hard light wedge between them ---------- */
 s.push(`<path d="M812 0H870L990 858H700Z" fill="#FFF0C4" opacity="0.55"/><path d="M832 0H850L900 858H790Z" fill="#FFFBE6" opacity="0.6"/>`);
@@ -92,9 +91,7 @@ const ear = { x: tg.x - 29.5 * tg.sc, y: tg.y - 81 * tg.sc };
 s.push(K.shadow({ x: tg.x - 30, y: tg.y, rx: 330, ry: 16, opacity: 0.5 }));
 s.push(K.glow(tg.x - 150, tg.y - 330, 380, 300, '#FFC98A', 0.5)); // low-sun rim behind the black coat
 s.push(RV.notched(K.cat({ ...RV.CAST.togemaru, pose: 'hiss', expr: 'hiss', outline: 'sage', x: tg.x, y: tg.y, scale: tg.sc, flip: true, shadow: false }),
-  [{ x: ear.x, y: ear.y, a: 52, d: 34, w: 22 }], { rim: C.sage, lw: 3 }));
-// warm rim of low sun along his back and Mikan's (the sun is between them)
-s.push(`<path d="M${tg.x - 250} ${tg.y - 400}Q${tg.x - 120} ${tg.y - 470} ${tg.x + 40} ${tg.y - 420}" stroke="#FFD58C" stroke-width="5" fill="none" stroke-linecap="round" opacity="0.7"/>`);
+  [{ x: ear.x - 6, y: ear.y - 4, a: 52, d: 25, w: 17 }], { rim: C.sage, lw: 3 }));
 s.push(RV.storm({ x: tg.x - 170, y: tg.y - 560, s: 1.7 }));
 s.push(K.ticks({ x: tg.x - 210, y: tg.y - 330, r: 190, n: 3, a0: 190, a1: 240, len: 26, lw: 3.5 }));
 
