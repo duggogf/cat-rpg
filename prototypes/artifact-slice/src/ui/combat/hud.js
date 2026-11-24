@@ -310,6 +310,13 @@ export class CombatHUD {
         const p = ctx.project(f.head); this.place(el, p, -110 * sc);
       }
     }
+    // Slow Blink: props and known Fears highlighted in the world (replaces Whisker Sense in combat)
+    if (s.slow_blink) for (const pr of s.props) {
+      if (!pr.uses_left) continue;
+      const el = this.wEl('prop:' + pr.id, 'ch-pom', svgIcon.soggy);
+      el.style.transform = `translate(-50%,-100%) scale(${sc * 1.3})`; el.style.background = 'var(--cream)';
+      this.place(el, ctx.project({ x: pr.pos[0], y: (pr.id === 'wash_tub' ? 0.5 : 0.4), z: pr.pos[2], clone() { return this; } }), -6);
+    }
     // Slow Blink target cursor: bell-gold corner brackets
     if (this.sb.open && this.sb.step === 'target' && this.sb.targets && this.sb.targets[this.sb.target]) {
       const f = fighters.get(this.sb.targets[this.sb.target]);
@@ -387,8 +394,8 @@ export class CombatHUD {
   }
 
   /** Centre card (Standoff name-card / outcome): a wedge-ended band slamming into the upper third. */
-  card(text, sub, ms, t, clowder = 'ink') {
-    this.cards.innerHTML = `<div class="ch-card" style="transform:translate(-50%,-50%) scale(${this.scale * 1.15})"><div class="k-band" style="${clowder === 'sage' ? 'background:var(--sage);color:var(--ink)' : clowder === 'gold' ? 'background:var(--gold);color:var(--ink)' : ''}">${text}${sub ? `<span style="font-size:30px;font-weight:700;opacity:.9">${sub}</span>` : ''}</div></div>`;
+  card(text, sub, ms, t, clowder = 'ink', y = 0.3) {
+    this.cards.innerHTML = `<div class="ch-card" style="top:${y * 100}%;"transform:translate(-50%,-50%) scale(${this.scale * 1.15})"><div class="k-band" style="${clowder === 'sage' ? 'background:var(--sage);color:var(--ink)' : clowder === 'gold' ? 'background:var(--gold);color:var(--ink)' : ''}">${text}${sub ? `<span style="font-size:30px;font-weight:700;opacity:.9">${sub}</span>` : ''}</div></div>`;
     this.cardStart = t; this.cardEnd = t + ms / 1000;
   }
   tickCard(t) {

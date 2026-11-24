@@ -28,12 +28,12 @@ const hexV = (h) => { const n = parseInt(h.slice(1), 16); return new THREE.Vecto
 export const COL = { ink: '#33273B', cream: '#FFF6E3', gold: '#F2B01E', sage: '#A8C878', magenta: '#FF3D8B' };
 
 /** Extra hull shells for the keyline + cream rim. */
-function addKeyline(cat) {
+function addKeyline(cat, rim = true) {
   const sk = cat.object3D.getObjectByProperty('isSkinnedMesh', true);
   if (!sk || !Array.isArray(sk.material) || !sk.material[1] || !sk.material[1].uniforms || !sk.material[1].uniforms.uLinePx) return null;
   const base = sk.material[1];
   const hide = new THREE.MeshBasicMaterial({ visible: false });
-  const shells = [['key', 2.2, 1], ['rim', 3.4, 2]].map(([name, extra, off]) => {
+  const shells = [['key', 2.2, 1], ['rim', 3.4, 2]].filter((x) => rim || x[0] === 'key').map(([name, extra, off]) => {
     const m = base.clone();
     m.uniforms.uInk.value = hexV(name === 'rim' ? COL.cream : COL.gold);
     m.polygonOffset = true; m.polygonOffsetFactor = 2 * off; m.polygonOffsetUnits = 40 * off;
@@ -48,14 +48,15 @@ function addKeyline(cat) {
     sk.parent.add(mesh);
     return { mesh, mat: m };
   });
-  return { key: shells[0], rim: shells[1], fill: sk.material[0], hull: base, inkHull: base.uniforms.uInk.value.clone() };
+  const noRim = { mesh: { userData: {}, visible: true }, mat: null };
+  return { key: shells[0], rim: shells[1] || noRim, fill: sk.material[0], hull: base, inkHull: base.uniforms.uInk.value.clone() };
 }
 
 const ss = (x) => { x = Math.min(1, Math.max(0, x)); return x * x * (3 - 2 * x); };
 const lerpAngle = (a, b, k) => a + Math.atan2(Math.sin(b - a), Math.cos(b - a)) * k;
 
 export class Fighter {
-  constructor(ent) {
+  constructor(ent, o = {}) {
     this.id = ent.id; this.side = ent.side; this.catId = ent.cat;
     const m = CAST_MAP[ent.cat] || DEFAULT;
     this.cat = createCat({ cast: m.cast, scale: 1.25 * m.scale });
@@ -63,7 +64,7 @@ export class Fighter {
     this.root = new THREE.Group(); this.pose = new THREE.Group();
     this.root.add(this.pose); this.pose.add(this.cat.object3D);
     this.root.name = 'fighter:' + ent.id;
-    this.kl = addKeyline(this.cat);
+    this.kl = addKeyline(this.cat, o.rim !== false);
     this.setClowder(ent.side === 'enemy' ? 'sage' : 'gold');
     this.yaw = Math.atan2(ent.facing[0], ent.facing[1]);
     this.prevPos = new THREE.Vector3(...ent.pos); this.pos = this.prevPos.clone(); this.vel = new THREE.Vector3();

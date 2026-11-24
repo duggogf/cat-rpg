@@ -35,6 +35,7 @@ scale is 1.25.
 | `16-orbit-8x45.png` | Mikan at 8 yaws, 45° apart: one face decal set, no swap | `angle=0..315&dist=1.7&h=0.5&fov=30` |
 | `17-orbit-24x15-continuity.png` | 24 yaws, 15° apart: the near eye travels continuously round the skull. No pop and no doubled eye | same, 15° steps |
 | `18-front-face-check.png` | Front-on face: the kept face before this pass, now (camera 1.22× further to cancel the 1.22× head), and the absolute difference. Measured: eye spacing, nose drop and feature areas match within 1–2% of eye separation; after normalising for scale, nose IoU is 0.92 and eye IoU 0.87 (the eyes now sit on a rounder skull) | `view=front&cast=mikan&t=0` |
+| `19-c8-compare.png` | C8: the owner's KEEP round face and target side profile beside the current front, side, 3/4 and back | composed |
 | `turnaround-compare.png` | The owner's v2 reference (left) beside 14 (right). The reference's long tail and back patches are not canon, so they are not modelled | composed from 14 |
 
 **Line (L-3 as revised):** the nominal width is 2.5 px against the OUTPUT height, with a top-up when the render target is smaller than the output. Horizontal ink-run medians are 3 px on `02` and 3 px on `13`; the same count on the first M0 `02` gave 2 px. So the line is heavier, and it no longer thins at 85%. Interior overlap lines (leg over body, haunch, head over neck, tail over rump) come from a separate legs shell, plus a hull pulled toward the eye by a share of the baked local thickness. Thin parts (ears) are never pulled, and the pull is capped at 1.6 cm so far paws never ink solid through leg gaps.
@@ -55,3 +56,12 @@ scale is 1.25.
 3. **Head from behind.** The skull is narrower than the cheeks; the ears are set in about 10% of head width and splayed about 10° more; a crown dome sits between them. It reads as a dome, not a box (`07`, `16` at 180°).
 4. **Profile.** The muzzle is about 1 cm further forward with the nose lifted. The near eye's anchor slides 45° round the skull, so cheek and muzzle lead the eye. The reviewer suggested capping the slide at 30°, but a smaller slide moves the eye forward; raising it gives the cheek-ahead-of-eye result the review asked for. Front-on is unaffected (`18`).
 5. **Hind leg.** The hock is raised about 1 cm and given a heel point. The foot is near vertical, and the paw sits about 1.4 cm forward under the back of the rump.
+
+**C8 pass (owner: the round fat face, a short cat muzzle, a long tail).**
+- **Reverted from the AD anatomy round:** the narrowed cranium, inset and splayed ears, and crown dome (together they made the pear head). The cheeks now sit lower and fuller.
+- **Cap and eye patch:** both are scaled by head size again. The 1.22× head had shrunk the patch over the left eye away; it is now restored.
+- **Muzzle:** a shallow, softly blended bump; the nose sits barely ahead of the face. No crease lines.
+- **Tail (canon change):** a long tapered tail (`tail: 'long'`, 0.37 m real size, radius 2.2 → 1.05 cm) on a new 'mikan' carriage. It rises, curls up gently and sways with lag. The six personality carriages still work on it (`05`, `06`, rendered on Mikan).
+- **Kept from earlier passes:** the C7 body (front legs under the chest, narrow haunches, hind heel) and the per-eye decals (no swap).
+- **Checks:** the walk (8 frames) and the 24-angle orbit are free of artefacts.
+- **Line:** the low-resolution boost is eased (factor 2.2 → 1.0) so the harness lands at about 2.3–2.4 px at 85%.

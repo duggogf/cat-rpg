@@ -61,14 +61,19 @@ export class CombatCamera {
       s.px = ctx.C.x; s.py = ctx.C.y + 0.3; s.pz = ctx.C.z; s.pitch = c.sbPitch; s.dist = c.sbDist; return s;
     }
     const C = ctx.C, T = ctx.T || ctx.enemiesCentroid || C;
-    const P = C.clone().lerp(T, 0.35);
+    // safe frame (central 80% x 75%): if the target rides too high (a High Road / boss wall), lean the
+    // framing point toward it until it sits back inside; relax to the canon 0.35 otherwise
+    this.bias = this.bias ?? 0.35;
+    if (ctx.targetNY != null && ctx.targetNY > 0.5) this.bias = Math.min(0.6, this.bias + dt * 0.6);
+    else if (ctx.targetNY == null || ctx.targetNY < 0.25) this.bias = Math.max(0.35, this.bias - dt * 0.3);
+    const P = C.clone().lerp(T, this.bias);
     const sep = Math.hypot(C.x - T.x, C.z - T.z);
     const W = THREE.MathUtils.clamp(c.k * sep + c.m, c.wMin, c.wMax);
     const aspect = Math.min(16 / 9, ctx.aspect);
     const hf = 2 * Math.atan(Math.tan(c.fov * D2R / 2) * aspect);
     let D = THREE.MathUtils.clamp(W / (2 * Math.tan(hf / 2)), c.dMin, c.dMax);
     if (this.relayHold > t) D = Math.max(D, this.pose.dist);
-    s.px = P.x; s.pz = P.z; s.py = Math.max(C.y, T.y) * 0.5 + 0.35;
+    s.px = P.x; s.pz = P.z; s.py = Math.max(C.y, T.y) * 0.65 + 0.35;
     s.pitch = ctx.highRoad ? c.pitchHigh : c.pitch; s.dist = D;
     // soft lock: re-aim yaw only when needed; free orbit wins for 1 s after input
     const ideal = Math.atan2(C.x - T.x, C.z - T.z) / D2R;   // camera behind C, looking past it at T
@@ -79,6 +84,15 @@ export class CombatCamera {
       const diff = wrap(ideal - s.yaw);
       const rate = need ? c.yawRate : (Math.abs(diff) > 70 ? 40 : 12);   // gentle drift toward the over-shoulder line
       s.yaw += Math.sign(diff) * Math.min(Math.abs(diff), rate * dt);
+    }
+    // never through camera-solid geometry: if a wall hides the controlled cat or the target, turn the
+    // minimum needed (≤ 90°) to a yaw that sees both (free-standing High Road walls in the sandbox lot)
+    if (ctx.occluded && ctx.occluded(s)) {
+      const y0 = s.yaw; let best = null;
+      for (let k = 10; k <= 90 && best == null; k += 10) for (const sg of [1, -1]) { s.yaw = y0 + sg * k; if (!ctx.occluded(s)) { best = y0 + sg * k; break; } }
+      s.yaw = y0;
+      if (best != null) { const d = wrap(best - y0); s.yaw = y0 + Math.sign(d) * Math.min(Math.abs(d), c.yawRate * 1.5 * dt); this.lastUserT = -99; }
+      else s.pitch = c.pitchHigh;
     }
     return s;
   }

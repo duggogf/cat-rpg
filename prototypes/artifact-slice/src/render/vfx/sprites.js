@@ -32,7 +32,7 @@ const G = {
   },
   crack(seed) { const R = Kit.rng(seed * 17 + 5); let s = ''; for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2 + R() * 0.6; let x = 0, y = 0, d = 'M0 0'; for (let k = 0; k < 3; k++) { x += Math.cos(a + (R() - 0.5) * 0.9) * (30 + R() * 30); y += Math.sin(a + (R() - 0.5) * 0.9) * (30 + R() * 30); d += `L${x.toFixed(1)} ${y.toFixed(1)}`; } s += `<path d="${d}" fill="none" stroke="${C.ink}" stroke-width="${7 - i % 3}" stroke-linecap="round" stroke-linejoin="round"/>`; } return s; },
   scratch() { let s = ''; for (let i = 0; i < 3; i++) s += `<path d="M-110 ${-24 + i * 24}Q0 ${-34 + i * 24} 110 ${-20 + i * 24}" fill="none" stroke="${C.cream}" stroke-width="7" stroke-linecap="round" opacity="0.9"/>`; return s; },
-  pawGlyph() { return Kit.ui.paw({ size: 120 }).replace(/<svg[^>]*>/, '<g transform="scale(2.4)">').replace('</svg>', '</g>'); },
+  pawGlyph() { return '<g transform="scale(4.4)">' + Kit.ui.paw({ size: 120 }).replace(/<svg[^>]*>/, '').replace('</svg>', '') + '</g>'; },
   pawDisc() { // Paw-fill feedback: a flat Pad Pink disc with a halftone edge
     let s = `<circle r="70" fill="${C.pad}"/>`; for (let i = 0; i < 28; i++) { const a = i / 28 * Math.PI * 2; s += `<circle cx="${(Math.cos(a) * 84).toFixed(1)}" cy="${(Math.sin(a) * 84).toFixed(1)}" r="7" fill="${C.pad}"/><circle cx="${(Math.cos(a + 0.11) * 98).toFixed(1)}" cy="${(Math.sin(a + 0.11) * 98).toFixed(1)}" r="4" fill="${C.pad}"/>`; } return s + `<circle r="70" fill="none" stroke="${C.ink}" stroke-width="5"/>`;
   },
@@ -49,18 +49,18 @@ function recipes() {
   R.burstPlain = n3((s) => Kit.impactBurst({ r: 160, seed: s + 4, points: 13, inner: 0.5 }));
   R.burstMagenta = n3((s) => Kit.impactBurst({ r: 160, color: C.magenta, seed: s + 7, points: 11 }));
   R.burstGold = n3((s) => Kit.impactBurst({ r: 160, color: C.gold, seed: s + 9, points: 12 }));
-  R.sparkClaw = n3((s) => G.clawSpark(s));
-  R.sparkYowl = n3((s) => G.yowlSpark(s));
-  R.sparkThump = n3((s) => G.thumpSpark(s));
+  R.sparkClaw = n3((s) => `<g transform="scale(2.1)">${G.clawSpark(s)}</g>`);
+  R.sparkYowl = n3((s) => `<g transform="scale(2.2)">${G.yowlSpark(s)}</g>`);
+  R.sparkThump = n3((s) => `<g transform="scale(2.4)">${G.thumpSpark(s)}</g>`);
   // slash arcs, three different paths: low right, high left, full-circle flurry (art bible §10.3)
   R.slashLow = n3((s) => Kit.slashArc({ r: 200, a0: 160 + s * 4, a1: 20 - s * 6, thick: 30 }));
   R.slashHigh = n3((s) => Kit.slashArc({ r: 200, a0: -20 + s * 4, a1: -165 - s * 5, thick: 30 }));
-  R.slashFlurry = n3((s) => Kit.slashArc({ r: 205, a0: -200 + s * 10, a1: 120 + s * 8, thick: 34 }) + Kit.slashArc({ r: 150, a0: 10 - s * 10, a1: 300, thick: 22, color: C.ink, core: C.ink }));
+  R.slashFlurry = n3((s) => Kit.slashArc({ r: 170, a0: 200 + s * 12, a1: -60 + s * 10, thick: 26, count: 1, color: C.ink, core: C.ink }) + Kit.slashArc({ r: 215, a0: 190 + s * 10, a1: -75 + s * 6, thick: 44 }));
   R.puff = n3((s) => Kit.dustCloud({ r: 150, puffs: 5, seed: s, lw: 9 }));
   R.puffSmall = n3((s) => Kit.dustCloud({ r: 150, puffs: 3, seed: s + 5, lw: 10 }));
   R.sparkle = n3((s) => Kit.sparkle({ r: 150 - s * 10, fill: C.staticYellow, lw: 9 }));
   R.sparkleCream = n3((s) => Kit.sparkle({ r: 150 - s * 10, fill: C.cream, lw: 9 }));
-  R.orbit = n3((s) => `<g transform="scale(2.6) rotate(${s * 25})">${Kit.frazzleOrbit({ r: 70 })}</g>`);
+  R.orbit = n3((s) => `<g transform="scale(2.6) rotate(${s * 8 - 8})">${Kit.frazzleOrbit({ r: 70 }).replace(/stroke-width="7"/g, 'stroke-width="5"').replace(/stroke-width="3.5"/g, 'stroke-width="2.4"')}</g>`);
   R.spiral = n3((s) => `<g transform="scale(2.2)">${G.spiral(s)}</g>`);
   R.sweat = [G.sweat(), G.sweat(), G.sweat()].map((x) => `<g transform="scale(2.6)">${x}</g>`);
   R.hiss = n3((s) => `<g transform="scale(2.2)">${G.hiss(s)}</g>`);
@@ -74,6 +74,9 @@ function recipes() {
 }
 
 async function raster(svgContent, size) {
+  // lines at sprite scale: a 0.6 m drawing is ~130 px on screen at the combat framing, so kit strokes
+  // (authored for 1:1 SVG) are thickened to keep the 2-4 px ink line of the house style
+  svgContent = svgContent.replace(/stroke-width="([\d.]+)"/g, (m, v) => `stroke-width="${(+v * 2.1).toFixed(1)}"`).replace(/translate\(7 7\)/g, 'translate(16 16)');
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-256 -256 512 512" width="${size}" height="${size}" overflow="visible">${Kit.defs()}${svgContent}</svg>`;
   const img = new Image();
   img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);

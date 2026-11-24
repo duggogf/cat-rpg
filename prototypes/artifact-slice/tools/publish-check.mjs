@@ -11,7 +11,11 @@ const query = process.argv[2] || '';
 const files = [];
 (function walk(d) { for (const f of fs.readdirSync(d)) { const p = path.join(d, f);
   if (fs.statSync(p).isDirectory()) walk(p); else files.push(path.relative(root, p)); } })(root);
-const publish = files.filter(f => !/^(index|dev|catlab|combat)\.html$/.test(f) && !/^(catlab|combat)\.js$/.test(f)).sort();
+// Stale build output (e.g. a mesh whose source was removed from assets/) is never published:
+// a dist/mesh or dist/tex file goes out only if its source still exists under assets/.
+const assets = path.resolve(root, '../assets');
+const hasSource = f => !/^(mesh|tex|data)\//.test(f) || fs.existsSync(path.join(assets, f));
+const publish = files.filter(f => !/^(index|dev|catlab|combat)\.html$/.test(f) && !/^(catlab|combat)\.js$/.test(f) && hasSource(f)).sort();
 const frag = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const page = '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>' + frag + '</body></html>';
 const types = { '.js': 'text/javascript', '.json': 'application/json', '.webp': 'image/webp', '.png': 'image/png' };

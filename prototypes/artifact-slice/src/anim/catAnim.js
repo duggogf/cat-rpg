@@ -25,6 +25,8 @@ export const CARRIAGES = {
   spring: { bones: [[12, -86], [0, 0], [4, 0], [58, 0], [62, 0], [64, 0]], sway: 9, speed: 2.4, tip: 0.3 },
   // Mikan's pom: a perky stub
   pom: { bones: [[30, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]], sway: 6, speed: 1.6, tip: 0 },
+  // Mikan's long tail (C8): raised from the root, a gentle upward curve, the tip swaying
+  mikan: { bones: [[14, 0], [2, 0], [6, 0], [12, 0], [18, 0], [22, 0]], sway: 7, speed: 0.8, tip: 0.8 },
 };
 
 /** Personality posture (art bible §3.3: ears, head and stance read from behind, in silhouette). Radians.
@@ -37,6 +39,7 @@ export const POSTURE = {
   anchor: { earX: -0.25, earZ: 0.75, head: 0.2, chest: 0.05, crouch: 0.12 },     // Brooder: airplane ears, head low
   comma: { earX: -0.45, earZ: 0.38, head: 0.16, chest: 0.06, crouch: 0.5 },      // Fraidy: ears flat back, half-crouched
   pom: { earX: 0, earZ: 0, head: 0, chest: 0, crouch: 0 },                        // Mikan: the player's personality
+  mikan: { earX: 0, earZ: 0, head: 0, chest: 0, crouch: 0 },
 };
 
 function mulberry(seed) {

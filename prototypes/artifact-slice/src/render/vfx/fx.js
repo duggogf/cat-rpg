@@ -115,10 +115,10 @@ export class WorldFX {
     let mesh = this.pool.pop();
     if (!mesh) { mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), billboardMat(list[0])); mesh.frustumCulled = false; }
     mesh.material.uniforms.map.value = list[0]; mesh.material.uniforms.dissolve.value = 0; mesh.material.uniforms.flatCol.value.set(0, 0, 0, 0);
-    mesh.position.copy(pos); mesh.scale.setScalar(o.size || 0.5); mesh.renderOrder = o.order || (dust ? 1 : 3);
+    mesh.position.copy(pos || (o.follow ? o.follow() : new THREE.Vector3())); mesh.scale.setScalar(o.size || 0.5); mesh.renderOrder = o.order || (dust ? 1 : 3);
     this.scene.add(mesh);
     const it = { mesh, list, name, t: -(o.delay || 0), drawings: o.drawings || 4, size: o.size || 0.5, rot: o.rot || 0, spin: o.spin || 0, vel: o.vel ? o.vel.clone() : null, grow: o.grow || 0,
-      cycle: o.cycle !== false, dust, glyph: !!o.glyph, follow: o.follow || null, flat: o.flat || null, breakAt: o.breakAt ?? 0.6, start: 0 };
+      cycle: o.cycle !== false, dust, glyph: !!o.glyph, follow: o.follow || null, flat: o.flat || null, breakAt: o.breakAt ?? Math.max(0.5, 1 - 2 / (o.drawings || 4)), start: 0 };
     mesh.visible = it.t >= 0;
     mesh.material.uniforms.rot.value = it.rot;
     this.items.push(it);

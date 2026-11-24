@@ -73,7 +73,8 @@ if (strip) {
   };
   const yawL = (q.has('angle') ? num('angle', 0) : VIEW[q.get('view') || 'front34']) * Math.PI / 180;
   const D = num('dist', 9.0); let x = 0; const xs = [];
-  const made = L.map((n, i) => { const o = TOUGHS[n] || { cast: n }; const c = createCatInternal({ ...o, scale: 1.25, seed: o.seed != null ? o.seed + 20 : i + 3 }); return c; });
+  const sil = q.get('sil') === '1'; // flat-black silhouettes (the 3 m read test)
+  const made = L.map((n, i) => { const o = TOUGHS[n] || { cast: n }; const c = createCatInternal({ ...o, scale: 1.25, silhouette: sil, seed: o.seed != null ? o.seed + 20 : i + 3 }); return c; });
   made.forEach((c) => { const w = 0.3 * c.object3D.scale.x / 1.25 + 0.12; x += w; xs.push(x); x += w; });
   made.forEach((c, i) => {
     c.object3D.position.set(xs[i] - x / 2, 0, 0);

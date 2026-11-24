@@ -6,7 +6,7 @@
 //   ?fight=toughs3|captain|daifuku|sandbox|challenger|lose   (encounter; default toughs3)
 //   ?seed=N  ?phase=day|dusk  ?script=bot|median|daifuku|passive (a bot drives the controlled cat; demo/attract)
 //   ?test=1 (deterministic: no real-time pacing; window.__cat drives frames)  ?flash=reduce  ?motion=0..1
-//   ?res=0.85 (render scale)  ?post=0 (paint post off)  ?hud=0  ?brace=toggle
+//   ?res=0.85 (render scale)  ?post=0 (paint post off)  ?hud=0  ?brace=toggle  ?rim=0 (drop the cream rim shell: -1 pass per cat)
 import * as THREE from 'three';
 import { U, CEL, applyPhase, SunShadow } from '../render/env.js';
 import { PHASES, sunDir } from '../render/phases.js';
@@ -67,7 +67,7 @@ let world, shadow, post, enc, snap, prevSnap, fighters = new Map(), fx, scr, cca
 let realT = 0, acc = 0, paused = false, script = null, cmdQueue = [], injectQ = [], pile = null, impact = null, dip = null, midTone = new THREE.Color('#8C88B8');
 const DT = 1 / 60, evLog = [], counts = {};
 let lastTagWindow = null, routedTrail = new Map(), crackedUntil = new Map(), standoffFocus = null, fightStartT = null, endShown = false, lastStats = {};
-let seedCounter = 1, skipDraw = false; const pendingMenu = [];
+let pendingCard = null, seedCounter = 1, skipDraw = false; const pendingMenu = [];
 
 function setPhase(name) {
   const p = applyPhase(name), sd = sunDir(p);
@@ -117,7 +117,7 @@ function applyFeel(feel, at, o = {}) {
   if (feel.lines === 'local_streak' && o.from) scr.add({ kind: 'streak', from: o.from.clone(), to: at.clone(), dur: feel.lines_ms / 1000, seed: seedCounter++ % 3, delay: feel.delay_ms / 1000 });
   else if (feel.lines === 'radial_20' || feel.lines === 'radial_40') scr.add({ kind: 'radial', share: feel.lines === 'radial_20' ? 0.2 : 0.4, at: at.clone(), dur: feel.lines_ms / 1000, seed: seedCounter++ % 3, delay: feel.delay_ms / 1000 });
   else if (feel.lines === 'full_field' && !o.noFull) scr.add({ kind: 'radial', share: 0.62, at: at.clone(), dur: feel.lines_ms / 1000, seed: seedCounter++ % 3, color: Kit.C.ink });
-  if (feel.word) scr.letter({ cls: feel.word.cls, ms: feel.word.ms, tier: feel.tier, hitType: o.hitType, at: at.clone(), seed: seedCounter++, dir: o.dir });
+  if (feel.word) scr.letter({ cls: feel.word.cls, ms: feel.word.ms, tier: feel.tier, hitType: o.hitType, at: at.clone(), seed: seedCounter++, dir: o.dir, text: o.text });
   if (feel.edge_pulse) scr.add({ kind: 'edge', dur: Math.max(2 / 60, feel.edge_pulse.ms / 1000) });
   if (feel.time_dip && (!feel.time_dip.final_rout_only || o.finalRout)) dip = { from: start + hs + impactDur, to: start + hs + impactDur + feel.time_dip.ms / 1000, scale: feel.time_dip.scale };
 }
@@ -194,7 +194,12 @@ function onEvent(ev) {
     case 'TagIn': {
       ccam.blend(COMBAT_CAM.tagBlend); ccam.relayHold = realT + 3;
       const fi = F(ev.to), ftg = F(ev.target);
-      if (fi && ftg) scr.add({ kind: 'tagstreak', from: fi.pos.clone().add(new THREE.Vector3(0, 0.3, 0)), to: ftg.pos.clone().add(new THREE.Vector3(0, 0.35, 0)), dur: 0.36, relay: ev.relay_count });
+      if (fi && ftg) {
+        // the streak reads from the edge of the action: at least 3 m long, back along the leap
+        const to = ftg.pos.clone().add(new THREE.Vector3(0, 0.35, 0)), d = fi.pos.clone().sub(ftg.pos); d.y = 0;
+        const L = Math.max(3, d.length()); if (d.lengthSq() < 1e-4) d.set(0, 0, 1); d.normalize();
+        scr.add({ kind: 'tagstreak', from: to.clone().addScaledVector(d, L).add(new THREE.Vector3(0, 0.4, 0)), to, dur: 0.4, relay: ev.relay_count });
+      }
       break;
     }
     case 'CatRouted': {
@@ -214,14 +219,14 @@ function onEvent(ev) {
         mikan: ev.cats.includes('mikan'), chevrons: Math.max(0, ev.cats.length - (ev.cats.includes('mikan') ? 1 : 0)), panel: Kit.C.gold,
         bolter: t && t.side === 'enemy' && (ent(ev.target)?.rank !== 'boss') ? { ...Kit.CAST.brooder } : null, centerW: t ? t.pos.clone() : new THREE.Vector3() };
       hud.showChrome(false);
-      applyFeel(ev.feel, pile.centerW.clone().add(new THREE.Vector3(0, 0.4, 0)), { noFull: true });
+      applyFeel(ev.feel, pile.centerW.clone().add(new THREE.Vector3(0, 0.4, 0)), { noFull: true, text: 'BAP-BAP-BAP!' });
       break;
     }
     case 'PileOnBeat': if (pile) { pile.beat = ev.beat; pile.beatT = 0; pile.beatDx = ((ev.beat * 37) % 7 - 3) / 6; if (ev.feel?.shake) ccam.addShake(ev.feel.shake, realT, [0, 1]); } break;
     case 'PileOnEnd': {
       if (pile) { pile.phase = 'out'; pile.outT = 0; pile.screen = project(pile.centerW.clone().add(new THREE.Vector3(0, 0.35, 0))); }
       const at = pile ? pile.centerW.clone().add(new THREE.Vector3(0, 0.4, 0)) : new THREE.Vector3();
-      applyFeel(ev.feel, at, { noFull: true, finalRout: snap.mode === 'ended' || snap.entities.filter((e) => e.side === 'enemy' && !e.routed && e.present).length === 0, hitType: 'thump' });
+      applyFeel(ev.feel, at, { noFull: true, finalRout: snap.mode === 'ended' || snap.entities.filter((e) => e.side === 'enemy' && !e.routed && e.present).length === 0, hitType: 'thump', text: 'KA-BLAM!' });
       break;
     }
     case 'PhaseBreak': {
@@ -229,16 +234,15 @@ function onEvent(ev) {
       f.impulse('take', tw, { dur: 0.6 });
       fx.dust('ring plus crack decal', f.pos); fx.spawn('burstGold', f.head.clone(), { size: 1.6, drawings: 5, cycle: false });
       applyFeel(ev.feel, f.head.clone(), { hitType: 'thump', dir: [0, 1] });
-      hud.card('PHASE BREAK', '', 1400, realT, 'gold');
+      hud.card('PHASE BREAK', '', 1400, realT, 'gold', 0.78);
       break;
     }
-    case 'BossFlee': hud.card('DAIFUKU BOLTS FOR THE DEN', '', 2400, realT, 'sage'); break;
     case 'GuestEntered': case 'AllyYowl': { const f = F(ev.cat); if (f) fx.spawn('sparkleCream', f.head.clone(), { size: 0.4, drawings: 6 }); break; }
     case 'EncounterEnded': {
       endShown = true;
       const t = { win: ['ROUTED THEM!', ' The lot is ours'], loss: ['WIPED OUT', ' Back home by nightfall'], rival_fled: ['DAIFUKU BOLTS!', ' Phase 1 cleared'], player_fled: ['SCRAM!', ''] }[ev.outcome] || ['FIGHT OVER', ''];
       setTimeout(() => {}, 0);
-      hud.card(t[0], t[1], 999999, realT + 0.9, ev.outcome === 'loss' ? 'ink' : 'gold');
+      pendingCard = { at: realT + 1.1, text: t[0], sub: t[1], clowder: ev.outcome === 'loss' ? 'ink' : 'gold' };
       break;
     }
     default: break;
@@ -299,6 +303,23 @@ function present(dt, alpha, menu = []) {
     f.update(lerpEnt(e, alpha), frozen ? 0 : dt * (s.slow_blink ? 0.05 : 1), realT, tw, dt);
     // routed bolt: a three-puff trail of shrinking clouds
     if (e.anim === 'routed' && routedTrail.has(e.id) && realT - routedTrail.get(e.id) > 0.12) { routedTrail.set(e.id, realT); fx.spawn('puffSmall', f.pos.clone().add(new THREE.Vector3(0, 0.12, 0)), { size: 0.3, drawings: 6 }); }
+    // Frazzled: spiral eyes (two spiral glyphs over the face when it turns toward the camera)
+    if (e.frazzled_s > 0 && f.root.visible && !skipDraw) {
+      const toCam = new THREE.Vector3(cam.position.x - f.pos.x, 0, cam.position.z - f.pos.z).normalize();
+      const facing = e.facing[0] * toCam.x + e.facing[1] * toCam.z;
+      if (facing > 0.35 && (!f.spiralT || realT - f.spiralT > 2 / 30 - 1e-6)) {
+        f.spiralT = realT;
+        const right = new THREE.Vector3().setFromMatrixColumn(cam.matrixWorld, 0);
+        for (const sg of [-1, 1]) fx.spawn('spiral', f.head.clone().add(new THREE.Vector3(e.facing[0] * 0.14 * f.scaleK, -0.11 * f.scaleK, e.facing[1] * 0.14 * f.scaleK)).addScaledVector(right, sg * 0.075 * f.scaleK), { size: 0.12 * f.scaleK, drawings: 1, rot: (Math.floor(realT * 15) % 4) * 1.57 * sg, breakAt: 9, order: 4 });
+      }
+    }
+    // Fired Up (anger or a status): steam puffs rising off the head, on twos
+    const fired = (e.status && e.status.kind === 'fired_up') || (e.anger_fired_up && e.anger_fired_up.active);
+    if (fired && f.root.visible && (!f.steamT || realT - f.steamT > 0.45)) {
+      f.steamT = realT; const sg = (Math.floor(realT / 0.45) % 2) ? 1 : -1;
+      const right = new THREE.Vector3().setFromMatrixColumn(cam.matrixWorld, 0);
+      fx.spawn('puffSmall', f.head.clone().addScaledVector(right, sg * 0.22 * f.scaleK).add(new THREE.Vector3(0, 0.08, 0)), { size: 0.16 * f.scaleK, drawings: 8, vel: new THREE.Vector3(0, 0.5, 0), grow: 0.3, order: 4 });
+    }
     if (e.controlled && f.root.visible) f.cat.lookAt(s.lock && F(s.lock) ? F(s.lock).head : null);
   }
   // tag window opening: a bell-gold spark ring on the controlled cat
@@ -313,7 +334,7 @@ function present(dt, alpha, menu = []) {
   const standoffK = s.mode === 'standoff' ? Math.min(1, s.t / 3) : 0;
   ccam.update(dt, realT, { C: C ? C.pos.clone() : new THREE.Vector3(), T: T ? T.pos.clone() : null, enemiesCentroid: cen, aspect: cam.aspect, slowBlink: s.slow_blink,
     highRoad: C && T && Math.abs(C.pos.y - T.pos.y) > 0.6, mode: pile && pile.phase === 'main' ? 'pileon' : s.mode, pileCenter: pile ? pile.centerW : null,
-    standoffFocus, standoffK, offFrame, globalStop });
+    standoffFocus, standoffK, offFrame, globalStop, targetNY: T ? project(T.head).ny : null, occluded: C ? (pose) => occludedAt(pose, [C.head, T ? T.head : null]) : null });
   // impact frame state
   let impactMode = null;
   if (impact) {
@@ -356,10 +377,24 @@ function present(dt, alpha, menu = []) {
   if (skipDraw) pendingMenu.push(...menu);
   else if (opt.hud) {
     hud.update({ s, t: realT, project, fighters, menuEvents: pendingMenu.splice(0).concat(menu), send: (c) => cmdQueue.push(c) });
+    if (pendingCard && realT >= pendingCard.at) { hud.card(pendingCard.text, pendingCard.sub, 1e6, realT, pendingCard.clowder); pendingCard = null; }
     hud.tickCard(realT);
   }
   renderer.domElement.style.filter = s.slow_blink ? 'saturate(0.7) brightness(0.9)' : '';
   if (!skipDraw) draw(impactMode, s);
+}
+
+/** Does camera-solid geometry hide any of `pts` from the camera at `pose`? */
+const ray = new THREE.Ray(), hitP = new THREE.Vector3(), camP = new THREE.Vector3();
+function occludedAt(pose, pts) {
+  const y = pose.yaw * Math.PI / 180, pi = pose.pitch * Math.PI / 180;
+  camP.set(pose.px + Math.sin(y) * Math.cos(pi) * pose.dist, pose.py + Math.sin(pi) * pose.dist, pose.pz + Math.cos(y) * Math.cos(pi) * pose.dist);
+  for (const p of pts) {
+    if (!p) continue;
+    const d = p.clone().sub(camP), L = d.length(); ray.set(camP, d.divideScalar(L));
+    for (const b of world.colliders) { if (b.soft || b.max.y > 4) continue; if (ray.intersectBox(b, hitP) && hitP.distanceTo(camP) < L - 0.15) return true; }
+  }
+  return false;
 }
 
 /* ---------------------------------------------------------------- render */
@@ -408,10 +443,11 @@ async function boot() {
   envScene.add(world.env, world.backdrop); lateScene.add(world.late);
   shadow = new SunShadow(2048, 21); post = new PaintPost(tex.grain); U.grainMap.value = tex.grain;
   keyLight = new THREE.DirectionalLight('#ffffff', 2.5); fillLight = new THREE.AmbientLight('#6E6AA8', 0.8); lateScene.add(keyLight, fillLight);
-  for (const e of snap.entities) { const f = new Fighter(e); fighters.set(e.id, f); fGroup.add(f.root); }
+  for (const e of snap.entities) { const f = new Fighter(e, { rim: Q.get('rim') !== '0' }); fighters.set(e.id, f); fGroup.add(f.root); }
   fx = new WorldFX(spr, fxScene, decalScene);
   scr = new ScreenFX(app);
   hud = new CombatHUD(app, DATA); if (!opt.hud) hud.el.style.display = 'none';
+  try { await Promise.all(["400 64px 'Dela Gothic One'", "800 32px 'M PLUS Rounded 1c'", "700 32px 'M PLUS Rounded 1c'"].map((f) => document.fonts.load(f))); } catch (e) { /* fonts optional */ }
   hud.setup(snap);
   ccam = new CombatCamera(cam);
   input = new CombatInput(renderer.domElement, { braceToggle: Q.get('brace') === 'toggle' });
@@ -426,16 +462,22 @@ async function boot() {
     state: () => ({ fight: opt.fight, seed: opt.seed, tick: enc.tick, realT: +realT.toFixed(4), mode: snap.mode, outcome: snap.outcome, slow_blink: snap.slow_blink, controlled: snap.controlled,
       counts: { ...counts }, pile: !!pile, impact: !!impact, camera: cam.position.toArray().map((v) => +v.toFixed(3)), yaw: +ccam.pose.yaw.toFixed(2), stats: { ...lastStats } }),
     hash: () => enc.hash(),
+    debug: () => ({ screen: scr.fx.map((f) => ({ kind: f.kind, t: +f.t.toFixed(3), dur: f.dur, from: f.from && project(f.from), to: f.to && project(f.to) })), word: scr.word && scr.word.text, world: fx.items.length }),
     snapshot: () => snap,
     /** Advance n rendered frames of 1/60 s (deterministic), drawing only the last unless every = true. */
     frames: (n = 1, every = false) => { for (let i = 0; i < n; i++) { skipDraw = !every && i < n - 1; frame(DT); } skipDraw = false; return window.__cat.state(); },
     /** Run until an event of `type` (count index `nth`, 0-based over the whole run) has been emitted, or max frames. */
-    until: (type, max = 6000, nth = 0) => { skipDraw = true; for (let i = 0; i < max; i++) { if ((counts[type] || 0) > nth) { skipDraw = false; draw(null, snap); return { ok: true, ...window.__cat.state() }; } if (snap.mode === 'ended' && i > 0 && prevSnap === snap) break; frame(DT); } skipDraw = false; return { ok: (counts[type] || 0) > nth, ...window.__cat.state() }; },
+    until: (type, max = 6000, nth = 0) => { skipDraw = true; for (let i = 0; i < max; i++) { if ((counts[type] || 0) > nth) { skipDraw = false; present(0, 1); return { ok: true, ...window.__cat.state() }; } if (snap.mode === 'ended' && i > 0 && prevSnap === snap) break; frame(DT); } skipDraw = false; return { ok: (counts[type] || 0) > nth, ...window.__cat.state() }; },
     inject: (inp) => { injectQ.push(inp); },
     scriptOn: (on) => { if (!on) { window.__cat._script = script; script = null; } else if (window.__cat._script) script = window.__cat._script; },
     menu: (m) => { input.menu.push(m); },
     events: (type) => evLog.filter((e) => !type || e.type === type).map((e) => ({ type: e.type, tick: e.tick, t: e.t, tier: e.feel ? e.feel.tier : null, impact: e.feel ? e.feel.impact : null })),
   };
+  if (Q.get('sheet') === '1') {
+    const d = document.createElement('div'); d.style.cssText = 'position:fixed;inset:0;background:#B9AC93;display:flex;flex-wrap:wrap;gap:6px;padding:8px;z-index:9;overflow:auto';
+    for (const [k, list] of Object.entries(spr)) for (const t of list) { const c = t.image; c.style.cssText = 'width:150px;height:150px;background:#C9BFA8'; c.title = k; d.appendChild(c); }
+    document.body.appendChild(d);
+  }
   if (opt.test) {
     frame(DT); frame(DT);
     window.__ready = true;

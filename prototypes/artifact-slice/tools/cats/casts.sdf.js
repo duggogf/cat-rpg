@@ -44,7 +44,7 @@ export function buildCast(o) {
   const headC = [0, spineY + 0.118 * hs + 0.006, zF + 0.074 * hs]; // chestnut centre
   pos.head = [0, headC[1] - 0.06 * hs, headC[2] - 0.025 * hs];   // pivot low and behind: nods read well
   const rump = [0, spineY + 0.014, -0.112 * ln * (0.85 + 0.15 * bx)];
-  const tailLen = { pom: 0.06, stub: 0.1, whip: 0.34, ringed: 0.31, plume: 0.33 }[o.tail || 'whip'];
+  const tailLen = { pom: 0.06, stub: 0.1, whip: 0.34, ringed: 0.31, plume: 0.33, long: 0.37 }[o.tail || 'whip'];
   const seg = tailLen / 6;
   for (let i = 0; i < 6; i++) pos['tail' + (i + 1)] = [0, rump[1], rump[2] + 0.02 - i * seg];
   pos.fUL = [xF, legTop + 0.012, zFL]; pos.fLL = [xF, knee, zFL];
@@ -60,9 +60,9 @@ export function buildCast(o) {
     huge: { hw: 0.056, h: 0.112, tip: 0.008, th: 0.02 },
   }[o.ears || 'standard'];
   const ears = [1, -1].map((s) => {
-    const base = [headC[0] + s * 0.041 * hs, headC[1] + 0.054 * hs, headC[2] - 0.016 * hs];
+    const base = [headC[0] + s * 0.057 * hs, headC[1] + 0.046 * hs, headC[2] - 0.016 * hs];
     pos[s > 0 ? 'earL' : 'earR'] = base;
-    const up = v3.norm([s * 0.78, 1, -0.16]);
+    const up = v3.norm([s * 0.42, 1, -0.16]);
     const F = frame(base, up, [s * 0.62, 0, 1]);
     const E = earShape, sc = hs, folded = o.fold === (s > 0 ? 'L' : 'R');
     return { t: 'ear', F, A: [-E.hw * sc, -0.01], B: [E.hw * sc, -0.01], C: [s * E.tip * sc, E.h * sc * (folded ? 0.6 : 1)], folded,
@@ -108,15 +108,13 @@ export function buildCast(o) {
   const head = [];
   const H = (x) => head.push(x);
   const hc = headC;
-  H({ t: 'ell', c: hc, r: [0.086 * hs, 0.082 * hs, 0.09 * hs], bone: 'head', k: 0 }); // round cranium; narrower than the cheeks (a dome from behind)
+  H({ t: 'ell', c: [hc[0], hc[1] + 0.003 * hs, hc[2]], r: [0.093 * hs, 0.086 * hs, 0.088 * hs], bone: 'head', k: 0 }); // round cranium: the round, fat-cheeked face (owner C8)
   const jw = o.jowls || 1, cheekK = (o.build === 'round' || o.build === 'huge') ? 1.08 : 1;
-  for (const s of [1, -1]) H({ t: 'ell', c: [hc[0] + s * 0.052 * hs * (1 + (jw - 1) * 0.5), hc[1] - (0.019 + (jw - 1) * 0.03) * hs, hc[2] + 0.02 * hs], r: [0.068 * hs * cheekK * jw, 0.052 * hs * (1 + (jw - 1) * 0.6), 0.064 * hs], bone: 'head', k: 0.034 });
+  for (const s of [1, -1]) H({ t: 'ell', c: [hc[0] + s * 0.05 * hs * (1 + (jw - 1) * 0.5), hc[1] - (0.027 + (jw - 1) * 0.03) * hs, hc[2] + 0.02 * hs], r: [0.064 * hs * cheekK * jw, 0.054 * hs * (1 + (jw - 1) * 0.6), 0.064 * hs], bone: 'head', k: 0.034 }); // full, low cheeks: the round fat face
   // lifted muzzle: a small stop under the brow (low blend), the nose tip the most forward point, chin tucked back
-  H({ t: 'ell', c: [hc[0], hc[1] - 0.038 * hs, hc[2] + 0.074 * hs], r: [0.037 * hs, 0.026 * hs, 0.034 * hs], bone: 'head', k: 0.016 });
-  H({ t: 'ell', c: [hc[0], hc[1] - 0.025 * hs, hc[2] + 0.107 * hs], r: [0.014 * hs, 0.01 * hs, 0.011 * hs], bone: 'head', k: 0.012 }); // small upturned nose tip
-  H({ t: 'ell', c: [hc[0], hc[1] - 0.058 * hs, hc[2] + 0.063 * hs], r: [0.02 * hs, 0.012 * hs, 0.016 * hs], bone: 'head', k: 0.012 });
-  // crown dome between the ears (from behind: a soft dome, not a box with ear tabs)
-  H({ t: 'ell', c: [hc[0], hc[1] + 0.05 * hs, hc[2] - 0.01 * hs], r: [0.05 * hs, 0.044 * hs, 0.064 * hs], bone: 'head', k: 0.03 });
+  H({ t: 'ell', c: [hc[0], hc[1] - 0.038 * hs, hc[2] + 0.056 * hs], r: [0.038 * hs, 0.026 * hs, 0.03 * hs], bone: 'head', k: 0.03 }); // soft: no crease line
+  H({ t: 'ell', c: [hc[0], hc[1] - 0.027 * hs, hc[2] + 0.08 * hs], r: [0.013 * hs, 0.009 * hs, 0.008 * hs], bone: 'head', k: 0.018 }); // small nose, barely ahead of the face
+  H({ t: 'ell', c: [hc[0], hc[1] - 0.058 * hs, hc[2] + 0.046 * hs], r: [0.018 * hs, 0.011 * hs, 0.014 * hs], bone: 'head', k: 0.014 }); // small chin
   for (const e of ears) H(e);
   for (const e of ears) {
     const bone = e.bone, F = e.F;
@@ -151,7 +149,7 @@ export function buildCast(o) {
     }
     T({ t: 'sph', c: v3.add(c, [0, 0, -0.022]), r: 0.03, bone: 'tail1', k: 0.014 });
   } else {
-    const rad = { whip: [0.017, 0.012], ringed: [0.024, 0.02], plume: [0.024, 0.022], stub: [0.026, 0.022] }[o.tail];
+    const rad = { whip: [0.017, 0.012], ringed: [0.024, 0.02], plume: [0.024, 0.022], stub: [0.026, 0.022], long: [0.022, 0.0105] }[o.tail];
     const pts = [[0, rump[1], rump[2] + 0.03], ...[1, 2, 3, 4, 5].map((i) => tp(i)), v3.add(tp(5), [0, 0, -seg])];
     for (let i = 0; i < 6; i++) {
       const t0 = i / 6, t1 = (i + 1) / 6;
@@ -199,7 +197,7 @@ export function buildCast(o) {
 
 /** Geometry of every named cast (look lives in src/render/cats/casts.js). */
 export const CASTS = {
-  mikan: { build: 'standard', tail: 'pom', ears: 'standard', collar: true },
+  mikan: { build: 'standard', tail: 'long', ears: 'standard', collar: true }, // canon change C8: long tail (was the pom bobtail)
   // Wall Sitter tough (M0): Round build (Bruiser-weighted), thick ringed tail, small round ears.
   wallSitter: { build: 'round', tail: 'ringed', ears: 'round' },
   // The old wall cat (art bible §5.2: lean grey elder on the Long mesh, the one notched ear; GDD: heavy jowls)

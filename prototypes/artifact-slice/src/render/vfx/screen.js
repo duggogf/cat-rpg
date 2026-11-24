@@ -35,6 +35,30 @@ function streak(x, y, ang, seed, len = 170, color = C.ink) {
   return Kit.speedLines({ mode: 'parallel', x: 0, y: -45, w: len, h: 90, count: 9, seed, color }).replace('<g class="k-vfx" transform="translate(0 -45) rotate(0)">', `<g transform="translate(${r1(x)} ${r1(y)}) rotate(${r1(ang)}) translate(${-len - 30} -45)">`);
 }
 
+/** Measured advance of a glyph in the lettering face (Dela Gothic One stands in for hand lettering). */
+let measureCtx = null;
+function advance(ch, fs) {
+  if (!measureCtx) measureCtx = document.createElement('canvas').getContext('2d');
+  measureCtx.font = `400 ${fs}px 'Dela Gothic One', 'M PLUS Rounded 1c', sans-serif`;
+  return measureCtx.measureText(ch).width;
+}
+/**
+ * Hand-lettered sound word (art bible §10.7): Cream fill, Ink outline, an offset second print in the damage
+ * colour, letters growing ~1.4x along the hit, irregular baseline, no letter rotated > 20° off the baseline,
+ * spacing from measured advances so letters overlap a little like a shout but never change reading order.
+ */
+function lettering({ text, size, rot, color, seed, grow = 1.4 }) {
+  const R = rng(seed * 37 + 11), n = text.length, glyphs = []; let x = 0;
+  for (let i = 0; i < n; i++) {
+    const k = 1 + (grow - 1) * (n > 1 ? i / (n - 1) : 0), fs = size * k / ((1 + grow) / 2);
+    glyphs.push({ ch: text[i], x, fs, dy: (R() - 0.5) * size * 0.12, rot: (R() - 0.5) * 12 });
+    x += advance(text[i], fs) * 0.9;
+  }
+  const off = size * 0.06, sw = Math.max(4, size * 0.07);
+  const layer = (fill, stroke, w, dx, dy) => glyphs.map((g) => `<text x="${r1(g.x + dx)}" y="${r1(g.dy + dy)}" font-size="${r1(g.fs)}" transform="rotate(${r1(g.rot)} ${r1(g.x + dx + g.fs * 0.35)} ${r1(g.dy + dy - g.fs * 0.35)})" fill="${fill}" stroke="${stroke}" stroke-width="${r1(w)}" stroke-linejoin="round" paint-order="stroke">${g.ch}</text>`).join('');
+  return { w: x, svg: `<g transform="rotate(${rot}) translate(${r1(-x / 2)} 0)" font-family="'Dela Gothic One','M PLUS Rounded 1c',sans-serif" filter="url(#k-dry)">${layer(color, C.ink, sw * 0.8, off, off)}${layer(C.cream, C.ink, sw, 0, 0)}</g>` };
+}
+
 export class ScreenFX {
   constructor(parent) {
     this.el = document.createElement('div');
@@ -53,7 +77,7 @@ export class ScreenFX {
   add(o) { this.fx.push({ t: -(o.delay || 0), ...o }); }
 
   /** The one lettered word (DR-49). o: {cls, ms, tier, hitType, at (world V3), seed} */
-  letter(o) { this.word = { t: 0, ...o, text: (WORDS[o.cls] || WORDS.scratch)[(o.seed || 0) % (WORDS[o.cls] || WORDS.scratch).length] }; }
+  letter(o) { const L = WORDS[o.cls] || WORDS.scratch; this.word = { t: 0, ...o, text: o.text || L[(o.seed || 0) % L.length] }; }
 
   /** Per frame. ctx: {w, h, project(v3)->{x,y,on}, controlledBox {x,y,w,h}, hudRects[], pile, offscreen[], tw} */
   update(dt, ctx) {
@@ -144,8 +168,14 @@ export class ScreenFX {
   drawWord(ctx, di) {
     const W = this.word, k = W.t / (W.ms / 1000);
     const size = (W.tier >= 5 ? 0.3 : 0.12) * ctx.h * 0.78;   // letter height ~= font-size x 0.78 for Dela Gothic caps
-    const est = W.text.length * size * 0.82, ht = size * 1.25;
+    if (!W.svg) {
+      W.svg = lettering({ text: W.text, size, rot: 0, color: WORD_COL[W.hitType] || C.ink, seed: W.seed || 1 });
+      if (W.svg.w > ctx.w * 0.86) { W.size = size * ctx.w * 0.86 / W.svg.w; W.svg = lettering({ text: W.text, size: W.size, rot: 0, color: WORD_COL[W.hitType] || C.ink, seed: W.seed || 1 }); }
+    }
+    const sizeU = W.size || size;
+    const est = W.svg.w * 1.05, ht = sizeU * 1.3;
     const anchor = W.screen || ctx.project(W.at);
+    if (!W.place && ctx.pile) { W.place = { x: Math.max(est / 2 + 30, ctx.w * 0.06 + est / 2), y: ctx.h * 0.17 }; W.rot = -9; }
     if (!W.place) {
       const cb = ctx.controlledBox, hud = ctx.hudRects || [];
       const cands = [[0.25, -1.1], [-0.25, -1.1], [0.6, -0.6], [-0.6, -0.6], [0, -1.5], [0.8, 0.1], [-0.8, 0.1]];
@@ -162,11 +192,11 @@ export class ScreenFX {
     }
     const sc = di === Math.floor(W.firstDi ?? (W.firstDi = di)) ? 1.2 : 1;
     const jit = di % 2 ? 1 : -1;
-    const sfx = Kit.sfx({ text: W.text, x: 0, y: 0, size, rot: W.rot + jit * 0.8, color: WORD_COL[W.hitType] || C.ink, seed: W.seed || 1 });
-    const base = `translate(${r1(W.place.x + jit * 1.5)} ${r1(W.place.y + size * 0.35)}) scale(${sc})`;
+    const sfx = `<g transform="rotate(${r1(W.rot + jit * 0.8)})">${W.svg.svg}</g>`;
+    const base = `translate(${r1(W.place.x + jit * 1.5)} ${r1(W.place.y + sizeU * 0.35)}) scale(${sc})`;
     if (k < 0.82) return `<g transform="${base}">${sfx}</g>`;
     // break into three wedges flying apart
-    const u = (k - 0.82) / 0.18, d = u * size * 0.8, R = est;
+    const u = (k - 0.82) / 0.18, d = u * sizeU * 0.8, R = est;
     const wedges = [[`M0 0L${-R} ${-R}L${R} ${-R}Z`, 0, -d], [`M0 0L${R} ${-R}L${R} ${R}L0 ${R}Z`, d, d * 0.4], [`M0 0L0 ${R}L${-R} ${R}L${-R} ${-R}Z`, -d, d * 0.4]];
     return wedges.map(([path, dx, dy], i) => `<clipPath id="sxw${i}"><path d="${path}"/></clipPath><g transform="${base} translate(${r1(dx)} ${r1(dy)}) rotate(${(i - 1) * u * 14})"><g clip-path="url(#sxw${i})">${sfx}</g></g>`).join('');
   }
@@ -192,10 +222,10 @@ export class ScreenFX {
       const R = rng(1000 + Math.floor(di / 2));
       const coats = P.coats.length ? P.coats : ['#FFF8EC'];
       for (let i = 0; i < 7; i++) {
-        const a = -Math.PI * 0.95 + (i / 6) * Math.PI * 1.9 + (R() - 0.5) * 0.3, len = R0 * (0.35 + R() * 0.25);
+        const a = -Math.PI * 0.95 + (i / 6) * Math.PI * 1.9 + (R() - 0.5) * 0.3, len = R0 * (0.5 + R() * 0.3);
         if (R() < 0.3) continue;
         const bx = cx + Math.cos(a) * R0 * 0.82, by = cy + Math.sin(a) * R0 * 0.62, ex = bx + Math.cos(a) * len, ey = by + Math.sin(a) * len;
-        const coat = coats[i % coats.length], wpx = R0 * 0.1;
+        const coat = coats[i % coats.length], wpx = R0 * 0.13;
         const kind = i % 3;
         if (kind === 2) { // a tail
           const d = Kit.tube([[bx, by], [bx + Math.cos(a + 0.5) * len * 0.5, by + Math.sin(a + 0.5) * len * 0.5], [ex, ey]], (t) => wpx * 0.8 * (1 - t * 0.3), { per: 6 });
@@ -211,7 +241,7 @@ export class ScreenFX {
       for (let i = 0; i < 3; i++) { const a = R() * Math.PI * 2, d = R0 * (1.0 + R() * 0.4); s += `<g transform="translate(${r1(cx + Math.cos(a) * d)} ${r1(cy + Math.sin(a) * d * 0.8)}) rotate(${r1(R() * 60 - 30)})">${Kit.ui.paw({ size: 54 }).replace(/^<svg/, '<svg x="-27" y="-27"')}</g>`; }
       // Mikan's head and the Posse chevrons bob on top
       const bob = (di % 2) * 6;
-      if (P.mikan) s += `<g transform="translate(${r1(cx)} ${r1(cy - R0 * 0.62 - bob)}) scale(${r1(R0 / 260)})">${Kit.cat({ ...Kit.CAST.mikan, pose: 'front-sit', x: 0, y: 160, scale: 1.6, expr: 'angry', shadow: false, outline: 'gold' })}</g>`;
+      if (P.mikan) { const k = R0 / 190; s += `<g transform="translate(${r1(cx)} ${r1(cy - R0 * 0.25 - 160 * k - bob)}) scale(${r1(k)})">${Kit.cat({ ...Kit.CAST.mikan, pose: 'front-sit', x: 0, y: 160, scale: 1.6, expr: 'angry', shadow: false, outline: 'gold' })}</g>`; }
       for (let i = 0; i < P.chevrons; i++) { const x = cx + (i - (P.chevrons - 1) / 2) * R0 * 0.42, y = cy - R0 * 0.55 + ((i + di) % 2) * 6; s += `<path d="M${r1(x - 14)} ${r1(y - 8)}l14 12l14 -12" fill="none" stroke="${C.ink}" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M${r1(x - 14)} ${r1(y - 8)}l14 12l14 -12" fill="none" stroke="${C.gold}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>`; }
       s += `<g transform="translate(${r1(cx)} ${r1(cy)}) scale(${r1(sc)})">${Kit.dustCloud({ x: 0, y: 0, r: R0, puffs: 9, seed: 1 + boil, lw: 6 })}`;
       // curly ink strokes on the cloud

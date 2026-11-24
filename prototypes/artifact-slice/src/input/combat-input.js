@@ -99,7 +99,7 @@ export class CombatInput {
 
   /** Camera orbit delta for this frame (degrees), from mouse and right stick. */
   takeLook(dt) {
-    const d = [this.mouse.dx * 0.22 + this.padLook[0] * 150 * dt, this.mouse.dy * 0.15 + this.padLook[1] * 90 * dt];
+    const d = [-this.mouse.dx * 0.22 - this.padLook[0] * 150 * dt, this.mouse.dy * 0.15 + this.padLook[1] * 90 * dt];
     this.mouse.dx = this.mouse.dy = 0;
     return d;
   }

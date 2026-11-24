@@ -24,7 +24,7 @@ const EAR_INNER = /* glsl */`
 
 export const CASTS = {
   mikan: {
-    entry: 'mikan', carry: 'pom',
+    entry: 'mikan', carry: 'mikan',
     colors: { white: '#FFF8EC', ginger: '#F28C28', collar: '#D02A45', gold: '#F2B01E', ear: PINK_EAR, ink: INK, cream: '#FFF6E3' },
     eye: '#FFB52E', expr: 'neutral', lid: '#FFF8EC', lidR: '#FFF8EC', lidL: '#F28C28',
     ear: { hw: 0.047, h: 0.092, tip: 0.007 },
@@ -43,12 +43,14 @@ export const CASTS = {
       if (onEar(vAux, uEar.y) > 0.5) return earInner(vAux, side, uEar.x, uEar.y, uEar.z) > 0.5 ? c_ear : c_ginger;
       // the ginger cap: low at the back and sides, rising to the brow at the front, wavy edge,
       // a small white blaze between the eyes; plus the patch over the LEFT eye (+X)
-      float front = smoothstep(0.01, 0.075, h.z);
+      // all in head-scale units (uHS), so the marks keep their proportions on the bigger head
+      float hs = uHS;
+      float front = smoothstep(0.01 * hs, 0.075 * hs, h.z);
       float ang = atan(h.x, -h.z);
-      float edge = mix(-0.018, 0.026, front) + 0.0045 * sin(ang * 6.0) * (1.0 - front);
-      edge += 0.03 * front * max(0.0, 1.0 - abs(h.x) / 0.016);
+      float edge = (mix(-0.018, 0.026, front) + 0.0045 * sin(ang * 6.0) * (1.0 - front)) * hs;
+      edge += 0.03 * hs * front * max(0.0, 1.0 - abs(h.x) / (0.016 * hs));
       if (h.y > edge) return c_ginger;
-      vec3 q = (h - vec3(0.047, 0.004, 0.06)) / vec3(0.044, 0.04, 0.06);
+      vec3 q = (h - vec3(0.047, 0.004, 0.06) * hs) / (vec3(0.044, 0.04, 0.06) * hs);
       if (dot(q, q) < 1.0 && h.z > 0.0) return c_ginger;
       return c_white;
     }
