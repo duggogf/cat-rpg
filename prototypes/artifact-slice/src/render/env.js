@@ -202,7 +202,7 @@ void main() {
   gl_FragColor = vec4(hazeIt(c, vP), 1.0);
 }`;
 const BB_DEPTH_FRAG = /* glsl */`
-uniform sampler2D map; uniform float alphaCut, holes, time, wind; varying vec2 vUv; varying vec3 vP; varying vec2 vV; varying float vNear;
+uniform sampler2D map; uniform float alphaCut, holes, time, wind; uniform vec3 sunDir; varying vec2 vUv; varying vec3 vP; varying vec2 vV; varying float vNear;
 float h21(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float vn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f); return mix(mix(h21(i), h21(i + vec2(1, 0)), f.x), mix(h21(i + vec2(0, 1)), h21(i + vec2(1, 1)), f.x), f.y); }
 void main() {
@@ -210,7 +210,8 @@ void main() {
   if (holes > 0.0) {
     vec2 q = vV * 2.6 + vec2(sin(time * 0.9), cos(time * 0.7)) * 0.3 * wind;
     float n = vn(q) * 0.65 + vn(q * 2.3 + 7.1) * 0.35;
-    if (n > 1.0 - holes) discard;
+    // leaf-light only under a high sun; a low Dusk sun throws long solid shadows (no camouflage on walls)
+    if (n > 1.0 - holes * smoothstep(0.3, 0.7, sunDir.y)) discard;
   }
   gl_FragColor = vec4(1.0);
 }`;
@@ -233,7 +234,7 @@ export function billboards(items, map, o = {}) {
   g.setAttribute('iClump', new THREE.InstancedBufferAttribute(K, 4));
   g.instanceCount = n;
   g.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 1e5);
-  const common = { time: U.time, wind: U.wind, sway: { value: o.sway ?? 1 }, holes: { value: o.holes || 0 }, cylindrical: { value: o.cylindrical ? 1 : 0 }, cols: { value: o.cols || 4 }, rows: { value: o.rows || 2 }, map: { value: map }, alphaCut: { value: o.alphaCut || 0.5 } };
+  const common = { sunDir: U.sunDir, time: U.time, wind: U.wind, sway: { value: o.sway ?? 1 }, holes: { value: o.holes || 0 }, cylindrical: { value: o.cylindrical ? 1 : 0 }, cols: { value: o.cols || 4 }, rows: { value: o.rows || 2 }, map: { value: map }, alphaCut: { value: o.alphaCut || 0.5 } };
   const m = new THREE.ShaderMaterial({
     uniforms: { ...U, ...common, tint: { value: rgb(o.tint || '#FFFFFF') }, rampLo: { value: o.rampLo ?? -0.35 }, rampHi: { value: o.rampHi ?? 0.45 }, receive: { value: o.receive ? 1 : 0 }, keyK: { value: o.keyK ?? 1 } },
     vertexShader: BB_VERT, fragmentShader: BB_FRAG, side: THREE.DoubleSide,

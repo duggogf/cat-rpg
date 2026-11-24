@@ -27,3 +27,5 @@ Collected by the orchestrating session from reviser hand-backs, for the consiste
 | F17 | Territory §4.14 says one point below "two posts at 30" closes the window, but under its own rounding 30 + 29 reads 75 and stays open; 28 closes it. Fix the doc's wording or the threshold | M2 territory sim | territory-management |
 | F18 | Nemesis F10 worked example skips the L2D2 night's −15 anger decay; the reference reaches L2D4 Calm (15), not Riled (30). Fix the example | M2 territory sim | nemesis-system |
 | F19 | Outsiders' wisp colour is a placeholder `#4E9DA6`; art director to set | M2 territory sim | art-bible |
+
+**Closed 2026-11-24:** F17 and F18 (corrected wording and numbers from the territory sim applied to territory-management §4.14 and nemesis-system F10/§3.16).

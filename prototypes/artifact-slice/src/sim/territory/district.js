@@ -160,11 +160,11 @@ export class District {
     if (c.over_marked.includes(mark)) return [this._refuse(id, 'rub', 'already_over_marked')];
     c.over_marked.push(mark);
     const target = p.owner;
-    p.scent = Math.max(0, p.scent - k.over_mark);
     p.last_seen_day = this.s.day;
     ev.push(this._mark(id, 'over_mark', target, mark));
+    this._setScent(id, p.scent - k.over_mark, 'over_mark', ev);
     this._afterErosion(id, seen, ev);
-    this._afterScentChange(ev);
+    this._afterScentChange(ev, { cause: { kind: 'over_mark', patch: id } });
     return ev;
   }
 
@@ -179,25 +179,24 @@ export class District {
     if (!offer) return [this._refuse(id, 'spray', row.boss_seat && !s.boss.verdicted ? 'den_unmarkable' : 'not_offered')];
     p.last_seen_day = s.day;
     if (offer.kind === 'rescue_spray') {
-      const from = p.scent;
-      p.scent = k.rescue_scent;
-      ev.push(this._mark(id, 'rescue_spray', p.owner), { type: 'ScentChanged', district: s.district, patch: id, from, to: p.scent, cause: 'rescue_spray' });
+      ev.push(this._mark(id, 'rescue_spray', p.owner));
+      this._setScent(id, k.rescue_scent, 'rescue_spray', ev);
     } else if (offer.kind === 'claim_spray') {
-      const prev = p.owner, from = p.scent;
-      p.owner = this.dist.player_clowder; p.keeper = PLAYER; p.scent = k.claim_scent;
+      const prev = p.owner;
+      ev.push(this._mark(id, 'claim_spray', prev));
+      p.owner = this.dist.player_clowder; p.keeper = PLAYER;
       p.claimed_day = s.day; p.contest = null; p.stale_until_night = null; p.sentry = null; p.routed_night = null;
-      ev.push(this._mark(id, 'claim_spray', prev),
-        { type: 'ScentChanged', district: s.district, patch: id, from, to: p.scent, cause: 'claim_spray' },
-        { type: 'PatchChanged', district: s.district, patch: id, owner: p.owner, previous_owner: prev, keeper: PLAYER, cause: 'claim_spray' });
+      this._setScent(id, k.claim_scent, 'claim_spray', ev, prev);
+      ev.push({ type: 'PatchChanged', district: s.district, patch: id, owner: p.owner, previous_owner: prev, keeper: PLAYER, cause: 'claim_spray' });
       if (row.boss_seat) { s.claimed = true; ev.push({ type: 'DistrictClaimed', district: s.district }); }
     } else {
-      const target = p.owner, from = p.scent;
+      const target = p.owner;
       this._contest(id).counter_sprays++;
-      p.scent = Math.max(0, p.scent - k.counter_spray);
-      ev.push(this._mark(id, 'counter_spray', target), { type: 'ScentChanged', district: s.district, patch: id, from, to: p.scent, cause: 'counter_spray' });
+      ev.push(this._mark(id, 'counter_spray', target));
+      this._setScent(id, p.scent - k.counter_spray, 'counter_spray', ev);
       this._afterErosion(id, true, ev);
     }
-    this._afterScentChange(ev);
+    this._afterScentChange(ev, { cause: { kind: offer.kind, patch: id } });
     return ev;
   }
 
@@ -261,10 +260,11 @@ export class District {
   townEventNewcomer(id, cat, clowder = 'outsiders') {
     const p = this._p(id), row = this.D.patches[id];
     if (p.keeper != null || p.owner === this.dist.player_clowder || row.boss_seat) return [this._refuse(id, 'newcomer', 'not_keeperless')];
-    const prev = p.owner;
-    Object.assign(p, { owner: clowder, keeper: cat, scent: this.D.k.newcomer_scent, contest: null });
-    const ev = [{ type: 'PatchChanged', district: this.s.district, patch: id, owner: clowder, previous_owner: prev, keeper: cat, cause: 'newcomer' }];
-    this._afterScentChange(ev, { atStep2: false });
+    const prev = p.owner, ev = [];
+    Object.assign(p, { owner: clowder, keeper: cat, contest: null });
+    this._setScent(id, this.D.k.newcomer_scent, 'newcomer', ev, prev);
+    ev.push({ type: 'PatchChanged', district: this.s.district, patch: id, owner: clowder, previous_owner: prev, keeper: cat, cause: 'newcomer' });
+    this._afterScentChange(ev, { cause: { kind: 'newcomer', patch: id } });
     return ev;
   }
 
@@ -273,9 +273,11 @@ export class District {
     const p = this._p(id), row = this.D.patches[id], k = this.D.k;
     if (row.home_ground || row.boss_seat) { if (p.sentry && p.sentry.cat === cat) p.sentry = null; return [this._refuse(id, 'betrayal', 'declined')]; }
     if (p.owner !== this.dist.player_clowder) return [this._refuse(id, 'betrayal', 'not_held')];
-    Object.assign(p, { owner: 'outsiders', keeper: cat, scent: k.turncoat_scent, sentry: null, routed_night: null, stale_until_night: this.s.day + k.stale_claim_nights });
-    const ev = [{ type: 'PatchChanged', district: this.s.district, patch: id, owner: 'outsiders', previous_owner: 'bell', keeper: cat, cause: 'turncoat' }];
-    this._afterScentChange(ev, { atStep2: false });
+    const ev = [];
+    Object.assign(p, { owner: 'outsiders', keeper: cat, sentry: null, routed_night: null, stale_until_night: this.s.day + k.stale_claim_nights });
+    this._setScent(id, k.turncoat_scent, 'turncoat', ev, 'bell');
+    ev.push({ type: 'PatchChanged', district: this.s.district, patch: id, owner: 'outsiders', previous_owner: 'bell', keeper: cat, cause: 'turncoat' });
+    this._afterScentChange(ev, { cause: { kind: 'turncoat', patch: id } });
     return ev;
   }
 
@@ -355,16 +357,16 @@ export class District {
         const decay = Math.floor((k.base_decay + k.border * rn) * (row.home_ground ? k.home_mult : 1) * (brooder ? k.brooder_mult : 1));
         const refresh = this._watched(p, night) ? (p.sentry.style === 'yowler' ? k.crier_refresh : k.sentry_refresh) : 0;
         const floor = row.home_ground ? k.home_floor : 0;
-        p.scent = Math.max(floor, Math.min(k.scent_max, p.scent - decay + refresh));
+        this._setScent(id, Math.max(floor, Math.min(k.scent_max, p.scent - decay + refresh)), 'decay', ev);
         Object.assign(r, { decay, refresh, rival_neighbours: rn, watched: this._watched(p, night) });
         if (p.sentry) report.upkeep += k.upkeep_per_post;
       } else if (p.owner != null) {
         if (p.keeper != null) {
           const ceil = p.stale_until_night != null && night <= p.stale_until_night ? k.stale_claim_ceiling : row.boss_seat ? k.ceiling_den : k.ceiling_outer;
-          if (p.scent < ceil) p.scent = Math.min(ceil, p.scent + k.rival_recovery);
+          if (p.scent < ceil) this._setScent(id, Math.min(ceil, p.scent + k.rival_recovery), 'recovery', ev);
           r.recovery = true;
         } else {
-          p.scent = Math.max(0, p.scent - k.keeperless_fade);
+          this._setScent(id, p.scent - k.keeperless_fade, 'keeperless_fade', ev);
           r.fade = true;
         }
         if (p.contest) p.contest = null; // the night ends any contest
@@ -376,7 +378,7 @@ export class District {
     if (ch && !ch.beaten && night > ch.arrived_night && s.patches[ch.patch].owner === bell) {
       const p = s.patches[ch.patch];
       const om = p.sentry && p.sentry.personality === 'goofball' && this._watched(p, night) ? k.challenger_overmark_goofball : k.challenger_overmark;
-      p.scent = Math.max(0, p.scent - om);
+      this._setScent(ch.patch, p.scent - om, 'challenger_overmark', ev);
       report.patches[ch.patch].overmark = om;
     }
 
@@ -394,7 +396,8 @@ export class District {
       ev.push({ type: 'PatchChanged', district: s.district, patch: id, owner: null, previous_owner: prev, keeper: null, cause: 'lapsed' });
       if (sentry) ev.push({ type: 'SentryReturned', district: s.district, patch: id, cat: sentry.cat, cause: 'lapsed' });
       if (prev === bell && ch && !ch.beaten && ch.patch === id) {
-        Object.assign(p, { owner: 'outsiders', keeper: ch.id, scent: k.newcomer_scent });
+        Object.assign(p, { owner: 'outsiders', keeper: ch.id });
+        this._setScent(id, k.newcomer_scent, 'challenger_settled', ev, null);
         ev.push({ type: 'PatchChanged', district: s.district, patch: id, owner: 'outsiders', previous_owner: null, keeper: ch.id, cause: 'challenger_settled' });
         this._endChallenge('settled', ev);
       }
@@ -402,7 +405,7 @@ export class District {
     for (const id of this.dist.patches) Object.assign(report.patches[id], { to: s.patches[id].scent, owner_after: s.patches[id].owner });
 
     // f) recompute influence and the Boss window (opens at 100, closes below 75: step 2 only)
-    this._afterScentChange(ev, { atStep2: true });
+    this._afterScentChange(ev, { atStep2: true, cause: { kind: 'overnight', night } });
     report.influence = this.influence();
     report.window_open = s.window_open;
 
@@ -515,11 +518,32 @@ export class District {
     return out;
   }
 
-  /** After any Scent change: InfluenceChanged if a value moved; open the window at 100; close only at step 2 < 75. */
-  _afterScentChange(ev, { atStep2 = false } = {}) {
+  /**
+   * Set a Patch's Scent (clamped 0-100) and emit ScentChanged {patch, clowder (owner now), previous_clowder
+   * (if it just changed hands), from, to, delta, cause} so the HUD can animate it without diffing snapshots.
+   */
+  _setScent(id, to, cause, ev, previousClowder) {
+    const p = this.s.patches[id], from = p.scent;
+    p.scent = Math.max(0, Math.min(this.D.k.scent_max, to));
+    const owned = previousClowder !== undefined && previousClowder !== p.owner;
+    if (p.scent === from && !owned) return;
+    const e = { type: 'ScentChanged', district: this.s.district, patch: id, clowder: p.owner, from, to: p.scent, delta: p.scent - from, cause };
+    if (owned) e.previous_clowder = previousClowder;
+    ev.push(e);
+  }
+
+  /**
+   * After any Scent change: InfluenceChanged {by_clowder, from, delta, cause:{kind, patch|night}, scent:[ScentChanged…]}
+   * if a value moved; open the window at 100; close only at step 2 below 75.
+   */
+  _afterScentChange(ev, { atStep2 = false, cause = null } = {}) {
     const s = this.s, k = this.D.k;
     const now = this._influenceAll();
-    if (Object.keys(now).some(c => now[c] !== s.influence[c])) ev.push({ type: 'InfluenceChanged', district: s.district, by_clowder: { ...now } });
+    if (Object.keys(now).some(c => now[c] !== s.influence[c])) {
+      const from = { ...s.influence }, delta = Object.fromEntries(Object.keys(now).map(c => [c, now[c] - (from[c] ?? 0)]));
+      const scent = ev.filter(e => e.type === 'ScentChanged').map(({ type, district, ...rest }) => rest);
+      ev.push({ type: 'InfluenceChanged', district: s.district, by_clowder: { ...now }, from, delta, cause, scent });
+    }
     s.influence = now;
     const mine = now[this.dist.player_clowder];
     if (!s.window_open && !s.claimed && !s.boss.verdicted && mine >= k.i_full) {
@@ -567,22 +591,23 @@ export class District {
     if (outcome === 'lost' && (atResolution >= k.strong || (s.window_open && row.outer) || k.motives[motive]?.never_lost)) outcome = 'scuffed';
     const sentry = p.sentry && this._watched(p, night) ? p.sentry : null;
     if (outcome === 'repelled') {
-      p.scent = Math.max(0, p.scent + k.raid_repelled);
+      this._setScent(patch, p.scent + k.raid_repelled, 'raid', ev);
       if (sentry && sentry.style === 'scrapper' && raid.leader_home && s.patches[raid.leader_home]?.owner && s.patches[raid.leader_home].owner !== this.dist.player_clowder) {
-        const h = s.patches[raid.leader_home]; h.scent = Math.max(0, h.scent - k.scrapper_repel);
+        this._setScent(raid.leader_home, s.patches[raid.leader_home].scent - k.scrapper_repel, 'scrapper_repel', ev);
       }
       if (motive === 'challenge' && s.challenger) {
         s.challenger.repels++;
         if (s.challenger.repels >= k.challenger_repels_to_leave) this._endChallenge('repelled_twice', ev);
       }
     } else if (outcome === 'scuffed') {
-      p.scent = Math.max(0, p.scent + (sentry && sentry.style === 'bruiser' ? k.raid_scuffed_anchor : k.raid_scuffed));
+      this._setScent(patch, p.scent + (sentry && sentry.style === 'bruiser' ? k.raid_scuffed_anchor : k.raid_scuffed), 'raid', ev);
       if (sentry && sentry.personality !== 'brooder') p.routed_night = night;
     } else if (outcome === 'lost') {
       const clowder = raid.clowder || (motive === 'challenge' ? 'outsiders' : this.dist.gang);
       const keeper = motive === 'challenge' && s.challenger ? s.challenger.id : leader;
       if (p.sentry) ev.push({ type: 'SentryReturned', district: d, patch, cat: p.sentry.cat, cause: 'lost' });
-      Object.assign(p, { owner: clowder, keeper, scent: k.raid_lost_scent, sentry: null, routed_night: null, stale_until_night: night + k.stale_claim_nights, contest: null });
+      Object.assign(p, { owner: clowder, keeper, sentry: null, routed_night: null, stale_until_night: night + k.stale_claim_nights, contest: null });
+      this._setScent(patch, k.raid_lost_scent, 'raid_lost', ev, this.dist.player_clowder);
       ev.push({ type: 'PatchChanged', district: d, patch, owner: clowder, previous_owner: this.dist.player_clowder, keeper, cause: 'raid_lost' });
       if (motive === 'challenge') this._endChallenge('took_post', ev);
     }

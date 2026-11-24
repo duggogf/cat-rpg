@@ -651,7 +651,7 @@ window_open' = true    if not claimed(d) and I(mikan, d) ≥ I_full          (af
 
 **Examples:**
 - Life 2 day 3 evening, Persimmon Alley left to fade (OR-08): LWC 80, LPY 66, PA 48, TSS 70 → `25 + 25 + 20 + 25 = 95`. Rescue-Spray PA → 100: the window opens.
-- The window is open; a challenger's over-mark and a Scuffed take TSS from 66 to 36: `25 + 25 + 25 + 15 = 90` → stays open. A second post fading to 40 too: `25 + 25 + 16.7 + 15 = 82` → still open. Two posts at 30: `75` → open; one more point lost → closes at step 2.
+- The window is open; a challenger's over-mark and a Scuffed take TSS from 66 to 36: `25 + 25 + 25 + 15 = 90` → stays open. A second post fading to 40 too: `25 + 25 + 16.7 + 15 = 82` → still open. Two posts at 30: `75` → open. Under round-half-up, 30 and 29 (74.58) still reads `75` and stays open; it takes 30 and 28 (74.17), or 29 and 29, to read `74` and close at step 2 (corrected 2026-11-24, F17, from the territory sim).
 - A post Sprayed to 90 and left Unwatched (no rival neighbours): 25, 25, 25 for three nights, then 20.8, 16.7, 12.5, 8.3, 4.2, 0 (lapses on night 9).
 
 ### 4.15 Challenger pressure (OR-16; Territory's terms)

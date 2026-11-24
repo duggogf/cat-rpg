@@ -132,3 +132,42 @@ test('an Unwatched post Sprayed to 90 holds its full 25 for three nights, then 2
   // Assert
   assert.deepEqual(seq, [80, 70, 60, 50, 40, 30, 20, 10, 'open']);
 });
+
+test('InfluenceChanged carries from, delta and cause, and the Scent changes behind it, for the HUD to animate (M2 review fix 6)', () => {
+  // Arrange: the §4.14 example at 95
+  const t = districtWith({ LWC: 80, LPY: 66, PA: 48, TSS: 70 });
+  // Act
+  const inf = ofType(t.spray('PA'), 'InfluenceChanged')[0];
+  // Assert
+  assert.equal(inf.from.bell, 95);
+  assert.equal(inf.by_clowder.bell, 100);
+  assert.equal(inf.delta.bell, 5);
+  assert.deepEqual(inf.cause, { kind: 'rescue_spray', patch: 'PA' });
+  assert.deepEqual(inf.scent, [{ patch: 'PA', clowder: 'bell', from: 48, to: 90, delta: 42, cause: 'rescue_spray' }]);
+});
+
+test('Over-mark and Counter-Spray report the rival\'s loss: ScentChanged always, and the gang\'s bar delta once it is below Strong', () => {
+  // Arrange: PA is the gang's at 80 (capped at 60 for influence)
+  const t = districtWith({ LWC: 80, PA: ['wall_sitters', 80, 'pa_tough'] });
+  // Act
+  const e1 = t.rub('PA', 'PA.rub1');            // 80 → 70: Scent moves, the gang's share (capped) does not
+  const e2 = t.spray('PA');                     // 70 → 40: PA's share 25 → 17 (LPY and TSS keep the gang's other 50)
+  // Assert
+  assert.deepEqual(ofType(e1, 'ScentChanged').map(e => [e.clowder, e.from, e.to, e.delta, e.cause]), [['wall_sitters', 80, 70, -10, 'over_mark']]);
+  assert.deepEqual(ofType(e1, 'InfluenceChanged'), []);
+  const inf = ofType(e2, 'InfluenceChanged')[0];
+  assert.deepEqual([inf.from.wall_sitters, inf.by_clowder.wall_sitters, inf.delta.wall_sitters, inf.delta.bell], [75, 67, -8, 0]);
+  assert.deepEqual(inf.cause, { kind: 'counter_spray', patch: 'PA' });
+  assert.deepEqual(inf.scent.map(x => [x.patch, x.clowder, x.delta, x.cause]), [['PA', 'wall_sitters', -30, 'counter_spray']]);
+});
+
+test('overnight Scent changes carry their cause (decay, challenger_overmark, raid) and InfluenceChanged names the night', () => {
+  const t = districtWith({ LWC: 80, LPY: 90, PA: 75, TSS: 70, DEN: ['wall_sitters', 100, 'daifuku'] });
+  t.s.challenger = { id: 'challenger_1', patch: 'LPY', arrived_night: 3, repels: 0, origin: 'calendar', beaten: false };
+  const { events } = t.overnight({ raid: { patch: 'LPY', motive: 'challenge', outcome: 'repelled' } });
+  const lpy = ofType(events, 'ScentChanged').filter(e => e.patch === 'LPY').map(e => [e.cause, e.delta]);
+  assert.deepEqual(lpy, [['decay', -12], ['challenger_overmark', -10], ['raid', -5]]);
+  const inf = ofType(events, 'InfluenceChanged')[0];
+  assert.deepEqual(inf.cause, { kind: 'overnight', night: 5 });
+  assert.equal(inf.delta.bell, inf.by_clowder.bell - inf.from.bell);
+});

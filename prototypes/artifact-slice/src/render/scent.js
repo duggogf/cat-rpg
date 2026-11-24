@@ -57,15 +57,16 @@ const CARD_VERT = /* glsl */`uniform float sway, time, droop; varying vec2 vUv;
     float h = position.y + 0.5; vec2 p = position.xy * vec2(sx, sy * (1.0 - 0.18 * droop));
     p.x += (sin(time * 1.3 + c.x * 2.0) * 0.06 * sway + droop * 0.16 * h) * sy * h;   // slow curl; below Strong they lean and sag
     vec3 wp = c + r * p.x + vec3(0.0, p.y, 0.0); gl_Position = projectionMatrix * viewMatrix * vec4(wp, 1.0); }`;
-const CARD_FRAG = /* glsl */`uniform sampler2D map; uniform float lift, gate, halftone, fade; varying vec2 vUv;
+const CARD_FRAG = /* glsl */`uniform sampler2D map; uniform float lift, gate, halftone, fade; uniform vec3 tint; varying vec2 vUv;
   float bb(vec2 p){ ivec2 i = ivec2(mod(p, 4.0)); int b[16] = int[16](0,8,2,10,12,4,14,6,3,11,1,9,15,7,13,5); return (float(b[i.y * 4 + i.x]) + 0.5) / 16.0; }
   void main(){ vec4 t = texture2D(map, vUv); if (t.a < 0.5) discard;
     if (gate < 0.999) { vec2 g = fract(gl_FragCoord.xy / 7.0) - 0.5; if (length(g) > gate * 0.72) discard; }   // halftone in/out, never an alpha fade
     if (fade < 0.999 && bb(gl_FragCoord.xy) > fade) discard;
     vec3 c = t.rgb; c = mix(c, min(c * 1.18, vec3(1.0)), lift);
+    float L = dot(c, vec3(0.3, 0.59, 0.11)); c = mix(c, c * tint, smoothstep(0.55, 0.95, L));   // a puff takes the marked Clowder's colour in its light tones
     gl_FragColor = vec4(c, 1.0); }`;
 const cardMat = (map, o = {}) => new THREE.ShaderMaterial({
-  uniforms: { map: { value: map }, time: U.time, sway: { value: o.sway ?? 1 }, droop: { value: 0 }, lift: { value: 0 }, gate: { value: o.gate ?? 1 }, halftone: { value: 0 }, fade: { value: 1 } },
+  uniforms: { map: { value: map }, time: U.time, sway: { value: o.sway ?? 1 }, droop: { value: 0 }, lift: { value: 0 }, gate: { value: o.gate ?? 1 }, halftone: { value: 0 }, fade: { value: 1 }, tint: { value: new THREE.Color(1, 1, 1) } },
   vertexShader: CARD_VERT, fragmentShader: CARD_FRAG, side: THREE.DoubleSide,
 });
 
@@ -109,8 +110,8 @@ export class ScentLayer {
     this.posts = []; this.pops = []; this.ribbons = [];
     for (const p of L.patches) {
       const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), cardMat(T.wisps.wallSitters[1][0]));
-      m.position.set(p.at[0], p.at[1] + 0.62, p.at[2]); m.scale.set(0.95, 0.95, 1); m.frustumCulled = false; m.renderOrder = 4; m.name = 'wisps-' + p.id;
-      scene.add(m); this.posts.push({ id: p.id, mesh: m, base: m.position.clone() });
+      m.position.set(p.at[0], p.at[1], p.at[2]); m.frustumCulled = false; m.renderOrder = 4; m.name = 'wisps-' + p.id;
+      scene.add(m); this.posts.push({ id: p.id, mesh: m, cap: p.at[1], shown: null, stepT: 0 });
       for (const [k, [x, y, z, face]] of Object.entries(p.rub)) {   // Rub Marks: emblem glyphs flat on the wall base, Whisker Sense only
         const g = new THREE.Mesh(new THREE.PlaneGeometry(0.22, 0.22), cardMat(T.glyph.brickTex, { gate: 0, sway: 0 }));
         g.material.vertexShader = /* glsl */`varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0); }`;
@@ -130,19 +131,24 @@ export class ScentLayer {
   }
   setRT(w, h) { for (const m of [this.thread, ...this.ribbons.map((r) => r.mesh)]) if (m.material.uniforms.rtH) { m.material.uniforms.rtH.value = h; m.material.uniforms.rtW.value = w; } }
   /** A Spray (big sparkle cloud + pop) or an Over-mark (small puff) at a point, drawn on twos. */
-  pop(at, big) {
+  pop(at, big, tint) {
     const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), cardMat((big ? this.T.pops : this.T.puffs)[0], { sway: 0 }));
-    m.position.copy(at); m.scale.setScalar(big ? 1.3 : 0.6); m.frustumCulled = false; m.renderOrder = 6; this.scene.add(m);
+    if (tint) m.material.uniforms.tint.value.set(tint);
+    m.position.copy(at); m.scale.setScalar(big ? 1.15 : 0.95); m.frustumCulled = false; m.renderOrder = 6; this.scene.add(m);
     this.pops.push({ m, t: 0, big, frames: big ? this.T.pops : this.T.puffs });
   }
   update(dt, ctx) {
     this.t += dt; const sk = ctx.sense; this.sense = sk;
     for (const p of this.posts) {
-      const st = this.terr.patch(p.id), n = Math.max(1, Math.min(4, st.wisps)), key = this.T.wisps[st.owner] ? st.owner : 'wallSitters', mat = p.mesh.material;
-      p.mesh.visible = st.wisps > 0;
+      const st = this.terr.patch(p.id), key = this.T.wisps[st.owner] ? st.owner : 'wallSitters', mat = p.mesh.material;
+      // wisps sprout (or wither) one at a time toward the Scent band, so a Spray's payoff is seen
+      if (p.shown == null) p.shown = st.wisps;
+      p.stepT -= dt; if (p.shown !== st.wisps && p.stepT <= 0) { p.shown += Math.sign(st.wisps - p.shown); p.stepT = 0.22; }
+      const n = Math.max(1, Math.min(4, p.shown));
+      p.mesh.visible = p.shown > 0;
       mat.uniforms.map.value = this.T.wisps[key][n][Math.floor(this.t * 6) % 2];   // on twos (12 fps drawings, two drawings)
       mat.uniforms.droop.value = st.droop ? 1 : 0; mat.uniforms.lift.value = sk; mat.uniforms.fade.value = ctx.fadeOf ? ctx.fadeOf(p.id) : 1;
-      p.mesh.scale.set(0.8 + 0.06 * n, (0.8 + 0.06 * n) * (st.droop ? 0.85 : 1), 1);
+      const sc = 0.5 + 0.05 * n, sy = sc * (st.droop ? 0.85 : 1); p.mesh.scale.set(sc, sy, 1); p.mesh.position.y = p.cap + 0.04 + sy * 0.5;   // base on the cap: 0.4-0.6 m of wisps above the post
     }
     for (const r of this.ribbons) {
       const gate = r.sense ? sk : 1, m = r.mesh.material.uniforms; m.gate.value = gate; r.mesh.visible = gate > 0.02;
@@ -152,7 +158,7 @@ export class ScentLayer {
       q.t += dt; const f = Math.floor(q.t * 12);   // twos
       if (f >= q.frames.length + 1) { this.scene.remove(q.m); q.m.geometry.dispose(); q.m.material.dispose(); q.dead = true; continue; }
       q.m.material.uniforms.map.value = q.frames[Math.min(q.frames.length - 1, f)]; q.m.material.uniforms.gate.value = f >= q.frames.length ? 0.45 : 1;
-      q.m.position.y += dt * (q.big ? 0.35 : 0.2);
+      q.m.position.y += dt * (q.big ? 0.12 : 0.08); q.m.scale.multiplyScalar(1 + dt * 0.6);
     }
     this.pops = this.pops.filter((q) => !q.dead);
     // thread

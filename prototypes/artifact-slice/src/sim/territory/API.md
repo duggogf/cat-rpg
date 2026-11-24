@@ -35,6 +35,10 @@ t.hash();                                                   // 16 hex chars over
 | `whisker(dt, {held, inCombat, pos:[x,z], cats:[{id, pos\|dist, onScreen}]})` | Every frame while held. An undiscovered cat on screen within **10 m** for **1.0 s** → discovered. Release, combat, range or screen loss cancels | `CatDiscovered{cat, how:'sniff'}` |
 | `discover(cat, how)` | Encounter/Crew discovery | `CatDiscovered` |
 
+**Animating changes (M2 review fix 6).** Every per-Patch Scent change emits
+**`ScentChanged {district, patch, clowder, previous_clowder?, from, to, delta, cause}`**, with `cause` one of `over_mark`, `counter_spray`, `rescue_spray`, `claim_spray` (by day), `decay`, `recovery`, `keeperless_fade`, `challenger_overmark`, `raid`, `raid_lost`, `scrapper_repel`, `challenger_settled` (overnight), or `newcomer` / `turncoat`. `clowder` is the owner after the change. `previous_clowder` appears only when the Patch changed hands, so the rival's loss on an Over-mark or Counter-Spray is `clowder: 'wall_sitters', delta: -10 / -30`.
+When any Clowder's bar value moves, **`InfluenceChanged {district, by_clowder, from, delta, cause, scent}`** follows. `from`, `by_clowder` and `delta` are per-Clowder maps. `cause` is `{kind, patch}` for a day act or `{kind: 'overnight', night}`. `scent[]` lists the Scent changes behind it, so ours and theirs ("+5 ours / −8 theirs") come in one event. A mark on a rival post still at 60 or more moves no bar (influence caps at Strong), so it emits ScentChanged only.
+
 **`MarkApplied {district, patch, post, by:'mikan', kind, target_clowder, rub_mark?}`**, `kind ∈ over_mark | counter_spray | claim_spray | rescue_spray` (F8 contract; `district`/`patch` are its `district_id`/`patch_id`). Nemesis reads it for anger (over_mark +5 / counter_spray +15 on `wall_sitters` only); `anger-reference.js` is a stand-in consumer until M3.
 
 ## Time
