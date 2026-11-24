@@ -142,3 +142,13 @@ Final bindings, owner's last word: "Do F for special on staggered enemies, R for
 > Decisions: "Do a ground version for Daifuku, but no need the wash tub anymore. Make it universal. The rest, however you suggest. Go"
 
 Ruled into `design/reviews/owner-feedback/combat-m1.2-spec.md`.
+
+## C12 — combat minor fixes after M1.2, and go for the next phase (chat)
+
+> * Captain is barely attack, and Daifuku is even worse. Daifuku doesn't do normal attack. It waits until its skill is ready then use, while it's getting attacked constantly by my crew.
+> * I want the dash to be more controllable like in Nier Automata. Right now, dash is just one directional forward. I want it so during dash, you can move to pivot the direction of the dash, just like Nier Automata.
+> * Right now the KO just frame freeze and zoom-in, but no background. Add background, just like when a cat is doing specials. And on KO, the cat will fly, like it's getting knocked off.
+> * Damage from enemies are now black, make it red instead.
+> * The damage popup is fixed above the character that takes damage, make it so it spawns on a worldspace, at the character position, but NOT fixed to the character. ...
+>
+> These are just the minor stuff. I think you can now move onto the next phase.
