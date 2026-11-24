@@ -112,6 +112,26 @@
    "errors": []
   },
   {
+   "name": "latency-after.png",
+   "note": "after three rapid clicks: one or two hits landed, not three queued",
+   "tick": 310,
+   "mode": "fight",
+   "controlled": "mikan",
+   "calls": 106,
+   "triangles": 282268,
+   "errors": []
+  },
+  {
+   "name": "latency-click1-plus3.png",
+   "note": "click 1, +3 ticks: the light hit is on screen",
+   "tick": 231,
+   "mode": "fight",
+   "controlled": "mikan",
+   "calls": 128,
+   "triangles": 331408,
+   "errors": []
+  },
+  {
    "name": "pileon-01.png",
    "note": "Pile-On +1 frames: wipe in (halftone, drawing 1)",
    "tick": 1391,
@@ -322,6 +342,86 @@
    "errors": []
   },
   {
+   "name": "stagger-01.png",
+   "note": "stagger cinematic +1 frames: zoom-in + shattered-glass blink, drawing 1 (Cream shard tints <= 0.16 alpha)",
+   "tick": 768,
+   "mode": "fight",
+   "controlled": "mikan",
+   "calls": 31,
+   "triangles": 154642,
+   "errors": []
+  },
+  {
+   "name": "stagger-02.png",
+   "note": "stagger cinematic +3 frames: blink off (cracks only)",
+   "tick": 770,
+   "mode": "fight",
+   "controlled": "mikan",
+   "calls": 98,
+   "triangles": 312924,
+   "errors": []
+  },
+  {
+   "name": "stagger-03.png",
+   "note": "stagger cinematic +6 frames: shards drift apart, time slowed",
+   "tick": 773,
+   "mode": "fight",
+   "controlled": "mikan",
+   "calls": 103,
+   "triangles": 366952,
+   "errors": []
+  },
+  {
+   "name": "stagger-04.png",
+   "note": "stagger cinematic +24 frames: back to play: the F Special prompt over the staggered cat",
+   "tick": 784,
+   "mode": "fight",
+   "controlled": "mikan",
+   "calls": 96,
+   "triangles": 433458,
+   "errors": []
+  },
+  {
+   "name": "stalk-1.png",
+   "note": "AI intents (+40 frames, player idle): circling, stalking, posturing (arched puff, hiss), flanking, dash-in",
+   "tick": 272,
+   "mode": "fight",
+   "controlled": "mikan",
+   "calls": 122,
+   "triangles": 309592,
+   "errors": []
+  },
+  {
+   "name": "stalk-2.png",
+   "note": "AI intents (+80 frames, player idle): circling, stalking, posturing (arched puff, hiss), flanking, dash-in",
+   "tick": 312,
+   "mode": "fight",
+   "controlled": "mikan",
+   "calls": 115,
+   "triangles": 282388,
+   "errors": []
+  },
+  {
+   "name": "stalk-3.png",
+   "note": "AI intents (+120 frames, player idle): circling, stalking, posturing (arched puff, hiss), flanking, dash-in",
+   "tick": 352,
+   "mode": "fight",
+   "controlled": "mikan",
+   "calls": 125,
+   "triangles": 423392,
+   "errors": []
+  },
+  {
+   "name": "stalk-4.png",
+   "note": "AI intents (+160 frames, player idle): circling, stalking, posturing (arched puff, hiss), flanking, dash-in",
+   "tick": 392,
+   "mode": "fight",
+   "controlled": "mikan",
+   "calls": 116,
+   "triangles": 374380,
+   "errors": []
+  },
+  {
    "name": "tagin.png",
    "note": "Tag-In: bell-gold streak with the Relay pip, Relay chain over the plates, 0.3 s camera retarget",
    "tick": 926,
@@ -329,6 +429,16 @@
    "controlled": "hige",
    "calls": 111,
    "triangles": 365618,
+   "errors": []
+  },
+  {
+   "name": "team-finisher-3.png",
+   "note": "chain end: KA-BLAM, the cloud blows apart",
+   "tick": 1477,
+   "mode": "ended",
+   "controlled": "mikan",
+   "calls": 82,
+   "triangles": 312704,
    "errors": []
   }
  ],
@@ -5022,5 +5132,44 @@
    "max": 478660
   },
   "budget": 500000
- }
+ },
+ "chain": {
+  "start": [],
+  "teamFinisher": false
+ },
+ "latency": {
+  "pressTicks": [
+   229,
+   233,
+   237
+  ],
+  "log": [
+   {
+    "type": "AttackActive",
+    "tick": 231,
+    "attack": "L1",
+    "latency_ticks": 2
+   },
+   {
+    "type": "InputDropped",
+    "tick": 233,
+    "attack": "L1"
+   },
+   {
+    "type": "InputDropped",
+    "tick": 237,
+    "attack": "L1"
+   }
+  ]
+ },
+ "intents": [
+  "mikan:neutral",
+  "hige:retreat",
+  "pon:circle",
+  "kinako:flank",
+  "goma:retreat",
+  "sasa:circle",
+  "stray:retreat",
+  "stray_2:flank"
+ ]
 }

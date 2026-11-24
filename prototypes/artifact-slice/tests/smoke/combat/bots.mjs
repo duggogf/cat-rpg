@@ -1,6 +1,7 @@
 // PROTOTYPE - NOT FOR PRODUCTION (Cat RPG artifact showcase slice; throwaway, see README.md)
-// Input bots for the combat smoke runs (tools/sim-run.mjs). A bot is (enc) -> InputFrame, using only
-// the public snapshot plus the encounter's read-only fields, as a player would see the screen.
+// Input bots for the combat smoke runs (tools/sim-run.mjs), M1.1 controls: the player drives Mikan only
+// (light, heavy, dodge, dash, Tab lock-on, R skill bar, F Special). A bot is (enc) -> InputFrame and reads only the
+// public snapshot plus the string table, as a player reads the screen.
 
 const d2 = (a, b) => Math.hypot(a.pos[0] - b.pos[0], a.pos[2] - b.pos[2]);
 const toward = (a, b) => [b.pos[0] - a.pos[0], b.pos[2] - a.pos[2]];
@@ -9,72 +10,28 @@ const away = (a, b) => [a.pos[0] - b.pos[0], a.pos[2] - b.pos[2]];
 /** Passive: no input at all. */
 export const passiveBot = () => () => ({});
 
-function reactDefensively(s, c, inp) {
+function dodgeIfNeeded(s, c, inp, every = 1, memo = new Map(), counter = { n: 0 }) {
   for (const tl of s.telegraphs) {
     const aimed = tl.aimed_at === c.id;
-    const left = tl.dur - tl.t;
-    const att = s.entities.find(e => e.id === tl.attacker);
-    if (!att) continue;
     const inRed = tl.cls === 'red' && tl.shape.type === 'circle' && Math.hypot(c.pos[0] - tl.shape.center[0], c.pos[2] - tl.shape.center[1]) < tl.shape.radius + 0.5;
-    if (tl.cls === 'yellow' && aimed && c.hiss_cd_s <= 0 && d2(c, att) <= 3.8 && left < 0.6) return { ...inp, aim: toward(c, att), hiss: true };
-    if (tl.move === 'climb_back' && c.hiss_cd_s <= 0 && d2(c, att) <= 3.8) return { ...inp, aim: toward(c, att), hiss: true };
-    if ((aimed || inRed) && left < 0.25) {
-      const from = tl.shape.type === 'circle' ? { pos: [tl.shape.center[0], 0, tl.shape.center[1]] } : att;
-      return { ...inp, skitter: true, move: away(c, from) };
-    }
+    if (!(aimed || inRed) || tl.dur - tl.t > 0.25) continue;
+    if (!memo.has(tl.id)) memo.set(tl.id, (counter.n++ % every) === 0);
+    if (!memo.get(tl.id)) continue;
+    const att = s.entities.find(e => e.id === tl.attacker);
+    const from = tl.shape.type === 'circle' ? { pos: [tl.shape.center[0], 0, tl.shape.center[1]] } : att;
+    if (from) return { ...inp, dodge: true, move: away(c, from) };
   }
   return null;
 }
 
-/**
- * Skilled bot: focuses the enemy with the most Frazzle, dodges and Hisses telegraphs, Tag-Ins on every
- * window, commands Set-up -> Pay-off pairs from Slow Blink, and cashes in Pile-Ons.
- */
-export function skilledBot({ tagIns = true, commands = true, uptime = 1, tagPeriod = 0, dodgeEvery = 1 } = {}) {
-  let sbPhase = 0, lastCmdT = -99, lastTagT = -99, seen = 0;
-  const dodged = new Map();
-  return enc => {
-    const s = enc.snapshot();
-    if (s.mode !== 'fight') return {};
-    const c = s.entities.find(e => e.controlled);
-    const foes = s.entities.filter(e => e.side === 'enemy' && e.present && !e.routed);
-    if (!c || !foes.length) return {};
-    // Slow Blink: open, issue the commands, close.
-    if (sbPhase === 1) { sbPhase = 2; return { slowBlink: true }; }
-    if (s.pile_on_offer) return { hiss: true, slowBlink: s.slow_blink };
-    // Lock: a Frazzled enemy first, then the one with the most Frazzle.
-    const lock = foes.slice().sort((a, b) => (b.frazzled_s > 0) - (a.frazzled_s > 0) || b.frazzle - a.frazzle || d2(c, a) - d2(c, b))[0];
-    const inp = { lockId: lock.id };
-    let def = reactDefensively(s, c, inp);
-    if (def && dodgeEvery > 1) { // the median policy answers only some telegraphs
-      const tl = s.telegraphs.find(t => t.aimed_at === c.id) || s.telegraphs[0];
-      if (tl && !dodged.has(tl.id)) dodged.set(tl.id, (seen++ % dodgeEvery) === 0);
-      if (tl && !dodged.get(tl.id)) def = null;
-    }
-    if (def) return def;
-    if (tagIns && s.tag_window && s.fight_t - lastTagT >= tagPeriod) {
-      lastTagT = s.fight_t;
-      const order = s.entities.filter(e => e.side === 'posse').sort((a, b) => a.slot - b.slot);
-      const members = new Set(s.relay?.members || []);
-      for (let i = 1; i < order.length; i++) {
-        const n = order[(c.slot + i) % order.length];
-        if (!n.routed && !members.has(n.id) && d2(n, lock) <= 7.5) return { ...inp, switchTo: n.slot };
-      }
-      if (s.relay && s.relay.starter !== c.id) { const st = order.find(e => e.id === s.relay.starter); if (st && !st.routed) return { ...inp, switchTo: st.slot }; }
-    }
-    if (commands && s.fight_t - lastCmdT > 1.5) {
-      const cmds = planCommands(enc, s, lock);
-      if (cmds.length) { lastCmdT = s.fight_t; sbPhase = 1; return { ...inp, slowBlink: true, commands: cmds }; }
-    }
-    if (d2(c, lock) > 1.4 || Math.abs(c.pos[1] - lock.pos[1]) > 0.5) return { ...inp, move: toward(c, lock) };
-    const cyc = enc.k.string_cycle_s / uptime;
-    if (uptime < 1 && (s.fight_t % cyc) > enc.k.string_cycle_s) return { ...inp, aim: toward(c, lock) };
-    return { ...inp, aim: toward(c, lock), attack: true };
-  };
+/** The next string press: light, or heavy after L3 (L-L-L-H finisher), timed into the buffer window. */
+function stringPress(enc, c, inp, lock) {
+  const a = c.attack;
+  if (!a || a.id === 'charging') return { ...inp, move: toward(c, lock), light: true };
+  const r = enc.D.strings[a.id];
+  if (a.t < r.chain_s - 0.1) return inp; // a player waits for the window; mashing earlier is dropped anyway
+  return a.id === 'L3' ? { ...inp, heavy: true } : { ...inp, move: toward(c, lock), light: true };
 }
-
-/** Combat F9's median policy: 65% attack uptime, about one Tag-In per 10 s, half the telegraphs answered. */
-export const medianBot = () => skilledBot({ uptime: 0.65, tagPeriod: 10, dodgeEvery: 2 });
 
 /** Would a Shoulder Check from `from` Splat `t`? (A wall, prop, other enemy or the ring edge within 3.6 m behind it.) */
 function obstacleBehind(s, from, t, m = 3.6) {
@@ -87,9 +44,8 @@ function obstacleBehind(s, from, t, m = 3.6) {
 }
 
 /**
- * One Slow Blink's commands. Set-up -> Pay-off chains first (Combat §3.10): Hige's Shoulder Check -> Mikan's
- * Bunny-Kick on the Splat (the sim holds the Pay-off until the Set-up resolves), and Pon's Withering Hiss -> Purr
- * (x1.5 with a Cowed enemy near). Hige's Paws are spent only inside a chain; otherwise his own AI spends them.
+ * One skill-bar opening's commands: Set-up -> Pay-off chains first (Shoulder Check -> Bunny-Kick, Withering Hiss ->
+ * Purr); the sim holds a Pay-off until its Set-up resolves. Crew skills are forced; Hige's Paw is spent only in a chain.
  */
 function planCommands(enc, s, lock) {
   const cmds = [];
@@ -105,7 +61,7 @@ function planCommands(enc, s, lock) {
     cmds.push({ cat: 'pon', move: 'withering_hiss', target: lock.id }, { cat: 'pon', move: 'purr', target: hurt.id });
   } else if (mikan && free(mikan) >= 1 && (lock.splat_s > 0 || lock.status?.kind === 'soggy')) {
     cmds.push({ cat: 'mikan', move: 'bunny_kick', target: lock.id });
-  } else if (mikan && free(mikan) >= 1 && lock.ruffled_s <= 0 && lock.frazzled_s <= 0 && level(mikan)) {
+  } else if (mikan && free(mikan) >= 1 && lock.ruffled_s <= 0 && lock.staggered_s <= 0 && level(mikan)) {
     cmds.push({ cat: 'mikan', move: 'face_swat', target: lock.id });
   } else if (pon && free(pon) >= 1 && hurt && hurt.nerve / hurt.nerve_max < 0.45) {
     cmds.push({ cat: 'pon', move: 'purr', target: hurt.id });
@@ -114,60 +70,92 @@ function planCommands(enc, s, lock) {
 }
 
 /**
- * Scripted Daifuku bot: drive Hige onto the wall, Shove Daifuku off into the tub (the Bruiser finisher is a
- * knock-off), fight him on the ground with Face Swat / Bunny-Kick commands, Hiss Paw Swats and Climb Backs,
- * Tag-In Mikan and back, and cash in every Pile-On.
+ * Skilled bot: focuses the most-staggered enemy, strings L-L-L-H into the buffer windows, dashes in with a lunge,
+ * dodges telegraphs, chains Set-ups into Pay-offs from the skill bar, and fires the Special (F) on every stagger.
+ * Options make it the median policy: `uptime` (share of time attacking), `dodgeEvery` (answer 1 in N telegraphs).
  */
-export function daifukuBot() {
-  let sbPhase = 0, lastCmdT = -99, started = false;
+export function skilledBot({ commands = true, uptime = 1, dodgeEvery = 1, specials = true } = {}) {
+  let sbPhase = 0, lastCmdT = -99;
+  const memo = new Map(), counter = { n: 0 };
   return enc => {
     const s = enc.snapshot();
     if (s.mode !== 'fight') return {};
-    if (!started) { started = true; return { switchTo: 1 }; }
+    const c = s.entities.find(e => e.controlled);
+    const foes = s.entities.filter(e => e.side === 'enemy' && e.present && !e.routed);
+    if (!c || c.routed || !foes.length) return {};
+    if (sbPhase === 1) { sbPhase = 2; return { skillBar: true }; }
+    if (specials && s.special_prompt?.ready) return { special: true };
+    const lock = foes.slice().sort((a, b) => (b.staggered_s > 0) - (a.staggered_s > 0) || b.stagger - a.stagger || d2(c, a) - d2(c, b))[0];
+    const inp = s.lock === lock.id ? {} : { lockId: lock.id };
+    const def = dodgeIfNeeded(s, c, inp, dodgeEvery, memo, counter);
+    if (def) return def;
+    if (commands && s.fight_t - lastCmdT > 1.5 && !c.attack) {
+      const cmds = planCommands(enc, s, lock);
+      if (cmds.length) { lastCmdT = s.fight_t; sbPhase = 1; return { ...inp, skillBar: true, commands: cmds }; }
+    }
+    const dd = d2(c, lock), sameLevel = Math.abs(c.pos[1] - lock.pos[1]) < 0.5;
+    if (!sameLevel) return { ...inp, move: toward(c, lock) };
+    if (dd > 3.2 && !c.attack && c.anim !== 'dash') return { ...inp, move: toward(c, lock), dash: true };
+    if (c.anim === 'dash' && dd < 2.4) return { ...inp, light: true }; // Dash -> L lunge
+    if (dd > 1.6 && !c.attack) return { ...inp, move: toward(c, lock) };
+    const cyc = enc.k.string_cycle_s / uptime;
+    if (uptime < 1 && (s.fight_t % cyc) > enc.k.string_cycle_s && !c.attack) return { ...inp, aim: toward(c, lock) };
+    return stringPress(enc, c, inp, lock);
+  };
+}
+
+/** Combat F9's median policy: 65% attack uptime, half the telegraphs answered. */
+export const medianBot = () => skilledBot({ uptime: 0.65, dodgeEvery: 2 });
+
+/**
+ * Scripted Daifuku bot (Mikan only): dash into the wall below him to mantle, L-L-L-H him off (the heavy finisher
+ * knocks back), force Hige's Shoulder Check from the skill bar when Hige is up there, fight him on the ground, and
+ * fire the Special on every stagger.
+ */
+export function daifukuBot() {
+  let sbPhase = 0, lastCmdT = -99;
+  const memo = new Map(), counter = { n: 0 };
+  return enc => {
+    const s = enc.snapshot();
+    if (s.mode !== 'fight') return {};
     const c = s.entities.find(e => e.controlled);
     const b = s.entities.find(e => e.id === 'daifuku');
-    if (!c || !b || !b.present) return {};
-    if (sbPhase === 1) { sbPhase = 2; return { slowBlink: true }; }
-    if (s.pile_on_offer) return { hiss: true };
-    const inp = { lockId: b.id };
-    const def = reactDefensively(s, c, inp);
+    if (!c || c.routed || !b || !b.present) return {};
+    if (sbPhase === 1) { sbPhase = 2; return { skillBar: true }; }
+    if (s.special_prompt?.ready) return { special: true };
+    const inp = s.lock === b.id ? {} : { lockId: b.id };
+    const def = dodgeIfNeeded(s, c, inp, 1, memo, counter);
     if (def) return def;
     const onWall = b.boss.state === 'wall' && b.on_high_road;
-    if (s.tag_window && !onWall) {
-      const mikan = s.entities.find(e => e.id === 'mikan'), hige = s.entities.find(e => e.id === 'hige');
-      if (c.id === 'hige' && mikan && !mikan.routed && (!s.relay || !s.relay.members.includes('mikan'))) return { ...inp, switchTo: mikan.slot };
-      if (c.id === 'mikan' && hige && !hige.routed && s.relay) return { ...inp, switchTo: hige.slot };
-    }
-    if (!onWall && s.fight_t - lastCmdT > 1.5 && b.pos[1] < 0.5) {
-      const mikan = s.entities.find(e => e.id === 'mikan' && !e.routed);
+    const hige = s.entities.find(e => e.id === 'hige' && !e.routed), mikanE = c;
+    if (s.fight_t - lastCmdT > 1.5 && !c.attack) {
       const cmds = [];
-      if (mikan && mikan.paws - mikan.paws_reserved >= 1) {
+      if (onWall && hige && hige.on_high_road && hige.paws - hige.paws_reserved >= 1 && Math.hypot(hige.pos[0] - b.pos[0], hige.pos[2] - b.pos[2]) < 4) cmds.push({ cat: 'hige', move: 'shoulder_check', target: b.id });
+      if (!onWall && b.pos[1] < 0.5 && mikanE.paws - mikanE.paws_reserved >= 1) {
         if (b.status?.kind === 'soggy') cmds.push({ cat: 'mikan', move: 'bunny_kick', target: b.id });
-        else if (b.ruffled_s <= 0 && b.frazzled_s <= 0) cmds.push({ cat: 'mikan', move: 'face_swat', target: b.id });
+        else if (b.ruffled_s <= 0 && b.staggered_s <= 0) cmds.push({ cat: 'mikan', move: 'face_swat', target: b.id });
       }
-      if (cmds.length) { lastCmdT = s.fight_t; sbPhase = 1; return { ...inp, slowBlink: true, commands: cmds }; }
+      if (cmds.length) { lastCmdT = s.fight_t; sbPhase = 1; return { ...inp, skillBar: true, commands: cmds }; }
     }
-    // Hige (or whoever is controlled) goes to Daifuku's level.
     if (onWall && !c.on_high_road) {
       if (c.anim === 'mantle') return inp;
       const hr = s.arena.high_roads.find(h => h.boss_wall);
       const foot = [b.pos[0], hr.a[1] + hr.drop_side[1] * 0.6];
-      const dx = foot[0] - c.pos[0], dz = foot[1] - c.pos[2];
       const fromWall = Math.abs(c.pos[2] - hr.a[1]);
-      if (fromWall <= 0.85 && Math.abs(c.pos[0] - b.pos[0]) <= 1.5) return { ...inp, hop: true };
-      return { ...inp, move: [dx, dz] };
+      if (fromWall <= 0.85 && Math.abs(c.pos[0] - b.pos[0]) <= 1.5) return { ...inp, dash: true, move: [-hr.drop_side[0], -hr.drop_side[1]] };
+      return { ...inp, move: [foot[0] - c.pos[0], foot[1] - c.pos[2]] };
     }
-    if (!onWall && c.on_high_road) return { ...inp, hop: true };
-    if (d2(c, b) > 1.6) return { ...inp, move: toward(c, b) };
-    return { ...inp, aim: toward(c, b), attack: true };
+    if (!onWall && c.on_high_road && !c.attack) return { ...inp, dash: true, move: [0, 1] };
+    if (d2(c, b) > 1.7 && !c.attack) return { ...inp, move: toward(c, b) };
+    return stringPress(enc, c, inp, b);
   };
 }
 
-/** Wrap a bot so that a list of Slow Blink commands in its frame is sent one per tick. */
+/** Wrap a bot so that a list of skill-bar commands in its frame is sent one per tick. */
 export function withCommandQueue(bot) {
   const q = [];
   return (enc, i) => {
-    if (q.length && enc.slowBlink) return { command: q.shift() };
+    if (q.length && enc.skillBar) return { command: q.shift() };
     const f = bot(enc, i) || {};
     if (f.commands) { q.push(...f.commands); delete f.commands; }
     return f;

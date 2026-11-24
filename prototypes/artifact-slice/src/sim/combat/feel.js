@@ -6,7 +6,7 @@
 export const BASE_TIER = {
   whiff: 0, prop_hit: 0, blocked: 0,
   string: 1, move_mid: 1,
-  finisher: 2, pounce: 2, tag_in: 2, splat: 2,
+  finisher: 2, heavy: 2, pounce: 2, tag_in: 2, splat: 2, special: 4,
   move1: 3, hiss_interrupt: 3, fear: 3,
   move2: 4, frazzling: 4, tough_rout: 4, back_down: 4,
   pile_on: 5, zoomies: 5, phase_break: 5, leader_rout: 5,

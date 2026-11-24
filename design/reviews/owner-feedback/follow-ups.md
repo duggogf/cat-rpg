@@ -19,3 +19,6 @@ Collected by the orchestrating session from reviser hand-backs, for the consiste
 
 **Status (2026-11-24):** all twelve items are ruled and applied in `consistency-pass.md` (§1 for F11–F12, §2 for F1–F10).
 | F13 | M1 sim fight lengths vs GDD: Toughs fights run 20–30% short (2T 14.2 s vs 18–21; 3T 21.1 vs 25–28; 4T 26.1 vs 33–36); Captain 41.4 vs 37; Daifuku phase 1 39 s vs ~55–60, full fight 128–195 s vs 166–176. Tuning call for the game designer in the M1 review | M1 sim | combat-system (tuning), src/data/combat |
+| F14 | M1.1 doc sweep leftovers: brief §4.1/§6.1/§7/§8/§10 and GDD §6, §17–§21 still mention Tag-In/Relay/Pile-On inputs; crew lines 23/45/618; nemesis "clean Pile-On" and `by_pile_on` | M1.1 docs agent | brief, GDD, crew, nemesis |
+| F15 | M1.1 doc vs sim: docs specify a bonded-chain bonus and Special values the sim does not use; reconcile when the sim lands (sim data wins for numbers) | M1.1 docs agent | combat-system, src/data/combat |
+| F16 | Designer rulings for owner awareness: no jump in combat (Dash mantles); Brace AI-only; Hiss moved to the skill bar; Specials have no unlock level | M1.1 docs agent | combat-system |

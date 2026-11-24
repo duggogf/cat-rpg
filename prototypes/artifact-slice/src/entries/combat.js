@@ -23,6 +23,7 @@ import { CombatCamera, COMBAT_CAM } from '../camera/combat.js';
 import { CombatInput } from '../input/combat-input.js';
 import { CombatHUD, BARK_ICON } from '../ui/combat/hud.js';
 import { chapterPill } from '../ui/combat/chapters.js';
+import { Cinematics, styleOf, SPECIAL_BY_STYLE } from '../render/vfx/cinematics.js';
 
 const Q = new URLSearchParams(location.search);
 // a 10-cat brawl for the triangle budget check (inline encounter row; same arena as the sandbox)
@@ -70,7 +71,8 @@ let world, shadow, post, enc, snap, prevSnap, fighters = new Map(), fx, scr, cca
 let realT = 0, acc = 0, paused = false, script = null, cmdQueue = [], injectQ = [], pile = null, impact = null, dip = null, midTone = new THREE.Color('#8C88B8');
 const DT = 1 / 60, TWO = 1 / 30, evLog = [], counts = {};
 let lastTagWindow = null, routedTrail = new Map(), crackedUntil = new Map(), standoffFocus = null, fightStartT = null, endShown = false, lastStats = {};
-let hudBackAt = null, pendingCard = null, seedCounter = 1, skipDraw = false; const pendingMenu = [];
+let hudBackAt = null, chainMean = 0.4, staggerSeen = false, latencyLog = [], cin = null, chainPending = false, chainFired = false; const banners = new Set();
+let pendingCard = null, seedCounter = 1, skipDraw = false; const pendingMenu = [];
 
 function setPhase(name) {
   const p = applyPhase(name), sd = sunDir(p);
@@ -183,7 +185,14 @@ function onEvent(ev) {
     case 'Skitter': { const f = F(ev.cat); if (f) { fx.dust('2 puffs', f.pos); scr.add({ kind: 'streak', from: f.pos.clone().add(new THREE.Vector3(0, 0.3, 0)), to: f.pos.clone().add(new THREE.Vector3(f.vel.x, 0.3, f.vel.z).multiplyScalar(0.3)), dur: 0.2, seed: 1, len: 120 }); } break; }
     case 'Hop': case 'Mantle': case 'HopDown': { const f = F(ev.cat); if (f) fx.dust('2 puffs', f.pos); break; }
     case 'Pounce': { const f = F(ev.cat); if (f) scr.add({ kind: 'streak', from: f.pos.clone().add(new THREE.Vector3(0, 0.3, 0)), to: f.pos.clone().add(new THREE.Vector3(0, 0, 0)), dur: 0.2, seed: 2 }); break; }
-    case 'Frazzled': { { const by = ent(ev.by); if (by && by.side !== 'enemy') hud.bark(ev.by, 'bang', realT); } const f = F(ev.cat); if (f) { f.impulse('take', tw, { dur: 0.25 }); fx.spawn('burstMagenta', f.head.clone(), { size: 0.9, drawings: 4, cycle: false }); } break; }
+    case 'Staggered': case 'Frazzled': {
+      // M1.1 §5 stagger cinematic (the sim's 'Staggered' when published; the M1 Frazzle until then)
+      { const f = F(ev.cat), e = ent(ev.cat);
+        if (f && e && e.side === 'enemy') { const full = e.rank === 'captain' || e.rank === 'boss' || !staggerSeen; staggerSeen = true;
+          const r = cin.stagger(f, ev.treatment ? ev.treatment === 'full' : full, realT); if (!ev.slow) dip = r.dip; ccam.focus = r.focus; } }
+    }
+    // falls through for the M1 Frazzle's own drawing
+    case 'FrazzledLegacy': { { const by = ent(ev.by); if (by && by.side !== 'enemy') hud.bark(ev.by, 'bang', realT); } const f = F(ev.cat); if (f) { f.impulse('take', tw, { dur: 0.25 }); fx.spawn('burstMagenta', f.head.clone(), { size: 0.9, drawings: 4, cycle: false }); } break; }
     case 'FrazzleEnded': { const f = F(ev.cat); if (f) for (let i = 0; i < 3; i++) fx.spawn('wedge', f.head.clone().add(new THREE.Vector3((i - 1) * 0.2, 0, 0)), { size: 0.22, drawings: 4, vel: new THREE.Vector3((i - 1) * 0.8, 0.6, 0) }); break; }
     case 'Ruffled': { const f = F(ev.cat); if (f) { f.impulse('take', tw); fx.spawn('sweat', null, { size: 0.26, drawings: 30, cycle: true, follow: () => f.head.clone().add(new THREE.Vector3(0.22 * f.scaleK, 0.08, 0)), breakAt: 0.85 }); } break; }
     case 'Hiss': { const f = F(ev.cat), e = ent(ev.cat); if (f && e) { f.impulse('hiss', tw); fx.spawn('hiss', f.head.clone().add(new THREE.Vector3(e.facing[0] * 0.35, -0.05, e.facing[1] * 0.35)), { size: 0.7, drawings: 5, rot: Math.atan2(-e.facing[1], e.facing[0]) * 0.3, cycle: true, breakAt: 0.7 }); } break; }
@@ -203,8 +212,15 @@ function onEvent(ev) {
       fu.impulse('strike', tw, { mag: 1.5, dur: 0.28 });
       hud.moveUsed(ev.user, ev.move, realT);
       if (eu.side !== 'enemy') hud.bark(ev.user, eu.personality, realT, true);
-      fx.tagRing(fu.pos);
-      const mv = DATA.moves[ev.move] || {};
+      const mv = DATA.moves[ev.move] || {}, col = styleOf(eu.cat).col;
+      fx.tagRing(fu.pos, eu.side === 'enemy' ? '#A8C878' : col);
+      if (!banners.has(ev.user + ev.move + Math.floor(realT))) scr.add({ kind: 'banner', at: fu.head.clone(), text: (mv.name || ev.move).toUpperCase(), col: eu.side === 'enemy' ? '#A8C878' : col, who: eu.name, dur: 1.3 });
+      // distinct VFX per Move type at each target: claw flurry, thump shockwave, yowl arcs
+      for (const id of ev.targets_hit || []) { const ft = F(id); if (!ft || mv.target === 'ally') continue;
+        const at = ft.head.clone().add(new THREE.Vector3(0, -0.15, 0));
+        if (mv.type === 'thump') { fx.dust('ring plus crack decal', ft.pos); fx.spawn('burstThump', at, { size: 1.2, drawings: 5, cycle: false }); fx.tagRing(ft.pos, '#FFF6E3'); }
+        else if (mv.type === 'yowl') { for (let i = 0; i < 3; i++) fx.spawn('sparkYowl', fu.head.clone().lerp(at, 0.35 + i * 0.3), { size: 0.5 + i * 0.25, drawings: 5, delay: i * TWO * 2 }); fx.spawn('spiral', at, { size: 0.35, drawings: 6 }); }
+        else { fx.spawn('slashFlurry', at, { size: 1.5, drawings: 5, cycle: false }); for (let i = 0; i < 3; i++) fx.spawn('claws', at.clone().add(new THREE.Vector3((i - 1) * 0.25, 0.2, 0)), { size: 0.3, drawings: 5, delay: i * TWO }); } }
       if (mv.target === 'ally' || mv.target === 'self') for (const id of (ev.targets_hit && ev.targets_hit.length ? ev.targets_hit : [ev.user])) { const f = F(id); if (f) for (let i = 0; i < 3; i++) fx.spawn('heart', f.head.clone().add(new THREE.Vector3((i - 1) * 0.18, 0.1, 0)), { size: 0.18, drawings: 10, vel: new THREE.Vector3((i - 1) * 0.2, 0.7, 0), delay: i * TWO, breakAt: 0.7 }); }
       break;
     }
@@ -232,12 +248,14 @@ function onEvent(ev) {
       else if (ev.feel && ev.feel.word && !pile) scr.letter({ cls: ev.feel.word.cls, ms: ev.feel.word.ms, tier: ev.feel.tier, at: f.head.clone(), seed: seedCounter++ });
       break;
     }
-    case 'PileOnStart': {
+    case 'TeamFinisher': case 'PileOnStart': {
+      // the Team finisher (M1.1 §6) reuses the Pile-On set-piece; on the M1 sim it is the Pile-On itself
+      const isTeam = ev.type === 'TeamFinisher'; if (isTeam) { ev = { ...ev, pile_type: 'full', feel: ev.feel || { tier: 5 } }; }
       const t = F(ev.target);
-      pile = { t: 0, dur: snap.pile_on ? snap.pile_on.dur : (ev.pile_type === 'full' ? 2.5 : 1.2), type: ev.pile_type, target: ev.target, cats: ev.cats, phase: 'main', beat: 0, beatT: null, beatDx: 0, outT: 0,
+      pile = { t: 0, dur: ev.duration_s || (snap.pile_on ? snap.pile_on.dur : (ev.pile_type === 'full' ? 2.5 : 1.2)), type: ev.pile_type, target: ev.target, cats: ev.cats, phase: 'main', beat: 0, beatT: null, beatDx: 0, outT: 0,
         coats: ev.cats.map((id) => { const e = ent(id); const k = portraitFor(e?.cat || id, id); return id === 'mikan' ? k.coat.base : (k.coat.patch || k.coat.base); }),
         mikan: ev.cats.includes('mikan'), chevrons: Math.max(0, ev.cats.length - (ev.cats.includes('mikan') ? 1 : 0)), panel: Kit.C.gold,
-        bolter: t && t.side === 'enemy' && (ent(ev.target)?.rank !== 'boss') ? { ...portraitFor(ent(ev.target)?.cat, ev.target) } : null, centerW: t ? t.pos.clone() : new THREE.Vector3() };
+        bolter: t && t.side === 'enemy' && (ent(ev.target)?.rank !== 'boss') ? { ...portraitFor(ent(ev.target)?.cat, ev.target) } : null, centerW: t ? t.pos.clone() : new THREE.Vector3(), team: isTeam, beatIdx: -1 };
       hud.showChrome(false);
       applyFeel(ev.feel, pile.centerW.clone().add(new THREE.Vector3(0, 0.4, 0)), { noFull: true, text: 'BAP-BAP-BAP!' });
       break;
@@ -250,6 +268,23 @@ function onEvent(ev) {
       scr.letter({ cls: 'dust_cloud', ms: 340, tier: 4, hitType: ev.style === 'Bruiser' ? 'thump' : ev.style === 'Yowler' ? 'yowl' : 'claw', text: W[ev.beat % W.length], seed: ev.beat });
       if (ev.feel?.shake) ccam.addShake(ev.feel.shake, realT, [0, 1]);
     } break;
+    case 'SpecialChainStart': chainMean = measureMean(); hud.showChrome(false); break;
+    case 'SpecialCutIn': {
+      const e = ent(ev.cat), f = F(ev.cat); if (!e || !f) break;
+      cin.cutIn({ id: e.id, catId: e.cat, name: e.name, f, special: (ev.special || '').toUpperCase(), idx: (ev.index || 1) - 1, of: ev.of || 1 }, ev.duration_s || 1, chainMean, realT, ev.index === 1);
+      break;
+    }
+    case 'SpecialUsed': { const fu = F(ev.cat); for (const id of ev.targets_hit || []) { const ft = F(id); if (ft) { ft.impulse('hurt', tw, { mag: 1.5 }); fx.spawn('burstGold', ft.head.clone(), { size: 1.2, drawings: 4, cycle: false }); fx.dust('5-puff ring', ft.pos); } } if (fu) fu.impulse('strike', tw, { mag: 1.6 }); break; }
+    case 'SpecialChainEnd': {
+      if (pile) { pile.phase = 'out'; pile.outT = 0; pile.screen = pile.anchor || project(pile.centerW.clone().add(new THREE.Vector3(0, 0.35, 0))); scr.letter({ cls: 'dust_cloud', ms: 800, tier: 5, hitType: 'thump', text: 'KA-BLAM!', at: pile.centerW.clone().add(new THREE.Vector3(0, 0.4, 0)), seed: 3 }); }
+      else { hud.showChrome(true); }
+      cin.end(); ccam.blend(0.2);
+      break;
+    }
+    case 'Dash': { const f = F(ev.cat); if (f) { fx.dust('3-puff ring', f.pos); scr.add({ kind: 'streak', from: f.pos.clone().add(new THREE.Vector3(0, 0.3, 0)), to: f.pos.clone().add(new THREE.Vector3(Math.sin(f.yaw), 0.3, Math.cos(f.yaw))), dur: 0.2, seed: 1, len: 140 }); } break; }
+    case 'AttackStart': { const f = F(ev.cat); if (f) { const heavy = /^(H|HC|FIN|LAUNCH)$/.test(ev.attack); f.impulse('coil', tw, { dur: heavy ? 0.14 : 0.05 }); } break; }
+    case 'InputBuffered': case 'InputDropped': latencyLog.push({ type: ev.type, tick: ev.tick, attack: ev.attack }); break;
+    case 'AttackActive': latencyLog.push({ type: ev.type, tick: ev.tick, attack: ev.attack, latency_ticks: ev.latency_ticks }); break;
     case 'PileOnEnd': {
       if (pile) { pile.phase = 'out'; pile.outT = 0; pile.screen = pile.anchor || project(pile.centerW.clone().add(new THREE.Vector3(0, 0.35, 0))); }
       const at = pile ? pile.centerW.clone().add(new THREE.Vector3(0, 0.4, 0)) : new THREE.Vector3();
@@ -277,18 +312,84 @@ function onEvent(ev) {
   }
 }
 
+/* ---------------------------------------------------------------- M1.1 input -> sim adapter */
+// Tab lock-on cycle (owner, C10): not locked by default; a press locks the nearest enemy; a press when the
+// nearest enemy is a DIFFERENT one locks that one; otherwise it unlocks (free third-person camera).
+let camLock = null;
+function nearestEnemy() {
+  const c = snap.entities.find((e) => e.id === snap.controlled); if (!c) return null;
+  let best = null, bd = 1e9;
+  for (const e of snap.entities) { if (e.side !== 'enemy' || !e.present || e.routed) continue; const d = Math.hypot(e.pos[0] - c.pos[0], e.pos[2] - c.pos[2]); if (d < bd) { bd = d; best = e.id; } }
+  return best;
+}
+function lockCycle() {
+  const n = nearestEnemy();
+  camLock = n && n !== camLock ? n : null;
+  if (camLock) hud.lockFlash = realT;
+}
+/** Does the sim speak the M1.1 InputFrame (light/heavy/dodge/dash/special/skillBar)? Detected from API.md's
+ * contract as published in the snapshot (`input_api >= 2`) or the encounter (`enc.inputApi`). */
+const simM11 = () => !!snap && 'special_prompt' in snap;
+function toSim(f) {
+  const out = { move: f.move };
+  if (simM11()) {   // M1.1 sim: it owns the Tab cycle (lockOn) and reads heavy as a HELD flag (press/release edges)
+    for (const k of ['light', 'dodge', 'dash', 'special', 'skillBar']) if (f[k]) out[k] = true;
+    if (f.heavy || f.heavyHeld) out.heavy = true;
+    if (f.lock) out.lockOn = true;
+    return out;
+  }
+  if (f.lock) lockCycle();
+  if (camLock && !ent(camLock)?.routed) out.lockId = camLock; else if (camLock) camLock = null;
+  // legacy (M1) sim: light/heavy -> the string, dodge/dash -> skitter, Special -> the Pile-On while one is offered,
+  // skill bar -> Slow Blink
+  if (f.light || f.heavy) out.attack = true;
+  if (f.dodge || f.dash) out.skitter = true;
+  if (f.special && snap.pile_on_offer) out.hiss = true;
+  if (f.skillBar) out.slowBlink = true;
+  return out;
+}
+
+/** The enemy the F prompt points at: a staggered enemy while Mikan's Special is ready (M1 sim: the offered Pile-On). */
+function specialTarget(s) {
+  if (s.special_prompt) return s.special_prompt.ready ? s.special_prompt.target : null;
+  if (simM11()) { const m = s.entities.find((e) => e.id === s.controlled); const st = s.entities.find((e) => e.side === 'enemy' && (e.staggered_s > 0 || e.frazzled_s > 0)); return m && st && (m.special ?? 0) >= 100 ? st.id : null; }
+  return s.pile_on_offer ? s.pile_on_offer.targetId : null;
+}
+function startSpecialChain() {
+  if (cin.holding || chainPending) return;
+  const offer = snap.pile_on_offer, tgt = offer ? ent(offer.targetId) : null;
+  const order = snap.entities.filter((e) => e.side === 'posse' && e.present && !e.routed).sort((a, b) => (b.controlled - a.controlled) || a.slot - b.slot)
+    .filter((e) => !tgt || e.controlled || Math.hypot(e.pos[0] - tgt.pos[0], e.pos[2] - tgt.pos[2]) < 7.5);
+  const cats = order.map((e) => ({ id: e.id, catId: e.cat, name: e.name, f: F(e.id), special: styleOf(e.cat).special || SPECIAL_BY_STYLE[e.style] })).filter((c) => c.f);
+  if (!cats.length) return;
+  chainPending = true; hud.showChrome(false);
+  cin.startChain(cats, measureMean(), realT, () => { chainPending = false; chainFired = true; ccam.blend(0.2); });
+}
+
 /* ---------------------------------------------------------------- sim tick */
 function tick() {
   let inp;
   if (injectQ.length) inp = injectQ.shift();
   else if (script) inp = script(enc, enc.tick) || {};
-  else inp = input.frame(ccam.pose.yaw, input._pad);
+  else inp = toSim(input.frame(ccam.pose.yaw, input._pad));
   if (cmdQueue.length && snap.slow_blink) { const c = cmdQueue.shift(); if (c.command) inp.command = c.command; if (c.slowBlink) inp.slowBlink = true; }
   else if (cmdQueue.length && cmdQueue[0].slowBlink) { cmdQueue.shift(); inp.slowBlink = true; }
+  // Special (F on a staggered enemy): the cut-in chain plays first with the sim held (time stop), then the Team
+  // finisher fires. On the M1 sim the finisher is its Pile-On (offered on a Frazzled target), so the chain wraps it.
+  if (inp.hiss && snap.pile_on_offer && !chainFired && !simM11()) { delete inp.hiss; startSpecialChain(); }
+  if (chainFired) { inp.hiss = true; chainFired = false; }
   prevSnap = snap;
   const evs = enc.step(inp);
-  snap = enc.snapshot();
+  snap = normSnap(enc.snapshot());
+  if (simM11()) camLock = snap.locked ? snap.lock : null;
   for (const ev of evs) onEvent(ev);
+}
+
+/** M1.1 snapshot aliases for the presentation (skill bar = the old Slow Blink grade/menu; stagger = Frazzle). */
+function normSnap(s) {
+  if ('skill_bar' in s) s.slow_blink = s.skill_bar;
+  for (const e of s.entities) { if (e.staggered_s != null) e.frazzled_s = e.staggered_s; if (e.stagger != null && e.frazzle == null) e.frazzle = e.stagger; }
+  return s;
 }
 
 /** Interpolated entity for rendering. */
@@ -304,10 +405,11 @@ function frame(dt) {
   realT += dt; input.now = realT;
   if (!opt.test) input._pad = input.pollPad();
   const look = input.takeLook(dt); ccam.userOrbit(look[0], look[1], realT);
-  input.slowBlinkOpen = !!snap.slow_blink;
+  input.skillBarOpen = !!snap.slow_blink;
   const menu = input.takeMenu();
   if (menu.includes('pause')) { paused = !paused; hud.setHint(paused ? 'Paused · P / Esc to resume' : ''); }
-  let rate = paused ? 0 : 1;
+  const cut = cin.update(realT);
+  let rate = paused || (cin.holding && !simM11()) ? 0 : 1;
   if (dip && realT >= dip.from && realT < dip.to) { const k = (dip.to - realT) < 0.1 ? 1 - (dip.to - realT) / 0.1 : 0; rate = dip.scale + (1 - dip.scale) * k; }
   if (dip && realT >= dip.to) dip = null;
   if (enc.mode !== 'ended' || prevSnap !== snap) {
@@ -315,10 +417,10 @@ function frame(dt) {
     while (acc >= DT - 1e-9 && n < 5) { acc -= DT; if (enc.mode === 'ended') { prevSnap = snap; break; } tick(); n++; }
     if (n >= 5) acc = 0;
   }
-  present(dt, Math.min(1, acc / DT), menu);
+  present(dt, Math.min(1, acc / DT), menu, cut);
 }
 
-function present(dt, alpha, menu = []) {
+function present(dt, alpha, menu = [], cut = null) {
   const s = snap, tw = Math.floor(realT * 30 + 1e-6) / 30;
   const globalStop = s.time_scale === 0;
   // triangle budget (0.5 M): besides the controlled cat (full), at most the 2 nearest cats may take the full mesh
@@ -338,7 +440,20 @@ function present(dt, alpha, menu = []) {
     if (want !== !!f.crowd && realT - (f.crowdT || -9) > 0.6) { f.crowd = want; f.crowdT = realT; }
     const crowd = !!f.crowd && !e.controlled;
     f.hidden = hidden || crowd;
-    f.update(lerpEnt(e, alpha), frozen ? 0 : dt * (s.slow_blink ? 0.05 : 1), realT, tw, dt);
+    // nearest standing opponent (for intent reading and squaring off)
+    const le = lerpEnt(e, e.controlled ? 1 : alpha);   // the controlled cat renders the newest tick: no presentation lag
+    if (!e.controlled && !e.routed && e.present) {
+      let bo = null, bd = 1e9;
+      for (const o of s.entities) { if (!o.present || o.routed || (o.side === 'enemy') === (e.side === 'enemy')) continue; const d = Math.hypot(o.pos[0] - e.pos[0], o.pos[2] - e.pos[2]); if (d < bd) { bd = d; bo = o; } }
+      if (bo && bd > 1e-3) { le._opp = { dir: [(bo.pos[0] - e.pos[0]) / bd, (bo.pos[2] - e.pos[2]) / bd], dist: bd }; le._side = (e.id.charCodeAt(0) + e.id.length) % 2 ? 1 : -1; }
+    }
+    f.update(le, cut && cut.id === e.id ? dt : frozen ? 0 : dt * (s.slow_blink ? 0.05 : 1), realT, tw, dt);
+    // posturing cats hiss and lash (a hiss glyph every ~1.6 s, staggered per cat); dash-ins leave a streak
+    if (!skipDraw && f.root.visible && f.intent === 'posture' && e.side === 'enemy' && (!f.hissT || realT - f.hissT > 1.6 + (e.id.length % 3) * 0.4)) {
+      f.hissT = realT; fx.spawn('hiss', f.head.clone().add(new THREE.Vector3(le._opp.dir[0] * 0.3, -0.04, le._opp.dir[1] * 0.3)), { size: 0.32, drawings: 4, breakAt: 0.7 });
+      fx.spawn('claws', f.pos.clone().add(new THREE.Vector3(-le._opp.dir[0] * 0.45, 0.35, -le._opp.dir[1] * 0.45)), { size: 0.22, drawings: 3, rot: 1.2 });
+    }
+    if (!skipDraw && f.root.visible && f.intent === 'dash_in' && (!f.dashT || realT - f.dashT > 0.35)) { f.dashT = realT; scr.add({ kind: 'streak', from: f.pos.clone().add(new THREE.Vector3(0, 0.3, 0)).addScaledVector(f.vel, -0.25), to: f.pos.clone().add(new THREE.Vector3(0, 0.3, 0)), dur: 0.2, seed: 2, len: 110 }); }
     // routed bolt: a three-puff trail of shrinking clouds
     if (e.anim === 'routed' && routedTrail.has(e.id) && realT - routedTrail.get(e.id) > 0.12) { routedTrail.set(e.id, realT); fx.spawn('puffSmall', f.pos.clone().add(new THREE.Vector3(0, 0.12, 0)), { size: 0.3, drawings: 6 }); }
     // Frazzled: spiral eyes (two spiral glyphs over the face when it turns toward the camera)
@@ -363,16 +478,16 @@ function present(dt, alpha, menu = []) {
   // camera-soft ring dressing: a prop crowding the lens is hidden outright (never half-transparent)
   if (world.dress) for (const m of world.dress.children) m.visible = Math.hypot(m.position.x - cam.position.x, m.position.z - cam.position.z) > 1.7;
   // tag window opening: a bell-gold spark ring on the controlled cat
-  if (s.tag_window && !lastTagWindow) { const f = F(s.controlled); if (f) fx.tagRing(f.pos); }
   lastTagWindow = s.tag_window;
   // camera
-  const C = F(s.controlled), T = s.lock && F(s.lock) && F(s.lock).root.visible ? F(s.lock) : null;
+  const lockId = camLock || (script && !simM11() ? s.lock : null);   // bots play locked; the player starts free
+  const C = F(s.controlled), T = lockId && F(lockId) && F(lockId).root.visible ? F(lockId) : null;
   const foes = s.entities.filter((e) => e.side === 'enemy' && e.present && !e.routed);
   const cen = foes.length ? foes.reduce((a, e) => a.add(v3(e.pos)), new THREE.Vector3()).divideScalar(foes.length) : null;
   let offFrame = false;
   if (T && C) { const a = project(T.head), b = project(C.pos); offFrame = Math.abs(a.nx) > 0.6 || Math.abs(b.nx) > 0.8 || b.ny < -0.75 || a.ny > 0.75; }
   const standoffK = s.mode === 'standoff' ? Math.min(1, s.t / 3) : 0;
-  ccam.update(dt, realT, { C: C ? C.pos.clone() : new THREE.Vector3(), T: T ? T.pos.clone() : null, enemiesCentroid: cen, aspect: cam.aspect, slowBlink: s.slow_blink,
+  ccam.update(dt, realT, { free: !T, C: C ? C.pos.clone() : new THREE.Vector3(), T: T ? T.pos.clone() : null, enemiesCentroid: cen, aspect: cam.aspect, slowBlink: s.slow_blink,
     highRoad: C && T && Math.abs(C.pos.y - T.pos.y) > 0.6, mode: pile && pile.phase === 'main' ? 'pileon' : s.mode, pileCenter: pile ? pile.centerW : null,
     standoffFocus, standoffK, offFrame, globalStop, targetNY: T ? project(T.head).ny : null, clearance, occluded: C ? (pose) => occludedAt(pose, [C.head, T ? T.head : null]) : null });
   // impact frame state
@@ -388,6 +503,11 @@ function present(dt, alpha, menu = []) {
   // Pile-On set-piece clock
   if (pile) {
     pile.t += dt; if (pile.beatT != null) pile.beatT += dt;
+    // Team finisher (M1.1): the sim sends no per-cat beats, so each chained cat gets one beat across the cloud's run
+    if (pile.team && pile.phase === 'main') {
+      const n = pile.cats.length, bi = Math.min(n - 1, Math.floor(pile.t / (pile.dur * 0.85 / n)));
+      if (bi !== pile.beatIdx) { pile.beatIdx = bi; const e = ent(pile.cats[bi]); if (e) onEvent({ type: 'PileOnBeat', cat: e.id, beat: bi + 1, of: n, style: e.style, flourish: e.personality, feel: { shake: { peak_pct: 0.7, steps: 4, step_ms: 33, decay: 0.6 } } }); }
+    }
     if (pile.phase === 'out') { pile.outT += dt; if (pile.outT > 0.42) { pile = null; hudBackAt = realT + (scr.word ? Math.max(0, scr.word.ms / 1000 - scr.word.t) : 0); } }
   }
   // the giant T5 word plays only while the HUD is hidden (HUD §4.1): the chrome returns after it
@@ -419,12 +539,12 @@ function present(dt, alpha, menu = []) {
   // HUD
   if (skipDraw) pendingMenu.push(...menu);
   else if (opt.hud) {
-    hud.update({ device: input.lastDevice, s, t: realT, project, fighters, menuEvents: pendingMenu.splice(0).concat(menu), send: (c) => cmdQueue.push(c) });
+    hud.update({ device: input.lastDevice, lockId: camLock, cinematic: cin.holding || !!pile, specialTarget: specialTarget(s), s, t: realT, project, fighters, menuEvents: pendingMenu.splice(0).concat(menu), send: (c) => cmdQueue.push(c) });
     if (pendingCard && realT >= pendingCard.at) { hud.card(pendingCard.text, pendingCard.sub, 1e6, realT, pendingCard.clowder); pendingCard = null; }
     hud.tickCard(realT);
   }
   renderer.domElement.style.filter = s.slow_blink ? 'saturate(0.7) brightness(0.9)' : '';
-  if (!skipDraw) draw(impactMode, s);
+  if (!skipDraw) draw(impactMode, s, cut);
 }
 
 /** Distance the camera may sit at from `pivot` along `dir` before camera-solid geometry (minus 0.2 m). */
@@ -448,7 +568,7 @@ function occludedAt(pose, pts) {
 }
 
 /* ---------------------------------------------------------------- render */
-function draw(impactMode, s) {
+function draw(impactMode, s, cut = null) {
   renderer.info.reset();
   shadow.update(renderer, [envScene, lateScene], world.casters); renderer.info.reset();
   const R = world.rings;
@@ -484,6 +604,7 @@ function draw(impactMode, s) {
     }
     renderer.autoClear = true;
   }
+  if (cut) cin.render(cut, realT);
   lastStats = { calls: renderer.info.render.calls, triangles: renderer.info.render.triangles };
 }
 
@@ -492,22 +613,46 @@ async function boot() {
   const [tex, spr] = await Promise.all([loadTextures(), bakeSprites(256), loadCatAssets('')]);
   sprites = spr;
   enc = createEncounter(opt.fight, { seed: opt.seed, showcase: true, reduceFlashes: opt.reduceFlashes, motionScale: opt.motion });
-  snap = enc.snapshot(); prevSnap = snap;
+  snap = normSnap(enc.snapshot()); prevSnap = snap;
   world = buildArena(snap.arena, snap.props, tex); world.tex = tex;
   envScene.add(world.env, world.backdrop); lateScene.add(world.late);
   shadow = new SunShadow(2048, 21); post = new PaintPost(tex.grain); U.grainMap.value = tex.grain;
   keyLight = new THREE.DirectionalLight('#ffffff', 2.5); fillLight = new THREE.AmbientLight('#6E6AA8', 0.8); lateScene.add(keyLight, fillLight);
   for (const e of snap.entities) { const f = new Fighter(e, { rim: Q.get('rim') !== '0' }); fighters.set(e.id, f); fGroup.add(f.root); }
   fx = new WorldFX(spr, fxScene, decalScene); fx.cam = cam;
-  scr = new ScreenFX(app);
+  cin = new Cinematics({ renderer, cam, scr: null, lateScene, fGroup });
+  scr = new ScreenFX(app); cin.scr = scr;
   hud = new CombatHUD(app, DATA); if (!opt.hud) hud.el.style.display = 'none';
   // deterministic captures step frames faster than wall-clock CSS transitions: snap them in test mode
   if (opt.test) { const st = document.createElement('style'); st.textContent = '.ch, .ch * { transition: none !important; animation: none !important; }'; document.head.appendChild(st); }
   try { await Promise.all(["400 64px 'Dela Gothic One'", "800 32px 'M PLUS Rounded 1c'", "700 32px 'M PLUS Rounded 1c'"].map((f) => document.fonts.load(f))); } catch (e) { /* fonts optional */ }
-  hud.setup(snap);
+  hud.setup(snap); hud.catOf = (id) => (snap.entities.find((e) => e.id === id) || {}).cat || id;
   ccam = new CombatCamera(cam);
   input = new CombatInput(renderer.domElement, { braceToggle: Q.get('brace') === 'toggle' });
-  const bots = { bot: () => withCommandQueue(skilledBot()), median: () => withCommandQueue(medianBot()), daifuku: () => withCommandQueue(daifukuBot()), passive: () => passiveBot() };
+  // ?script=demo: a presentation-side player bot for the M1.1 controls (Mikan only): locks on, plays L-L-L-H
+  // strings with steering, dodges telegraphs aimed at her, presses F (Special) whenever the prompt is ready
+  const demoBot = () => { let n = 0, holdH = 0; return () => {
+    const s = snap; if (s.mode !== 'fight') return {};
+    const c = s.entities.find((e) => e.controlled); if (!c) return {};
+    const foes = s.entities.filter((e) => e.side === 'enemy' && e.present && !e.routed); if (!foes.length) return {};
+    const out = {};
+    if (!s.locked) out.lockOn = (n++ % 30) === 0;
+    if (s.special_prompt && s.special_prompt.ready) return { ...out, special: true };
+    // meter full: go for a staggered enemy (the Special needs one in range)
+    const stag = c.special_ready && foes.find((e) => (e.staggered_s || 0) > 0);
+    if (stag) return { ...out, move: [stag.pos[0] - c.pos[0], stag.pos[2] - c.pos[2]], dash: n++ % 40 === 0 };
+    const t = foes.find((e) => e.id === s.lock) || foes.sort((a, b) => Math.hypot(a.pos[0] - c.pos[0], a.pos[2] - c.pos[2]) - Math.hypot(b.pos[0] - c.pos[0], b.pos[2] - c.pos[2]))[0];
+    const tl = s.telegraphs.find((x) => x.aimed_at === c.id && x.dur - x.t < 0.22);
+    if (tl) return { ...out, dodge: true, move: [c.pos[0] - t.pos[0], c.pos[2] - t.pos[2]] };
+    const d = Math.hypot(t.pos[0] - c.pos[0], t.pos[2] - c.pos[2]);
+    if (d > 1.3) return { ...out, move: [t.pos[0] - c.pos[0], t.pos[2] - c.pos[2]], dash: d > 3.5 && n % 90 === 0 };
+    n++;
+    const ph = n % 40;   // a press every ~10 ticks: L L L then H (the finisher)
+    if (ph === 0 || ph === 10 || ph === 20) return { ...out, light: true };
+    if (ph >= 30 && ph < 33) { holdH = 1; return { ...out, heavy: true }; }
+    holdH = 0; return out;
+  }; };
+  const bots = { demo: () => demoBot(), bot: () => withCommandQueue(skilledBot()), median: () => withCommandQueue(medianBot()), daifuku: () => withCommandQueue(daifukuBot()), passive: () => passiveBot() };
   if (bots[opt.script]) script = bots[opt.script]();
   layout(); setPhase(opt.phase);
   // start the camera on the Posse, looking down the ring at the opponents
@@ -518,7 +663,8 @@ async function boot() {
     state: () => ({ fight: opt.fight, seed: opt.seed, tick: enc.tick, realT: +realT.toFixed(4), mode: snap.mode, outcome: snap.outcome, slow_blink: snap.slow_blink, controlled: snap.controlled,
       counts: { ...counts }, pile: !!pile, impact: !!impact, camera: cam.position.toArray().map((v) => +v.toFixed(3)), yaw: +ccam.pose.yaw.toFixed(2), stats: { ...lastStats } }),
     hash: () => enc.hash(),
-    debug: () => ({ screen: scr.fx.map((f) => ({ kind: f.kind, t: +f.t.toFixed(3), dur: f.dur, from: f.from && project(f.from), to: f.to && project(f.to) })), word: scr.word && scr.word.text, world: fx.items.length, cats: [...fighters.values()].map((f) => ({ id: f.id, vis: f.root.visible, lod: f.cat.lod, tri: f.cat.triangles, d: +f.pos.distanceTo(cam.position).toFixed(2) })) }),
+    latency: () => latencyLog.slice(),
+    debug: () => ({ screen: scr.fx.map((f) => ({ kind: f.kind, t: +f.t.toFixed(3), dur: f.dur, from: f.from && project(f.from), to: f.to && project(f.to) })), word: scr.word && scr.word.text, world: fx.items.length, cats: [...fighters.values()].map((f) => ({ id: f.id, intent: f.intent, vis: f.root.visible, lod: f.cat.lod, tri: f.cat.triangles, d: +f.pos.distanceTo(cam.position).toFixed(2) })) }),
     snapshot: () => snap,
     /** Advance n rendered frames of 1/60 s (deterministic), drawing only the last unless every = true. */
     frames: (n = 1, every = false) => { for (let i = 0; i < n; i++) { skipDraw = !every && i < n - 1; frame(DT); } skipDraw = false; return window.__cat.state(); },

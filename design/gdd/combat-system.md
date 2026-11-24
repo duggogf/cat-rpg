@@ -1,96 +1,114 @@
 # Combat System — Vertical Slice
 
-*Owner: combat designer (game-designer) · Round 2 (slice rewrite) · 2026-11-23 · Owner feedback pass 2026-11-24 · Consistency pass (creative director) 2026-11-24 · Canon: the owner's comments C1–C5 → `design/reviews/owner-feedback-rulings.md` (OR-01…OR-21, binding), as settled by `design/reviews/owner-feedback/consistency-pass.md` (F1–F12) → `design/creative-brief.md` v1.6 → `design/reviews/round-1/director-rulings.md`. Patent guardrails: `design/legal/nemesis-patent-analysis.md` v2 §5 (binding). First draft archived at `design/backlog/first-drafts/combat-system.md`.*
+*Owner: combat designer (game-designer) · Round 2 (slice rewrite) · 2026-11-23 · Owner feedback pass 2026-11-24 · Consistency pass (creative director) 2026-11-24 · Canon: the owner's comments C1–C5 → `design/reviews/owner-feedback-rulings.md` (OR-01…OR-21, binding), as settled by `design/reviews/owner-feedback/consistency-pass.md` (F1–F12) → `design/creative-brief.md` v1.6 → `design/reviews/round-1/director-rulings.md`. Patent guardrails: `design/legal/nemesis-patent-analysis.md` v2 §5 (binding). First draft archived at `design/backlog/first-drafts/combat-system.md`. · **Owner combat direction M1.1 (2026-11-24):** `design/reviews/owner-feedback/combat-m1.1-spec.md` is binding and supersedes this doc where they differ (final bindings: **F = Special on a staggered enemy, R = skill bar, Tab = lock-on cycle**).*
 
 > **Patent rule (brief v1.5):** nothing Mikan does to one cat, and nothing that cat becomes because of it, changes a *different* cat. In combat that means: a loss changes only the victor (G1); Boss anger buffs only that Boss and never comes from a fight (G2); an old boss fights the same whoever is in the Posse, and only the recruit's own memory makes it flinch (G4); a join-in belongs to the joiner and its Rival fights exactly as it would anyway (G7). Not legal advice; counsel review still blocks scope lock.
 
-**Scope.** This doc covers what the vertical slice (DR-01) and the grey-box combat prototype (DR-02) need: real-time rules, the 12 slice Moves, 3 Zoomies, 3 Fears, Tag-In/Relay, Frazzle and the Pile-On, Posse AI by personality, enemy grammar, Daifuku, the game-feel/VFX tier table, and the combat column of the control map. Everything else is in `## Backlog (post-slice)`. **Spec level (DR-28):** intent, rules and ranges in milliseconds or seconds. Frame data goes in `assets/data/combat/*` and the prototype.
+**Scope.** This doc covers what the vertical slice (DR-01) and the grey-box combat prototype (DR-02) need: real-time rules, Mikan's five strings and the input rules, the 12 slice Moves, the skill bar, 3 Fears, Frazzle (stagger), the Special chain and the Team Pile-On (Zoomies folded in), Posse and enemy AI (attack tokens, cat-like spacing, personality), enemy grammar, Daifuku, the game-feel/VFX tier table, and the combat column of the control map. Everything else is in `## Backlog (post-slice)`. **Spec level (DR-28):** intent, rules and ranges in milliseconds or seconds. Frame data goes in `assets/data/combat/*` and the prototype.
 
 ---
 
 ## 1. Overview
 
-Combat is a short, loud, readable cartoon brawl with FF7 Remake's **structure** but deliberately light detail. You directly control one cat of a four-cat **Posse** (Mikan + 3 Crew), seen from a third-person camera behind and above the cat. You can switch instantly to any of the four. Each cat has one 3-hit string, a dodge (**Skitter**), a guard (**Brace**), a jump (**Hop**) and a **Hiss**. Hits fill a **Pounce Gauge** measured in **Paws**. Paws are spent on **Moves**, either from a shortcut or in **Slow Blink**, where time runs at 5% and you give orders to any cat. Every Move is either a **Set-up** that creates a state or a **Pay-off** that cashes one in. Hits build an enemy's **Frazzle** gauge. A Frazzled enemy is helpless and takes ×1.5 damage, and it opens the **Pile-On**: the Posse dives in and vanishes into a cartoon dust cloud. Switching control at the right moment is a **Tag-In**, and chaining Tag-Ins is a **Relay**. Relays are how a skilled player conducts the fight. AI Crew fight according to their **personality** and fill Paws at half rate, so the biggest moments are always ones the player chose. A Tough falls in 6–10 s, a normal encounter takes 30–60 s, a Captain 30–45 s and Daifuku 2–3 min. Formulas and the reference model (§4) show the arithmetic for each. **A fight can be lost** (the owner's C2): a Posse wipe ends the encounter, the victor Gloats, and the day ends (Day Loop jumps the clock to Night and sends Mikan home). Two personal moments ride on statuses the fight already has: a recruit that sees its old boss may flinch **Cowed** until the player Tags it in, and a Boss the player has angered by loud marking starts the fight **Fired Up**.
+Combat is a short, loud, readable cartoon brawl with FF7 Remake's **structure** but deliberately light detail. **The player controls Mikan only** (owner direction M1.1). The three Crew of the four-cat **Posse** are always AI; the player **commands** them from the **skill bar**. The camera is third-person behind and above Mikan and free by default; **Tab** locks on and cycles. Mikan has a **Light** and a **Heavy** attack, a **Dodge** (**Skitter**) and a **Dash**, and five strings built from them (L-L-L, the **L-L-L-H finisher**, the L-H launcher, a charged Heavy, the Dash-L lunge). The pace is slower than the M1 grey box but the response is not: a Light's first active frame lands within 3 frames, a press is buffered only near the end of an attack, and movement steers out of an attack's recovery on a ramp. Hits fill a **Pounce Gauge** measured in **Paws**. Paws are spent on **Moves** from the skill bar (**R**), where time slows and the player picks a Move for Mikan or forces one for any Crew cat. Every Move is either a **Set-up** that creates a state or a **Pay-off** that cashes one in, and every Move is visible (name banner, cat colour, wind-up pose). Hits build an enemy's **Frazzle** gauge; **Frazzled** is this game's word for *staggered*. A Frazzled enemy is helpless and takes ×1.5 damage, and the stagger plays a short zoom, slow-down and shattered-glass blink. On a Frazzled enemy, **F** fires Mikan's **Special** (Zoomies are folded into it) with a shonen cut-in; every Crew cat in range with a ready meter **chains** its own Special automatically, and if all four land, the **Team Pile-On** plays: the Posse vanishes into the cartoon dust cloud. AI on both sides thinks like cats: only 1–2 enemies engage Mikan at once (attack tokens) while the rest circle, stalk, posture and flank before dashing in. AI Crew fight according to their **personality** and fill Paws at half rate, so the biggest moments are always ones the player chose. A Tough falls in 6–10 s, a normal encounter takes 30–60 s, a Captain 30–45 s and Daifuku 2–3 min (F9; the M1.1 re-baseline of those figures is owned by the sim's data and tests). **A fight can be lost** (the owner's C2): a Posse wipe ends the encounter, the victor Gloats, and the day ends (Day Loop jumps the clock to Night and sends Mikan home). Two personal moments ride on statuses the fight already has: a recruit that sees its old boss may flinch **Cowed** until the player commands it from the skill bar, and a Boss the player has angered by loud marking starts the fight **Fired Up**.
 
 ## 2. Player Fantasy
 
-**"I'm the boss of a gang of very different cats, and I'm conducting a brawl."** It reads as cat slapstick turned up to the maximum: action lines, stepped screen shake, impact frames, hand-lettered sound-effect words on the big hits. But the player never loses track of their cat, because every big effect answers something they did or ordered.
+**"I'm the boss of a gang of very different cats, and I'm commanding a brawl."** It reads as cat slapstick turned up to the maximum: action lines, stepped screen shake, impact frames, hand-lettered sound-effect words on the big hits. But the player never loses track of their cat, because every big effect answers something they did or ordered.
 
-- **Target aesthetics (MDA):** *Challenge* (read telegraphs, time the Tag-In, cash in the Frazzle window); *Sensation* (a tiered feel budget peaking at the Pile-On); *Fellowship* through *Fantasy* (four distinct personalities you can watch working); *Expression* (who is in your Posse and how you chain them).
-- **Pillar 3, Conduct the Brawl:** fights are short, with one goal you can always see (fill the Frazzle gauge), three telegraph colours with absolute answers, and Tag-In/Relay as the skill ceiling.
+- **Target aesthetics (MDA):** *Challenge* (read telegraphs, time the skill-bar orders, cash in the stagger with **F**); *Sensation* (a tiered feel budget peaking at the Special cut-ins and the Team Pile-On); *Fellowship* through *Fantasy* (four distinct personalities you can watch working); *Expression* (who is in your Posse and what you order them to do).
+- **Pillar 3, Command the Brawl:** fights are short, with one goal you can always see (fill the Frazzle gauge to stagger), three telegraph colours with absolute answers, and the skill bar plus the Special chain as the skill ceiling.
 - **Pillar 1, Cat's-Eye Truth:** the verbs are cat verbs. You Hiss a weak Tough until it backs down. You wait on a wall and pounce. You knock the Boss off his wall into a bucket. Nobody dies; a beaten cat bolts away in a puff of dust.
-- **Pillar 4, Rivals Remember:** Old Score makes a fight between cats with history play out differently. Memory lines appear at the Standoff, or at the Rout after an Ambush. A recruit ears-flat at the sight of its old boss, steeled by your Tag-In; a cat you spared yowling in to fight its own Rival beside you; a Boss already steaming because you sprayed his walls loudly.
-- **SDT:** *Competence* comes from readable telegraphs and a gauge you can see. *Autonomy* comes from Posse choice, Move slots and when to cash in a Frazzle. *Relatedness* comes from Crew who act like themselves.
+- **Pillar 4, Rivals Remember:** Old Score makes a fight between cats with history play out differently. Memory lines appear at the Standoff, or at the Rout after an Ambush. A recruit ears-flat at the sight of its old boss, steeled by your command; a cat you spared yowling in to fight its own Rival beside you; a Boss already steaming because you sprayed his walls loudly.
+- **SDT:** *Competence* comes from readable telegraphs and a gauge you can see. *Autonomy* comes from Posse choice, Move slots, what to order and when to cash in a stagger. *Relatedness* comes from Crew who act like themselves.
 
-**What the player tells a friend:** "When you stagger someone, your whole gang piles on in a dust cloud. And I knocked the Boss off his wall into a bucket."
+**What the player tells a friend:** "When you stagger someone you hit F, everything freezes on your cat for a manga panel, and if the whole gang's meters are full they all chain in and pile on in a dust cloud. And I knocked the Boss off his wall into a bucket."
 
 ---
 
 ## 3. Detailed Design
 
-### 3.1 Controls (actions owned here; map owned by UX, DR-08)
+### 3.1 Controls (actions owned here; map owned by UX, DR-08; final map per owner direction M1.1)
 
-Everything can be remapped. Every hold has a toggle alternative. West, North, South and East are face-button positions.
+Everything can be remapped. Every hold has a toggle alternative. West, North, South and East are face-button positions. **This is the one control table**; `ux/hud.md`, `ux/key-screens.md` and `GDD.md` copy it. The KB+M column is the owner's (2026-11-24, final bindings); the gamepad column mirrors it and is UX's to refine.
 
-| Action | Gamepad | KB/M | Rule |
+| Action | KB+M | Gamepad | Rule |
 |---|---|---|---|
-| Move | Left stick | WASD | — |
-| Camera / lock-on | Right stick; R3 toggles lock, flick picks the next target | Mouse; MMB / wheel | Soft lock is on by default |
-| **Attack** | West | LMB | 3-hit string. Airborne or from the High Road it becomes a **Pounce** |
-| **Hop** | South | Space | Jump and mantle onto the High Road |
-| **Skitter** | East | Shift | Dodge |
-| **Brace** | R1 (hold or toggle) | RMB | Guard |
-| **Hiss** / **Pile-On** | North | F | Becomes Pile-On while one is offered |
-| **Slow Blink** | R2 | Tab | Tactical menu, time ×5% |
-| Shortcut Move 1–4 | L1 hold + W/N/E/S | 1–4 | Fires the controlled cat's Move slots |
-| **Zoomies** | L1 + R1 | R | When the controlled cat's gauge is full |
-| Switch | D-pad Up = Mikan; Left/Down/Right = Crew 1/2/3 | Z X C V | Switching in a Tag-In window makes it a **Tag-In** |
-| Pause | Menu | Esc | — |
+| Move | WASD | Left stick | Free third-person camera on the mouse / right stick |
+| **Light attack** | LMB | West | Strings (§3.2). Airborne or from the High Road it becomes a **Pounce** |
+| **Heavy attack** | RMB | North | Hold to charge |
+| **Dodge** (Skitter) | Space | South | Cancels recovery after the hit |
+| **Dash** | Shift | East | Dash → Light is a string starter (lunge). Dashing at a reachable High Road ledge mantles onto it |
+| **Lock-on** | Tab | R3 | **Not locked by default.** Press: lock the nearest enemy. Press again: if the nearest enemy is now a *different* enemy, lock that one; otherwise **unlock** (free camera) |
+| **Special** | **F** (prompt) | R1 (prompt) | Only on a **Frazzled (staggered)** enemy while Mikan's Special meter is full; shown as a context prompt (§3.6) |
+| **Skill bar** | **R** | R2 | Opens the skill bar (time slows). Commands Mikan's Moves **and forces Crew Moves** (§3.3) |
+| Pause | Esc / P | Menu | — |
 
-**Inside Slow Blink:** stick = cursor; L1/R1 = change cat; South = confirm; East = back; R2 = close. Scram (flee) is a menu entry. The menu shows props and **known** Fears, which is why there is no Whisker Sense in combat. **Cut (DR-08, DR-28):** Whack, Bap, the Righting input, hold-charge attacks, the L3+R3 chord, Tactics and Auto-Hiss.
+**Removed (owner M1.1):** switching control to other cats (Z X C V / D-pad, Tag-In, Relay); the Pile-On input; the Zoomies input (folded into the Special); Slow Blink on Tab / R2 (it is now the skill bar on R); shortcut Moves 1–4 (Moves go through the skill bar); Hop on Space; Brace on RMB; Hiss on F.
 
-### 3.2 The controlled cat's verbs
+**Where the old verbs went** (designer's ruling to keep the map at the owner's table; owner to confirm, Assumptions A8–A10):
+- **Hop / mantle:** there is no jump button. A Dash at a reachable High Road ledge mantles onto it; a Dash off an edge drops. A Light while airborne or on the High Road is the **Pounce**.
+- **Brace:** cut as a player verb (RMB is Heavy). Mikan answers white and yellow with Dodge. AI cats keep **Brace** as an AI guard posture (§3.11), and its damage factor still applies (F1 `G`).
+- **Hiss:** an entry on every cat's skill-bar row (0 Paws, its own 8 s cooldown). The skill bar slows time, so a yellow windup can still be read and Hissed.
+- **Scram:** an entry on Mikan's skill-bar row, or leave the ring (§3.14).
 
-**Attack string.** Each Style has **one** 3-hit string (about 1.8 s per full cycle including recovery). Hits 1–2 are T1. Hit 3 is the **Style finisher** (T2):
+**Inside the skill bar** (the old Slow Blink; same name in fiction: Mikan's slow blink to the gang). Time runs at ×5%. One row per Posse cat, Mikan first, each with its 4 Move slots, its Hiss and its Paw pips (Mikan's row adds Scram). Mouse / stick picks a slot, then a target (the lock target by default); LMB / South confirms; RMB / East goes back; R / R2 closes. **Commands chain** while any cat can afford one. Props and **known** Fears are tagged in the world while it is open, which is why there is no Whisker Sense in combat. **Cut (DR-08, DR-28):** Whack, Bap, the Righting input, the L3+R3 chord, Tactics and Auto-Hiss.
 
-| Style | Basic type | Finisher |
+### 3.2 Mikan's verbs (the player controls Mikan only)
+
+**Feel: slower, but responsive (M1.1, binding).**
+- **Slower overall:** move speed ≈ 25–30% below the M1 grey box (`move_speed_scale`), with longer anticipation on Heavies and Moves and longer follow-through on everything, judged at the 3.8 m camera, which magnifies apparent speed.
+- **Responsive:** a Light's **first active frame within ≈ 50 ms (≤ 3 frames at 60 Hz)** of the press, from neutral or from the buffer. Slowness lives in follow-through and recovery, never before the hit.
+- **One-slot input buffer:** an attack press is buffered only in the **last ≈ 150 ms** of the current attack (`buffer_window_ms`); earlier presses are dropped. The buffer holds one press, and a newer press replaces it. Three fast clicks never queue three attacks.
+- **Move-out gradient:** the player does not wait for the animation to end. From **≈ 60% of an attack's recovery** (`moveout_start`), movement input is accepted on a ramp: partial steering first, full control by the end of recovery; a move input once the ramp reaches full ends the attack. **Dodge cancels recovery at any point after the hit.** Only the **L-L-L-H finisher** commits briefly (`finisher_commit_ms` ≈ 150 ms after its active frames; its ramp starts at 85%).
+- **Steering:** Light strings step forward (≈ 0.4 m per hit) and steer toward the stick, or toward the lock target when locked and the stick is neutral.
+
+**Mikan's five strings (Mikan only; keep it to these five).** Heavy hits build Frazzle faster than Lights. Values are starting values; the re-baseline is owned by the sim's data and tests.
+
+| String | Input | What it does | MV / FZ per hit | Tier |
+|---|---|---|---|---|
+| **Basic** | L → L → L | Two swipes, then **Flurry** (a 3-swipe burst counted as one hit) | 1.0 / 8, 1.0 / 8, 1.5 / 14 | T1, T1, T2 |
+| **Finisher** | L → L → L → **H** | Heavy pounce-slam: 2 m knockback that can push an enemy off a High Road edge; flinches leaders | 2.0 / 24 | T3 |
+| **Launcher** | L → H | Knock-up: a Tough, Stray or crow is popped up and helpless ≈ 1.0 s; leaders flinch | 1.5 / 16 | T2 |
+| **Charged heavy** | hold H (tap = uncharged) | Charge level 0 / 1 / 2 at 0 / 0.5 / 1.0 s held | 1.5 / 16 · 2.2 / 24 · 3.0 / 32 | T2 · T2 · T3 |
+| **Lunge** | Dash → L | Closes ≈ 4 m and strikes; a string starter (continues as L → L) | 1.2 / 10 | T2 |
+
+**Crew and enemies have no player strings.** Their AI attacks with its Style's **dash-in combo** (2 basic hits and a Style finisher, ≈ 1.8 s), chosen by the AI (§3.11):
+
+| Style | Basic type | Combo finisher (AI) |
 |---|---|---|
-| Scrapper (Mikan) | Claw | **Flurry**: a 3-swipe burst counted as one hit |
+| Scrapper | Claw | **Flurry**: a 3-swipe burst counted as one hit |
 | Bruiser | Thump | **Shove**: 2 m knockback, which can push an enemy off a High Road edge |
 | Yowler | Yowl | **Yowl cone**: a 3 m, 60° cone hitting every enemy in it |
 
-There is no heavy attack and no hold-charge. A string can be cancelled into Skitter, Brace, Hiss, a Move or a switch at any point; the prototype tunes exactly when.
+**Pounce.** A Light while airborne, or from the High Road, dives at the lock target (or the nearest enemy in front when unlocked; up to 6 m). On the High Road the Pounce **charges with time aloft** (Wind-Up, up to 3 s; F7). The charge shows as the pre-pounce bottom wiggle. While a cat is perched, its passive Paw fill stops. After 2 s perched, enemies with reach (crows, Yowlers, Daifuku) prefer it as a target. A Pounce made within 1.5 s of mantling deals ×0.6 and gives no Paw points, so mantle-and-pounce cannot be looped (CS-16).
 
-**Pounce.** Attack while airborne, or from the High Road, dives at the lock target (up to 6 m). On the High Road the Pounce **charges with time aloft** (Wind-Up, up to 3 s; F7). The charge shows as the pre-pounce bottom wiggle. While a cat is perched, its passive Paw fill stops. After 2 s perched, enemies with reach (crows, Yowlers, Daifuku) prefer it as a target. A Pounce made within 1.5 s of mantling deals ×0.6 and gives no Paw points, so mantle-and-pounce cannot be looped (CS-16).
+**Dodge (Skitter).** About 2.5 m, about 350 ms long, invulnerable for about the first 200 ms. It cancels recovery at any point after the hit. A **perfect Skitter** starts within 150 ms of an incoming hit; only the Fraidy perk rewards it.
 
-**Skitter.** A dodge of about 2.5 m, about 350 ms long, invulnerable for about the first 200 ms. A **perfect Skitter** starts within 150 ms of an incoming hit; only the Fraidy perk rewards it.
+**Dash.** About 3 m in about 250 ms, not invulnerable, 0.5 s re-use. Dash → Light is the Lunge. A Dash at a reachable High Road ledge mantles.
 
-**Brace.** Hold to guard the front 120°. White and yellow hits are reduced to the 30% floor. **Red cannot be Braced.** There is no guard break; red attacks and Fed Up stop players from turtling.
+**Hiss** (from the skill bar). 8 s cooldown per cat, 4 m reach in front. Against a **yellow** telegraph, it **interrupts** the attack, **Ruffles** the attacker (§3.5) and flinches it. The interrupted enemy **spends the Paw**, and that Move goes on a 6 s cooldown, so there is no retry loop. Against a **Tough at ≤ 15% Nerve**, the Tough **Backs Down**: it is Routed by intimidation, T4, `CatRouted(by_back_down)`. Otherwise a Hiss flinches Toughs and does nothing to leaders. **AI cats Hiss on their own only at yellow telegraphs aimed at themselves** (DR-28, CX-8); the player can force any cat's Hiss from its row.
 
-**Hiss.** 8 s cooldown, 4 m reach in front. Against a **yellow** telegraph, it **interrupts** the attack, **Ruffles** the attacker (§3.5) and flinches it. The interrupted enemy **spends the Paw**, and that Move goes on a 6 s cooldown, so there is no retry loop. Against a **Tough at ≤ 15% Nerve**, the Tough **Backs Down**: it is Routed by intimidation, T4, `CatRouted(by_back_down)`. Otherwise a Hiss flinches Toughs and does nothing to leaders. **AI cats Hiss only yellow telegraphs aimed at themselves** (DR-28, CX-8).
+**No control switching.** The player controls Mikan only; Crew are always AI. If Mikan is Routed while Crew stand, the player keeps the skill bar (commanding the Crew) and the camera frames the nearest standing Posse cat; the Special prompt is unavailable. A `win` gets Mikan up at 20% (§3.14). There is no mid-fight bench swap.
 
-**Switch.** Switching is instant. The outgoing cat goes back to AI at once. You cannot switch to a Routed cat. If the controlled cat is Routed, control passes to the next standing slot in D-pad order (Up, Left, Down, Right, wrapping round), **not** to Mikan (DR-33). There is no mid-fight bench swap.
+### 3.3 Command: the skill bar and visible Moves (the commanding core; replaces Tag-In and Relay)
 
-### 3.3 Tag-In and Relay (the conducting core, DR-29)
+- **Commanding** is the player's reach into the Crew. On the skill bar (§3.1) the player fires Mikan's Moves and **forces** any Crew cat's Move or Hiss. A forced Move fires as soon as the cat can act (it finishes its current hit first); during an enemy's Frazzle window it skips pathing (§3.4). A commanded hit is player-authored and renders at full tier (§3.17 rule 1). `MoveUsed(user, move, targets_hit[], commanded)` is emitted.
+- **Steeling a Cowed recruit:** a skill-bar command to that cat (any Move or its Hiss) clears Old Gang Nerves' Cowed at once (§3.5).
+- **Bonded pair** (DR-37; moved from the Tag-In): when two bonded cats fire their Specials back to back in a Special chain (§3.6), the second deals MV ×1.25 and adds +10 FZ to any non-Frazzled rider targets (F6).
+- **Every Move is visible (M1.1 §7).** Every Move, Mikan's or a Crew cat's, commanded or fired by the AI on its own, shows:
+  - a **name banner** over the cat (world-anchored, ≈ 1.2 s, in that cat's colour; UX draws it);
+  - a **per-cat colour** (Art assigns one per Posse cat; never Frazzle Magenta, never Koharu's coral, and distinct from the telegraph colours);
+  - a readable **wind-up pose** held ≥ 200 ms before the first active frame (Moves only; the Light's ≤ 3-frame rule is not affected);
+  - **distinct VFX** per Move (Art), drawn at the Move's tier even when the hit renders one tier lower under rule 1 (rule 1 lowers hit-stop, shake and lettering, never the Move's identity);
+  - a **highlight on that cat's HUD plate** for the Move's duration.
+  Audio for Moves arrives in M6.
 
-- **Trigger:** switch within **0.35 s** after the controlled cat **lands** a string finisher, a Pounce, or a Hiss interrupt.
-- **Effect:** the incoming cat leaps to the target from up to 8 m, **invulnerable during the leap**, and lands its Style's **Tag-In strike** (T2, MV 1.5, FZ 20; F6). Both cats gain **25 Pounce points** (a quarter Paw). If the target is out of range, the switch is just a plain switch.
+### 3.4 Pounce Gauge, Moves, the skill bar
 
-| Style | Tag-In strike |
-|---|---|
-| Scrapper | **Cut-Through**: dashes through the target, two swipes counted as one hit |
-| Bruiser | **Body Slam**: 1.5 m knockback that can knock an enemy off a High Road edge |
-| Yowler | **Yowl Pop**: 3 m cone; a Fear in range shows its flinch tell (§3.9) |
-
-- **Relay:** a Tag-In strike opens its own 0.35 s window. Each Tag-In must start within 0.35 s of the previous strike landing and within 3 s of the previous Tag-In. **Each cat may be the incoming cat once per Relay; the cat that started the Relay may also be the incoming cat of its final tag.** Max 4 tags (a four-cat Relay is A→B→C→D→A; a 2-cat Relay is A→B→A). Each tag after the first adds a flat Frazzle bonus that **ignores rank resistance**: tag 2 **+10**, tag 3 **+15**, tag 4 **+20**. After a Relay of 3 or more tags, the Relay bonus is unavailable for 6 s. Tag-Ins still work during that time but add no bonus. `TagIn(from, to, relay_count)` is emitted on every tag.
-- **Bonded pair** (DR-37): a Tag-In between bonded cats deals MV ×1.25 and adds +10 FZ.
-- **Payoff:** a four-cat Relay adds about 61 FZ to a Captain (F6). It is the skill route to cracking a Captain.
-
-### 3.4 Pounce Gauge, Moves, Slow Blink
-
-- **Pounce Gauge:** 100 points = 1 Paw. Every cat has **2 Paws** (Mikan's third, from Life 4, is outside the slice). The gauge fills slowly over time and faster from hits (F3). AI-controlled cats fill at **`ai_fill` = 50%** (data per Life, DR-35). It starts each fight at 0 (25 with Well-Fed, DR-20). Fights do not carry it over.
-- **Moves:** 4 slots per cat; each costs 1 or 2 Paws. A Move is fired by shortcut (controlled cat) or from Slow Blink (any cat). The Paw is spent when the Move **commits**; a Move interrupted before then refunds. **No Move refunds its own cost** (CS-C12). `MoveUsed(user, move, targets_hit[])` is emitted.
-- **Slow Blink:** R2 sets time to ×5% and lifts the camera to a tactical three-quarter view (owned by `camera-system.md`). Pick a cat, a Move and a target. **Commands chain** while any cat can afford one. All timers, including the Frazzle window and Pile-On pips, run at 5%. **A Move commanded during an enemy's Frazzle window skips pathing:** the cat leaps to range. Slow Blink is closed during Standoff, Pile-On and Zoomies cinematics.
+- **Pounce Gauge:** 100 points = 1 Paw. Every cat has **2 Paws** (Mikan's third, from Life 4, is outside the slice). The gauge fills slowly over time and faster from hits (F3). AI cats (every Crew cat) fill at **`ai_fill` = 50%** (data per Life, DR-35); Mikan fills at 100%. It starts each fight at 0 (25 with Well-Fed, DR-20). Fights do not carry it over.
+- **Moves:** 4 slots per cat; each costs 1 or 2 Paws. Every Move, Mikan's included, is fired from the skill bar (§3.1, §3.3); Crew also fire `auto` and `support` Moves on their own (§3.11). The Paw is spent when the Move **commits**; a Move interrupted before then refunds. **No Move refunds its own cost** (CS-C12). `MoveUsed(user, move, targets_hit[])` is emitted.
+- **Skill bar (Slow Blink):** R sets time to ×5% and eases the camera to the skill-bar pose (owned by `camera-system.md`). Pick a cat's row, a Move and a target. **Commands chain** while any cat can afford one. All timers, including the Frazzle window and its Special pips, run at 5%. **A Move commanded during an enemy's Frazzle window skips pathing:** the cat leaps to range. The skill bar is closed during the Standoff, the Special chain and phase breaks.
 
 ### 3.5 Ruffled, Frazzle, poise, statuses
 
@@ -98,31 +116,39 @@ There is no heavy attack and no hold-charge. A string can be cancelled into Skit
 - **Frazzle** gauge 0–100, shown as a zigzag bar on the enemy in the world. It fills from hits (F2) and decays only after a pause in gains (Tough 5/s after 4 s; Captain 2/s and Boss 1/s after 6 s). **Frazzled** when full: **6 s** helpless, damage taken ×1.5, the window drawn as a shrinking ring. When the window ends, the gauge resets to 0. Hits do not build Frazzle while the target is Frazzled.
 - **Poise (DR-28, CS-3):**
   - **Toughs, Strays and crows** flinch (about 0.4 s) from string hits. After a flinch ends, they ignore *string-hit* flinches for 1.0 s.
-  - **Captains and Bosses do not flinch from strings.** They flinch only from finishers, Tag-In strikes, Hiss interrupts, knock-offs and phase breaks, and from finishers or Tag-In strikes at most once per 3 s.
+  - **Captains and Bosses do not flinch from strings.** They flinch only from finishers (L-L-L-H, launcher, a level-2 charged heavy, an AI combo finisher), Hiss interrupts, knock-offs and phase breaks, and from finishers at most once per 3 s.
   - **Every enemy windup is armoured from its start.** Yellow can be stopped only by Hiss. Red cannot be stopped.
 - **Statuses: three only, one per cat at a time (the newest replaces the old):** **Soggy** (move speed and recovery ×0.8, 6 s), **Cowed** (deals ×0.75, 8 s), **Fired Up** (deals ×1.25, 8 s). Well-Fed is not a status (DR-20).
 - **Two fight-start sources (owner feedback, OR-06 and OR-07).** Same statuses, same multipliers; only the duration and the source differ. Both are applied at the end of the Standoff and read data Nemesis puts in `RivalCombatProfile` (§6). Neither is a new status.
-  - **Old Gang Nerves → Cowed on the recruit (OR-06).** A Crew cat in the Posse whose own record has `old_gang_nerves` = true and Loyalty < 80 (below Sworn) starts **Cowed for 20 s** (Fraidy **30 s**) when it **sees** its Old Boss among the opponents: at the Standoff, or when a wave brings him in. Resisting personalities (Braggart, Stalwart, Brooder) never carry the flag (Nemesis sets it at recruitment); they play a defiant line instead. While Cowed this way: it deals ×0.75; **its AI will not target the Old Boss** (it picks another opponent, or postures at 4–6 m if he is the only one); the player can still drive it in or command its Moves. **A Tag-In to that cat clears it at once** (a "steeled" bark, recruit-voiced); a plain switch gives control but leaves the status. The Old Boss's AI, targeting, taunt and parameters never read who is in the Posse (G4).
+  - **Old Gang Nerves → Cowed on the recruit (OR-06).** A Crew cat in the Posse whose own record has `old_gang_nerves` = true and Loyalty < 80 (below Sworn) starts **Cowed for 20 s** (Fraidy **30 s**) when it **sees** its Old Boss among the opponents: at the Standoff, or when a wave brings him in. Resisting personalities (Braggart, Stalwart, Brooder) never carry the flag (Nemesis sets it at recruitment); they play a defiant line instead. While Cowed this way: it deals ×0.75; **its AI will not target the Old Boss** (it picks another opponent, or postures at 4–6 m if he is the only one); the player can still force its Moves. **A skill-bar command to that cat clears it at once** (a "steeled" bark, recruit-voiced; M1.1 §8, Tag-In no longer exists); nothing else clears it early except a newer status. The Old Boss's AI, targeting, taunt and parameters never read who is in the Posse (G4).
   - **Boss anger → Fired Up on the Boss (OR-07).** At the end of the Standoff a Boss is Fired Up by its anger stage: **Riled 20 s · Seething 40 s · Furious the whole fight** (Calm: none). Only that Boss; his Toughs and waves never read anger. **Doused, not lost:** a newer status (the bucket's Soggy) suspends anger's Fired Up and **pauses its timer**; it resumes with its remaining time when the newer status ends. So the bucket buys 6 s of calm, and a tier's seconds are always seconds of buff. Anger itself is Nemesis's store, fed only by marking acts on objects, never by fights; Combat only reads the stage at fight start.
 - **States that are not statuses** (Set-up targets): **Ruffled**, **Splat** (knocked flat and helpless for 1.5 s, plus a flat 20 FZ chunk; a Boss is never Splatted and is Ruffled instead) and **Clumped** (2+ enemies pulled within 2 m of each other for 3 s).
 
-### 3.6 Pile-On (DR-30)
+### 3.6 Stagger, the Special chain and the Team Pile-On (replaces the Pile-On, DR-30; M1.1 §5–6)
 
-- **Requires** ≥ 2 standing Posse cats and a Frazzled target. North (or Slow Blink) triggers it. Every standing Posse cat joins and is invulnerable for the duration. Enemies not in the Pile-On hold their attacks until it ends.
-- **On trash (Toughs, Strays, crows): Quick Pile-On** (about 1.2 s). It is offered **only** when 2+ enemies are Frazzled within 3 m of each other (all of them are Routed), or when the target is the **last enemy standing**. It **always Routs** anything below Captain. Otherwise Frazzled Toughs just die faster to hits.
-- **On a Captain or Boss: Full Pile-On** (about 2.5 s), worth **more the earlier it is triggered** (F5). The Frazzle ring shows **5 pips** that drain as the window runs, so the current value is readable without a number. The Pile-On ends the Frazzle.
-- **The decision:** cash in now for the biggest Pile-On, or first spend banked Paws on Moves (×1.5 inside the window, no pathing) and cash in a smaller Pile-On after. With no Paws banked, cashing in at once is best. With 2+ Paws banked, dumping them first and then cashing in is best (F5 worked example). That way the decision depends on how well you managed your Paws.
-- **Each beat** uses that cat's Style animation and voice and its **personality flourish**. Camera shake happens on the beats only; the cloud itself does not shake the screen.
+**Stagger presentation.** When an enemy becomes Frazzled (staggered): a brief **zoom onto the staggered cat** (camera §3.7), **time slows** briefly, and a **shattered-glass blink** plays on and around it (in the spirit of FF7 Remake's stagger; our own drawing). Total ≤ ≈ 0.5 s (`stagger_fx_s`). Input stays buffered under the one-slot rule (§3.2), and the 6 s Frazzle window starts after it.
+- **Full treatment** for Captains, Bosses and the first stagger in each fight: zoom, time ×0.25 for ≈ 0.3 s, two soft blink pulses.
+- **Light treatment** for Toughs, Strays and crows after the first: no zoom, time ×0.5 for ≈ 0.15 s, one local pulse.
+- **Safety:** the blink is a soft pulse (luminance change ≤ 0.10, ≥ 2 rendered frames each, never a strobe) and counts against §3.17's flash caps; a full treatment counts as that second's one full-screen frame. Reduce Flashes turns it into a held crack line with no luminance change; Reduce Motion drops the zoom.
 
-### 3.7 Zoomies (one per Style)
+**The Special (F).** When an enemy is Frazzled and Mikan's **Special meter** is full (F8), the **F** prompt shows on it. Pressing F fires Mikan's **Special**: the camera punches in on Mikan, **time stops**, only Mikan renders over an impact-frame background (a shonen-ultimate cut-in, ≈ 1 s), then Mikan leaps to the target (up to `chain_range_m` 8 m, High Road included) and the hit lands. Zoomies are folded into the Special: there is no separate limit break. The Special spends the whole meter.
+- **Crew Specials chain automatically** (owner's decision). After Mikan's hit, every Crew cat that is standing, within `chain_range_m` of the target and has a full meter fires its own Special and cut-in in turn (Posse slot order). No input. A Crew cat whose meter is not full is skipped. Crew never start a Special on their own and cannot be forced into one from the skill bar: the chain is the only way in.
+- **Team Pile-On.** If **all four** Posse cats land their Specials in one chain, the **Team Pile-On** plays (≈ 1.5 s): the KA-BLAM dust cloud, each cat's beat with its Style animation, voice and **personality flourish**. It is the existing Pile-On art, now the payoff of a full chain, in the spirit of Granblue Fantasy Relink's Full Burst (our art and staging; counsel watch item, `design/legal/nemesis-patent-analysis.md` §8).
+- **During the chain** every Posse cat in it is invulnerable, enemies not in it hold their attacks, and a red windup already in progress pauses. The skill bar is closed. Camera shake happens on the hits and beats only; the cloud itself does not shake the screen.
+- **Pacing:** each cut-in ≈ 1 s (`cutin_s`); the full chain, Team Pile-On included, ≤ ≈ 6 s; after the first chain in a fight cut-ins shorten to ≈ 0.5 s (`cutin_repeat_s`).
+- **What it does.** **Below Captain:** a Special Routs its Frazzled target, and a Team Pile-On Routs every Frazzled enemy below Captain within 3 m of the target. **On a Captain or Boss:** each Special is worth **more the earlier it is fired** in the window (F5); the Frazzle ring shows **5 pips** that drain as the window runs, so the current value is readable without a number. The chain **ends the Frazzle**. Riders (the Style's area effect, §3.7) apply to other enemies.
+- **The decision:** fire F now for the biggest chain, or first spend banked Paws on commanded Moves (×1.5 inside the window, no pathing) and fire a smaller chain after (F5 worked example). Whether the chain reaches four cats depends on how the player spent the fight filling meters.
+- `SpecialChain(target, cats[], team)` is emitted when the chain ends; Routs from it are `CatRouted(by_pile_on)` (the name is kept for Nemesis's contract).
 
-Each cat has its own Zoomies gauge (0–100). It fills from damage taken and from Frazzles (F8), and it **persists within a day**. When full, the controlled cat fires it with L1+R1, or any cat can be ordered to from Slow Blink. Zoomies are invulnerable, with a 0.6 s cut-in, and are T5 (DR-07). **Unlocks** (Crew owns, §3.8.4): Mikan's on Life 2 day 3 (§3.16); a Crew cat's at Lv 6. A locked cat's gauge does not fill. The budget is a single-target value of 12 MV; area hits pay 40% per target.
+### 3.7 Specials (Zoomies folded in; one per Style)
 
-| Style | Zoomies | Effect |
+Each cat has one **Special meter** (0–100), shown on its plate. It fills from hits landed, damage taken and Frazzles (F8), and it **persists within a day**. A Special is fired only through the chain (§3.6). **Every cat has its Special from the day it joins** (designer's ruling, A11: the old Zoomies unlocks, Mikan Life 2 day 3 and Crew Lv 6, would keep the Team Pile-On out of most of the slice). Specials are invulnerable, player-authored and T5 (DR-07). The primary hit on the staggered target is F5's value; the Style's rider follows (area hits pay 40% per target).
+
+| Style | Special (was its Zoomies) | Rider on other enemies |
 |---|---|---|
-| Scrapper | **Midnight Laps** | Three laps of the ring: 4 hits of MV 1.2 on every enemy (4.8 each), FZ 15 per hit |
-| Bruiser | **Landslide** | Rolls along a line: MV 12 and FZ 80 to the first target; MV 4.8 to others in the path. **Knocks every target off High Road edges** |
-| Yowler | **Midnight Aria** | Ring-wide MV 3.0, all enemies Cowed; heals the Posse 15% of max Nerve, counted against the heal cap |
+| Scrapper | **Midnight Laps** | Three laps of the ring: 4 hits of MV 1.2 on every other enemy, FZ 15 per hit |
+| Bruiser | **Landslide** | Rolls along a line through the target: MV 4.8 to others in the path. **Knocks every target off High Road edges** |
+| Yowler | **Midnight Aria** | Ring-wide MV 3.0 on every other enemy, all enemies Cowed; heals the Posse 15% of max Nerve, counted against the heal cap |
 
 ### 3.8 Damage types and Style matchups (DR-06)
 
@@ -148,12 +174,12 @@ A prop activates when any attack hits it, when a Pounce lands on it, or when a k
 
 - **A triggered Fear:** `FearTriggered` is emitted; the cat is **Ruffled** (the leader cooldown applies), takes a flat Frazzle chunk (Tough 30 / Captain 20 / Boss 15), any non-red action is interrupted, and a rider applies: **Water**, Soggy 6 s; **Loud Noise**, a 0.8 s flinch; **Cucumbers**, launched upward, helpless 1.0 s, then Splat (Boss: no Splat).
 - **Diminishing:** the same Fear on the same cat in one encounter gives full effect, then half the chunk and no rider, then nothing.
-- **Flinch tell (CX-12):** any cat with the matching Fear inside a prop's radius plays a visible flinch-and-ears-flat tell, even when the Fear is diminished or the prop does nothing else. The Fear then becomes **known**: `FearTriggered(source = tell)` is sent, and Nemesis records it. Slow Blink then tags that prop.
+- **Flinch tell (CX-12):** any cat with the matching Fear inside a prop's radius plays a visible flinch-and-ears-flat tell, even when the Fear is diminished or the prop does nothing else. The Fear then becomes **known**: `FearTriggered(source = tell)` is sent, and Nemesis records it. The skill bar then tags that prop.
 - Nemesis chooses Fears and Strengths; Combat values them. A Strength is worth one of: resist one type at ×0.6; cannot be knocked off the High Road; immune to one status; +15% Nerve; +25% Frazzle resistance. A cat may not hold a Strength that cancels its own Fear.
 
 ### 3.10 The slice Move catalogue (12; DR-05)
 
-Data lives in `assets/data/combat/moves.*`. Crew owns learnsets keyed by `move_id`. Fields: `id, name, style, cost, type, mv, fz, role (setup|payoff), creates|pays_on, target, range, ai_use (auto|command_only|support), flags, feel_tier`. **Set-up Moves are `command_only` for AI.** Budget: 1 Paw ≈ 3.5 MV + about 30 FZ; 2 Paws ≈ 8 MV or a strong utility; area damage pays 40% per target. ★ marks the 8 prototype Moves (DR-02).
+Data lives in `assets/data/combat/moves.*`. Crew owns learnsets keyed by `move_id`. Fields: `id, name, style, cost, type, mv, fz, role (setup|payoff), creates|pays_on, target, range, ai_use (auto|command_only|support), flags, feel_tier`. **Set-up Moves are `command_only`: an AI cat fires them only when the player forces them from the skill bar.** Budget: 1 Paw ≈ 3.5 MV + about 30 FZ; 2 Paws ≈ 8 MV or a strong utility; area damage pays 40% per target. ★ marks the 8 prototype Moves (DR-02).
 
 | # | Move | Style · Paws | Role | Effect | ai_use |
 |---|---|---|---|---|---|
@@ -172,29 +198,34 @@ Data lives in `assets/data/combat/moves.*`. Crew owns learnsets keyed by `move_i
 
 Set-up → Pay-off pairs inside one Style: Face Swat → Shred; Scruff Toss → Bunny-Kick; Shoulder Check → Sit On It; Withering Hiss → Purr / Screech. Pairs across Styles: Howl → Belly Flop; Shoulder Check → Bunny-Kick. Teaching a cat a Move gives it a new interaction, not just a bigger number.
 
-### 3.11 Posse AI by personality (combat column, DR-37)
+### 3.11 AI: cats think before they charge (enemies and Crew; combat column, DR-37; M1.1 §4)
 
-All AI shares one base:
+**Every AI fighter, enemy or Crew, shares one base** (like cats, in the spirit of Assassin's Creed group fights, not a strict copy):
+- **Attack tokens.** Only a token holder may start an attack on a cat. **Mikan carries 2 tokens** on Alley (§3.15), so only 1–2 enemies engage the player at once; every Crew cat carries 1; every enemy accepts at most 2 Posse attackers at once (Crew use the same rule on the other side). A holder returns its token after its dash-in combo or Move (or after 4 s) and cannot take one again for `token_cooldown_s` (2 s). At least 300 ms separates two hits landing on the same cat.
+- **No beeline.** A fighter without a token keeps spacing (3–6 m; personality sets it), faces its target and **circles** (strafes at ≈ 40% move speed), **stalks** (slow low approach), **postures** (arched back, tail lash, hiss idle; 1–2 s), side-steps, **feints** (a fake step-in ≤ 0.5 s, no hit) and **flanks** (works toward the target's rear 120° while another fighter holds its front). It never runs straight at the nearest target.
+- **Dash in, combo, back out.** A token holder waits for an opening (the target in recovery, facing away, or after ≥ 1 s of posturing), **dashes in** for its combo (§3.2) or a Move, then backs out to spacing.
 - It keeps within the camera's frame bias.
-- It attacks with its string at AI cadence: about 35% attack uptime, the rest spent posturing, repositioning and dodging white telegraphs.
-- It Hisses only at yellow telegraphs aimed at itself.
-- **It never spends its last Paw on its own**, so one Paw is always banked for the conductor.
-- It uses `auto` Pay-offs only when their condition is met, and `support` Moves under the condition stated in the catalogue.
-- **High Road:** if the AI's target stands on the High Road within 3 m of a reachable ledge, the cat Hops up after 1 s (Fraidy: never; Brooder: only once it has an avenge target). **At most 2 Posse cats are on Daifuku's wall at once**; the rest attack props and Toughs below. The controlled cat counts toward the 2.
-- Its hits render one feel tier lower.
+- Attack uptime stays about 35% (`ai_attack_uptime`); the rest is circling, stalking, posturing, repositioning and dodging white telegraphs.
+- It Hisses on its own only at yellow telegraphs aimed at itself. **Brace** is an AI guard posture (front 120°; white and yellow reduced to the 30% floor; red cannot be Braced).
+- **It never spends its last Paw on its own**, so one Paw is always banked for the commander.
+- It uses `auto` Pay-offs only when their condition is met, and `support` Moves under the condition stated in the catalogue. It never starts a Special (§3.6).
+- **High Road:** if the AI's target stands on the High Road within 3 m of a reachable ledge, the cat mantles after 1 s (Fraidy: never; Brooder: only once it has an avenge target). **At most 2 Posse cats are on Daifuku's wall at once**; the rest attack props and Toughs below. Mikan counts toward the 2.
+- Its hits render one feel tier lower; its Moves still show in full (§3.3).
 
-| Personality | How it fights (target choice and distance) | Paw habit | Combat perk |
-|---|---|---|---|
-| **Braggart** | Charges the biggest enemy (highest rank, then highest max Nerve); stays in melee | Spends a Pay-off at the first chance | Its first hit on a Captain or Boss each encounter adds **+20 FZ** (flat) |
-| **Brooder** | Hangs back at 5–7 m until an enemy hits an ally, then goes for that enemy for 6 s | Saves for Pay-offs on its avenge target | **Old Score ×1.5** instead of ×1.25 |
-| **Schemer** | Approaches from the target's rear 120°; switches to a Ruffled or Frazzled target within **6 m** | Spends on Frazzled targets | **+20% damage to Frazzled** targets |
-| **Fraidy** | Keeps 4–6 m away; Skitters whites eagerly; prefers support | Holds Paws for `support`; with no `support` Move slotted, uses the base Pay-off rule | **Perfect Skitter: +25 Pounce points** |
-| **Stalwart** | Stays within 3 m of the controlled cat; Braces against attacks aimed at itself; takes attack-token priority from enemies | Spends on whatever is attacking the controlled cat | **Allies within 3 m take ×0.85 damage** |
-| **Goofball** | Goes for props that would catch an enemy (6 m); otherwise picks randomly between the nearest two enemies (seeded) | Each time an `auto` Pay-off becomes eligible, fires it on a seeded 50% roll; otherwise waits 3 s before rolling again | **Props it triggers: ×1.3 effect** |
-| **Mikan** (no personality; AI only when the player has switched away) | Stays 2–4 m from the controlled cat's lock target and attacks it | Base Pay-off rule | None (no flourish beyond the Scrapper Pile-On beat) |
+**Personality shapes the movement** (the "Moves like" column) as well as target choice. Enemies with a personality (Rivals, Captains, Daifuku) use the same "Moves like" flavour; their target choice stays the base rule (B-22).
+
+| Personality | How it fights (target choice and distance) | Moves like (M1.1) | Paw habit | Combat perk |
+|---|---|---|---|---|
+| **Braggart** | Goes for the biggest enemy (highest rank, then highest max Nerve); stays close | Struts in front of its target, chest out; takes a token first | Spends a Pay-off at the first chance | Its first hit on a Captain or Boss each encounter adds **+20 FZ** (flat) |
+| **Brooder** | Hangs back at 5–7 m until an enemy hits an ally, then goes for that enemy for 6 s | Stalks low and slow, eyes fixed; long postures | Saves for Pay-offs on its avenge target | **Old Score ×1.5** instead of ×1.25 |
+| **Schemer** | Approaches from the target's rear 120°; switches to a Ruffled or Frazzled target within **6 m** | Flanks; feints often; dashes in when the target turns away | Spends on Frazzled targets | **+20% damage to Frazzled** targets |
+| **Fraidy** | Keeps 4–6 m away; Skitters whites eagerly; prefers support | Hangs back and darts: short dash-ins, quick retreats | Holds Paws for `support`; with no `support` Move slotted, uses the base Pay-off rule | **Perfect Skitter: +25 Pounce points** |
+| **Stalwart** | Stays within 3 m of Mikan; Braces against attacks aimed at itself; takes attack-token priority from enemies | Holds ground: little circling, squared up | Spends on whatever is attacking Mikan | **Allies within 3 m take ×0.85 damage** |
+| **Goofball** | Goes for props that would catch an enemy (6 m); otherwise picks randomly between the nearest two enemies (seeded) | Bouncy, erratic circling; play-pounces | Each time an `auto` Pay-off becomes eligible, fires it on a seeded 50% roll; otherwise waits 3 s before rolling again | **Props it triggers: ×1.3 effect** |
+| **Mikan** (no personality) | Always the player's; never AI | — | — | None (no flourish beyond the Scrapper beat in the Team Pile-On) |
 
 - **Old Score (DR-29):** a Crew cat fighting a Rival whose Memory records a Rout between them, either way, deals ×1.25 Frazzle to that Rival (Brooder ×1.5). Both bark at the Standoff. Fight barks are icon-only (DR-44).
-- **Kin (OR-05):** a Crew cat under AI control **never targets an opponent that is its own Kin** (its `kin_ids`). It picks another opponent; if its Kin is the last one standing, it postures at 4–6 m and Braces. The player can still switch to it and drive it in, or command its Moves; a player-triggered Pile-On includes it. It plays one `kin` bark of its own at the Standoff. Slice pair: Kinako ↔ Sasa. The opposing Kin's AI is unchanged.
+- **Kin (OR-05):** a Crew cat under AI control **never targets an opponent that is its own Kin** (its `kin_ids`). It picks another opponent; if its Kin is the last one standing, it postures at 4–6 m and Braces. The player can still force its Moves onto its Kin from the skill bar, and its Special still chains on a staggered Kin (both player-authored). It plays one `kin` bark of its own at the Standoff. Slice pair: Kinako ↔ Sasa. The opposing Kin's AI is unchanged.
 - **Old Boss exclusion (OR-06):** while Cowed by Old Gang Nerves (§3.5), the recruit's AI will not target its Old Boss. Nothing else about its row changes.
 - **Signature perks:** an ex-Rival's Nemesis Strength becomes an always-on perk, valued per §3.9. Strays have none.
 
@@ -204,15 +235,15 @@ All AI shares one base:
 
 | Class | Look | Answer | Windup |
 |---|---|---|---|
-| White | White thin arc or line | Skitter or Brace | 300–500 ms (Tough), ≥ 250 ms (Captain+) |
-| Yellow | **Paper Cream, dashed, triangle glyph** | **Hiss** (best), Skitter, Brace | ≥ 750 ms |
+| White | White thin arc or line | Dodge (AI: Skitter or Brace) | 300–500 ms (Tough), ≥ 250 ms (Captain+) |
+| Yellow | **Paper Cream, dashed, triangle glyph** | **Hiss** (best; skill bar), Dodge (AI: Brace) | ≥ 750 ms |
 | Red | **Frazzle Magenta, zigzag edge, filling area** | Get out or Skitter through; nothing stops it | ≥ 1,000 ms (Boss specials ≥ 1,500 ms) |
 
 At most one red is active in the ring outside the Boss fight. A hit never exceeds its drawn shape. An off-screen attacker shows an edge arrow for its whole windup.
 
-**Attack tokens** (on Alley): 2 melee tokens on the controlled cat, 1 on each AI cat, with at least 300 ms between two hits landing on the same cat. An enemy without a token postures (circles, makes a hiss idle, shuffles sideways). Each attack averages about 1.5 MV, roughly one attack per 4.5 s per token holder (F10).
+**Attack tokens** (on Alley; rules in §3.11): 2 melee tokens on Mikan, 1 on each Crew cat, with at least 300 ms between two hits landing on the same cat. An enemy without a token circles, stalks, postures and flanks (§3.11). Each attack averages about 1.5 MV, roughly one attack per 4.5 s per token holder (F10).
 
-**Enemy kits.** An enemy uses its Style's string (white), plus up to 4 slice Moves from its `RivalCombatProfile`: a 1-Paw Move is yellow, a 2-Paw Move is red. **Enemy Paws** fill at a flat rate: Tough 1 per 16 s, Captain 1 per 9 s, Boss 1 per 6 s. No enemy heals more than 25% of its max Nerve per encounter.
+**Enemy kits.** An enemy uses its Style's dash-in combo (white), plus up to 4 slice Moves from its `RivalCombatProfile`: a 1-Paw Move is yellow, a 2-Paw Move is red. **Enemy Paws** fill at a flat rate: Tough 1 per 16 s, Captain 1 per 9 s, Boss 1 per 6 s. No enemy heals more than 25% of its max Nerve per encounter.
 
 | Archetype | Nerve × | Damage × | Notes |
 |---|---|---|---|
@@ -228,7 +259,7 @@ Style Nerve multipliers stack on top for Strays, Toughs, crows and the Boss (Dai
 
 **Where he is fought (OR-09).** There is no Den gate. When Mikan's Lane influence reaches 100, the **Boss window** opens (Territory) and Daifuku roams a fixed **three-stop patrol**, one stop per daytime phase (Morning: Laundry Pole Yard's yard wall, wash tub · Day: Tofu Shop's back wall, rain barrel · Dusk and Night: the Den corner stone, the bucket). Approach within 8 m of the current stop for the Standoff; the fight plays **on that stop's arena kit**. Each kit is one authored arena: a wall segment with a High Road knock-off edge, a water prop below it (the "bucket" in every rule here), and the phase-2 and phase-3 dressing (a noise prop in reach, ledge junk above the wall, a crumbling wall top, wave entry points). Before the window opens he stays at the Den and ignores Mikan; there is no fight to be had.
 
-**His fight is "knock him off into the bucket".** He never comes down off the walls of his own accord: in the fight he stays on the stop's wall until knocked off. On the wall, only High Road cats reach him. **Knock-offs are deterministic:** any knockback that crosses a High Road edge (Bruiser finisher, Shoulder Check, Body Slam, Banshee Screech, Landslide) drops him, and a Boss knock-off means **Ruffled 4 s** plus a flat 20 FZ (+10 more, and Soggy, if he lands in the bucket splash). He then spends **6 s** on the ground before a yellow **Climb Back**. A Hiss on the Climb Back keeps him down 3 s more. **Frazzled on the wall, he stays on the wall; the Pile-On plays on the wall top** (every standing Posse cat leaps up for it). Which AI cats climb to him is the §3.11 High Road rule (at most 2 on the wall). The fight length depends on knock-off frequency (F9): the sim needs about one knock-off per 8 s of wall time.
+**His fight is "knock him off into the bucket".** He never comes down off the walls of his own accord: in the fight he stays on the stop's wall until knocked off. On the wall, only High Road cats reach him. **Knock-offs are deterministic:** any knockback that crosses a High Road edge (Mikan's L-L-L-H finisher, the Bruiser's Shove, Shoulder Check, Banshee Screech, the Landslide Special) drops him, and a Boss knock-off means **Ruffled 4 s** plus a flat 20 FZ (+10 more, and Soggy, if he lands in the bucket splash). He then spends **6 s** on the ground before a yellow **Climb Back**. A Hiss on the Climb Back keeps him down 3 s more. **Frazzled on the wall, he stays on the wall; the Special chain plays on the wall top** (each chaining cat leaps up for its Special). Which AI cats climb to him is the §3.11 High Road rule (at most 2 on the wall). The fight length depends on knock-off frequency (F9): the sim needs about one knock-off per 8 s of wall time.
 
 | Phase (Nerve) | Arena | New attack | New Ruffle route |
 |---|---|---|---|
@@ -236,7 +267,7 @@ Style Nerve multipliers stack on top for Strays, Toughs, crows and the Boss (Dai
 | 2 (70–35%) | 2 Wall Sitter Toughs join (a seeded pick among the gang's Toughs, never chosen by who is in truce or in the Posse); the bucket refills; a scooter horn (the kit's noise prop) is in reach | Yellow **Wall Yowl** (Fired Up on his Toughs): Hiss it | The horn (Loud Noise, if he has it) |
 | 3 (35–0%) | The wall top crumbles at both ends, so knock-off edges get wider; 2 more Toughs | Red **Rolling Thunder** along the ground after each Climb Back | Ledge junk (a cucumber) above his wall |
 
-- **Phase rules (DR-32):** damage that would cross a phase threshold clamps at it. **The phase break keeps the Frazzle gauge.** **A break is deferred while he is Frazzled:** the window and the Pile-On run to completion, and a Pile-On on a clamped Frazzle plays the break as its final beat. Up to 10% of max Nerve of overflow carries into the next phase. A break lasts 3–4 s, he is invulnerable, it is T5, and every Posse cat gains +50 Pounce points. Total break time is ≤ 8 s.
+- **Phase rules (DR-32):** damage that would cross a phase threshold clamps at it. **The phase break keeps the Frazzle gauge.** **A break is deferred while he is Frazzled:** the window and any Special chain run to completion, and a chain on a clamped Frazzle plays the break as its final beat. Up to 10% of max Nerve of overflow carries into the next phase. A break lasts 3–4 s, he is invulnerable, it is T5, and every Posse cat gains +50 Pounce points. Total break time is ≤ 8 s.
 - **Anger (OR-07):** he starts the fight Fired Up by his anger stage (§3.5): Riled 20 s, Seething 40 s, Furious all fight. Fired Up changes only the damage he deals; it never changes his Nerve, phases, Frazzle resistance or Toughs. The sim (F9, F10) shows what it does: a win takes the same time at every stage, and Furious raises the Posse's Nerve lost at the median from 52% to 61% and moves the expected-value wipe line from 95% to 83% of his swings landing.
 - **Old gangs in his fight (OR-06):** in the slice, Hige (Stalwart, authored ex–Wall Sitter) and Togemaru (Braggart) resist and play a defiant line; Kagi (Schemer) is susceptible and flinches Cowed unless Sworn. So the fight can show both halves. Daifuku runs his ordinary Standoff taunt whoever is in the Posse.
 - **Rematch:** each wipe against him leaves him plastered with −10% max Nerve (stacking to −30%, DR-21); it changes only him. A win, a loss or his `rival_fled` **spends his anger** (Nemesis resets it to 0 at `EncounterEnded`), so the rematch meets a Calm Boss unless Mikan has marked loudly since. **Scram does not spend it.**
@@ -248,12 +279,12 @@ Style Nerve multipliers stack on top for Strays, Toughs, crows and the Boss (Dai
 - **Openers** (`EncounterStarted.opener`):
   - `standoff`: name-card plus one taunt, 2–4 s. A memory-citing line cannot be skipped for 1 s. Both sides start neutral.
   - `ambush_by_player`: an unseen first hit, or a Pounce from the High Road. That hit is ×1.5 and **Ruffles** the target; every Posse cat gets +25 Pounce points; there is no Standoff. A remembered Rival's memory line plays **at its Rout** (DR-40).
-  - `ambush_by_rival`: a 2.0 s directional yowl-sting. A Skitter or Brace in its **last 0.75 s** gives a neutral start. Otherwise the controlled cat takes MV 1.5 and the Posse starts at 0 Pounce points.
-  - `raid_defence`: the posted Sentries fight as allied AI. They are not controllable, do not join Pile-Ons, and count toward the cap. *(Territory's presence rule: the raid resolves by its formula whatever happens in this brawl; its outcome changes only the cats in it.)*
+  - `ambush_by_rival`: a 2.0 s directional yowl-sting. A Dodge in its **last 0.75 s** gives a neutral start. Otherwise Mikan takes MV 1.5 and the Posse starts at 0 Pounce points.
+  - `raid_defence`: the posted Sentries fight as allied AI. They are not commandable, never join the Special chain, and count toward the cap. *(Territory's presence rule: the raid resolves by its formula whatever happens in this brawl; its outcome changes only the cats in it.)*
 - **Allied guest: the Nose-Touch join-in (OR-13).** Nemesis rolls the join-in at `EncounterStarted` (from Life 2; a truce cat or Friend in the same district whose own **Rival** is among the encounter's opponents, including its waves) and emits `AllyJoined(cat_id, encounter_id)`. Combat then:
   - **Entry:** a 3 s directional yowl from the ring edge nearest its old Patch, then it bounds in. If its Rival arrives in a wave, the yowl starts when that wave enters. It needs a free combatant slot (≤ 10); if none is free, it waits at the edge and enters when one frees up.
-  - **AI:** an **allied AI guest** under the `raid_defence` guest rules: not controllable (no D-pad slot, no Slow Blink commands, no Tag-In), no Pile-On, its own personality row (§3.11) for distance and habits, Paws at `ai_fill` used only for `auto` Pay-offs. Its one bias is its own: it prefers its Rival as a target while the Rival stands. It counts toward the High Road limit of 2 on Daifuku's wall. Its hits render at the AI tier (§3.17 rule 1).
-  - **Sides and HUD:** it fights on the Posse's side. It shows the Posse's bell-gold keyline but a **truce-sprig tick** instead of the Posse chevron, gets a small fifth **guest plate** beside the Posse plates (Nerve only: no Paw pips, no switch slot), and never shows an enemy Frazzle bar. UX owns the drawing (`ux/hud.md`).
+  - **AI:** an **allied AI guest** under the `raid_defence` guest rules: no skill-bar row (it cannot be commanded), no Special and never in the chain or the Team Pile-On, its own personality row (§3.11) for distance and habits, Paws at `ai_fill` used only for `auto` Pay-offs. Its one bias is its own: it prefers its Rival as a target while the Rival stands. It counts toward the High Road limit of 2 on Daifuku's wall. Its hits render at the AI tier (§3.17 rule 1).
+  - **Sides and HUD:** it fights on the Posse's side. It shows the Posse's bell-gold keyline but a **truce-sprig tick** instead of the Posse chevron, gets a small fifth **guest plate** beside the Posse plates (Nerve only: no Paw pips, no Special meter), and never shows an enemy Frazzle bar. UX owns the drawing (`ux/hud.md`).
   - **Leaving:** Routed, it slips away like any Routed Rival (no Verdict, nothing recorded against it). At `EncounterEnded` it leaves the ring whatever the outcome. On a Posse `win` Nemesis gives **the joiner** +5 Regard.
   - **The opposing Rival is untouched (G7):** the same AI, targeting, buffs and lines as against any Posse cat. No "traitor" bark, no aggro toward the joiner.
 - **Composition** (threat: Tough 1, Captain 3, Boss 8, crow 0.5):
@@ -263,7 +294,7 @@ Style Nerve multipliers stack on top for Strays, Toughs, crows and the Boss (Dai
   - **Boss bout**: Daifuku alone at his patrol stop (threat 8); his Toughs arrive by phase (§3.13)
   - **Life 1 tutorial**: a crow; then 2 Strays
 - **Caps:** 1–6 enemies at the start; **≤ 10 combatants** in total; anything beyond that arrives as a wave when ≤ 2 enemies remain; at most 2 waves outside the Boss fight.
-- **Scram:** hold the controlled cat > 2 m outside the ring for 3 s, or pick Scram in Slow Blink. Outcome `player_fled`. The group is then alert for 20 s, so it cannot be Ambushed. Combat applies no penalty of its own.
+- **Scram:** hold Mikan > 2 m outside the ring for 3 s, or pick Scram on the skill bar. Outcome `player_fled`. The group is then alert for 20 s, so it cannot be Ambushed. Combat applies no penalty of its own.
 - **Rival flight:** a Rival with a `flee_threshold` (Nemesis) bolts on a yellow windup of 1.0 s. A Hiss or any landed hit stops it. A Frazzled or Splat cat cannot bolt. The First Thorn uses this same rule (DR-22, DR-41), **except on Life 1 day 1 (OR-14):** at 25% Nerve Togemaru bolts with no windup and nothing interrupts it ("faster than a kitten"), not even Frazzled or Splat; the encounter ends `rival_fled`. So the first Verdict is always day 2's, after his memory line.
 - **Fed Up at 75 s** (non-Boss fights): every enemy is Ruffled for the rest of the fight, ignoring the cooldown, and Toughs Back Down to a Hiss at ≤ 30%.
 - **Ending:**
@@ -271,7 +302,7 @@ Style Nerve multipliers stack on top for Strays, Toughs, crows and the Boss (Dai
   - `loss`: every Posse cat Routed (a Scram or a Rival fleeing is never a loss; Life 1 tutorial fights cannot be lost). Combat's part ends at the Gloat: the ring holds, the victor plays its Gloat (≤ 3 s, Nemesis/UX), any allied guest slips away, and `EncounterEnded(outcome = loss)` fires. **Day Loop owns what follows** (`day-loop.md` §3.6, OR-01): the clock jumps to Night, the street closes, and Mikan comes to on the spot and walks home. **Only the victor changes** (OR-02, Nemesis): a `WON` Memory entry, its Glory Title if it has none, and for a Boss the −10% plaster. No promotion, level gain, seat, feud or line for any other cat. Combat applies no penalty of its own.
   - `rival_fled` (a Rival bolted, §3.14 Rival flight) and `player_fled` (Scram) end the encounter with the outing going on.
   - **Boss anger at the end (OR-07):** Nemesis spends it at `EncounterEnded` when the outcome is `win`, `loss` or `rival_fled` and the Boss took part. **Not on `player_fled`**, so engaging a Furious Boss, Scramming and re-engaging gives no calm reset.
-  - Nerve and Zoomies persist within the day. Paws, statuses and Frazzle do not.
+  - Nerve and Special meters persist within the day. Paws, statuses and Frazzle do not.
 - **Verdict:** routed tracked Rivals are held at the ring edge (DR-36). There is one full Verdict per fight (Nemesis).
 
 ### 3.15 Difficulty (enemy-side only)
@@ -280,20 +311,20 @@ Style Nerve multipliers stack on top for Strays, Toughs, crows and the Boss (Dai
 |---|---|---|---|
 | Enemy Nerve | ×0.75 | ×1 | ×1.2 |
 | Enemy damage | ×0.6 | ×1 | ×1.3 |
-| Melee tokens on the controlled cat | 1 | 2 | 3 |
+| Melee tokens on Mikan | 1 | 2 | 2 (shorter token cooldown, 1 s) |
 | Enemy Paw rate | ×0.75 | ×1 | ×1.25 |
 
 ### 3.16 What is taught when (DR-22; UX owns the beat sheet)
 
 | When | Verbs |
 |---|---|
-| 0:04–0:08, garden, then the lane-side wall top | Move, Hop in the garden; then Attack, Skitter on a crow on the lane-side wall top (no combat inside the wall, R4) |
-| 0:10–0:15, lane | With the old wall cat against 2 Strays: switch, first Paw, Slow Blink, command the other cat, Frazzle the last enemy → **two-cat Quick Pile-On** |
-| Rest of Life 1 | Hiss, Back Down, Brace (First Thorn), **Tag-In** (2-cat) |
-| Life 2 day 1 | Ambush, High Road Pounce |
-| Life 2 day 2 | Props and Fears; Relay (Posse of 4) |
-| Life 2 day 3 | Zoomies (Mikan's unlocks today, on the Captain; Crew `crew-and-progression.md` §3.8.4). Lessons open at the Lot the same day (Crew/Territory) |
-| Life 2 day 4+, his patrol stop (Boss window open) | Daifuku: knock-offs; Fired Up read from his anger; a recruit's Cowed flinch answered by a Tag-In |
+| 0:04–0:08, garden, then the lane-side wall top | Move and Dash (mantle) in the garden; then Light, Dodge and Lock-on (Tab) on a crow on the lane-side wall top (no combat inside the wall, R4) |
+| 0:10–0:15, lane | With the old wall cat against 2 Strays: Heavy and the L-L-L-H finisher, first Paw, the skill bar (R), command the other cat, Frazzle the last enemy → **F: Mikan's first Special, the wall cat's chains** (the tutorial starts both meters full) |
+| Rest of Life 1 | Hiss from the skill bar, Back Down (First Thorn); the launcher and the charged Heavy |
+| Life 2 day 1 | Ambush, High Road Pounce; the 4-cat Posse makes the first **Team Pile-On** possible |
+| Life 2 day 2 | Props and Fears; a full four-cat chain (Team Pile-On) taught |
+| Life 2 day 3 | The Captain: a four-cat Special chain on a leader (early is worth more). Lessons open at the Lot the same day (Crew/Territory) |
+| Life 2 day 4+, his patrol stop (Boss window open) | Daifuku: knock-offs; Fired Up read from his anger; a recruit's Cowed flinch answered by a skill-bar command |
 | Life 2, any fight against a truce cat's Rival | The join-in ally (no new input: it shows the guest plate) |
 
 ### 3.17 Game feel and VFX — Impact Moments (the single tier table, DR-07)
@@ -302,7 +333,7 @@ Art owns the drawings and Audio maps to these same tiers. **DR-50 safety overrid
 
 | | T0 | T1 | T2 | T3 | T4 | T5 |
 |---|---|---|---|---|---|---|
-| **Events** | Whiff, prop hit, blocked hit | String hits 1–2; middle hits of multi-hit Moves | Finisher, Pounce, Tag-In strike, Splat | 1-Paw Move hit, Hiss interrupt, Fear trigger | 2-Paw Move hit, Frazzling hit, Tough Rout, Back Down | Pile-On, Zoomies, Boss phase break, leader (Captain/Boss) Rout |
+| **Events** | Whiff, prop hit, blocked hit | String hits 1–2; middle hits of multi-hit Moves | L-L-L Flurry, launcher, Lunge, charged heavy (0–1), AI combo finisher, Pounce, Splat | L-L-L-H finisher, level-2 charged heavy, 1-Paw Move hit, Hiss interrupt, Fear trigger | 2-Paw Move hit, Frazzling hit, Tough Rout, Back Down | Special (each), Team Pile-On, Boss phase break, leader (Captain/Boss) Rout |
 | Hit-stop | 0 | ≈ 40 ms, local | ≈ 80 ms, local | ≈ 120 ms, local | ≈ 180 ms, **global** | ≈ 230 ms, **global**, then authored |
 | Screen shake (stepped, peak % of viewport height) | 0 | 0 | 0.4 | 0.7 | 1.1 | 1.6 |
 | Shake steps (one per 33 ms, ×0.6 decay per step) | — | — | 3 | 4 | 5 | 7 |
@@ -310,20 +341,22 @@ Art owns the drawings and Audio maps to these same tiers. **DR-50 safety overrid
 | Action lines | — | — | Local streak, ≈ 200 ms | Radial on 20% of the edge, ≈ 300 ms | Radial on 40% of the edge, ≈ 400 ms | Full-field (Ink/Cream), ≈ 600 ms, plus cut-in |
 | Impact frame | — | — | — | Local disc ≤ 15% of screen, 2 frames | Full-screen mid-tone inversion (luminance change ≤ 0.10), 2 frames, plus a 2-frame effect-shape flash | Full-screen, 3 frames plus 2 |
 | Glyph / lettering | — | Spark | 1 glyph, 0.6 m | Glyph burst of 2–3, 1.0 m | **Lettered word**, ≈ 12% of screen height, ≈ 500 ms | **Giant lettered word**, ≈ 30%, ≈ 800 ms |
-| Dust | 2 puffs | 3-puff ring | 5-puff ring | Ring plus trail | Ring plus crack decal | Cloud 3.5 m across (Full) / 2.5 m (Quick) |
+| Dust | 2 puffs | 3-puff ring | 5-puff ring | Ring plus trail | Ring plus crack decal | Cloud 3.5 m across (Team Pile-On) |
 | Camera punch-in | — | — | 1.5% | 3% | 6% | Authored, ≤ 15% |
 | Time dip after hit-stop | — | — | — | — | 30% for ≈ 200 ms | 20% for ≈ 500 ms (final Rout only) |
 | Rumble (low/high, 0–1) | 0/0.1 | 0/0.25 | 0.35/0.3 | 0.55/0.5 | 0.85/0.7 | 1/1, 3 pulses then decay |
 
 **Rules:**
-1. **Player authorship:** hits from AI cats acting on their own render **one tier lower** and never cause global hit-stop, full-screen effects or lettering. Commanded hits render at full tier.
+1. **Player authorship:** hits from AI cats acting on their own render **one tier lower** and never cause global hit-stop, full-screen effects or lettering. Commanded hits and every Special (the chain starts from Mikan's F) render at full tier. A Move's banner, colour, wind-up and VFX are never lowered (§3.3).
 2. **One screen-wide channel:** full-screen frames, full-field lines, cut-ins and giant words share it. A higher tier pre-empts a lower one, and equal tiers queue at least 170 ms apart. **A Tough Rout gets its full-screen frame only if player-authored and only if no full-screen frame played in the last 1 s; otherwise it downgrades to local.**
 3. **Shake (one model):** each event plays the table's stepped pattern (peak %, one step per 33 ms, ×0.6 decay per step). When patterns overlap they are **summed and clamped**: total displacement never exceeds **1.8% of viewport height**, and a new pattern never restarts a louder one already running. There is no separate trauma curve. The motion option scales it to 0–100%. Camera plays it back (`camera-system.md`).
 4. Multi-hit Moves: only the first and last hits use the Move's tier. A multi-target hit gets one hit-stop and one shake.
-5. **Caps:** 4 glyph bursts / 20 glyphs alive (PC). 60 dust puffs. Nothing covers the controlled cat's ground ring or an active telegraph decal, and telegraph decals draw above dust.
-6. **Timers** (Frazzle, Ruffled, statuses, cooldowns) **stop during global hit-stop** and run at 5% in Slow Blink. Time dips ease out over ≈ 100 ms.
-7. **Incoming hit on the controlled cat:** same tier as the enemy's class (white T1/T2, yellow T3, red T4), but hit-stop is local and 75% as long, with an **Ink/halftone edge pulse** (≈ 150 ms, alpha 0.35) instead of an impact frame. The pulse is never coral, which is Koharu's colour. Hits on AI cats render two tiers lower with no shake.
+5. **Caps:** 4 glyph bursts / 20 glyphs alive (PC). 60 dust puffs. Nothing covers Mikan's ground ring or an active telegraph decal, and telegraph decals draw above dust.
+6. **Timers** (Frazzle, Ruffled, statuses, cooldowns) **stop during global hit-stop**, run at 5% on the skill bar, and stop during the stagger presentation and the Special chain. Time dips ease out over ≈ 100 ms.
+7. **Incoming hit on Mikan:** same tier as the enemy's class (white T1/T2, yellow T3, red T4), but hit-stop is local and 75% as long, with an **Ink/halftone edge pulse** (≈ 150 ms, alpha 0.35) instead of an impact frame. The pulse is never coral, which is Koharu's colour. Hits on AI cats render two tiers lower with no shake.
 8. **Paw-fill feedback:** a drawn flat disc with a halftone edge at the cat's feet (Art's "glow"), plus a per-slot audio cue.
+9. **Stagger presentation** (§3.6): full or light treatment; it shares the screen-wide channel and its blink pulses count as flashes.
+10. **Special cut-ins** (§3.6): each cut-in is one screen-wide event. Its impact-frame background is a held drawing (no flicker); entering it is one full-screen frame under the ≤ 1 per second cap, so cut-ins in a chain start ≥ 1 s apart (≥ 0.5 s shortened cut-ins use a cut with no luminance change). Time stop is not hit-stop and is not counted against the 200 ms global hit-stop budget; it is an authored T5 sequence.
 
 **Safety (DR-50; the default configuration must pass an automated Harding-style analysis):**
 - ≤ 3 flashes in any 1 s (WCAG 2.3.1, area > 20%), with a **design cap of 2/s and 6 per rolling 5 s**.
@@ -334,23 +367,23 @@ Art owns the drawings and Audio maps to these same tiers. **DR-50 safety overrid
 - **Reduce Flashes:** impact frames become a +1 px line hold with no luminance change. **Reduce Motion:** shake, punch-ins and full-field lines are scaled together.
 
 **Lettered onomatopoeia (DR-49), which events letter:**
-- **Only T4 and T5, and only when player-authored.** At most one word on screen. Never over the controlled cat or the HUD. World-anchored. Never at home.
-- Event → word class: Claw hit → *scratch* word; Thump → *thud* word; Yowl → *yowl* word; Frazzling hit → *pop/burst* word; Back Down → *hiss* word; Pile-On final beat → *dust-cloud* word; Boss phase break → *crash* word; leader Rout → *bolt/whoosh* word.
+- **Only T4 and T5, and only when player-authored.** At most one word on screen. Never over Mikan or the HUD. World-anchored. Never at home.
+- Event → word class: Claw hit → *scratch* word; Thump → *thud* word; Yowl → *yowl* word; Frazzling hit → *pop/burst* word; Back Down → *hiss* word; Team Pile-On final beat → *dust-cloud* word (KA-BLAM); Boss phase break → *crash* word; leader Rout → *bolt/whoosh* word.
 - Art supplies about 16 hand-lettered words per language from these classes. Japanese uses native onomatopoeia.
 
 **Audio timing (SB-X13):** Combat owns *that* a cue exists and *when* it plays; Audio owns the timbre.
 - Ruffled: cue on onset, held 4 s.
 - Frazzled: a swell on the Frazzle, then a tick on each beat through the 6 s.
-- Slow Blink: a cue on open and on close.
+- Skill bar: a cue on open and on close.
 - Paw: a cue per slot.
 - Hit-stop freezes audio within its scope.
 - Telegraph vocals by class; the Hiss sound belongs to the acting cat.
 
 **Camera and readability (DR-48; camera states owned by `camera-system.md`):**
-- The combat camera pulls back 6–8 m and frames **the controlled cat, its lock target and every active telegraph**. It does not try to frame every combatant.
+- The combat camera sits behind Mikan at ≈ 3.8 m (`camera-system.md` §3.2) and frames **Mikan, the lock target when locked (otherwise the nearest threat ahead) and every active telegraph**. It does not try to frame every combatant.
 - Edge arrows mark off-screen Posse cats and attackers.
 - Posse cats: bell-gold keyline plus an overhead tick. Enemies: a Clowder-colour outline. Both have a 1 px Paper Cream rim.
-- **World text in real-time combat:** only the single bark balloon, one lettered word, and the Pile-On prompt's word (on its first 3 showings; glyph only after that). **Damage numerals are Off by default in the slice** (presentation ruling R3), with an Options toggle Off / Big hits / All (UX owns the display). Weakness and resistance read from the spark shape (an extra Ink crack wedge on a weak hit, a blunted spark on a resisted one; Art).
+- **World text in real-time combat:** only the single bark balloon, one lettered word, Move name banners (§3.3) and the **F** Special prompt (key glyph plus the word "Special" on its first 3 showings; glyph only after that). **Damage numerals are Off by default in the slice** (presentation ruling R3), with an Options toggle Off / Big hits / All (UX owns the display). Weakness and resistance read from the spark shape (an extra Ink crack wedge on a weak hit, a blunted spark on a resisted one; Art).
 - The enemy Frazzle bar sits on the enemy. An identity ribbon appears only for tracked Rivals, Captains and Daifuku (UX-2).
 
 ---
@@ -382,21 +415,21 @@ A mixed Wall Sitters group averages about 1.0, which the F9 doc model assumes.
 ΔFZ = FZ × r_rank × (2 if Ruffled) × OldScore × Weak   +   flat chunks
 r_rank   = Tough/Stray/crow 1.0 · Captain 0.20 · Boss 0.15
 OldScore = 1.25 (Brooder 1.5);  Weak = 1.2 if the target is weak to the hit's type
-flat chunks (ignore r_rank and Ruffled): Relay +10/+15/+20 · knock-off/Splat 20 · bucket +10 ·
+flat chunks (ignore r_rank and Ruffled): knock-off/Splat 20 · bucket +10 · bonded chain +10 (riders) ·
   Braggart first hit 20 · Fear 30/20/15 (Tough/Captain/Boss)
 ```
-Basic FZ: string hits 8, 8, finisher 14 (30 per string). Tag-In strike 20. Pounce F7.
+Basic FZ: Mikan's L-L-L 8, 8, 14 (30 per string); L-L-L-H adds 24 (54 per finisher string); launcher 16; charged heavy 16 / 24 / 32; Lunge 10 (§3.2). AI combos 8, 8, 14. Pounce F7. *(M1.1: string values are starting values; the sim's data and tests own the re-baseline.)*
 
 ### F3. Pounce Gauge (Paws)
 ```
 ΔP = fill × (4/s passive [0 while perched] + 4 per string hit landed + 6 per finisher/Pounce) + grants
-fill = 1.0 controlled, ai_fill (0.5) AI      grants: Tag-In 25 (both cats) · Ambush 25 · Well-Fed 25 at the start · Fraidy perfect Skitter 25
+fill = 1.0 Mikan, ai_fill (0.5) Crew      grants: Ambush 25 · Well-Fed 25 at the start · Fraidy perfect Skitter 25
 cap = 200 (2 Paws)
 ```
-*Controlled cat:* at 65% attack uptime that is 0.65 × 3 hits / 1.8 s = 1.08 hits/s × 4.67 average = 5.1, + 4 passive = **9.1 pts/s → 1 Paw per 11 s**.
+*Mikan:* at 65% attack uptime that is 0.65 × 3 hits / 1.8 s = 1.08 hits/s × 4.67 average = 5.1, + 4 passive = **9.1 pts/s → 1 Paw per 11 s**.
 *AI cat:* 0.5 × (4 + 0.35 × 1.67 × 4.67) = **3.4 pts/s → 1 Paw per 30 s**.
-*Tag-Ins* (baseline 1 per 10 s × 50 pts) = 0.05 Paw/s.
-*Posse total:* 0.091 + 3 × 0.034 + 0.05 = **0.242 Paws/s**.
+*Tag-Ins* † (removed in M1.1; was 0.05 Paw/s).
+*Posse total:* 0.091 + 3 × 0.034 = **0.193 Paws/s** (was 0.242 with Tag-In grants; the sim re-baselines F9 on this).
 
 ### F4. Healing
 ```
@@ -405,47 +438,56 @@ Total healed per cat per fight ≤ 0.60 × its max Nerve (Purr, Aria; Lick Wound
 ```
 *Example:* a neutral Yowler's single Purr heals 3.0 × 4.5% = 13.5% of neutral Nerve, or 20.3% with a Cowed enemy nearby. A Bruiser ally (×1.3 Nerve) receives 15.6% of its own bar. It takes at least 3 Cowed Purrs to reach the 60% cap, which uses that Yowler's whole Paw income for about 90 s of AI time (CS-10).
 
-### F5. Pile-On
+### F5. Special chain and Team Pile-On (replaces the Pile-On)
 ```
-Quick (trash): Routs every Frazzled enemy in the cluster (or the last enemy). No damage roll.
-Full (Captain/Boss): PileOn = Σ_cats (2.0 + k × T_rem) × TypeMod_cat × 1.5        k = 1.0 MV/s, T_rem = seconds left of the 6 s window
+Below Captain: a Special Routs its Frazzled target; a Team Pile-On Routs every Frazzled enemy < Captain within 3 m. No damage roll.
+Captain/Boss:  Chain = Σ_cats_in_chain (sp_base + k × T_rem) × TypeMod_cat × Bond_cat × 1.5   +   team × team_mv × 1.5
+               k = 1.0 MV/s · sp_base = 4.0 MV · team_mv = 8.0 MV · team = 1 iff all four Posse cats land in the chain
+               T_rem = seconds left of the 6 s window when F is pressed (the chain runs in stopped time)
+               Bond_cat = 1.25 for the second of two bonded cats fired back to back, else 1
 Pips shown = ceil(T_rem / 1.2)  (5 → 0)
 ```
-*Why k = 1.0:* the window is worth about 2.5–2.8 MV/s × 1.5 in basics to a leader. Four cats × k × 1.5 = 6 MV per remaining second, which is more than the basics would deal. So the **Pile-On itself is always worth more earlier** (DR-30).
-*Decision, worked (Captain, 4 cats):*
-- **(a)** Cash in at once: 4 × (2 + 6) × 1.5 = **48 MV** in 2.5 s.
-- **(b)** No Paws banked, wait to the end: basics 6 s × 2.48 × 1.5 = 22.3, then 4 × 2 × 1.5 = 12, total **34.3 MV** in 8.5 s. **(a) wins.**
-- **(c)** 2 Paws banked, 1.5 s spent dumping them, then cash in at T_rem 4.5: basics 1.5 × 2.48 × 1.5 = 5.6, Moves 2 × 3.5 × 1.5 = 10.5, Pile-On 4 × 6.5 × 1.5 = 39, total **55.1 MV** in 4 s. **(c) beats (a)**, which is what makes Paw banking a real decision (CS-6).
+*Why k = 1.0 (kept from DR-30):* the window is worth about 2.5–2.8 MV/s × 1.5 in basics to a leader. A four-cat chain gains 4 × k × 1.5 = 6 MV per remaining second, more than the basics would deal, so **the chain is always worth more earlier**. A Mikan-only Special gains 1.5 MV per second, less than the basics: with only Mikan's meter ready, spending the window first and firing late is fine. The meters set which case the player is in.
+*Decision, worked (Captain, all four meters full, no bonded pair; defaults):*
+- **(a)** F at once: 4 × (4 + 6) × 1.5 + 8 × 1.5 = **72 MV** in ≤ 6 s of stopped time.
+- **(b)** No Paws banked, F at the end: basics 6 s × 2.48 × 1.5 = 22.3, then 4 × 4 × 1.5 + 12 = 36, total **58.3 MV**. **(a) wins.**
+- **(c)** 2 Paws banked, 1.5 s dumping them, then F at T_rem 4.5: basics 5.6 + Moves 2 × 3.5 × 1.5 = 10.5 + chain 4 × 8.5 × 1.5 + 12 = 63, total **79.1 MV**. **(c) beats (a)**, so Paw banking stays a real decision (CS-6).
+- *Mikan alone ready:* F at once = (4 + 6) × 1.5 = 15 MV.
+*Re-baseline:* `sp_base`, `team_mv`, `k` and the meter pace (F8) are design starting values. The sim's data and tests own the re-baselined numbers and AC 6.
 
-### F6. Tag-In and Relay
+### F6. Command (replaces Tag-In and Relay)
 ```
-Tag-In strike: MV 1.5 (bonded ×1.25), FZ 20 (+10 bonded), T2
-Relay flat FZ: tag 2 +10, tag 3 +15, tag 4 +20 (ignores r_rank); bonus locked 6 s after a 3+ relay
+Commanded Move: the Move's own MV/FZ (§3.10); ×1.5 inside a Frazzle window; no pathing in the window
+Bonded chain:   the second of two bonded cats fired back to back in a chain: MV ×1.25, +10 FZ on rider targets
+Steel:          a command to a Cowed-by-nerves recruit ends the status (F11)
 ```
-*Four-cat Relay on a Captain:* strikes 4 × 20 × 0.20 = 16, plus 45 flat = **61 FZ in about 2 s**. Normal Captain build is about 7.4 FZ/s (F9), so a Relay saves about 8 s of building.
+*Removed:* the Tag-In strike (MV 1.5, FZ 20, 25 Pounce points to both cats) and the Relay flat bonus (+10/+15/+20; ≈ 61 FZ for a four-cat Relay on a Captain). Their share of the Captain build (≈ 1.0 FZ/s in F9) and of Paw income (0.05 Paw/s in F3) is gone; the heavier strings (§3.2) and the chain are meant to cover it, and the sim re-baselines F9.
 
 ### F7. High Road Pounce (Wind-Up)
 ```
 MV = 1.5 + 0.5 × t_aloft (max 3.0 at 3 s) · FZ = 15 + 10 × t_aloft (max 45) · ×0.6 and no Paw points if within 1.5 s of mantling
 ```
 
-### F8. Zoomies gain
+### F8. Special meter gain (was Zoomies gain)
 ```
-+1 per 1% of own max Nerve lost (≤ +40 per encounter) · +10 to every standing Posse cat on each enemy Frazzle · gauge 100, persists through the day
-Well-Fed: Mikan starts the day at 5% × Bond hearts (max 50)
++sp_per_hit (2) per hit landed × fill (1.0 Mikan, ai_fill Crew) · +1 per 1% of own max Nerve lost (≤ +40 per encounter)
++10 to every standing Posse cat on each enemy Frazzle · gauge 100, emptied by its Special, persists through the day
+Well-Fed: Mikan starts the day at 5% × Bond hearts (max 50) · Life 1 tutorial: Mikan and the wall cat start full
 ```
-*Pace:* about 3 Frazzles plus about 20% damage per normal encounter gives about +50, so each cat gets one Zoomies about every 2 encounters (2–3 per day per cat).
+*Pace (design intent; the sim owns the numbers):* Mikan lands ≈ 1.1 hits/s at 65% uptime, so ≈ 2.2 + Frazzle and damage terms ≈ 50–60 per Captain Frazzle cycle (≈ 18 s): **Mikan's Special about every second stagger of a Captain and about once per normal encounter**; a Crew cat (≈ 0.6 hits/s × 2 × 0.5) about half as often, so a full four-cat chain is a Captain-or-Boss event, a few times in the Daifuku fight. This replaces the old Zoomies pace (≈ 1 per cat per 2 encounters; B-19).
 
 ### F9. Reference model: the fight-length arithmetic (Alley, same level, neutral matchups)
 
 This is the **expected-value spec for the encounter sim (DR-57)**, not a substitute for it.
+
+> **M1.1 re-baseline pending (owned by the sim's data and tests).** Every figure below was computed with Tag-In strikes, Relays, Tag-In Paw grants and an always-available Pile-On. Owner direction M1.1 replaces them with the meter-gated Special chain (F5, F8), Mikan's heavier strings (§3.2) and attack-token AI (§3.11). The **bands** (Tough 6–10 s, normal 30–60 s, Captain 30–45 s, Daifuku 2–3 min, incoming 15–25% / 50–80%) and the ACs are unchanged; terms that no longer exist are marked †, and "Pile-On" below reads as "Special chain". The sim and the M1 tests own the new numbers; this hand model is not re-derived here.
 
 **Iteration 3 — sim-checked figures (these replace the hand claims below where they differ).** The round-2 sim (`design/reviews/round-2/sim/combat_slice_sim.py`, deterministic) shows the hand model below is optimistic by 0–25%, because it treats Paw income as continuous Move damage (no Move is affordable inside a Tough-length fight) and the catalogue averages ≈ 2.1 MV / 20 FZ per Paw, not 3.5 / 30. Ranges are *doc variant – slice variant* (slice = Crew's Lv 8 stats and the slice Posse):
 
 | Fight (ruled band) | Hand claim below | **Sim (canonical)** | In band? |
 |---|---|---|---|
 | Tough, focused in a group (6–10 s) | 7.9 s | **9.7–10.7 s** | Upper edge |
-| Tough, last enemy (Quick Pile-On) | — | **5.6–5.7 s** | ✓ |
+| Tough, last enemy (Quick Pile-On †; now a Special) | — | **5.6–5.7 s** | ✓ |
 | Skirmish, 2 / 3 Toughs (A2) | 16 / 24 s | **18–21 / 25–28 s** | ✓ (A2) |
 | 4 / 5 / 6 Toughs (30–60 s) | 31 / 39 / 44 s | **33–36 / 40–44 / 48–53 s** | ✓ |
 | Captain, any Style (30–45 s) | 36.7 s (Bruiser 44, Yowler 33) | **37 s; Bruiser 37–44 s** (after `captain_style_nerve` = off, §3.12) | ✓, 2 Frazzles each |
@@ -462,25 +504,25 @@ The single retune is `captain_style_nerve` = off (the ×1.3 Bruiser Captain ran 
 | Calm / Riled 20 s / Seething 40 s / Furious all fight | **175.5 s at every stage** (wins at good, median and poor dodging) | **52.3 / 54.0 / 56.1 / 60.6%** (good 37–42%, poor 68–79%) | Fired Up changes his damage only, so a win takes the same time; all inside F10's 50–80% band |
 | Where the expected-value Posse wipes | — | — | Calm at ≥ 95% landed, Riled 93%, Seething 91%, **Furious 83%**; a lost attempt lasts ≈ 190 s with ≈ 90–96% of his Nerve gone |
 | Rematch at −10%, anger spent (Calm) | **157.2 s** (161 s good dodging) | 45.7% | Wipe line ≥ 98% landed |
-| Kagi Cowed 20 s, cleared by the first Tag-In (≈ 10 s) | 176.0 s | 52.3% | **+0.6 s** |
+| Kagi Cowed 20 s, cleared by the first Tag-In † (≈ 10 s; now the first skill-bar command to Kagi) | 176.0 s | 52.3% | **+0.6 s** |
 | Kagi Cowed 20 s, no answer (Fraidy 30 s: same) | 179.7 s | 54.0% | **+4.3 s** at every anger stage; the cost is quantised by the Frazzle cycle |
 | Nose-Touch ally (Togemaru, guest), family Posse | **161.7 s from the start / 169.5 s with the phase-2 wave** (no ally 175.5 s) | 40.9% / 45.8% (no ally 54.2%) | −14 s / −6 s; Furious with the ally from the start 162.2 s, 47.0% lost. In the slice Daifuku has no Rival tag, so the reachable case is the phase-2 wave holding Goma |
 
-**What the numbers say.** Anger is a *pressure* knob, not a *length* knob: the fight stays 2.6–3 min at every stage, and the stage shows up as Nerve lost and as how much dodging the player can get wrong before a wipe. A Cowed recruit costs ≤ 5 s even unanswered, so the flinch is a beat and a prompt to Tag-In, not a tax. A join-in ally is worth ≈ 8% of the fight and ≈ 13 points of Nerve. The expected-value model wipes only under very poor dodging; the reference path's lost L2D4 attempt (`day-loop.md` §3.10) is a first-attempt assumption that variance and under-levelling supply, and Furious makes it more likely.
+**What the numbers say.** Anger is a *pressure* knob, not a *length* knob: the fight stays 2.6–3 min at every stage, and the stage shows up as Nerve lost and as how much dodging the player can get wrong before a wipe. A Cowed recruit costs ≤ 5 s even unanswered, so the flinch is a beat and a prompt to command the recruit, not a tax. A join-in ally is worth ≈ 8% of the fight and ≈ 13 points of Nerve. The expected-value model wipes only under very poor dodging; the reference path's lost L2D4 attempt (`day-loop.md` §3.10) is a first-attempt assumption that variance and under-levelling supply, and Furious makes it more likely.
 
 **Rates per cat (from F1–F3):**
 
 | Source | MV/s | Raw FZ/s |
 |---|---|---|
-| Controlled cat, basics (string 3.5 MV and 30 FZ per 1.8 s × 65% uptime) | 1.26 | 10.8 |
+| Mikan, basics (string 3.5 MV and 30 FZ per 1.8 s × 65% uptime; M1.1 strings re-baselined by the sim) | 1.26 | 10.8 |
 | AI cat, basics (× 35% uptime) | 0.68 | 5.8 |
 | Posse basics (1 + 3 AI) | **3.30** | **28.2** |
-| Moves (0.242 Paw/s × 3.5 MV / 30 FZ) | 0.85 | 7.3 |
-| Tag-In strikes (1 per 10 s) | 0.15 | 2.0 |
+| Moves (0.242 Paw/s † (0.193 in M1.1) × 3.5 MV / 30 FZ) | 0.85 | 7.3 |
+| Tag-In strikes † (1 per 10 s; removed) | 0.15 | 2.0 |
 | **All four on one target** | **4.30** | **37.5** (8.7 FZ per MV) |
 
 **Focus factors**, the share of that output that reaches the target:
-- Tough under focus: the controlled cat + 1 AI.
+- Tough under focus: Mikan + 1 AI.
 - Normal group: 0.55 (targets split, 4–6 attackers to dodge, token posturing).
 - Captain: 0.75, with half the Paws banked for the window, which gives **2.91 MV/s** and **25.4 raw FZ/s**.
 - Boss on his wall: 0.5 (High Road cats only). Boss on the ground: 0.85.
@@ -502,20 +544,20 @@ The single retune is `captain_style_nerve` = off (the ×1.3 Bruiser Captain ran 
 - (Skirmishes of 2–3 Toughs: 16–24 s by hand, 18–28 s in the sim, deliberately below this band. DR-16's 4–6 fights per day mixes both.)
 
 **Captain (target 30–45 s; Nerve 8 × 22.2 = 177.8 MV).**
-- Build: 25.4 × 0.20 = 5.08 FZ/s, × 1.25 for 25% Ruffle uptime (Hiss on its yellows, a prop; capped at 40% by the cooldown) = 6.35, + a 2-cat Relay every 10 s (+1.0) = **7.35 FZ/s**.
+- Build: 25.4 × 0.20 = 5.08 FZ/s, × 1.25 for 25% Ruffle uptime (Hiss on its yellows, a prop; capped at 40% by the cooldown) = 6.35, + a 2-cat Relay † every 10 s (+1.0) = **7.35 FZ/s** (6.35 without it).
 - So it Frazzles after **13.6 s**, by which time the Posse has dealt 13.6 × 2.91 = **39.6 MV**.
 - Window: F5(c) = **55.1 MV in 4 s**.
 - One cycle = 17.6 s and 94.7 MV, leaving 83.1 MV. The second build (13.6 s, 39.6 MV) leaves 43.5 MV, which an early Pile-On finishes in about 3.5 s.
 - **Total ≈ 17.6 + 13.6 + 3.5 + 2 (opening) = 36.7 s ✓**, with 2 Frazzles.
 - Style spread: Captains take no Style Nerve multiplier (§3.12), so every Captain has 177.8 MV; a Bruiser Captain is slower only through its Hide (sim 44 s in the slice variant) ✓.
-- Expert policy (a 4-cat Relay per cycle, 40% Ruffle uptime): **≈ 25 s**. That is allowed down to 0.7 × the band floor, which rewards skill.
+- Expert policy (a 4-cat Relay † per cycle; now four-cat chains, 40% Ruffle uptime): **≈ 25 s**. That is allowed down to 0.7 × the band floor, which rewards skill.
 
 **Daifuku (target 2–3 min; Nerve 26 × 22.2 = 577.8 MV; phases 173 / 202 / 202 MV).**
 - **Knock-off cycle (≈ 14 s):**
   - Wall, 8 s at focus 0.5: 1.94 MV/s gives 15.5 MV; 16.9 × 0.15 = 2.54 FZ/s gives 20 FZ.
   - Knock-off into the bucket: 30 FZ flat.
   - Ground, 6 s at focus 0.85: 3.29 MV/s gives 19.7 MV; 4.3 FZ/s, ×2 for the 4 s Ruffled, gives 43 FZ.
-  - Relays: 14 FZ.
+  - Relays †: 14 FZ.
   - Cycle total: **35 MV and 107 FZ**, so about one Frazzle per knock-off (≈ 13 s of building, ≈ 33 MV).
 - **Window:** 1.5 s × 2.8 × 1.5 = 6.3, + 10.5 (2 Paws), + 39 (Pile-On) = **55.8 MV in 4 s**.
 - **Frazzle cycle:** 17 s and ≈ 89 MV. 577.8 / 89 = 6.5 cycles, about **110 s**.
@@ -523,15 +565,15 @@ The single retune is `captain_style_nerve` = off (the ×1.3 Bruiser Captain ran 
 - **Frazzles per phase:** 1.9 / 2.3 / 2.3, so every phase has ≥ 1 ✓ (DR-32).
 - At −30% plastered, the fight takes **≈ 1.7 min** (a deliberate story-player assist).
 
-**Crew share (DR-33, target ≥ 55%).** Worst case, the player controls Mikan the whole fight. Basics: Mikan 1.26 against Crew 2.04. Moves: Mikan's 0.32 against the Crew's commanded Paws 0.53. Pile-Ons: 3 of 4 beats. **Crew share ≈ 62% in trash fights and ≈ 66% against a Captain ✓.**
+**Crew share (DR-33, target ≥ 55%).** The player controls Mikan the whole fight (always, under M1.1). Basics: Mikan 1.26 against Crew 2.04. Moves: Mikan's 0.32 against the Crew's commanded Paws 0.53. Special chains: 3 of 4 Specials when all meters are ready. **Crew share ≈ 62% in trash fights and ≈ 66% against a Captain ✓.**
 
-**Conductor share.** Against a Captain, commanded Moves, Tag-In strikes and Pile-Ons are 4.3 + 1.5 + 49.5 = 55.3 of 94.7 MV per cycle, **≈ 58%** (CS-5: the conductor layer is now the majority where it matters).
+**Commander share** (was conductor share). Against a Captain, commanded Moves, Tag-In strikes † and Pile-Ons † were 4.3 + 1.5 + 49.5 = 55.3 of 94.7 MV per cycle, **≈ 58%** (CS-5). Under M1.1 the share is commanded Moves plus Special chains; the sim re-measures it against AC 3.
 
 ### F10. Incoming damage model (CS-12)
 
 **Normal 5-Tough encounter (≈ 40 s):**
 - Token holders attack once per 4.5 s at about 1.5 MV each. About 55% of enemies are still standing on average across the fight.
-- Controlled cat: 2 tokens × 8.9 attacks × 1.5 MV × 40% landed = 10.7 MV.
+- Mikan: 2 tokens × 8.9 attacks × 1.5 MV × 40% landed = 10.7 MV.
 - AI cats: 3 × 8.9 × 1.5 × 60% = 24.0 MV.
 - Total 34.7 × 0.55 = **19.1 MV ≈ 21% of the Posse's 89 MV of Nerve** (target 15–25% ✓).
 
@@ -540,7 +582,7 @@ The single retune is `captain_style_nerve` = off (the ×1.3 Bruiser Captain ran 
 - The Tough waves add about 8 MV.
 - Total 64 MV = **72% without heals** (target 50–80% ✓).
 - Purr can recover at most 60% per cat, so the fight stays tense but survivable.
-- **Sim (owner feedback pass):** with his swings held while he is Frazzled, during Pile-Ons and during phase breaks, the 175 s fight costs **52% at the median** (37% good dodging, 68% poor). **Fired Up** (F11) multiplies the swings it covers by 1.25: Riled +1.7, Seething +3.8, Furious +8.3 points at the median; poor dodging while Furious reaches 79%, still inside the band.
+- **Sim (owner feedback pass):** with his swings held while he is Frazzled, during Pile-Ons (now Special chains) and during phase breaks, the 175 s fight costs **52% at the median** (37% good dodging, 68% poor). **Fired Up** (F11) multiplies the swings it covers by 1.25: Riled +1.7, Seething +3.8, Furious +8.3 points at the median; poor dodging while Furious reaches 79%, still inside the band.
 
 ### F11. Fight-start statuses: anger and nerves (OR-06, OR-07)
 
@@ -549,7 +591,7 @@ Fired Up on a Boss:  D_out = D × fu_dmg   while  fu_left > 0  and the Boss has 
                      fu_left(0) = anger_fu_s[stage]       stage ∈ {Calm, Riled, Seething, Furious}
                      fu_left decreases only while the anger Fired Up is active (paused under Soggy)
 Cowed on a recruit:  D_out = D × cowed_dmg ; AI target set excludes old_boss_id
-                     while  t < t_seen + nerves_s[personality]  and no Tag-In to it since t_seen
+                     while  t < t_seen + nerves_s[personality]  and no skill-bar command to it since t_seen
                      applies iff  old_gang_nerves = true  and  Loyalty < 80  and  old_boss_id ∈ opponents
 ```
 
@@ -561,34 +603,34 @@ Cowed on a recruit:  D_out = D × cowed_dmg ; AI target set excludes old_boss_id
 | `nerves_s` | Seconds Cowed at the sight of the Old Boss | 20; Fraidy 30 (10–30) |
 | `t_seen` | Standoff end, or the moment a wave brings the Old Boss in | — |
 
-*Example (Furious Daifuku, median):* he swings every 4 s for 2 × 1.6 = 3.2 MV, half lands = 1.6 MV; Fired Up makes it 2.0 MV, +0.4 MV a swing. About 20 of his swings fall outside his Soggy windows (the rest land while he is doused, or are held by Frazzles, Pile-Ons and breaks), so the Posse takes ≈ 8 MV more of its 97 MV of Nerve: 52.3% → 60.6% (sim). *Riled:* 20 s of buff is 5 swings × 0.4 MV = 2.0 MV ≈ +1.7 points. *Kagi Cowed and unanswered:* 20 s × 0.68 MV/s (AI basics) × 1.08 (a Yowler on a Bruiser) × 0.5 (wall focus) ≈ 7 MV withheld, ≈ 1.3% of his 578 MV, which costs 4.3 s once the Frazzle cycle rounds it.
+*Example (Furious Daifuku, median):* he swings every 4 s for 2 × 1.6 = 3.2 MV, half lands = 1.6 MV; Fired Up makes it 2.0 MV, +0.4 MV a swing. About 20 of his swings fall outside his Soggy windows (the rest land while he is doused, or are held by Frazzles, Special chains and breaks), so the Posse takes ≈ 8 MV more of its 97 MV of Nerve: 52.3% → 60.6% (sim). *Riled:* 20 s of buff is 5 swings × 0.4 MV = 2.0 MV ≈ +1.7 points. *Kagi Cowed and unanswered:* 20 s × 0.68 MV/s (AI basics) × 1.08 (a Yowler on a Bruiser) × 0.5 (wall focus) ≈ 7 MV withheld, ≈ 1.3% of his 578 MV, which costs 4.3 s once the Frazzle cycle rounds it.
 
 ---
 
 ## 5. Edge Cases
 
-1. **Frazzled at a phase gate:** damage clamps; the break waits until the window or Pile-On ends; overflow up to 10% of max Nerve carries over. A Pile-On started on a clamped Frazzle plays the break as its last beat.
+1. **Frazzled at a phase gate:** damage clamps; the break waits until the window or Special chain ends; overflow up to 10% of max Nerve carries over. A chain started on a clamped Frazzle plays the break as its last beat.
 2. **Phase gate reached with Frazzle at 95:** the gauge is kept through the break, so the first hits in the next phase can Frazzle him.
-3. **Pile-On while a second enemy attacks:** the participants are invulnerable, and enemies outside the Pile-On hold their attacks until it ends. A red windup already in progress pauses.
-4. **Pile-On availability drops mid-window** (a Posse cat Routed, leaving < 2 standing): the prompt disappears. Frazzle continues.
-5. **Quick Pile-On with 3 Frazzled Toughs, two within 3 m and one 5 m away:** only the cluster of two is Routed. The third stays Frazzled.
-6. **Last enemy is a Captain:** the Full Pile-On rule applies, not the "last enemy" Rout rule. Auto-Rout applies only below Captain.
-7. **Tag-In to a cat > 8 m away or out of line of sight:** it is a plain switch with no strike, no Paw grant and no Relay.
-8. **Relay revisiting a cat:** a non-starter cat that has already been the incoming cat cannot be selected (its D-pad direction is greyed for the rest of the Relay); switching to it is a plain switch and ends the Relay. The Relay's starter stays selectable and, as the incoming cat, closes the Relay with that tag (so A→B→A is a 2-tag Relay, A→B→C→A a 3-tag one and A→B→C→D→A the 4-tag maximum). After tag 4 the Relay ends.
-9. **Controlled cat Routed during a Tag-In leap:** impossible, because the leap is invulnerable. If the cat is Routed in its recovery, control passes to the next slot.
-10. **Slow Blink during a Frazzle window:** pips drain at 5% time. Commands skip pathing. A Pile-On can be chosen from the menu.
+3. **Special chain while a second enemy attacks:** the cats in the chain are invulnerable, and enemies outside it hold their attacks until it ends. A red windup already in progress pauses.
+4. **F prompt availability drops mid-window** (Mikan Routed, or the target leaves 8 m and is unreachable): the prompt disappears. Frazzle continues; the meter is kept.
+5. **Team Pile-On with 3 Frazzled Toughs, two within 3 m of the target and one 5 m away:** only the two are Routed. The third stays Frazzled. A single Special Routs only its own target.
+6. **Last enemy is a Captain:** F5's value applies; auto-Rout applies only below Captain.
+7. **F pressed with the meter not full:** nothing fires; the prompt is not shown, and the plate's meter pulses once. **A Crew cat's meter fills mid-chain:** it does not join that chain (eligibility is fixed when F is pressed).
+8. **Lock-on press when the nearest enemy is still the locked one:** the lock releases (free camera). Pressed when unlocked with no enemy within 14 m: nothing. The locked enemy Routed, Backing Down or leaving the ring: the lock releases; it never jumps to another target by itself.
+9. **Mikan Routed while Crew stand:** the player keeps the skill bar and the camera frames the nearest standing Posse cat; no F prompt. A `win` gets Mikan up at 20%; all four Routed is a `loss`. **Three fast clicks:** the first press starts the first Light; a later press is kept only if it falls in that attack's last 150 ms (the newest replaces an older buffered one); the string never queues more than one follow-up.
+10. **Skill bar during a Frazzle window:** pips drain at 5% time. Commands skip pathing. The Special is not on the bar: close it and press F.
 11. **Hiss on a red telegraph:** the cooldown is spent and nothing happens (the HUD shows a fizzle glyph). Red is never interruptible.
-12. **Two yellow windups at once:** one Hiss interrupts only the attacker in front within 4 m. Interrupting several is a job for the conductor (switch, then Hiss).
-13. **Back Down on a Tough that is Frazzled:** allowed. Back Down beats the Pile-On prompt, and the event `CatRouted(by_back_down)` is sent.
+12. **Two yellow windups at once:** one Hiss interrupts only the attacker in front within 4 m. Interrupting several is a job for the commander (force two cats' Hisses from the skill bar).
+13. **Back Down on a Tough that is Frazzled:** allowed. Back Down beats the Special prompt, and the event `CatRouted(by_back_down)` is sent.
 14. **Ruffle on a leader during its cooldown:** the Ruffle is ignored and a small "wise to it" glyph shows. Fear triggers still give their chunk and rider. Fed Up overrides the cooldown.
 15. **Status replacement:** a Cowed enemy hit by a Soggy splash becomes Soggy, not Cowed. Purr's bonus checks Cowed at cast time.
-16. **Damage-reduction stacking:** a Bracing Bruiser in Puff Up next to a Stalwart is 0.3 × 0.7 × 0.85 = 0.18, floored to **0.30**.
-17. **Heal cap reached:** further heals on that cat show a capped glyph and do nothing. Purr cannot be cast at a capped cat from Slow Blink (greyed).
+16. **Damage-reduction stacking:** a Bracing (AI) Bruiser in Puff Up next to a Stalwart is 0.3 × 0.7 × 0.85 = 0.18, floored to **0.30**.
+17. **Heal cap reached:** further heals on that cat show a capped glyph and do nothing. Purr cannot be cast at a capped cat from the skill bar (greyed).
 18. **Knock-off of an enemy with the Strength "cannot be knocked off":** the enemy stops at the edge, and knockback becomes a flinch. On Daifuku that Strength is forbidden (Nemesis rule request).
 19. **Crow knocked off the High Road:** it flies; there is no Splat. Crows are exempt from knock-offs.
 20. **Fear prop triggered by the enemy side:** it applies to every cat in range, Posse included, if a Crew cat carries that Fear (recruited Rivals keep their Fears).
 21. **Daifuku knocked off with no bucket in reach:** Ruffled plus 20 FZ, no Soggy. The bucket only adds value; it is never required.
-22. **Wipe during a Pile-On:** impossible (participants are invulnerable). A wipe in the frames after it resolves normally (`loss`).
+22. **Wipe during a Special chain:** impossible (the cats in it are invulnerable; Routed cats are not in it). A wipe in the frames after it resolves normally (`loss`).
 23. **Fed Up during a Frazzle window:** the window is unaffected. Ruffled applies after it ends.
 24. **Ambush by player on a group:** only the first target is Ruffled and takes ×1.5. The rest start neutral.
 25. **Degenerate strategies checked:**
@@ -598,20 +640,22 @@ Cowed on a recruit:  D_out = D × cowed_dmg ; AI target set excludes old_boss_id
     - **Heal loop:** the 60% cap.
     - **Paw farming:** no self-refunds, and AI never spends its last Paw.
     - **Hiss loop on leaders:** the interrupt spends the enemy's Paw, puts the Move on cooldown, and the re-Ruffle cooldown applies.
-    - **Control one cat all fight:** Tag-Ins are worth both damage and Paws (F3, F6). The sim checks that the switch rate is > 0 in the best policies.
+    - **Never command:** commanded Moves and the Special chain carry the commander share (AC 3, AC 5). The sim checks that the command rate is > 0 in the best policies.
+    - **Heavy spam:** Heavies build Frazzle faster but recover slower and the finisher commits; the one-slot buffer stops mash queues; tokens cap incoming, not outgoing, so dodging still matters.
+    - **Special stalling:** a meter never overfills, and an unused meter does nothing outside a stagger.
     - **Lose on purpose to end the day** (owner feedback): a wipe is dominated by Settle In in every currency (Day Loop §3.6, Territory §4.13); Combat adds nothing that rewards it.
     - **Scram-reset anger:** closed, Scram does not spend it (edge 32).
 26. **Wipe with a join-in ally standing:** the guest is not Posse, so all four Posse cats Routed is a `loss` even if the guest still stands. It slips away at the Gloat; it gains no Regard and nothing is recorded on it.
 27. **Wipe while a recruit is still Cowed:** a normal `loss`. The flinch writes nothing anywhere; next time it sees its Old Boss it flinches again unless Sworn by then.
-28. **Cowed recruit when the Old Boss is the only opponent** (Daifuku's phase 1): its AI has no target, so it postures at 4–6 m, Braces, and still Hisses yellows aimed at itself. It still fills Paws (passive only). The player's Tag-In is the answer.
+28. **Cowed recruit when the Old Boss is the only opponent** (Daifuku's phase 1): its AI has no target, so it postures at 4–6 m, Braces, and still Hisses yellows aimed at itself. It still fills Paws (passive only). A skill-bar command to it is the answer.
 29. **Old Boss arrives in a wave:** the flinch starts when he enters the ring (`t_seen`), not at the Standoff. A Cowed recruit hit by a newer status (Soggy) loses the Cowed early under the one-status rule; the AI exclusion ends with it.
-30. **Two susceptible recruits from the same gang:** each flinches on its own memory and needs its own Tag-In. The Old Boss's behaviour is the same either way.
+30. **Two susceptible recruits from the same gang:** each flinches on its own memory and needs its own command. The Old Boss's behaviour is the same either way.
 31. **Anger Fired Up and the bucket:** a knock-off into the water prop makes him Soggy for 6 s; anger's Fired Up pauses and resumes with its remaining time. A Furious Boss is Fired Up again as soon as he is dry. Wall Yowl's Fired Up on his **Toughs** (phase 2) is the move's own effect and has nothing to do with anger.
 32. **Scram from a Furious Boss:** `player_fled`; anger is not spent and he is still Furious at the next Standoff (unless a night's −15 dropped the stage). Re-engaging is never a calm reset.
 33. **Boss phase break at a stop's edge, or a stop reached at a phase change:** the arena is the stop where the Standoff began. The clock is paused in combat, so `PhaseChanged` (and his walk to the next stop) cannot happen mid-fight; he walks on after `EncounterEnded`.
 34. **Join-in rolled but no free slot (10 combatants):** the guest waits at the ring edge and enters when a slot frees. If the fight ends first, it never enters, and the join is not counted.
 35. **The joiner's Rival is Routed or bolts before the guest arrives:** it still enters and fights the rest of the opponents; its target bias simply has nothing to point at.
-36. **A Kin opponent is the last enemy standing:** the Kin AI cat postures and Braces; the others finish it. A player-triggered Quick Pile-On includes the Kin cat (player-authored).
+36. **A Kin opponent is the last enemy standing:** the Kin AI cat postures and Braces; the others finish it. A Special chain includes the Kin cat if its meter is full (player-authored).
 37. **Togemaru on Life 1 day 1 Frazzled or Splatted at 25%:** he still bolts (the day-1 exception overrides both). On every later day the normal flight rule applies.
 38. **Loss in a `raid_defence` brawl (the Caterwaul):** a normal `loss` for the day (Day Loop §5). The raid result is Territory's formula with the presence term; the brawl's outcome moves no Scent.
 
@@ -620,14 +664,14 @@ Cowed on a recruit:  D_out = D × cowed_dmg ; AI target set excludes old_boss_id
 | System (doc) | Direction | Contract |
 |---|---|---|
 | Nemesis (`nemesis-system.md`) | ← reads | `RivalCombatProfile` (level, style, personality, moves, strengths, fears, title, scars, `flee_threshold`; **+ `anger_stage`** on a Boss; on Crew cats **`old_gang_nerves`, `old_boss_id`** (from the cat's own Memory) and **`kin_ids`**, OR-20); `AngerChanged` (read at fight start only); `AllyJoined(cat_id, encounter_id)` (the guest, §3.14); Togemaru's Life 1 day 1 uninterruptible flee flag; Memory query for Old Score; leader levels per §3.12; Daifuku's trait kit must not include "cannot be knocked off"; his patrol-stop placement (Nemesis places, Territory opens the window) |
-| Nemesis | → emits | `EncounterStarted`, `CatRouted` (incl. `by_back_down`, `by_pile_on`), `FearTriggered` (incl. `source = tell`), `EncounterEnded(outcome ∈ {win, loss, player_fled, rival_fled})` (Nemesis spends anger on win, loss, `rival_fled`; writes the victor's `WON` and Title on a loss; +5 Regard to a joiner on a win); Verdict hold at the ring edge. **Combat never changes any cat's record; it reports outcomes** |
-| Crew & Progression (`crew-and-progression.md`) | ← reads | Stat curves `N_ref`, `S_ref`; per-cat stats; learnsets by `move_id`; Mikan's ≤ 2 cross-Style Moves; bonded/clashing pairs; Zoomies unlocks (Mikan Life 2 day 3, Crew Lv 6). Crew's personality sheets point to §3.11 for every combat value; **Loyalty for the Sworn check on Old Gang Nerves (§3.5); two Kin in the Crew are a bonded pair (§3.3)** |
-| Crew | → emits | `MoveUsed`, `TagIn`, `EncounterEnded` (XP, Loyalty "Routed in a lost fight") |
+| Nemesis | → emits | `EncounterStarted`, `CatRouted` (incl. `by_back_down`, `by_pile_on` = a Special or Team Pile-On Rout, name kept), `FearTriggered` (incl. `source = tell`), `EncounterEnded(outcome ∈ {win, loss, player_fled, rival_fled})` (Nemesis spends anger on win, loss, `rival_fled`; writes the victor's `WON` and Title on a loss; +5 Regard to a joiner on a win); Verdict hold at the ring edge. **Combat never changes any cat's record; it reports outcomes** |
+| Crew & Progression (`crew-and-progression.md`) | ← reads | Stat curves `N_ref`, `S_ref`; per-cat stats; learnsets by `move_id`; Mikan's ≤ 2 cross-Style Moves; bonded/clashing pairs; Specials (no unlock level under M1.1, §3.7). Crew's personality sheets point to §3.11 for every combat value; **Loyalty for the Sworn check on Old Gang Nerves (§3.5); two Kin in the Crew are a bonded pair (§3.3: bonded chain bonus)** |
+| Crew | → emits | `MoveUsed` (with `commanded`), `SpecialChain(target, cats[], team)` (replaces `TagIn`), `EncounterEnded` (XP, Loyalty "Routed in a lost fight") |
 | Territory & Economy (`territory-management.md`) | ↔ | `raid_defence` opener with Sentries as allied AI; `EncounterEnded` for loot; no prices here. **No combat outcome moves Scent or influence** (G5: the presence rule and "fight to clear, spray to claim" are Territory's); `BossWindowChanged` decides whether Daifuku can be fought at all |
 | Day loop (`day-loop.md`) | ↔ | Reads the Well-Fed flag (DR-20), the phase (Night Rivals; Daifuku's stop) and pauses the clock. **Hands it the loss:** `EncounterEnded(outcome = loss)` after the Gloat; Day Loop jumps the clock to Night, closes the street and sends Mikan home (§3.6 there). Tutorial fights cannot wipe |
-| Camera (`camera-system.md`) | → requires | Combat state (6–8 m, framing the controlled cat + lock target + active telegraphs), Slow Blink view, cinematic cuts for the Standoff, Pile-On, Zoomies and phase breaks; the reduced-shake option |
-| UX (`ux/hud.md`) | → requires | The control map (DR-08) with this doc's actions; Slow Blink menu; Frazzle bar on the enemy with 5 pips; identity ribbon for named enemies; edge arrows; Pile-On prompt; beat sheet (§3.16); **the guest plate and truce-sprig tick for a join-in ally; the Cowed flinch and "steeled" read on a Posse plate; the Boss's Fired Up read (steam puffs on his ribbon) and its doused state** |
-| Art (`art/art-bible.md`) | → requires | Drawings for every row of §3.17; telegraph decals and glyphs; 6 personality animation sets including Pile-On flourishes; Tag-In strikes (3 Styles); lettering sets |
+| Camera (`camera-system.md`) | → requires | Combat state (≈ 3.8 m behind Mikan, framing Mikan + lock target + active telegraphs); the Tab lock-on cycle and free orbit; the skill-bar view; the stagger zoom; the Special cut-in, the chain and the Team Pile-On; Standoff and phase-break cinematics; the reduced-shake option |
+| UX (`ux/hud.md`) | → requires | The control map (§3.1, DR-08); the skill bar (R); Frazzle bar on the enemy with 5 pips; the F Special prompt; Special meters and Move highlights on the plates (no control keys); Move name banners; the Tab lock-on indicator; identity ribbon for named enemies; edge arrows; beat sheet (§3.16); **the guest plate and truce-sprig tick for a join-in ally; the Cowed flinch and "steeled" (on command) read on a Posse plate; the Boss's Fired Up read (steam puffs on his ribbon) and its doused state** |
+| Art (`art/art-bible.md`) | → requires | Drawings for every row of §3.17; telegraph decals and glyphs; 6 personality animation sets including Team Pile-On flourishes and the circling, stalking and posturing sets (§3.11); Mikan's five strings; Special cut-in art and impact-frame backgrounds (3 Styles); the shattered-glass stagger blink; per-cat colours, wind-up poses and Move VFX (§3.3); lettering sets |
 | Audio (`audio/sound-bible.md`) | → requires | Cues per tier, the §3.17 cue timing list, 8 bark intents, a Rival yowl-sting for Ambush |
 | Accessibility (`design/accessibility-requirements.md`) | ↔ | Mirrors the safety rules; Reduce Flashes and Reduce Motion; remapping; hold toggles |
 | Narrative (`dual-story-progression.md`) | ← reads | Life 1 beats (DR-22); Life 8 Carry AI fill (Backlog) |
@@ -640,31 +684,38 @@ Cowed on a recruit:  D_out = D × cowed_dmg ; AI target set excludes old_boss_id
 | `basic_hit_pct` (B/N_ref) | 0.045 | 0.04–0.05 | Curve | Canon 4–5%; drives every TTK |
 | `string_mv` | 1.0 / 1.0 / 1.5 | ±20% | Curve | 3.5 MV per string |
 | `string_fz` | 8 / 8 / 14 | ±25% | Curve | Tough Frazzles at about 50% Nerve |
-| `string_cycle_s` | 1.8 | 1.5–2.2 | Feel | Short and readable |
+| `string_cycle_s` | 1.8 | 1.5–2.2 | Feel | AI combo length; Mikan's strings re-baselined by the sim |
+| `mikan_strings` (finisher, launcher, charge 0/1/2, lunge) | MV 2.0, 1.5, 1.5/2.2/3.0, 1.2; FZ 24, 16, 16/24/32, 10 | ±25% | Curve | Heavies build Frazzle faster than Lights (M1.1 §3); sim owns the re-baseline |
+| `light_first_active_frames` | 3 (at 60 Hz) | ≤ 3 | Feel | M1.1 binding: ≈ 50 ms press-to-hit |
+| `buffer_window_ms` | 150 | 100–200 | Feel | One-slot buffer; earlier presses dropped |
+| `moveout_start` / finisher | 0.60 / 0.85 of recovery | 0.5–0.75 / 0.75–0.95 | Feel | Move-out gradient |
+| `finisher_commit_ms` | 150 | 100–250 | Feel | Only the L-L-L-H commits |
+| `move_speed_scale` | 0.72 (vs M1) | 0.70–0.75 | Feel | 25–30% slower at the 3.8 m camera |
+| `skillbar_time_scale` | 0.05 | 0.03–0.15 | Feel | Time on the skill bar |
+| `token_cooldown_s` | 2 | 1–4 | Feel | How often a token re-engages Mikan |
+| `ai_spacing_m` | 3–6 (personality) | 2–8 | Feel | Circling distance (§3.11) |
+| `stagger_fx_s` | ≤ 0.5 (full) / 0.15 (light) | ≤ 0.5 | Feel | Stagger presentation; flash caps apply |
 | `ai_attack_uptime` | 0.35 | 0.25–0.45 | Curve | Crew share vs player authorship |
 | `ai_fill` (per Life) | 0.5 | 0.4–1.0 | Gate | DR-35 |
 | `paw_passive`, `paw_per_hit`, `paw_per_finisher` | 4/s, 4, 6 | ±25% | Curve | 1 Paw per 11 s controlled |
-| `tag_in_window_s` | 0.35 | 0.25–0.5 | Feel | DR-29 |
-| `tag_in_strike` | MV 1.5, FZ 20 | MV 1–2 | Curve | A T2-sized hit |
-| `tag_in_paw_grant` | 25 | 15–35 | Curve | Quarter Paw (DR-29) |
-| `relay_bonus_fz` | 10/15/20 | ±50% | Curve | Four-cat Relay ≈ 61 FZ on a Captain |
-| `relay_lockout_s` | 6 | 4–10 | Gate | Stops Relay spam |
 | `frazzle_res` (rank) | 1.0 / 0.20 / 0.15 | Captain 0.15–0.3 | Curve | 2 Frazzles per Captain, ≥ 1 per Boss phase |
 | `frazzled_s`, `frazzled_dmg` | 6, 1.5 | canon | — | DR-28 |
 | `ruffled_s`, `leader_reruffle_cd_s` | 4, 6 | canon | — | DR-28 |
 | `frazzle_decay` | T 5/s @4 s; C 2/s, B 1/s @6 s | — | Curve | Clearing adds does not erase leader work |
-| `pile_on_base`, `pile_on_k` | 2.0, 1.0 | k 0.8–1.3 | Curve | Earlier = more (F5); k > 0.75 required |
+| `sp_base`, `sp_k`, `team_mv` | 4.0, 1.0, 8.0 | k 0.8–1.3 | Curve | Special chain, earlier = more (F5); k > 0.75 required; sim owns the re-baseline |
+| `chain_range_m` | 8 | 6–12 | Gate | Which Crew chain |
+| `cutin_s` / `cutin_repeat_s` | 1.0 / 0.5 | 0.8–1.2 / 0.4–0.7 | Feel | Chain ≤ ≈ 6 s |
 | `rank_nerve`, `rank_dmg` | 1/8/20; 1/1.3/1.6 | canon | — | DR-31 |
 | `captain_style_nerve` | off (Captains use ×1.0) | off / on | Curve | On puts a Bruiser Captain at 55–58 s, outside 30–45 s (sim, F9) |
 | `focus_*` (sim policy only) | 0.55 / 0.75 / 0.5 / 0.85 | — | — | Model inputs, measured by the sim |
 | `hiss_cd_s`, `back_down_pct` | 8, 0.15 | canon | — | DR-28 |
 | `enemy_paw_s` | 16 / 9 / 6 | ±30% | Gate | Leader pressure |
-| `tokens_controlled` | 2 (Alley) | 1–3 | Gate | Incoming 15–25% |
+| `tokens_on_mikan` | 2 (Alley) | 1–2 | Gate | M1.1: only 1–2 engage at once; incoming 15–25% |
 | `heal_cap`, `dr_floor` | 0.6, 0.3 | canon | — | DR-31 |
 | `fed_up_s` | 75 | canon | — | DR-31 |
 | `knockoff_fz`, `bucket_fz`, `boss_ground_s` | 20, 10, 6 | ground 4–8 s | Curve | Daifuku's pace |
 | `pounce_windup` | +0.5 MV/s, +10 FZ/s, 3 s cap | — | Feel | Rewards waiting on a wall |
-| `zoomies_dmg_cap`, `zoomies_per_frazzle` | 40, 10 | — | Curve | About 1 Zoomies per 2 fights |
+| `sp_per_hit`, `sp_dmg_cap`, `sp_per_frazzle` | 2, 40, 10 | 1–4, —, 5–15 | Curve | Special meter pace (F8): Mikan about once per normal encounter |
 | Feel table rows (§3.17) | as listed | safety caps | Feel | DR-07; safety limits are not knobs |
 | `fu_dmg`, `cowed_dmg` (the existing statuses) | 1.25, 0.75 | 1.15–1.4, 0.6–0.85 | Curve | OR-20: Combat owns the values. At 1.25, Furious adds ≈ 8 points of Posse Nerve lost at the median (F9, F11) |
 | `anger_fu_s` (Riled / Seething / Furious) | 20 / 40 / whole fight | 10–30 / 30–60 / fixed | Gate | OR-07 tiers; a wider spread makes loud marking costlier |
@@ -682,27 +733,27 @@ Cowed on a recruit:  D_out = D × cowed_dmg ; AI target set excludes old_boss_id
 **Simulation (DR-57; median policy, Alley, same level, 500 seeded runs per case):**
 1. Tough under focus: median TTK 6–10 s. Normal encounter (4–6 threat): 30–60 s. Captain (+0–2 Toughs, Captain TTK): 30–45 s. Daifuku: 2–3 min. Expert policy is ≥ 0.7 × each band's floor.
 2. Every Daifuku phase contains ≥ 1 Frazzle in the median run. Each Captain gets ≥ 2 Frazzles in ≥ 60% of runs.
-3. Crew deal ≥ 55% of Posse damage with a Mikan-only policy. Commanded Moves + Tag-In strikes + Pile-Ons deal ≥ 45% of damage to Captains and Daifuku.
+3. Crew deal ≥ 55% of Posse damage (the player always controls Mikan). Commanded Moves + Special chains (incl. Team Pile-Ons) deal ≥ 45% of damage to Captains and Daifuku. *(M1.1: re-run on the new chain; the sim owns the figures.)*
 4. Incoming damage: a normal encounter costs 15–25% of total Posse Nerve; Daifuku costs 50–80% before heals.
-5. Under a best-response policy, no input sequence keeps a Captain or Boss unable to act for > 4 s outside Frazzled, Splat or a Fear rider. Max-switch policies outperform no-switch policies on Captains.
-6. A Full Pile-On with 0 Paws banked is worth more at T_rem = 6 than at T_rem = 0. With 2 Paws banked, the best trigger time is between 3 and 5 s remaining.
+5. Under a best-response policy, no input sequence keeps a Captain or Boss unable to act for > 4 s outside Frazzled, Splat or a Fear rider. Policies that command from the skill bar outperform no-command policies on Captains.
+6. A four-cat Special chain with 0 Paws banked is worth more at T_rem = 6 than at T_rem = 0. With 2 Paws banked, the best F time is between 3 and 5 s remaining.
 
 **Functional (unit/integration):**
 7. Unrounded B(L) / N_ref(L) = 0.045 at every level 1–10 (Crew's slice cap); F1 with Crew's F1 stats reproduces the worked examples (19 / 21 / 30 at Lv 8). The amplifier never exceeds 1.6, and G never drops below 0.30.
-8. A Pile-On Routs any Tough at any HP. A Quick Pile-On is offered only under the two DR-30 conditions.
+8. A Special Routs its Frazzled Tough at any HP. The F prompt shows only on a Frazzled enemy while Mikan stands with a full meter. A Team Pile-On plays iff all four Posse cats land Specials in one chain.
 9. A knock-off always Splats a non-Boss and always Ruffles Daifuku. No randomness in knock-offs, crits or damage.
-10. AI cats never Hiss a telegraph aimed at another cat, never fire `command_only` Moves, and never spend their last Paw on their own.
+10. AI cats never Hiss a telegraph aimed at another cat on their own, never fire `command_only` Moves unless forced from the skill bar, never start a Special, and never spend their last Paw on their own.
 11. Every Move in `moves.*` has `role` = setup or payoff and a state in `creates` or `pays_on`; ≤ 1 Ruffle-applying Move per Style; no Move refunds its own cost.
-12. Events fire with the §6 payloads; `TagIn.relay_count` is correct through 4 tags.
+12. Events fire with the §6 payloads; `SpecialChain.cats` lists the chaining cats in fire order and `team` is true iff all four landed.
 
 **Feel and safety:**
 13. The default build passes an automated Harding-style flash analysis on a capture of the Daifuku fight plus three normal encounters. Global hit-stop never exceeds 200 ms in any 1 s window outside T5. At most 1 full-screen impact frame per second.
-14. Random-pause test: in ≥ 90% of pauses, testers point to their controlled cat within 1 s and name the active telegraph's class (colour-blind simulation included).
-15. At most one lettered word is on screen at a time, never over the controlled cat or the HUD, and only on player-authored T4/T5 events.
+14. Random-pause test: in ≥ 90% of pauses, testers point to Mikan within 1 s and name the active telegraph's class (colour-blind simulation included).
+15. At most one lettered word is on screen at a time, never over Mikan or the HUD, and only on player-authored T4/T5 events.
 
 **Playtest (DR-02, DR-03):**
-16. Prototype: unprompted, ≥ 75% of testers perform ≥ 1 Tag-In and ≥ 3 commanded Moves per encounter, and rate the fight fun at 20 minutes.
-17. Slice: every tester has controlled two cats and seen a Pile-On by minute 15.
+16. Prototype: unprompted, ≥ 75% of testers make ≥ 3 skill-bar commands per encounter and fire ≥ 1 Special per Captain, and rate the fight fun at 20 minutes.
+17. Slice: every tester has commanded a Crew Move and seen a Special chain by minute 15.
 18. ≥ 70% of testers can say, unprompted, how one Crew cat "fights differently" (personality reads).
 19. ≥ 60% knock Daifuku into the bucket at least once without a hint after the first knock-off.
 
@@ -710,13 +761,25 @@ Cowed on a recruit:  D_out = D × cowed_dmg ; AI target set excludes old_boss_id
 20. **Loss hand-off:** a Posse wipe produces exactly one `EncounterEnded(outcome = loss)` after the Gloat (≤ 3 s), and Combat writes nothing to any cat's record. Unit test: across 1,000 seeded wipes, the only Nemesis records that differ from before the fight are the **victor's** (`WON` entry, Title if none, Boss plaster) and the Routed Posse cats' own Loyalty step-1 delta; no other cat's level, role, Memory, Grudge or lines change. Scram and `rival_fled` never produce `loss`; Life 1 tutorial fights never reach it.
 21. **Fired Up from anger:** at the end of the Standoff a Boss at Riled / Seething / Furious carries Fired Up for 20 s / 40 s / the whole fight (± one frame of buffed time outside Soggy windows), and a Calm Boss none. No Tough, wave cat or guest ever reads `anger_stage` (static check on AI inputs). Soggy pauses the anger timer and the buff resumes after it.
 22. **Anger spend:** with the Boss in the fight, anger resets to 0 on `win`, `loss` and `rival_fled`, and is unchanged on `player_fled` (integration test with Nemesis). Unit test: no combat event ever *raises* anger.
-23. **Old Gang Nerves:** a recruit with `old_gang_nerves` = true and Loyalty < 80 is Cowed for 20 s (Fraidy 30 s) from `t_seen`; its AI never selects `old_boss_id` while Cowed; a Tag-In to it clears the status within one frame; a plain switch does not. A resisting or Sworn recruit is never Cowed this way. **The Old Boss's AI inputs contain no Posse-membership or recruit field** (static check), and his Standoff line is chosen identically with and without his ex-member present (seeded comparison).
-24. **Join-in guest:** on `AllyJoined` the guest enters 3 s after its yowl (or after its Rival's wave enters), cannot be switched to, commanded or included in a Pile-On, counts toward the 10-combatant cap, and leaves at `EncounterEnded`. **The opposing Rival's AI, targeting weights, buffs and line selection are bit-identical in seeded runs with and without the guest** apart from the guest's presence as a valid target like any Posse cat.
-25. **Kin:** an AI-controlled Crew cat never selects an opponent in its `kin_ids`; the player can switch to it and hit that opponent; one `kin` bark per encounter.
+23. **Old Gang Nerves:** a recruit with `old_gang_nerves` = true and Loyalty < 80 is Cowed for 20 s (Fraidy 30 s) from `t_seen`; its AI never selects `old_boss_id` while Cowed; a skill-bar command to it clears the status within one frame; nothing else clears it early but a newer status. A resisting or Sworn recruit is never Cowed this way. **The Old Boss's AI inputs contain no Posse-membership or recruit field** (static check), and his Standoff line is chosen identically with and without his ex-member present (seeded comparison).
+24. **Join-in guest:** on `AllyJoined` the guest enters 3 s after its yowl (or after its Rival's wave enters), has no skill-bar row, is never commanded and is never in a Special chain, counts toward the 10-combatant cap, and leaves at `EncounterEnded`. **The opposing Rival's AI, targeting weights, buffs and line selection are bit-identical in seeded runs with and without the guest** apart from the guest's presence as a valid target like any Posse cat.
+25. **Kin:** a Crew cat's AI never selects an opponent in its `kin_ids`; the player can force its Moves onto that opponent from the skill bar; one `kin` bark per encounter.
 26. **Daifuku anywhere on the patrol:** the full 3-phase fight completes on each of the three stop kits (build check: knock-off edge, water prop with refills, noise prop, ledge junk, wave entries present at every stop). No Standoff is offered while `BossWindowChanged(open = false)`.
 27. **Togemaru, Life 1 day 1:** his encounter always ends `rival_fled` at 25% Nerve; no input (Hiss, hit, Frazzle, Splat) delays it.
 28. *Sim:* Daifuku at the median stays inside 2–3 min at every anger stage, his rematch at −10% inside it, and Posse Nerve lost inside 50–80% at every stage (sim 52–61%; poor dodging ≤ 80%). A Cowed recruit, unanswered, adds ≤ 10 s. Re-run on any change to `fu_dmg`, `anger_fu_s` or `nerves_s`.
-29. *Playtest:* ≥ 70% of testers who see a recruit flinch Tag it in within its 20 s at least once in the slice; ≥ 60% who get a join-in can say afterwards which cat helped them and why ("the one I spared").
+29. *Playtest:* ≥ 70% of testers who see a recruit flinch command it within its 20 s at least once in the slice; ≥ 60% who get a join-in can say afterwards which cat helped them and why ("the one I spared").
+
+
+**Owner combat direction M1.1 (functional unless marked):**
+30. **Response:** in a 60 Hz capture, a Light's first active frame is ≤ 3 frames after the press, from neutral and from the buffer, in 100% of 200 scripted presses.
+31. **Buffer:** a press earlier than the last 150 ms of an attack never produces an attack; three presses 100 ms apart from neutral produce exactly one Light plus at most one buffered follow-up.
+32. **Move-out:** stick input during recovery moves Mikan from 60% of recovery (85% for the L-L-L-H) with a monotonic ramp to full control at its end; Dodge cancels recovery at any point after the hit.
+33. **Strings:** exactly five strings exist (L-L-L, L-L-L-H, L-H, hold H, Dash-L); Heavy hits deal more FZ per MV than Lights; no Crew cat has a player string.
+34. **Lock-on:** not locked at fight start; Tab locks the nearest enemy; Tab again locks a different nearest enemy if there is one, else unlocks; no automatic target switch.
+35. **Tokens:** on Alley, no more than 2 enemies are mid-attack on Mikan in any frame across 500 seeded encounters; no AI path runs straight at a target from > 6 m without a circle, stalk, posture or flank phase first (log check).
+36. **Stagger and chain:** the stagger presentation is ≤ 0.5 s; full treatment fires for Captains, Bosses and the first stagger per fight, light otherwise; a chain with all four ready lasts ≤ 6 s (first) and plays the Team Pile-On; later chains use shortened cut-ins.
+37. **Visibility:** every `MoveUsed` (commanded or AI) shows a name banner, the cat's colour, a wind-up of ≥ 200 ms and a plate highlight (integration check on all 12 slice Moves). *Playtest:* ≥ 80% of testers can name the Move a Crew cat just used.
+38. **Safety capture:** a capture of a full four-cat chain plus two full stagger treatments passes the Harding-style analysis with default settings (AC 13 limits hold).
 
 ---
 
@@ -724,15 +787,20 @@ Cowed on a recruit:  D_out = D × cowed_dmg ; AI target set excludes old_boss_id
 
 - A1. **Damage numerals:** resolved by presentation ruling R3: Off by default in the slice, Options toggle Off / Big hits / All (§3.17).
 - A2. "Normal encounter" means a threat budget of 4–6. Roaming skirmishes of 2–3 are allowed to run 18–28 s (sim, F9).
-- A3. The Pile-On "earlier is worth more" coefficient (k = 1.0) is stated together with the Paw-dump trade-off, so the choice stays non-trivial.
+- A3. The Special chain keeps the Pile-On's "earlier is worth more" coefficient (k = 1.0), stated together with the Paw-dump trade-off, so the choice stays non-trivial.
 - A4. The Daifuku arena kit (wall edge, water prop with refills, noise prop, ledge junk, crumbling wall top), now needed at **each of his three patrol stops** (OR-09), is a request to Level and Nemesis. His Fear is Nemesis's choice. The fight does not require it.
 - A5. *(Owner feedback pass)* Anger's Fired Up **pauses under a newer status** instead of being replaced (§3.5). The one-status rule would otherwise let the first bucket end a Riled buff after ≈ 8 s and make the tiers unreadable. **CONFIRMED by the creative director (consistency pass F4):** the dunk still pays (no Fired Up while he is Soggy) and the stage stays readable; the knob `anger_fu_pause_under_status` reverts it.
 - A6. *(Owner feedback pass)* The join-in guest uses the `raid_defence` guest rules plus one bias of its own (it prefers its own Rival as a target). The bias is keyed to the joiner's own tag (G7). Counsel watch item under '303 (G10), held, not redesigned.
-- A7. *(Owner feedback pass)* Plain switches do not clear the Cowed flinch; only a Tag-In does (the ruling's "conducting moment").
+- A7. *(Superseded by M1.1 §8)* A skill-bar command to the recruit clears the Cowed flinch (Tag-In no longer exists); it is the new "commanding moment".
+- A8. *(M1.1, designer's ruling)* **Hop** has no button: a Dash at a reachable ledge mantles. Owner to confirm, or give mantling its own key.
+- A9. *(M1.1, designer's ruling)* **Brace** is AI-only; Mikan answers white and yellow with Dodge.
+- A10. *(M1.1, designer's ruling)* **Hiss** moved to the skill bar (0 Paws, per-cat 8 s cooldown); the slowed time keeps it a live yellow answer. Gamepad column (§3.1) is a mirror for UX to refine; the KB+M column is the owner's.
+- A11. *(M1.1, designer's ruling)* **Specials have no unlock level** (Zoomies' Life 2 day 3 / Lv 6 unlocks dropped) so a four-cat chain is reachable from Life 2 day 1. Crew doc §3.8.4 updated to match.
+- A12. *(M1.1, designer's ruling)* If Mikan is Routed, the player keeps the skill bar and the fight continues under Crew AI; the bonded-pair bonus moved from the Tag-In to back-to-back chained Specials; `CatRouted(by_pile_on)` keeps its name for Nemesis's contract.
 
 ## Backlog (post-slice)
 
-- B-1 · DR-04 / CS-C: full catalogue (≈ 45 Style Moves + 4 Home Moves); Prowler and Trickster strings, Tag-In strikes and Zoomies (names *Nine Shadows*, *Everything Off The Shelf* reserved; CS-C6); 3-Paw Move budget row (CS-C21); Mikan's third Paw from Life 4.
+- B-1 · DR-04 / CS-C: full catalogue (≈ 45 Style Moves + 4 Home Moves); Prowler and Trickster AI combos and Specials (names *Nine Shadows*, *Everything Off The Shelf* reserved; CS-C6); 3-Paw Move budget row (CS-C21); Mikan's third Paw from Life 4.
 - B-2 · CS-C5, CS-C7, CS-C10, CS-C11 (non-slice): Dirt Kick, Loaf (with the S-11 limits), Neck Nip, Vanish, Shadow Step, Wall-Kick, Bait, Leap. Each is re-specified as a Set-up or Pay-off.
 - B-3 · CS-C15 / DR-28: Knacks (merge duplicates; budget +10–15% of one channel; no new verbs). Tactics.
 - B-4 · CX-9: PG ×0.7 on ranged basics (relevant once the Trickster ships).
@@ -740,24 +808,24 @@ Cowed on a recruit:  D_out = D × cowed_dmg ; AI target set excludes old_boss_id
 - B-6 · CX-13: FF7R/Rebirth reference table corrections (the table is not in the slice body).
 - B-7 · CS-9: damage-display ceiling at Lv 30 (with the 1.6 amplifier cap; re-check with Crew's maximum stats).
 - B-8 · CS-14: arithmetic slips in deleted first-draft formulas; the reference path is now `crew-and-progression.md`.
-- B-9 · CS-15: Zoomies budget audit for AoE and prop-activating Zoomies (the damage-gain cap of 40 is already in).
+- B-9 · CS-15: Special rider budget audit for AoE and prop-activating Specials (the damage-gain cap of 40 is already in).
 - B-10 · Botan (4–5 min, four phases; DR-45), Madam Sabi, Oboro, Ikari Boss kits; other Critters (rats, weasel, chained dog); the Usurper.
 - B-11 · Life 8–9: AI fill 60/70/100% values and Carry escort combat (DR-27, DR-35).
 - B-12 · Handheld feel scaling (shake ×0.8, glyphs ×1.2; AB-10/11 handheld budgets).
 - B-13 · Crowd-fight readability beyond 6 enemies; one-handed presets.
 - B-14 · Over-level tuning across Lv 1–30 (re-derive K from Crew's full curve).
 - *From the round-2 check (`design/reviews/round-2/combat-and-crew.md`), not fixed in iteration 3:*
-- B-15 · C-1 trim for the slice (optional): cut the 6 s Relay lockout; replace Wind-Up, the perch Paw-stop, "enemies prefer perched cats" and the 1.5 s mantle penalty with one fixed High Road Pounce (MV 2.5, FZ 35, 3 s re-use); Fear diminishing "full once, then tell only"; drop the Hiss Paw-spend + 6 s cooldown unless a Hiss loop shows up.
+- B-15 · C-1 trim for the slice (optional): ~~cut the 6 s Relay lockout~~ (moot: Relay removed, M1.1); replace Wind-Up, the perch Paw-stop, "enemies prefer perched cats" and the 1.5 s mantle penalty with one fixed High Road Pounce (MV 2.5, FZ 35, 3 s re-use); Fear diminishing "full once, then tell only"; drop the Hiss Paw-spend + 6 s cooldown unless a Hiss loop shows up.
 - B-16 · C-3 F9 realism: rewrite F9 and AC 1's expected values with whole-Paw arrival (the sim table in F9 is canonical meanwhile); decide whether 1-Paw Set-ups trade damage for the state (catalogue averages 2.1–2.5 MV per Paw against the 3.5 budget) or Pay-off MV rises.
-- B-17 · C-4 AI Paw habits rarely fire (first AI self-cast at 60 s): let AI self-cast at 1 Paw when the controlled cat holds ≥ 1, or `ai_fill` 0.6 for the slice. Prototype question.
+- B-17 · C-4 AI Paw habits rarely fire (first AI self-cast at 60 s): let AI self-cast at 1 Paw when Mikan holds ≥ 1, or `ai_fill` 0.6 for the slice. Prototype question.
 - B-18 · C-5 scope AC 16's "≥ 3 commanded Moves per encounter" to normal encounters (threat 4–6) and Captains; supply is 0 in a Tough-length fight.
-- B-19 · C-6 Zoomies pace: F8 gives ≈ 0.7 Zoomies per cat per normal encounter, not 0.5; set `zoomies_per_frazzle` 5 or count only Captain/Boss Frazzles.
+- B-19 · C-6 Special meter pace (was Zoomies pace): superseded by F8's M1.1 intent; the sim sets `sp_per_hit` and `sp_per_frazzle`.
 - B-20 · C-7 Yowler basics strongest (Voice 1.35, multi-target cone); watch in prototype, or normalise `Off` by Style offence weight.
 - B-21 · C-8 leader level rule (Daifuku settled at Lv 8, Kagi Lv 6, 2026-11-24); say which Lane Captains are "Den" Captains (with Crew R-3).
 - B-22 · C-9 Rival personality AI: one target-choice bias per personality for enemies.
 - B-23 · C-10 adopt Crew's old Stalwart idea (step into white telegraphs aimed at the controlled cat) if the Stalwart reads weakly.
 - B-24 · C-11 slice body ≈ 57 KB vs 50 KB target (move rumble/punch-in rows to data, trim log).
-- B-25 · Presentation backlog: Pile-On prompt word (Combat §3.17, first 3 showings) vs HUD §4.1 hint card; pick one. Hit-stop 0% option shipping only once fairness is confirmed.
+- B-25 · Presentation backlog: Special prompt word (Combat §3.17, first 3 showings) vs HUD §4.1 hint card; pick one. Hit-stop 0% option shipping only once fairness is confirmed.
 - *From the owner feedback pass (2026-11-24):*
 - B-26 · **Held for counsel (OR-06):** a line-only, Boss-voiced taunt aimed at his ex-member. Restore only if counsel clears it; until then the Old Boss's lines never read the Posse.
 - B-27 · Rival personality AI for **join-in guests** beyond the own-Rival bias (with B-22).
@@ -765,6 +833,17 @@ Cowed on a recruit:  D_out = D × cowed_dmg ; AI target set excludes old_boss_id
 - B-29 · A variance model for the Daifuku sim (bursty damage, controlled-cat Routs) so the wipe rate, not just the expected-value wipe line, can be read per anger stage.
 
 ## Revision Log
+
+**2026-11-24 — Owner combat direction M1.1 (2026-11-24).** Source: owner C10 and follow-up (`design/reviews/user-comments-2026-11-24.md`), ruled into `design/reviews/owner-feedback/combat-m1.1-spec.md` (final bindings F = Special, R = skill bar, Tab = lock-on cycle).
+- §1, §2: player controls Mikan only; pillar wording "Command the Brawl"; friend line.
+- §3.1: one final control table (KB+M owner's; gamepad mirror); removed switching (Z X C V, D-pad), Tag-In, Relay, Pile-On input, Zoomies input, shortcut Moves, Hop/Brace/Hiss buttons; skill bar replaces Slow Blink. Rulings A8–A10 for the orphaned verbs.
+- §3.2: slower-but-responsive rules (≤ 3-frame first active frame, one-slot 150 ms buffer, move-out gradient, finisher commit, steering); Mikan's five strings; Crew/enemy AI combos; no switching.
+- §3.3: Tag-In and Relay replaced by Command (skill bar, steeling, bonded chain bonus) and the ability-visibility rule.
+- §3.5: Cowed cleared by a skill-bar command; leader flinch list.
+- §3.6, §3.7: Pile-On and Zoomies replaced by the stagger presentation, the F Special, the automatic Crew chain and the Team Pile-On (Full Burst resemblance noted for counsel); Specials per Style; no unlock level (A11).
+- §3.11, §3.12, §3.15: attack tokens, circling, stalking, posturing, flanking, feints, dash-in/back-out; "Moves like" personality column; Brace as AI posture; Feral tokens 3 → 2.
+- §3.13, §3.14, §3.16, §3.17: knock-off list, wall-top chain, guest rules, Scram, teaching beats, tier events, Special cut-in and stagger safety rules, camera framing at 3.8 m, world text.
+- F2, F3, F5, F6, F8, F11 rewritten for the chain, command and meter; F9/F10 marked † for removed terms, **numeric re-baseline owned by the sim's data and tests**. Edge cases 1–10, 12, 13, 22, 25, 28, 30, 36; dependencies; knobs; ACs 3, 5, 6, 8, 10, 12, 14–17, 23–25, 29 and new 30–38; A3, A7 (superseded), A8–A12; B-1, B-9, B-15, B-17, B-19, B-25.
 
 **2026-11-23 — Round 2 (fresh slice rewrite; first draft archived).**
 

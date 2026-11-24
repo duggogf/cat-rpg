@@ -58,8 +58,8 @@ export function frazzleGain(p, k) {
 }
 
 /** Combat F3 steady-state Paw rate in points/s for an attack uptime and fill (string of 3 hits per cycle). */
-export function pawRate(uptime, fill, k) {
-  const hitsPerS = uptime * 3 / k.string_cycle_s;
+export function pawRate(uptime, fill, k, cycleS = k.string_cycle_s) {
+  const hitsPerS = uptime * 3 / cycleS;
   const perHit = (2 * k.paw_per_hit + k.paw_per_finisher) / 3;
   return fill * (k.paw_passive + hitsPerS * perHit);
 }
@@ -69,7 +69,7 @@ export function heal(healMV, L, voice, cowedNear, k, cowedMult = 1.5) {
   return healMV * baseHit(L, k) * (voice / sRef(L, k)) * (cowedNear ? cowedMult : 1);
 }
 
-/** Combat F5 Full Pile-On value in MV (neutral): Σ (base + k x T_rem) x TypeMod x frazzled_dmg. */
+/** Combat F5 Full Pile-On value in MV (neutral); in M1.1 this is the Team finisher's value: Σ (base + k x T_rem) x TypeMod x frazzled_dmg. */
 export function pileOnMV(typeMods, tRem, k) {
   return typeMods.reduce((s, tm) => s + (k.pile_on_base + k.pile_on_k * tRem) * tm * k.frazzled_dmg, 0);
 }
@@ -90,14 +90,7 @@ export function windowValue({ cats, wait, basicsRate, paws = 0, moveMV = 3.5, wi
   return { basics, moves, pile, total: basics + moves + pile };
 }
 
-/** Combat F6: flat Relay FZ for tag n (1-based; tag 1 has none). */
-export const relayFz = (n, k) => (n >= 2 ? k.relay_bonus_fz[Math.min(n, 4) - 2] : 0);
-/** Combat F6: FZ from an n-cat Relay of Tag-In strikes on a rank with resistance rRank. */
-export function relayTotalFz(n, rRank, k) {
-  let s = 0;
-  for (let i = 1; i <= n; i++) s += k.tag_in_strike.fz * rRank + relayFz(i, k);
-  return s;
-}
+// Combat F6 (Tag-In and Relay) is retired by the M1.1 owner direction: the player controls Mikan only.
 
 /** Combat F7: High Road Pounce MV/FZ for time aloft (s) and time since mantling (s). */
 export function pounce(tAloft, sinceMantle, k) {

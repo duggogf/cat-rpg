@@ -4,6 +4,8 @@
 
 ## Changelog
 
+**Owner combat direction M1.1 (2026-11-24).** §8 gains item 6, a one-line watch item: the Team Pile-On's resemblance to Granblue Fantasy Relink's Full Burst. No legal conclusions added or changed.
+
 **v2 (2026-11-24, same day).** Rewritten against the full claim text of all four family documents. The text is saved in `design/legal/claims/`, extracted from Google Patents pages; it was not independently re-checked against the USPTO scans.
 
 - **§3 gap closed.** All 11 independent claims are quoted in full, with an element breakdown for each. The provisional reconstruction is withdrawn.
@@ -338,5 +340,6 @@ The patent remains presumed valid.
    - Apply G8 to the bark taxonomy.
    - Keep G9 true.
 5. **Keep previews private** until counsel clears a showing.
+6. **Watch item (originality, not a Nemesis-claim question):** the Team Pile-On (owner combat direction M1.1, `design/reviews/owner-feedback/combat-m1.1-spec.md` §6: all four cats' Specials chained into a team finisher) resembles Granblue Fantasy Relink's Full Burst; our cut-in art and staging are our own; list it for counsel's look.
 
 *Other sources:* [Eastgate IP](https://www.eastgateip.com/warner-brothers-patents-shadow-of-mordors-nemesis-system/) · [VGC news](https://www.videogameschronicle.com/news/warner-bros-receives-criticism-for-patenting-shadow-of-mordors-nemesis-system/) · [VGC, Hoeg](https://www.videogameschronicle.com/features/opinion/is-warners-nemesis-patent-really-gross-im-not-sure-id-go-that-far/) · [Northwestern JTIP](https://jtip.law.northwestern.edu/2026/02/06/protection-v-play-the-paradox-of-video-game-mechanic-patents/) · [Fordham IPLJ](https://fordhamiplj.org/2021/03/04/warner-bros-nemesis-patent-a-nemesis-to-future-gaming-innovation/) · [Kotaku 2025](https://kotaku.com/monolith-productions-middle-earth-nemesis-system-patent-1851766437) · [TechRadar 2025](https://www.techradar.com/gaming/shadow-of-mordors-nemesis-system-will-remain-warner-bros-property-until-2036) · [Acer Corner](https://blog.acer.com/en/discussion/3936/the-nemesis-system-a-brilliant-idea-trapped-by-patents) · [Axios, Dec 2025](https://www.axios.com/2025/12/05/netflix-warner-bros-buy-acquisition) · [Semafor, Feb 2026](https://www.semafor.com/article/02/26/2026/netflix-says-no-thank-you-to-warner-bros-discovery) · [Google Patents US20210245057A1](https://patents.google.com/patent/US20210245057A1) · [USPTO PDF 11,660,540](https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/11660540) · [USPTO PDF 12,201,908](https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/12201908) · [Google Patents US20250108303A1](https://patents.google.com/patent/US20250108303A1/en)

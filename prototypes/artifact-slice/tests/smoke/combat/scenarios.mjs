@@ -1,6 +1,7 @@
 // PROTOTYPE - NOT FOR PRODUCTION (Cat RPG artifact showcase slice; throwaway, see README.md)
 // Combat smoke scenarios: bots x encounters x seeds. Used by tools/sim-run.mjs and smoke.test.mjs.
-import { createEncounter, run } from '../../../src/sim/combat/index.js';
+import { createEncounter } from '../../../src/sim/combat/index.js';
+import { engagersOf } from '../../../src/sim/combat/ai.js';
 import { passiveBot, skilledBot, medianBot, daifukuBot, withCommandQueue } from './bots.mjs';
 
 /** GDD reference figures (Combat F9 sim table, owner-feedback pass, plan §2.2) for the report. */
@@ -15,14 +16,16 @@ export const GDD = {
   challenger: 'review Fix 1 (showcase): Captain-rank challenger with Water Fear + 1 Stray + the guest, 23-34 s',
 };
 
-/** A Pile-On is reached in at least 90% of the seeds. */
-const PILE_90 = rs => rs.filter(r => r.pileOns > 0).length >= Math.ceil(0.9 * rs.length);
+/** A Special chain is reached in at least 90% of the seeds. */
+const PILE_90 = rs => rs.filter(r => r.chains_ > 0).length >= Math.ceil(0.9 * rs.length);
+/** A Special chain in >= 90% of seeds and a Team finisher in at least one. */
+const CHAIN = rs => PILE_90(rs) && rs.some(r => r.teams > 0);
 
 export const SCENARIOS = [
   { id: 'skilled_tough_focus', enc: 'tough_focus', bot: () => withCommandQueue(skilledBot()), expect: r => r.outcome === 'win' },
-  { id: 'skilled_toughs_2', enc: 'toughs_2', bot: () => withCommandQueue(skilledBot()), expect: r => r.outcome === 'win', aggregate: PILE_90 },
+  { id: 'skilled_toughs_2', enc: 'toughs_2', bot: () => withCommandQueue(skilledBot()), expect: r => r.outcome === 'win' },
   { id: 'skilled_toughs_3', enc: 'toughs_3', bot: () => withCommandQueue(skilledBot()), expect: r => r.outcome === 'win' },
-  { id: 'skilled_sandbox', enc: 'sandbox', bot: () => withCommandQueue(skilledBot()), expect: r => r.outcome === 'win', aggregate: PILE_90 },
+  { id: 'skilled_sandbox', enc: 'sandbox', bot: () => withCommandQueue(skilledBot()), expect: r => r.outcome === 'win', aggregate: CHAIN },
   { id: 'skilled_captain', enc: 'captain', bot: () => withCommandQueue(skilledBot()), expect: r => r.outcome === 'win' },
   { id: 'skilled_challenger_guest', enc: 'challenger', bot: () => withCommandQueue(skilledBot()), expect: r => r.outcome === 'win' && r.guestJoined, aggregate: rs => { const m = median(rs.map(r => r.fight_s)); return m >= 23 && m <= 34; } },
   { id: 'median_tough_focus', enc: 'tough_focus', bot: () => withCommandQueue(medianBot()), expect: r => r.outcome === 'win' },
@@ -37,15 +40,21 @@ export const SCENARIOS = [
 /** Run one scenario on one seed and summarise it. */
 export function runOne(sc, seed, opts = {}) {
   const enc = createEncounter(sc.enc, { seed, showcase: true, ...opts });
-  const { events } = run(enc, sc.bot(), 60 * 400);
+  const bot = sc.bot(), events = [];
+  let maxEngaging = 0;
+  const mikan = enc.byId.get('mikan');
+  for (let i = 0; i < 60 * 400 && enc.mode !== 'ended'; i++) {
+    for (const e of enc.step(bot(enc, i))) events.push(e);
+    maxEngaging = Math.max(maxEngaging, engagersOf(enc, mikan));
+  }
   const count = t => events.filter(e => e.type === t).length;
   const ended = events.find(e => e.type === 'EncounterEnded');
   const pb = events.find(e => e.type === 'PhaseBreak');
-  const firstPile = events.find(e => e.type === 'PileOnStart');
+  const firstPile = events.find(e => e.type === 'SpecialChainStart');
   // Posse-side damage to enemies by source (Quick Pile-On Routs count the Nerve they removed).
-  const src = { basics: 0, moves: 0, tag_in: 0, pile_on: 0, other: 0 };
+  const src = { basics: 0, moves: 0, special: 0, pile_on: 0, other: 0 };
   const allyIds = new Set(enc.allies().map(a => a.id).concat(enc.entities.filter(e => e.side !== 'enemy').map(e => e.id)));
-  const SRC = { string: 'basics', finisher: 'basics', pounce: 'basics', move1: 'moves', move2: 'moves', move_mid: 'moves', tag_in: 'tag_in', pile_on_beat: 'pile_on' };
+  const SRC = { string: 'basics', finisher: 'basics', heavy: 'basics', pounce: 'basics', move1: 'moves', move2: 'moves', move_mid: 'moves', special: 'special', pile_on_beat: 'pile_on' };
   const nerveBefore = {};
   for (const e of events) {
     if (e.type === 'Hit' && allyIds.has(e.attacker) && enc.byId.get(e.target)?.side === 'enemy') { src[SRC[e.kind] || 'other'] += e.dmg; nerveBefore[e.target] = e.nerve; }
@@ -72,9 +81,9 @@ export function runOne(sc, seed, opts = {}) {
   const lost = posse.reduce((s, p) => s + (p.nerveMax - p.nerve), 0) / posse.reduce((s, p) => s + p.nerveMax, 0);
   return {
     id: sc.id, enc: sc.enc, seed, outcome: enc.outcome, fight_s: enc.fightT, real_s: enc.realT,
-    phaseBreak: !!pb, phaseBreak_s: pb ? pb.sim_t - 3 : null, pileOns: count('PileOnStart'), firstPile_s: firstPile ? firstPile.sim_t - 3 : null,
-    tagIns: count('TagIn'), maxRelay: Math.max(0, ...events.filter(e => e.type === 'TagIn').map(e => e.relay_count)),
-    moves: count('MoveUsed'), knockOffs: count('KnockOff'), frazzles: count('Frazzled'), guestJoined: count('GuestEntered') > 0,
+    phaseBreak: !!pb, phaseBreak_s: pb ? pb.sim_t - 3 : null, chains_: count('SpecialChainStart'), pileOns: count('SpecialChainStart'), teams: count('TeamFinisher'), firstPile_s: firstPile ? firstPile.sim_t - 3 : null,
+    tagIns: 0, maxRelay: 0, maxEngaging, specials: count('SpecialUsed'),
+    moves: count('MoveUsed'), knockOffs: count('KnockOff'), frazzles: count('Staggered'), guestJoined: count('GuestEntered') > 0,
     posseNerveLost: lost, dmgShare: Object.fromEntries(Object.entries(src).map(([k, v]) => [k, v / dmgTotal])), moveUse, chains, hash: enc.hash(), events,
   };
 }

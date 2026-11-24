@@ -137,6 +137,54 @@ export class ScreenFX {
         // wedge-ended band (Standoff name-card / outcome) slamming in: one drawing at 115%, then settled
         const sc = k < 0.06 ? 1.15 : 1, y = f.y * h;
         s += `<g transform="translate(${r1(w / 2)} ${r1(y)}) scale(${sc})">${f.lines ? radialLines(0, 0, 0, 0, 0, 1, C.ink, 0) : ''}<path d="M${-f.bw / 2} -46H${f.bw / 2}L${f.bw / 2 - 40} 46H${-f.bw / 2}Z" fill="${f.fill || C.ink}"/><text x="0" y="16" text-anchor="middle" font-family="'M PLUS Rounded 1c',sans-serif" font-weight="800" font-size="46" fill="${f.ink || C.cream}">${f.text}</text></g>`;
+      } else if (f.kind === 'banner') {
+        // ability name banner (M1.1 §7): a ribbon in the caster's colour over its head, pops in at 115% for one drawing
+        const p = ctx.project(f.at); if (!p.on) continue;
+        const fs = Math.round(h * 0.03), tw2 = f.text.length * fs * 0.68 + 40, sc = f.t < TWO ? 1.15 : 1, y = p.y - h * 0.09;
+        s += `<g transform="translate(${r1(p.x)} ${r1(y)}) scale(${sc})"><path d="M${r1(-tw2 / 2)} ${-fs}H${r1(tw2 / 2)}L${r1(tw2 / 2 - 14)} 0L${r1(tw2 / 2)} ${fs}H${r1(-tw2 / 2)}L${r1(-tw2 / 2 + 14)} 0Z" fill="${f.col}" stroke="${C.ink}" stroke-width="4" stroke-linejoin="round"/>`
+          + `<text x="0" y="${r1(fs * 0.36)}" text-anchor="middle" font-family="'M PLUS Rounded 1c',sans-serif" font-weight="800" font-size="${fs}" fill="${C.ink}">${f.text}</text>`
+          + `<text x="0" y="${r1(-fs * 1.25)}" text-anchor="middle" font-family="'M PLUS Rounded 1c',sans-serif" font-weight="800" font-size="${r1(fs * 0.62)}" fill="${C.cream}" stroke="${C.ink}" stroke-width="4" paint-order="stroke">${f.who}</text></g>`;
+      } else if (f.kind === 'shatter') {
+        // stagger: a shattered-glass blink (M1.1 §5). Ink + Cream cracks and shard tints at <= 0.16 alpha, so the
+        // luminance change stays under the 0.10 flash threshold: soft pulses, never a strobe
+        if (!f.anchor) f.anchor = ctx.project(f.at);
+        const R = Math.min(w, h) * (f.full ? 0.42 : 0.2), cx = f.anchor.x, cy = f.anchor.y, Rg = rng(f.seed * 71 + 3);
+        if (!f.geo) {
+          const n = f.full ? 11 : 7, rays = [];
+          for (let i = 0; i < n; i++) { const a = (i + Rg() * 0.8) / n * Math.PI * 2; rays.push([0.18 + Rg() * 0.25, 0.5 + Rg() * 0.3, 0.9 + Rg() * 0.35].map((rr) => { const j = a + (Rg() - 0.5) * 0.45; return [Math.cos(j) * rr, Math.sin(j) * rr]; })); }
+          f.geo = rays;
+        }
+        const di2 = Math.floor(f.t / TWO), push = di2 >= 3 ? (di2 - 2) * 0.05 : 0;
+        const P = (q, sh) => `${r1(cx + (q[0] * (1 + sh)) * R)} ${r1(cy + (q[1] * (1 + sh)) * R * 0.85)}`;
+        const rays = f.geo, n = rays.length;
+        if (di2 === 0 || di2 === 2 || di2 >= 3) {
+          const a = di2 === 0 ? 0.16 : di2 === 2 ? 0.1 : 0.06;
+          for (let i = 0; i < n; i++) { const A = rays[i], B = rays[(i + 1) % n];
+            for (let ring = 0; ring < 2; ring++) { if ((i + ring) % 2) continue; s += `<path d="M${P(A[ring], push)}L${P(A[ring + 1], push)}L${P(B[ring + 1], push)}L${P(B[ring], push)}Z" fill="${C.cream}" fill-opacity="${a}"/>`; } }
+        }
+        if (di2 < 3 || di2 % 2 === 0) {
+          let d = '';
+          for (let i = 0; i < n; i++) { const A = rays[i], B = rays[(i + 1) % n]; d += `M${r1(cx)} ${r1(cy)}L${P(A[0], push)}L${P(A[1], push)}L${P(A[2], push)}M${P(A[0], push)}L${P(B[0], push)}M${P(A[1], push)}L${P(B[1], push)}`; }
+          const sw = f.full ? 4 : 3;
+          s += `<path d="${d}" fill="none" stroke="${C.ink}" stroke-width="${sw + 2}" stroke-linejoin="round" stroke-linecap="round" opacity="${di2 >= 3 ? 0.6 : 1}"/><path d="${d}" fill="none" stroke="${C.cream}" stroke-width="${sw - 1.5}" stroke-linejoin="round" stroke-linecap="round" opacity="${di2 >= 3 ? 0.6 : 1}"/>`;
+        }
+      } else if (f.kind === 'cutin') {
+        // Special cut-in band: a wedge-ended Ink band slides in over 3 drawings, holds, leaves over 2; the
+        // Special's name in the lettering face over the cat's colour; the chain shown as paw pips
+        const k = f.t / f.dur, di3 = Math.floor(f.t / TWO), outN = Math.floor((f.dur - f.t) / TWO);
+        const slide = di3 < 3 ? (3 - di3) / 3 : outN < 2 ? (2 - outN) / 2 : 0;
+        const y0 = h * 0.66, bh = h * 0.17, x1 = w * 0.66 - slide * w * 0.7;
+        s += `<path d="M-20 ${r1(y0)}L${r1(x1)} ${r1(y0 - bh * 0.18)}L${r1(x1 - bh * 0.45)} ${r1(y0 + bh)}L-20 ${r1(y0 + bh * 1.1)}Z" fill="${C.ink}"/>`;
+        s += `<path d="M-20 ${r1(y0 + bh * 0.86)}L${r1(x1 - bh * 0.41)} ${r1(y0 + bh * 0.8)}L${r1(x1 - bh * 0.45)} ${r1(y0 + bh)}L-20 ${r1(y0 + bh * 1.1)}Z" fill="${f.col}"/>`;
+        if (slide === 0) {
+          if (!f.svg) f.svg = lettering({ text: f.name, size: bh * 0.55, rot: 0, color: f.col, seed: 5, grow: 1.15 });
+          s += `<g transform="translate(${r1(Math.max(f.svg.w / 2 + w * 0.03, w * 0.3))} ${r1(y0 + bh * 0.62)}) rotate(-4)">${f.svg.svg}</g>`;
+          s += `<text x="${r1(w * 0.03)}" y="${r1(y0 - bh * 0.12)}" font-family="'M PLUS Rounded 1c',sans-serif" font-weight="800" font-size="${r1(bh * 0.24)}" fill="${C.cream}" stroke="${C.ink}" stroke-width="${r1(bh * 0.05)}" paint-order="stroke">${f.who} · SPECIAL</text>`;
+          for (let i = 0; i < f.of; i++) s += `<g transform="translate(${r1(w * 0.035 + i * bh * 0.32)} ${r1(y0 + bh * 1.32)})">${Kit.ui.paw({ size: bh * 0.28, fill: i <= f.idx ? f.col : C.recessed }).replace(/^<svg/, `<svg x="${r1(-bh * 0.14)}" y="${r1(-bh * 0.14)}"`)}</g>`;
+          // four-point glint, two drawings
+          if (di3 % 4 < 2) s += Kit.sparkle({ x: w * 0.6, y: h * 0.3, r: bh * 0.22, fill: C.cream, lw: 4 });
+        }
+        void k;
       } else if (f.kind === 'bands') {
         // Standoff: horizontal band of parallel lines behind each cat
         for (const at of f.ats) { const p = ctx.project(at); s += Kit.speedLines({ mode: 'parallel', x: p.x - 230, y: p.y - 120, w: 460, h: 110, count: 10, seed: seed + 3, color: f.color || C.ink }); }

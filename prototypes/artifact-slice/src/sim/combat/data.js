@@ -13,12 +13,14 @@ import safety from '../../data/combat/safety.json' with { type: 'json' };
 import arenas from '../../data/combat/arenas.json' with { type: 'json' };
 import encounters from '../../data/combat/encounters.json' with { type: 'json' };
 import showcase from '../../data/combat/showcase_overrides.json' with { type: 'json' };
+import strings from '../../data/combat/strings.json' with { type: 'json' };
+import specials from '../../data/combat/specials.json' with { type: 'json' };
 
 const byName = rows => Object.fromEntries(rows.filter(r => !r.Name.startsWith('_')).map(r => [r.Name, r]));
 const valuesByName = rows => Object.fromEntries(rows.filter(r => !r.Name.startsWith('_')).map(r => [r.Name, r.value]));
 
 /** Raw tables exactly as on disk (for tests and tools). */
-export const RAW = { constants, styles, ranks, moves, personalities, combatants, bosses, tiers, safety, arenas, encounters, showcase };
+export const RAW = { constants, styles, ranks, moves, personalities, combatants, bosses, tiers, safety, arenas, encounters, showcase, strings, specials };
 
 /** Build the indexed data bundle. `overrides` (optional) is merged over the constants, for tuning in tests. */
 export function buildData(overrides = {}) {
@@ -26,7 +28,7 @@ export function buildData(overrides = {}) {
     k: { ...valuesByName(constants), ...overrides },
     styles: byName(styles), ranks: byName(ranks), moves: byName(moves), personalities: byName(personalities),
     cats: byName(combatants), bosses: byName(bosses), tiers: tiers.slice().sort((a, b) => a.tier - b.tier),
-    safety: valuesByName(safety), arenas: byName(arenas), encounters: byName(encounters), showcase: valuesByName(showcase),
+    safety: valuesByName(safety), arenas: byName(arenas), encounters: byName(encounters), showcase: valuesByName(showcase), strings: byName(strings), specials: byName(specials),
   };
 }
 

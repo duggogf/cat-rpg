@@ -4,7 +4,7 @@
 
 **Scope.** This doc specifies what the vertical slice (DR-01: Lives 1–2, Hidamari Lane, levels 1–8, Crew cap 6) needs: the **personality model** shared by Crew and Rivals (§3.2), the six slice recruits (§3.3), stats/levels/XP for Lv 1–10, recruitment and starting Loyalty, the Crew / Posse / guard-duty split, allied guests (§3.5.7), Loyalty and the betrayal thresholds, learnsets and Lessons, Tail-Up, and "make room". Everything else is in `## Backlog (post-slice)`.
 
-**Ownership reminders (brief §6, DR-05, DR-37, OR-20).** Combat owns every Move and Zoomies number, the AI implementation, the combat-perk values, the values of Cowed and Fired Up, the ally guest and the Kin targeting rule. Territory owns guard-perk values, raid maths, Sentry slots and every price. Nemesis owns personality *assignment*, recruit availability, relationship tags, the `OLD_GANG` Memory entry and `old_gang_nerves`, truces and the join-in roll, the betrayal event and the Rival column. This doc owns the **Loyalty and social columns**, starting Loyalty, the Bribe rule, **the betrayal thresholds and the G10 audit of Loyalty inputs** (§3.7), learnsets, Lessons, slot rules, stats, XP and Power Rating. Where this doc quotes another owner's value it is marked *(owner: X; proposed start)* and the owner's value wins.
+**Ownership reminders (brief §6, DR-05, DR-37, OR-20).** Combat owns every Move and Special number (Zoomies are folded into the Special, M1.1), the AI implementation, the combat-perk values, the values of Cowed and Fired Up, the ally guest and the Kin targeting rule. Territory owns guard-perk values, raid maths, Sentry slots and every price. Nemesis owns personality *assignment*, recruit availability, relationship tags, the `OLD_GANG` Memory entry and `old_gang_nerves`, truces and the join-in roll, the betrayal event and the Rival column. This doc owns the **Loyalty and social columns**, starting Loyalty, the Bribe rule, **the betrayal thresholds and the G10 audit of Loyalty inputs** (§3.7), learnsets, Lessons, slot rules, stats, XP and Power Rating. Where this doc quotes another owner's value it is marked *(owner: X; proposed start)* and the owner's value wins.
 
 **Patent rule (brief v1.5; OR Appendix).** Nothing Mikan does to one cat, and nothing that cat becomes because of it, may change a *different* cat. Every Crew rule below changes only the cat it is about, driven by that cat's own experience and the player's resource actions (posting, the Posse, Morsels, Lessons). The few Loyalty inputs that read Mikan's dealings with another cat are listed as '303 watch items in §3.7.6 and are fenced off from betrayal.
 
@@ -16,7 +16,7 @@ The Crew are the cats Mikan has won over: a few known faces, not a collection. A
 
 ## 2. Player Fantasy
 
-*"I know these cats."* You do not pick the cat with the best number; you pick **Pon** because she makes the bucket hit harder and she sulks if you leave her at the Lot, you post **Hige** on the corner because nothing gets past an old Stalwart, and you keep **Togemaru**, the Thorn, in the Posse because he was the first cat who ever called you Collar and now he charges the biggest enemy for you, loudly. The swap is the pleasure: bring the Fraidy for the crow-heavy lanes, the Brooder for the rematch with the cat who flattened your friend, the Goofball for the alley full of junk. When Kagi sees Daifuku, the old boss, on his wall, Kagi's ears go flat, and your Tag-In is what steadies the Schemer; Hige, who was one of Daifuku's cats once, just stares back.
+*"I know these cats."* You do not pick the cat with the best number; you pick **Pon** because she makes the bucket hit harder and she sulks if you leave her at the Lot, you post **Hige** on the corner because nothing gets past an old Stalwart, and you keep **Togemaru**, the Thorn, in the Posse because he was the first cat who ever called you Collar and now he charges the biggest enemy for you, loudly. The swap is the pleasure: bring the Fraidy for the crow-heavy lanes, the Brooder for the rematch with the cat who flattened your friend, the Goofball for the alley full of junk. When Kagi sees Daifuku, the old boss, on his wall, Kagi's ears go flat, and your command from the skill bar is what steadies the Schemer; Hige, who was one of Daifuku's cats once, just stares back.
 
 Teaching is the second pleasure. A Move is something one cat shows another: the old Captain you recruited knows a screech nobody else does, and by tomorrow morning your Bruiser has learned to bellow it too. Every Move a cat did not grow into, it took from another cat.
 
@@ -76,7 +76,7 @@ Six personalities. Nemesis assigns one at generation; it never changes; Style al
 - **On guard:** its district's raid forecast in the Morning Sniff **names the raider's motive** (Territory/UX render it).
 - **Loyalty:** a Lesson taken gives **+3** instead of +1. **−2** for each Nose-Touch Verdict Mikan gives that day (max −4/day), wherever the Schemer is (*'303 watch item, held; fenced off from betrayal*, §3.7.6).
 - **Social:** bonds with **Fraidy** and **Goofball**; clashes with **Brooder** and **Stalwart** (Stalwart's clash column names Schemer).
-- **Old gang:** **susceptible**: flinches and is **Cowed 20 s** at the sight of its old boss unless Sworn; a Tag-In steadies it (§3.4.4).
+- **Old gang:** **susceptible**: flinches and is **Cowed 20 s** at the sight of its old boss unless Sworn; a skill-bar command to it steadies it (§3.4.4).
 - **As a Rival:** Ambushes. Nose-Touch gate **0**. **As Crew:** becomes betrayal-eligible below **35** instead of 30 when posted (DR-37, OR-11; §3.7.4).
 - **Why you want it:** the best Pay-off cat in a Frazzle window; the posting that tells you *why* a raid is coming. **Cost:** clashes with your two most reliable personalities; dislikes mercy; flinches at its old boss; the likeliest turncoat if left Shifty on a post.
 
@@ -86,7 +86,7 @@ Six personalities. Nemesis assigns one at generation; it never changes; Style al
 - **On guard:** weak raid defence, but **raises the Caterwaul early** (longer live-defence window).
 - **Loyalty:** **+1** on any day it fought at least one encounter and was never Routed. **−2** extra each time it is Routed (any fight, won or lost).
 - **Social:** bonds with **Stalwart**, **Schemer** and **Goofball**; clashes with **Braggart**.
-- **Old gang:** **susceptible**, and worst of the six: **Cowed 30 s** unless Sworn; a Tag-In steadies it.
+- **Old gang:** **susceptible**, and worst of the six: **Cowed 30 s** unless Sworn; a skill-bar command to it steadies it.
 - **As a Rival:** flees early; slow to show itself again after a flee. Nose-Touch gate **+5**.
 - **Why you want it:** the cat that rarely gets Routed and feeds the Pounce Gauge when the player drives it well; the early-warning Sentry. **Cost:** lowest guard strength; a bad day makes it miserable; the longest flinch.
 
@@ -106,7 +106,7 @@ Six personalities. Nemesis assigns one at generation; it never changes; Style al
 - **On guard (Territory owns values; OR-15, OR-16):** **"Laughs off a challenge":** a challenger staking its Patch over-marks **0** instead of −10 a night.
 - **Loyalty:** **Share a Morsel counts double** (+4). **−2** for each day spent **Lounging** at the Lot (neither in the Posse nor posted at the Night Shuffle).
 - **Social:** bonds with **everyone except Brooder**, including another Goofball; clashes with **Brooder**.
-- **Old gang:** **susceptible**: **Cowed 20 s** unless Sworn; a Tag-In steadies it.
+- **Old gang:** **susceptible**: **Cowed 20 s** unless Sworn; a skill-bar command to it steadies it.
 - **As a Rival:** clowns about; easy to Recruit (+10 starting Loyalty, F6); Nose-Touch gate **+10**.
 - **Why you want it:** turns every prop-rich alley into a weapon (and the slice's three Fears are prop-driven); the social glue of any Posse; the post a challenger cannot wear down. **Cost:** must never be the one left at the Lot.
 
@@ -126,7 +126,7 @@ Six personalities. Nemesis assigns one at generation; it never changes; Style al
 Among the slice's one-of-each six: **7 bonded, 4 clashing, 4 neutral** pairs.
 
 **Effects (DR-37):**
-- **Bonded pair, both in the Posse:** a stronger Tag-In between them (Combat §3.3: **MV ×1.25 and +10 FZ**). The UX Crew card and the Posse picker show the ♥ link.
+- **Bonded pair, both in the Posse:** stronger Specials back to back in a Special chain (Combat §3.3: the second deals **MV ×1.25 and +10 FZ**; this was the bonded Tag-In before M1.1). The UX Crew card and the Posse picker show the ♥ link.
 - **Bonded pair, both posted in the same district at the Night Shuffle:** **+1 Loyalty each per night**.
 - **Clashing pair "together"** (both in the Posse that day, or both posted in the same district that night): **−1 Loyalty each per day**, once per clashing partner.
 - In the slice there is **one district**, so the two Sentries are always "together". A Posse cat and a Sentry are never together.
@@ -144,7 +144,7 @@ Among the slice's one-of-each six: **7 bonded, 4 clashing, 4 neutral** pairs.
 | To know why a raid is coming | Schemer on post | Motive in the Sniff |
 | To hear trouble early | Fraidy on post | Early Caterwaul |
 | Tribute | Braggart on post (but rotate him) | +10%, sulks after 2 days out of the Posse |
-| To face a recruit's old Boss | Braggart, Stalwart or Brooder (or any Sworn cat) | They resist Old Gang Nerves; a Schemer, Fraidy or Goofball flinches and needs your Tag-In |
+| To face a recruit's old Boss | Braggart, Stalwart or Brooder (or any Sworn cat) | They resist Old Gang Nerves; a Schemer, Fraidy or Goofball flinches and needs your command (skill bar) |
 | To hold a Patch a challenger is staking | Goofball on post | Laughs off a challenge: no over-mark |
 
 ### 3.3 The six slice recruits (character sheets)
@@ -165,12 +165,12 @@ Among the slice's one-of-each six: **7 bonded, 4 clashing, 4 neutral** pairs.
 | **Arrives knowing** | Belly Flop, Shoulder Check | Purr, Withering Hiss | Face Swat, Bunny-Kick | Nemesis kit (Tough: 2 Moves) | Nemesis kit (Captain: 4 Moves, incl. **Banshee Screech**) | Authored Boss kit (incl. **Sit On It**) |
 | **Bonds / clashes in the six** | ♥ Fraidy, Goofball, Brooder · ✗ Schemer | ♥ all but Brooder · ✗ Brooder | ♥ Stalwart, Schemer, Goofball · ✗ Braggart | ♥ Goofball · ✗ Fraidy | ♥ Fraidy, Goofball · ✗ Brooder, Stalwart | ♥ Stalwart · ✗ Schemer, Goofball |
 | **Tags (OR-04 slice seeds)** | Ex–Wall Sitter: **Old Boss** Daifuku (authored) | — | **Kin** Sasa (a Wall Sitter) | **Boss** Daifuku; **Rival** Goma | **Boss** Daifuku; **Rival** the second Captain | **Gang** (the Wall Sitters) |
-| **Old Gang Nerves (OR-06)** | Authored `OLD_GANG(daifuku)` from the start; Stalwart **resists**: "Not your cat anymore." | — (no old gang) | — (a Stray; no gang) | Gains `OLD_GANG(daifuku)` on recruit; Braggart **resists** | Gains `OLD_GANG(daifuku)` on recruit; Schemer **susceptible**: Cowed 20 s in the Daifuku fight unless Sworn; a Tag-In steadies Kagi | — (he was the Boss) |
+| **Old Gang Nerves (OR-06)** | Authored `OLD_GANG(daifuku)` from the start; Stalwart **resists**: "Not your cat anymore." | — (no old gang) | — (a Stray; no gang) | Gains `OLD_GANG(daifuku)` on recruit; Braggart **resists** | Gains `OLD_GANG(daifuku)` on recruit; Schemer **susceptible**: Cowed 20 s in the Daifuku fight unless Sworn; a skill-bar command steadies Kagi | — (he was the Boss) |
 | **The other Verdicts (OR-12–14)** | — | — | — | **Chase Off:** Gone for good; his arc closes "Run out of town"; no other cat becomes the lead. **Nose-Touch** (gate 45; open on Life 1 day 2 after a clean Pile-On, pending Grudge 43): 10-day truce, normally declared a Sworn Rival; may join Mikan's fights against Goma (§3.5.7) | **Chase Off:** Gone. **Nose-Touch** (gate 50, and a quiet take: one Counter-Spray on his post, not two; Nemesis F4): truce; may join fights against the second Captain | **Chase Off:** Gone. **Nose-Touch** (gate 45; closed if he came to the fight Seething or Furious, Nemesis F4): steps down into a 10-day truce; no Rival tag, so no join-in |
 | **Betrayal (OR-11)** | Never (story) | Never (story) | Never (Friend Stray) | Eligible when posted and Shifty (§3.7.4); posting is what he hates | Eligible when posted below 35 (Schemer) | Eligible in principle; joins at the end of Life 2, so not reachable in the slice |
 | **Hook in one line** | The bodyguard who taught you to smell the street, and once sat on Daifuku's wall | Prop chaos and the reason everyone gets along | The skittish lookout who never gets flattened | Your first enemy, now your loudest friend | The clever one who brings the screech, and friction, and a flinch at the old boss | The old king who never comes down off the walls until the Lane smells of you, and only warms to the cat who earned it |
 
-**What the roster asks of the player.** The comfortable "family" Posse (Hige + Pon + Kinako) is all-bonded but has no Frazzle opener and no Pay-off specialist. The "Rival" Posse (Togemaru + Kagi + Pon) hits harder at Captains and is bond-linked through Pon, but leaves Hige or Kinako to guard. With 6 cats, 3 Posse places and 2 Sentry slots, exactly one cat lounges every day: never Pon (−2), and not Togemaru for long (−2 from day 3). Posting Togemaru with Kinako (clash) costs both; posting Hige with Daifuku (bond) earns both. In the Daifuku fight the Posse shows both halves of Old Gang Nerves: Hige and Togemaru stare their old boss down, Kagi flinches until the player Tag-Ins to Kagi.
+**What the roster asks of the player.** The comfortable "family" Posse (Hige + Pon + Kinako) is all-bonded but has no Frazzle opener and no Pay-off specialist. The "Rival" Posse (Togemaru + Kagi + Pon) hits harder at Captains and is bond-linked through Pon, but leaves Hige or Kinako to guard. With 6 cats, 3 Posse places and 2 Sentry slots, exactly one cat lounges every day: never Pon (−2), and not Togemaru for long (−2 from day 3). Posting Togemaru with Kinako (clash) costs both; posting Hige with Daifuku (bond) earns both. In the Daifuku fight the Posse shows both halves of Old Gang Nerves: Hige and Togemaru stare their old boss down, Kagi flinches until the player commands Kagi from the skill bar.
 
 ### 3.4 Recruitment (DR-09, deterministic)
 
@@ -187,12 +187,12 @@ Among the slice's one-of-each six: **7 bonded, 4 clashing, 4 neutral** pairs.
 Fixed: they join at their beat, at Mikan's level, with fixed Loyalty (Hige 60, Pon 55) and no Bribe. They cannot be released in the slice.
 
 #### 3.4.3 Friend Stray (one-time favour, DR-18)
-Kinako is found by a Whisker Sense scent trail in Life 2 day 1 (UX/Level place it). **The favour is Life 2 day 1's required first objective: the Lot opens after it**, so it cannot be skipped and every player has a 4-cat Posse before Life 2 day 2 teaches the Relay (Combat §3.16, DR-01). The favour: drive off the crows harrying it at its hiding place (a Critter fight), then press **Interact (North / E) within 4 m**, which plays Mikan's slow-blink gesture; Kinako follows. (Not hold Sit, which is Head Home under DR-08, and not Slow Blink, which is the combat tactical mode.) It follows Mikan to the Lot and joins, Loyalty 50. No daily Trust pips, no food, no roll. Strays have no signature perk.
+Kinako is found by a Whisker Sense scent trail in Life 2 day 1 (UX/Level place it). **The favour is Life 2 day 1's required first objective: the Lot opens after it**, so it cannot be skipped and every player has a 4-cat Posse before Life 2 day 2 teaches the Team Pile-On (Combat §3.16, DR-01). The favour: drive off the crows harrying it at its hiding place (a Critter fight), then press **Interact (North / E) within 4 m**, which plays Mikan's slow-blink gesture; Kinako follows. (Not hold Sit, which is Head Home under DR-08, and not the skill bar, the combat command bar that was called Slow Blink.) It follows Mikan to the Lot and joins, Loyalty 50. No daily Trust pips, no food, no roll. Strays have no signature perk.
 
 #### 3.4.4 Join step, full Crew and release
 1. The joining cat keeps `name, title, coat_seed, style, personality, level, xp, traits, memory, relations[], signature_strength` and its kit (into `known_moves` and slots). `rank` is cleared; `former_rank` is set by Nemesis; `clowder = Bell`; `assignment = lot`; `loyalty` per F6 or the fixed value; `wavering_nights = 0`. Emits `CatRecruited(cat_id, origin)`.
 1a. **Old gang (OR-04, OR-06).** On `CatRecruited`, if the cat belonged to a gang with a Boss, Nemesis writes `OLD_GANG(boss_id)` into the **recruit's own Memory** and sets `old_gang_nerves` = true unless its personality resists (**resist: Braggart, Stalwart, Brooder; susceptible: Schemer, Fraidy, Goofball**). The Boss's record never changes. Hige's entry is authored from the start. A Stray or a Boss has no entry. Both values are fixed from then on; only the cat's own Loyalty can override the flinch (Sworn, below).
-   - **What it does in a fight** (Combat owns the values): when the recruit is in the Posse and sees its Old Boss among the opponents, *its own* reaction plays at the Standoff (ears flat, a flinch, its own line from its own memory). A susceptible cat below **Sworn (< 80)** is **Cowed for 20 s (Fraidy 30 s)** and its AI will not target the Old Boss; **a Tag-In to it clears Cowed at once** with a "steeled" bark. A resisting or Sworn cat plays a defiant line of its own and gets no status. The Old Boss behaves exactly as it would against any Posse.
+   - **What it does in a fight** (Combat owns the values): when the recruit is in the Posse and sees its Old Boss among the opponents, *its own* reaction plays at the Standoff (ears flat, a flinch, its own line from its own memory). A susceptible cat below **Sworn (< 80)** is **Cowed for 20 s (Fraidy 30 s)** and its AI will not target the Old Boss; **a skill-bar command to it clears Cowed at once** with a "steeled" bark (M1.1; Tag-In no longer exists). A resisting or Sworn cat plays a defiant line of its own and gets no status. The Old Boss behaves exactly as it would against any Posse.
    - **Shown on the Crew card** (UX): an **old-gang stamp**, the Old Boss's mark in faded paint with its portrait, plus a flinch glyph (susceptible) or a raised-chin glyph (resisting, or Sworn). The Rivals board shows the Old Boss / Old Gang tag on hover (UX, from the recruit's data).
 2. If the Posse has fewer than 3 Crew, the new cat is offered a Posse place on the spot.
 3. **Crew cap** comes from Territory's Clout table (slice: **6**; Mikan does not count). The slice has exactly 6 recruitables, so the cap is never exceeded in normal play; the rule below still ships.
@@ -211,14 +211,14 @@ Every Crew cat has exactly one `assignment`:
 | **Warden** | The Den's first Sentry slot; True+ only (DR-10) | As Sentry | As Sentry | As Sentry |
 | **Lounging** | the rest | Nothing | 25% share (F3) | 0 (Goofball −2) |
 
-1. **Posse growth (PP-08, PP-09, DR-22):** Mikan + Hige by ≈ minute 10 (two-cat Pile-On by minute 15); + Pon on Life 1 day 2 (three cats); + Kinako on **Life 2 day 1** (four cats, before Life 2 day 2's Relay lesson). Kinako's favour is that day's required first objective (§3.4.3), so the 4-cat Posse is guaranteed whether or not the player recruits a Rival.
+1. **Posse growth (PP-08, PP-09, DR-22):** Mikan + Hige by ≈ minute 10 (first two-cat Special chain by minute 15); + Pon on Life 1 day 2 (three cats); + Kinako on **Life 2 day 1** (four cats, before Life 2 day 2's Team Pile-On lesson). Kinako's favour is that day's required first objective (§3.4.3), so the 4-cat Posse is guaranteed whether or not the player recruits a Rival.
 2. **Changing the Posse at the Lot:** free, any number of times.
 3. **Tail-Up (DR-38, PP-31; UX shows it as the in-field swap):** outside the Lot, D-pad Left/Right opens the picker. Mikan raises tail and chirps; the outgoing cat peels off towards the Lot and the chosen cat arrives over the High Road in ≈ 5 s. Only **Lounging** cats can be called; posted cats show greyed (un-post them at the Turf Board). Not during an encounter, Standoff or Verdict; not inside Haru's wall; **30 s cooldown**; a Routed cat cannot be called until it recovers (Sunspot nap or home). There is no mid-fight bench swap (DR-29).
-4. A cat brought in arrives with the Nerve it last had today; Zoomies gauges are Combat's.
+4. A cat brought in arrives with the Nerve it last had today; Special meters (Zoomies folded in) are Combat's.
 5. Mikan cannot leave the Posse.
 6. **Posting** is done at the Turf Board (Territory). This doc only supplies the Loyalty and XP consequences and the personality guard perk's identity.
 7. **Allied guests: the Nose-Touched cat (OR-13; not Crew).** From Life 2, at `EncounterStarted`, Nemesis may roll a **join-in** for a cat in `Truce` (10 days) or a Friend, in the same district, when an opponent in the encounter is tagged its **Rival** (p 0.35–0.65, seeded; ≤ 1 joiner per encounter, ≤ 1 join per cat per day). The joiner is a **temporary fight ally, never Crew**:
-   - **In the fight** (Combat owns): it arrives after a 3 s yowl over the High Road as an **allied AI guest**. It is not controllable (no Tag-In, no Slow Blink commands), takes no part in the Pile-On, and counts toward the 10-combatant cap. It fights by **its own personality's "Fights like" row** (§3.2.1) with its own Rival kit, so a Stalwart guest shields the controlled cat and a Fraidy guest hangs back: personality is the hook here too. Its Nemesis Strength stays a Rival trait; it becomes a signature perk only on recruitment.
+   - **In the fight** (Combat owns): it arrives after a 3 s yowl over the High Road as an **allied AI guest**. It cannot be commanded (no skill-bar row), takes no part in the Special chain or the Team Pile-On, and counts toward the 10-combatant cap. It fights by **its own personality's "Fights like" row** (§3.2.1) with its own Rival kit, so a Stalwart guest shields Mikan and a Fraidy guest hangs back: personality is the hook here too. Its Nemesis Strength stays a Rival trait; it becomes a signature perk only on recruitment.
    - **Outside the Crew:** it has no `assignment`, Loyalty, Crew XP, Moves slots or Lessons; it never takes a Crew-cap slot, a Posse place or a Sentry slot; it never appears in the Posse picker, Tail-Up or the Turf Board Crew strip; it cannot Waver or betray. The social matrix (§3.2.2) does not apply to it. When the encounter ends it leaves and resumes roaming its district.
    - **G10:** no Crew cat's Loyalty, assignment or AI reads a join-in or `AllyJoined`. The opposing Rival is untouched (Combat, G7). The only cat a join changes is the joiner (Nemesis: +5 Regard if the Posse wins).
    - **How it is shown** (UX/HUD owns the art): a **truce sprig** above its head and a guest name-plate in its own coat colours, never bell-gold; a small sprig-marked portrait after the Posse row with no Paws gauge; `AllyJoined(cat_id, encounter_id)` drives the yowl and the arrival. On the Rivals board it keeps its own section and the truce sprig; it never moves to the Bell fence.
@@ -319,14 +319,14 @@ A cat adds a native Move to `known_moves` automatically on reaching its `instinc
 1. **4 Move slots** per cat (canon). At the Lot, any known Move can be slotted or unslotted for free.
 2. **Mikan may slot at most 2 cross-Style Moves** (DR-33); the other slots hold Scrapper Moves. There is no hidden potency penalty (and Combat has no Style passive to withhold).
 3. Slots change only at the Lot. A Tail-Up'd cat arrives with its current slots.
-4. **Zoomies** (Combat owns the three slice Zoomies and their gauges; Zoomies tiers are cut, CP-14): Mikan's unlocks on **Life 2 day 3**, where Combat §3.16 teaches Zoomies (on the Captain); a Crew cat's unlocks at **Lv 6**. One per Style; no Zoomies II.
+4. **Specials (Zoomies folded in, M1.1)** (Combat owns the three slice Specials and their meters, Combat §3.6–§3.7; Zoomies tiers are cut, CP-14): **every cat has its Special from the day it joins**, Mikan included (Combat A11; the old unlocks, Mikan Life 2 day 3 and Crew Lv 6, are dropped so the four-cat Team Pile-On is reachable from Life 2 day 1). One per Style; no Special II.
 
 #### 3.8.5 Rival kits (service to Nemesis/Combat, CP-X9)
 `DefaultKit(style, level, rank)`: Nemesis sets the count (Tough 2 Moves, Captain 4, Boss authored). Crew's selection rule: the cat's native Moves whose `instinct_level ≤ level`, most recent first; a Captain whose native list is short of 4 fills with its Style's capstone. So a Lv 6 Yowler Captain carries Purr, Withering Hiss, Howl and Banshee Screech, and recruiting it brings the capstone two levels early. Knacks are Backlog.
 
 ### 3.9 Protagonist share (DR-33, CP-5, PP-20)
 
-Mikan's ceiling is held by rules the player can read: 2 cross-Style slots max; the same 2 Paws as everyone in the slice; no Loyalty or personality perk; control passes to the **next slot**, not to Mikan, when the controlled cat is Routed (Combat). The Crew's edge is personality perks, signature perks, bonded Tag-Ins and Old Scores, none of which Mikan has. Acceptance is Combat's sim (Crew ≥ 55% of Posse damage).
+Mikan's ceiling is held by rules the player can read: 2 cross-Style slots max; the same 2 Paws as everyone in the slice; no Loyalty or personality perk; the player controls Mikan only and commands the Crew from the skill bar (Combat M1.1). The Crew's edge is personality perks, signature perks, bonded chain Specials and Old Scores, none of which Mikan has. Acceptance is Combat's sim (Crew ≥ 55% of Posse damage).
 
 ---
 
@@ -502,7 +502,7 @@ L' = max( L_all, T )       otherwise                   (watch inputs apply, but 
 **Worked example (a Life 2 day).** Posse: Togemaru, Kagi, Pon; Sentries: Hige and Kinako (district seen); Lounging: none (5 Crew). Share a Morsel given; Mikan Nose-Touches one Rival; Kagi takes a Lesson.
 - **Togemaru** (Braggart): Posse 2 + Braggart 1 + Morsel 2 = **+5**.
 - **Kagi** (Schemer): Posse 2 + Morsel 2 + Lesson 3 − Nose-Touch 2 = **+5**.
-- **Pon** (Goofball): Posse 2 + Morsel 4 = **+6**. (Bonded with Togemaru and Kagi in the Posse: stronger Tag-Ins, no Loyalty.)
+- **Pon** (Goofball): Posse 2 + Morsel 4 = **+6**. (Bonded with Togemaru and Kagi in the Posse: stronger back-to-back chain Specials, no Loyalty.)
 - **Hige** (Stalwart): post 1 + Morsel 2 + bond with Kinako 1 + Nose-Touch 1 = **+5**.
 - **Kinako** (Fraidy): post 1 + Morsel 2 + bond with Hige 1 = **+4**.
 Swap Hige for Togemaru on the post and Togemaru/Kinako clash: Togemaru post 1 + Morsel 2 − clash 1 = +2 (and −2 from day 3 out of the Posse), Kinako +2.
@@ -589,7 +589,7 @@ BetrayalTriggered    ⇔ wavering_nights = WAVER_NIGHTS                     (Nem
 | The Stash covers fair but not feast | Feast greys out; fair stays. Life 1 never shows the row |
 | Recruited cat's level exceeds `SLICE_LEVEL_CAP` | Kept as is (Daifuku ≤ 10 by Nemesis's Mikan + 3 cap); XP stops at the cap |
 | A cat is Tail-Up'd out mid-day | It counts as "in the Posse that day" (+2) if it was in the Posse at any encounter start; Goofball "Lounging" penalty applies only if it was never in the Posse and is not posted at the Night Shuffle |
-| Bonded or clashing cat Routed mid-fight | Still "together" for the day; the bonded Tag-In needs both standing (Combat) |
+| Bonded or clashing cat Routed mid-fight | Still "together" for the day; the bonded chain bonus needs both in the chain (Combat) |
 | Clashing pair split before the Night Shuffle | "Together" means both in the Posse at the same encounter start that day, or both posted at the Night Shuffle |
 | Brooder moved from one held post to another | Counts as dismissal (−10 raw → −5) and resets `nights_on_post`. Unposting because the Patch was lost is not a dismissal |
 | Posted cat's Patch Scuffed or Lost in a raid or to a challenger | Lost: Territory returns it to the Lot. If it was Routed in the raid fight: −3 (and Fraidy −2 extra). A posted **Stalwart** also takes −3 for the failed line on a Scuffed or Lost night (stacks, within `DAILY_CAP`). A Repelled night costs nothing |
@@ -604,7 +604,7 @@ BetrayalTriggered    ⇔ wavering_nights = WAVER_NIGHTS                     (Nem
 | Recruit's Old Boss is Gone, in truce or in the Crew | Old Gang Nerves never fire: they need the Old Boss among the **opponents** |
 | Two recruits from the same gang face their Old Boss | Each reacts from its own flag: one may flinch while the other stares him down |
 | Susceptible recruit reaches Sworn (≥ 80) | Plays its defiant line instead; no Cowed. Drops below 80 → flinches again |
-| Cowed recruit is not the controlled cat and the player never Tag-Ins to it | Cowed lasts its full 20 s (Fraidy 30 s), then ends; no Loyalty effect |
+| The player never commands a Cowed recruit | Cowed lasts its full 20 s (Fraidy 30 s), then ends; no Loyalty effect |
 | Nose-Touched guest joins a fight with a full 10-cat cap | No join (Nemesis/Combat). Nothing changes for the Crew |
 | Guest is Routed | It bolts like any cat; no Crew XP, Loyalty or social effect; its truce is Nemesis's |
 | Released at Loyalty < 60 | Gone for good (legend card); never rejoins; `returned` is moot |
@@ -628,7 +628,7 @@ BetrayalTriggered    ⇔ wavering_nights = WAVER_NIGHTS                     (Nem
 
 | System | Direction | Contract |
 |---|---|---|
-| **Combat** | reads ← | `stats`, `moves[4]`, `personality` (AI profile + combat perk), `signature_strength`, bonded pairs incl. Kin (Tag-In bonus), `Loyalty` (Sworn check for Old Gang Nerves, via `RivalCombatProfile`). Owns all Move/Zoomies data, AI implementation, combat-perk values, Old Score, Tag-In, Cowed and its Tag-In clear, the Kin targeting rule, and the allied guest (§3.5.7) |
+| **Combat** | reads ← | `stats`, `moves[4]`, `personality` (AI profile + combat perk), `signature_strength`, bonded pairs incl. Kin (bonded chain bonus), `Loyalty` (Sworn check for Old Gang Nerves, via `RivalCombatProfile`). Owns all Move/Special data, AI implementation, combat-perk values, Old Score, the skill bar and the Special chain, Cowed and its skill-bar clear, the Kin targeting rule, and the allied guest (§3.5.7) |
 | **Combat** | emits → | `EncounterEnded` (XP, Rout and loss events), `CatRouted` (Fraidy), `TagIn`, `MoveUsed` |
 | **Nemesis** | → | personality and `former_rank` at generation; recruit availability; `VerdictApplied(verdict ∈ {chase, recruit, nose})` (Recruit opens the join step; Nose-Touch feeds W1/W2 in F7); `G_pre`, Regard; Rival kit counts; `relations[]` (Kin), the `OLD_GANG` entry and `old_gang_nerves` (OR-06); `AllyJoined` (**not consumed** by Crew, G10); `BetrayalTriggered(crew_id, patch_id)` from Life 2; release consequences (clean parting / Gone) |
 | **Nemesis** | reads ← | `Loyalty(cat_id)`, `wavering_nights` and the F11 thresholds (it emits the betrayal at step 3); `origin`; `DefaultKit` selection rule; `CatRecruited` (writes `OLD_GANG`) |
@@ -664,7 +664,6 @@ BetrayalTriggered    ⇔ wavering_nights = WAVER_NIGHTS                     (Nem
 | Lessons per day (Mikan / others) | 3 / 1 | 2–4 / 1–2 | Teaching throughput |
 | Rank II learner level | 4 | 3–5 | When capstones can arrive early |
 | Instinct levels (I, II, capstone) | 1, 4, 7 | ±1 | Growth cadence |
-| Crew Zoomies unlock level | 6 | 5–8 | When Crew Zoomies appear |
 | Tail-Up arrival / cooldown | 5 s / 30 s | 3–8 s / 15–60 s | Field-swap friction |
 | PR_MOVE | 0.02 | 0–0.05 | Kit weight in Power Rating |
 | Fixed Loyalty (story / Friend Stray) | 60, 55 / 50 | 45–65 | Early Crew stability |
@@ -686,7 +685,7 @@ Owned elsewhere (do not tune here): combat-perk magnitudes, Cowed durations (20 
 5. **AC-5 (one personality model):** the schema has one `personality` field; no `temperament` field exists; personality never alters a stat. *(lint)*
 6. **AC-6 (pacing):** in the Lives 1–2 sim (DR-57) with the light, median and heavy policies, Posse level at the Daifuku fight is 7–9 for median and light play and ≤ 9.5 for heavy; Life 1 ends at Lv 3 ± 0.5. *(sim)*
 7. **AC-7 (catch-up):** a Lv 4 cat in Lv 7 fights reaches Lv 6 within 13 same-level-Tough kills (F3 gives ≈ 11.8; same-level pace would be 22). *(unit)*
-8. **AC-8 (Posse growth):** in playtests, 100% of testers have 2 cats by minute 15 (two-cat Pile-On, DR-03), 3 by the end of Life 1, and a 4-cat Posse by the end of Life 2 day 1 (before the Relay lesson on day 2). *(playtest)*
+8. **AC-8 (Posse growth):** in playtests, 100% of testers have 2 cats by minute 15 (first two-cat Special chain, DR-03), 3 by the end of Life 1, and a 4-cat Posse by the end of Life 2 day 1 (before the Team Pile-On lesson on day 2). *(playtest)*
 9. **AC-9 (personality reads):** after 2 h, ≥ 70% of unbriefed testers can name one cat's personality-driven behaviour in a fight ("the grey one stays next to me") and one reason they posted or benched a specific cat. *(playtest)*
 10. **AC-10 (no dominant roster):** across playtest logs, no single 3-cat Posse is chosen on > 60% of Life 2 days, and at least 4 of 6 cats each spend ≥ 1 day posted. *(telemetry)*
 11. **AC-11 (social puzzle):** every slice day after Life 2 day 1 presents at least one posting choice where the bonded option and the strongest-guard option differ (true by roster construction; verify in the Turf Board). *(design check)*
@@ -698,8 +697,8 @@ Owned elsewhere (do not tune here): combat-perk magnitudes, Cowed durations (20 
 17. **AC-17 (make room):** at a full Crew the Verdict's make-room list contains exactly the Lounging, non-story cats; a release at ≥ 60 emits a clean parting, below 60 the cat becomes Gone and never reappears in any later state of the run. *(integration)*
 18. **AC-18 (recruitment routes and Bribe):** the only code paths that emit `CatRecruited` are the Recruit Verdict, the two story beats and the Friend Stray favour. From Life 2 every Recruit debits ≥ `bribe_fair` from the Stash; no `bribe_step = 0` exists. *(unit + lint)*
 19. **AC-19 (G10 audit and firewall):** the only Loyalty inputs that read `VerdictApplied` or another cat's encounter are W1 and W2 (§3.7.6) (lint on F7's event list). For any cat and any day, adding or removing every W1/W2 event never changes whether the cat is below its threshold after step 1, nor its `wavering_nights` (property test over seeded days). `AllyJoined`, `AngerChanged`, `TownEvent` and a loss never change a Crew cat's Loyalty except through its own Rout (unit). *(unit + lint)*
-20. **AC-20 (Old Gang Nerves, Crew side):** on every recruit join from a gang with a Boss, the recruit's Memory gains exactly one `OLD_GANG(boss_id)` and the Boss's record is unchanged; `old_gang_nerves` is true exactly for Schemer, Fraidy and Goofball; Hige starts with `OLD_GANG(daifuku)`; the Crew card shows the stamp. In the Daifuku fight with Hige, Togemaru and Kagi (< 80), only Kagi is Cowed, and a Tag-In to Kagi clears it. *(unit + integration)*
-21. **AC-21 (allied guest is not Crew):** a joined guest never appears in the Crew list, Posse picker, Tail-Up picker or Turf Board strip, never counts toward the Crew cap, never earns Crew XP or Loyalty, and cannot be Tag-In'd or commanded; the truce sprig and guest portrait show for the whole encounter. *(integration)*
+20. **AC-20 (Old Gang Nerves, Crew side):** on every recruit join from a gang with a Boss, the recruit's Memory gains exactly one `OLD_GANG(boss_id)` and the Boss's record is unchanged; `old_gang_nerves` is true exactly for Schemer, Fraidy and Goofball; Hige starts with `OLD_GANG(daifuku)`; the Crew card shows the stamp. In the Daifuku fight with Hige, Togemaru and Kagi (< 80), only Kagi is Cowed, and a skill-bar command to Kagi clears it. *(unit + integration)*
+21. **AC-21 (allied guest is not Crew):** a joined guest never appears in the Crew list, Posse picker, Tail-Up picker or Turf Board strip, never counts toward the Crew cap, never earns Crew XP or Loyalty, and cannot be commanded (no skill-bar row); the truce sprig and guest portrait show for the whole encounter. *(integration)*
 22. **AC-22 (Stalwart and Goofball posts):** a posted Stalwart takes −3 on a Scuffed or Lost night on its own Patch and nothing on Repelled; a challenger staking a posted Goofball's Patch over-marks 0 (Territory's value, Crew's perk identity). *(unit + integration)*
 23. **AC-23 (betrayal rate):** in the Lives 1–2 sim, betrayal occurs in 0% of reference-policy runs and ≤ 10% of neglect-policy runs. *(sim)*
 
@@ -734,6 +733,8 @@ Owned elsewhere (do not tune here): combat-perk magnitudes, Cowed durations (20 
 ---
 
 ## Revision Log
+
+**2026-11-24 — Owner combat direction M1.1 (2026-11-24)** (`design/reviews/owner-feedback/combat-m1.1-spec.md`; edited only where Tag-In, Relay, Zoomies or the Cowed clear were mentioned). Tag-In steadying a Cowed recruit → a skill-bar command (§2, personality sheets, §3.2.3 table, §3.4.4, edge cases, AC-20); bonded Tag-In → bonded back-to-back chain Specials (§3.2.2, worked Loyalty note, edge cases, §6 Combat row); the Relay lesson → the Team Pile-On lesson (§3.4.3, §3.5 growth, AC-8); Zoomies → Specials with no unlock level (ownership note, §3.5 Tail-Up note, §3.8.4; knob "Crew Zoomies unlock level" removed); the guest cannot be commanded (§3.5.7, AC-21); Mikan's ceiling note (player controls Mikan only).
 
 **2026-11-23 — Round 2 (fresh slice rewrite; first draft archived).** Issue IDs from `design/reviews/round-1/crew-and-progression--design.md` and `paper-playtest.md`.
 

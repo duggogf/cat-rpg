@@ -13,6 +13,7 @@
 import { KIT_CSS } from './kit-assets.js';
 import { Kit } from '../../render/vfx/sprites.js';
 import { portraitFor } from '../../render/vfx/fighters.js';
+import { styleOf } from '../../render/vfx/cinematics.js';
 
 const C = Kit.C;
 const DPAD = ['n', 'w', 's', 'e'], KEYS = ['Z', 'X', 'C', 'V'];
@@ -100,6 +101,13 @@ const CSS = `
 .ch-sb .tstep { padding:8px 18px; font:700 26px/1.2 var(--font); color:var(--cocoa); background:var(--recessed); }
 .ch-bracket { width:150px; height:150px; }
 .ch-card { position:absolute; left:50%; top:30%; transform:translate(-50%,-50%); }
+.ch-meter { position:relative; flex:0 0 56px; width:56px; height:56px; border-radius:50%; background:conic-gradient(var(--mc) var(--a,0deg), var(--recessed) 0); border:3px solid var(--ink); box-sizing:border-box; display:flex; align-items:center; justify-content:center; }
+.ch-meter::before { content:''; position:absolute; inset:7px; border-radius:50%; background:var(--cream); border:2.5px solid var(--ink); }
+.ch-meter svg { position:relative; }
+.ch-meter.full { box-shadow:0 0 0 4px var(--gold), 0 0 0 7px var(--ink); animation: chpulse 0.6s steps(2) infinite; }
+.ch-plate.cast { box-shadow:0 0 0 5px var(--castc), var(--drop); }
+.ch-lock { width:150px; height:150px; }
+.ch-spec { display:flex; align-items:center; gap:8px; padding:6px 16px 6px 8px; background:var(--ink); border:3px solid var(--cream); border-radius:30px; color:var(--cream); font:800 30px/1 'Dela Gothic One',var(--font); letter-spacing:.03em; }
 .ch-kc { display:inline-flex; align-items:center; justify-content:center; min-width:40px; height:40px; padding:0 8px; border-radius:10px 12px 11px 13px; background:var(--cream); border:3px solid var(--cocoa); box-shadow:0 3px 0 var(--cocoa); font:800 24px/1 var(--font); color:var(--cocoa); box-sizing:border-box; }
 .ch-kc.big { min-width:52px; height:52px; font-size:30px; border-radius:14px 16px 15px 17px; }
 .ch-plate .glyph .ch-kc { width:52px; height:52px; font-size:30px; }
@@ -130,6 +138,9 @@ const svgIcon = {
   steam: (n) => `<svg viewBox="0 0 ${n * 26 + 4} 26" width="${n * 26 + 4}" height="26">${Array.from({ length: n }, (_, i) => `<path d="${Kit.blob(Kit.pomPts(15 + i * 26, 13, 10, 6, 0.18, i))}" fill="${C.cream}" stroke="${C.ink}" stroke-width="2.5"/>`).join('')}</svg>`,
 };
 /** Bark pictograms by personality (icon-only in fights). */
+const STAR = `<svg viewBox="-20 -20 40 40" width="34" height="34">${Kit.sparkle({ r: 15, fill: C.staticYellow, lw: 3, pinch: 0.3 })}</svg>`;
+/** Special meter 0..1 for a cat: the sim's field once it publishes one (special / special_meter / zoomies). */
+export const specialOf = (e) => { const v = e.special ?? e.special_meter ?? e.zoomies ?? 0; return Math.max(0, Math.min(1, v > 1 ? v / 100 : v)); };
 export const BARK_ICON = {
   Mikan: svgIcon.bell, Stalwart: `<svg viewBox="-20 -20 40 40" width="36" height="36"><path d="M0 -16L14 -10V2Q14 12 0 17Q-14 12 -14 2V-10Z" fill="${C.gold}" stroke="${C.ink}" stroke-width="3" stroke-linejoin="round"/></svg>`,
   Goofball: `<svg viewBox="-20 -20 40 40" width="36" height="36"><circle r="15" fill="${C.cream}" stroke="${C.ink}" stroke-width="3"/><path d="M-7 -3l3 -3l3 3M2 -3l3 -3l3 3" fill="none" stroke="${C.ink}" stroke-width="2.5" stroke-linecap="round"/><path d="M-6 5Q0 11 6 5" fill="${C.pad}" stroke="${C.ink}" stroke-width="2.5"/></svg>`,
@@ -175,7 +186,8 @@ export class CombatHUD {
     const posse = s.entities.filter((e) => e.side === 'posse').sort((a, b) => a.slot - b.slot);
     for (const e of posse) {
       const d = document.createElement('div'); d.className = 'ch-plate';
-      d.innerHTML = `<div class="glyph" data-slot="${e.slot}">${Kit.ui.dpad({ size: 56, lit: DPAD[e.slot] })}</div><div class="por">${this.portrait(e.cat, 72, e.id)}</div>
+      d.style.setProperty('--mc', styleOf(e.cat).col);
+      d.innerHTML = `<div class="ch-meter" title="Special">${STAR}</div><div class="por">${this.portrait(e.cat, 72, e.id)}</div>
         <div class="mid"><div class="nm">${e.name}</div><div class="k-gauge"><i></i></div></div>
         <div class="pads">${[0, 1].map(() => `<div class="ch-pad"><div>${padSVG(C.recessed)}</div><div class="fill">${padSVG(C.pad)}</div></div>`).join('')}</div>
         <div class="poms"></div>`;
@@ -207,7 +219,7 @@ export class CombatHUD {
     return out;
   }
 
-  showChrome(on) { for (const el of [this.bl, this.tc]) el.className = el.className.replace(/ch-(hide|show)/, on ? 'ch-show' : 'ch-hide'); this.world.style.visibility = on ? 'visible' : 'hidden'; }
+  showChrome(on) { if (this.keysEl) this.keysEl.style.visibility = on ? 'visible' : 'hidden'; for (const el of [this.bl, this.tc]) el.className = el.className.replace(/ch-(hide|show)/, on ? 'ch-show' : 'ch-hide'); this.world.style.visibility = on ? 'visible' : 'hidden'; }
 
   onEvent(ev, s, t) {
     if (ev.type === 'Hit' && ev.target) this.lastHit.set(ev.target, t);
@@ -219,9 +231,8 @@ export class CombatHUD {
   /** Swap every input glyph to the device in use: keycaps on keyboard + mouse, pad glyphs on a gamepad. */
   setDevice(dev) {
     if (dev === this.device) return; this.device = dev;
-    for (const p of this.plates.values()) { const g = p.querySelector('.glyph'), sl = +g.dataset.slot; g.innerHTML = dev === 'pad' ? Kit.ui.dpad({ size: 56, lit: DPAD[sl] }) : kc(KEYS[sl], true); }
     if (!this.keysEl) { this.keysEl = document.createElement('div'); this.keysEl.className = 'ch-keys'; this.el.appendChild(this.keysEl); }
-    this.keysEl.innerHTML = dev === 'pad' ? `<span class="ch-kc">☰</span>Pause` : `${kc('P')}Pause ${kc('Tab')}Slow Blink`;
+    this.keysEl.innerHTML = dev === 'pad' ? `<span class="ch-kc">R3</span>Lock <span class="ch-kc">R2</span>Skills <span class="ch-kc">☰</span>Pause` : `${kc('Tab')}Lock ${kc('R')}Skills ${kc('P')}Pause`;
     this.keysEl.style.transform = `scale(${this.scale})`;
     if (this.sbEl) this.sbEl._h = null;
   }
@@ -242,11 +253,13 @@ export class CombatHUD {
       g.querySelector('i').style.width = (nv * 100).toFixed(1) + '%'; g.classList.toggle('k-gauge--low', nv < 0.25);
       const pads = p.querySelectorAll('.ch-pad'), free = e.paws;
       pads.forEach((pd, i) => { const f = Math.max(0, Math.min(1, free - i)); pd.querySelector('.fill').style.setProperty('--c', ((1 - f) * 100).toFixed(0) + '%'); pd.classList.toggle('full', f >= 1); });
-      // Tag-In cue: the D-pad glyph of every standing crew plate pops to 115% with a gold rim
-      const glyph = p.querySelector('.glyph');
-      glyph.classList.toggle('cue', !!s.tag_window && !ctl && !e.routed);
+      // Special meter (M1.1 §6: Zoomies folded into the Special): a ring in the cat's colour around a star
+      const glyph = p.querySelector('.ch-meter'), mv = specialOf(e);
+      glyph.style.setProperty('--a', Math.round(360 * mv) + 'deg'); glyph.classList.toggle('full', mv >= 1 && !e.routed);
+      const castT = this.moveTag && this.moveTag.get(id);
+      p.classList.toggle('cast', !!(castT && t < castT.until)); if (castT) p.style.setProperty('--castc', castT.col || C.gold);
       const cowedNerves = e.status && e.status.kind === 'cowed' && e.status.source === 'nerves';
-      glyph.classList.toggle('pulse', cowedNerves && !ctl);
+      glyph.classList.toggle('pulse', false); void cowedNerves;
       // poms: status (+ badge), queued command, can-act bell, hiss
       let poms = '';
       if (e.status) {
@@ -336,13 +349,24 @@ export class CombatHUD {
       const f = fighters.get(this.barkMsg.id);
       if (f && f.root.visible) { const el = this.wEl('bark', 'k-bubble ch-bark', BARK_ICON[this.barkMsg.icon] || this.barkMsg.icon); el.style.transform = `translate(-30%,-100%) scale(${sc * 0.9})`; this.place(el, ctx.project(f.head), -60 * sc); }
     }
-    // Pile-On prompt over the Frazzled target (North / F glyph inside a dust-cloud pom; no world text)
-    if (s.pile_on_offer && s.mode !== 'pileon') {
-      const f = fighters.get(s.pile_on_offer.targetId);
+    // Special prompt (M1.1 §6): F on a staggered enemy while Mikan's Special is ready
+    if (ctx.specialTarget && s.mode !== 'pileon' && !ctx.cinematic) {
+      const f = fighters.get(ctx.specialTarget);
       if (f) {
-        const el = this.wEl('pile', 'k-prompt ch-prompt', `${this.device === 'pad' ? Kit.ui.faceButtons({ size: 50, lit: 'n' }) : kc('F', true)}${svgIcon.pileon}`);
-        el.style.transform = `translate(-50%,-100%) scale(${sc})`;
-        const p = ctx.project(f.head); this.place(el, p, -110 * sc);
+        const k2 = Math.floor(t * 15) % 2 ? 1.06 : 1;
+        const el = this.wEl('special', 'ch-spec', `${this.device === 'pad' ? Kit.ui.faceButtons({ size: 46, lit: 's' }) : kc('F', true)}${STAR.replace('width="34" height="34"', 'width="40" height="40"')}SPECIAL`);
+        el.style.transform = `translate(-50%,-100%) scale(${(sc * k2).toFixed(3)})`;
+        const p = ctx.project(f.head); this.place(el, p, -112 * sc);
+      }
+    }
+    // lock-on indicator (Tab): four Bell-Gold corner ticks around the locked enemy's body, stepping on twos
+    if (ctx.lockId && !s.slow_blink && s.mode !== 'pileon') {
+      const f = fighters.get(ctx.lockId);
+      if (f && f.root.visible) {
+        const feet = ctx.project(f.pos), head = ctx.project(f.head), hpx = Math.max(40, feet.y - head.y) * 1.7;
+        const pop = this.lockFlash && t - this.lockFlash < 0.1 ? 1.25 : 1, rot = (Math.floor(t * 15) % 2) * 6;
+        const el = this.wEl('lock', 'ch-lock', `<svg viewBox="0 0 150 150" width="150" height="150"><g transform="rotate(${45 + rot} 75 75)"><g fill="${C.gold}" stroke="${C.ink}" stroke-width="4" stroke-linejoin="round"><path d="M75 4l10 16h-20z"/><path d="M75 146l10 -16h-20z"/><path d="M4 75l16 10v-20z"/><path d="M146 75l-16 10v-20z"/></g></g><circle cx="75" cy="75" r="58" fill="none" stroke="${C.gold}" stroke-width="3" stroke-dasharray="8 10"/></svg>`);
+        el.style.transform = `translate(-50%,-50%) scale(${(hpx / 150 * pop).toFixed(3)})`; this.place(el, { x: (feet.x + head.x) / 2, y: (feet.y + head.y) / 2, on: feet.on }, 0);
       }
     }
     // Slow Blink: props and known Fears highlighted in the world (replaces Whisker Sense in combat)
@@ -414,7 +438,7 @@ export class CombatHUD {
     const tc = conds(tgt);
     const costPips = (n) => Array.from({ length: n }, () => Kit.ui.paw({ size: 30 })).join('');
     const pad = this.device === 'pad';
-    let html = `<div class="ch-sb"><div class="hd"><span class="key">${pad ? 'L1' : 'Q'}</span><span class="who">${this.portrait(cat.cat, 46, cat.id)}${cat.name}</span><span class="key">${pad ? 'R1' : 'E'}</span></div>`;
+    let html = `<div class="ch-sb"><div class="tstep" style="background:var(--ink);color:var(--cream);font-weight:800">SKILLS · time slowed · ${pad ? 'L1 / R1' : kc('Q') + ' ' + kc('E')} pick a cat to force its skill</div><div class="hd"><span class="key">${pad ? 'L1' : 'Q'}</span><span class="who">${this.portrait(cat.cat, 46, cat.id)}${cat.name}</span><span class="key">${pad ? 'R1' : 'E'}</span></div>`;
     rows.forEach((r, i) => {
       const focus = i === sb.row && sb.step === 'rows' ? ' focus' : '';
       if (r.kind === 'pile') html += `<div class="row pin${focus}"><span class="ic">${svgIcon.pileon}</span><span class="nm">PILE-ON</span>${pad ? Kit.ui.faceButtons({ size: 40, lit: 'n' }) : kc('F')}</div>`;
@@ -427,7 +451,7 @@ export class CombatHUD {
       }
     });
     if (sb.step === 'target') html += `<div class="tstep">Target: <b>${tgt ? tgt.name : '-'}</b> · ${pad ? '◀ ▶' : kc('A') + ' ' + kc('D')} pick</div>`;
-    html += `<div class="ft"><span>${sb.step === 'target' ? '' : ''}</span><span class="k">${pad ? Kit.ui.faceButtons({ size: 40, lit: 's' }) : kc('Space')}OK</span><span class="k">${pad ? Kit.ui.faceButtons({ size: 40, lit: 'e' }) : kc('Esc')}Back</span><span class="key" style="background:var(--cocoa);color:var(--cream)">${pad ? 'R2' : 'Tab'}</span></div></div>`;
+    html += `<div class="ft"><span>${sb.step === 'target' ? '' : ''}</span><span class="k">${pad ? Kit.ui.faceButtons({ size: 40, lit: 's' }) : kc('Space')}OK</span><span class="k">${pad ? Kit.ui.faceButtons({ size: 40, lit: 'e' }) : kc('Esc')}Back</span><span class="key" style="background:var(--cocoa);color:var(--cream)">${pad ? 'R2' : 'R'} close</span></div></div>`;
     if (this.sbEl._h !== html) { this.sbEl.innerHTML = html; this.sbEl._h = html; }
   }
 
@@ -435,7 +459,7 @@ export class CombatHUD {
   moveUsed(id, move, t) {
     const mv = this.D.moves[move] || {}; this.moveTag = this.moveTag || new Map();
     const icon = svgIcon[mv.creates ? STATE_ICON[mv.creates] : mv.type === 'thump' ? 'splat' : mv.type === 'yowl' ? 'cowed' : 'ruffled'] || svgIcon.ruffled;
-    this.moveTag.set(id, { icon: mv.target === 'ally' ? BARK_ICON.heart : icon, until: t + 1.4 }); this.flash.set(id, t + 0.12);
+    this.moveTag.set(id, { icon: mv.target === 'ally' ? BARK_ICON.heart : icon, until: t + 1.4, col: styleOf(this.catOf ? this.catOf(id) : id).col }); this.flash.set(id, t + 0.12);
   }
 
   /** Icon-only fight bark (DR-44): one balloon at a time over a cat, ~0.9 s. */

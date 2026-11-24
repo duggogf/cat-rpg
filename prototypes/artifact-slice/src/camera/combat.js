@@ -43,7 +43,7 @@ export class CombatCamera {
   addShake(sh, t, dir) { if (!sh) return; this.shakes.push({ ...sh, start: t }); if (dir) this.shakeDir = dir; }
   addPunch(pt, pct, t, holdS) { if (this.punch && t < this.punch.end) return; if (!pct) return; this.punch = { pt: pt.clone(), k: Math.min(0.15, pct / 100), t0: t, tin: Math.max(0.05, holdS), end: t + Math.max(0.05, holdS) + COMBAT_CAM.punchOut }; }
   hold(untilT) { this.holdUntil = Math.max(this.holdUntil, untilT); }
-  userOrbit(dYaw, dPitch, t) { if (!dYaw && !dPitch) return; this.userYaw += dYaw; this.lastUserT = t; }
+  userOrbit(dYaw, dPitch, t) { if (!dYaw && !dPitch) return; this.userYaw += dYaw; this.freePitch = Math.max(-4, Math.min(40, (this.freePitch ?? COMBAT_CAM.pitch) + dPitch)); this.lastUserT = t; }
 
   /** Solve the state's target pose. ctx: {C, T (Vector3|null), mode, slowBlink, highRoad, enemiesCentroid, aspect, pileCenter, standoffFocus, occluded, clearance} */
   solve(ctx, dt, t) {
@@ -59,6 +59,12 @@ export class CombatCamera {
       const P = C.clone().lerp(ctx.standoffFocus, 0.5 - 0.3 * k);
       s.px = P.x; s.py = 0.5; s.pz = P.z; s.pitch = 18 - 6 * k; s.dist = 6.5 - 2.7 * k; s.shoulder = c.shoulder * k;
       s.yaw = Math.atan2(C.x - ctx.standoffFocus.x, C.z - ctx.standoffFocus.z) / D2R; return s;
+    }
+    // M1.1: UNLOCKED (default) = a free third-person orbit around Mikan, driven only by the mouse / right stick
+    if (ctx.free && !ctx.slowBlink) {
+      s.px = C.x; s.pz = C.z; s.py = C.y + c.pivotH; s.dist = c.dist; s.shoulder = c.shoulder * 0.6;
+      s.pitch = this.freePitch ?? c.pitch; s.yaw = this.pose.yaw + this.userYaw; this.userYaw = 0;
+      return s;
     }
     const sep = T ? Math.hypot(C.x - T.x, C.z - T.z) : 0;
     let lead = ctx.slowBlink ? c.sbLead : c.lead;
@@ -122,6 +128,11 @@ export class CombatCamera {
       if (u > q.tin + COMBAT_CAM.punchOut) this.punch = null;
       else { dist *= 1 - q.k * Math.max(0, k); pivot.lerp(q.pt, 0.25 * Math.max(0, k)); }
     }
+    // stagger focus (M1.1 §5): a brief zoom onto the staggered cat, in over 2 drawings, out over the rest
+    if (this.focus && t < this.focus.until) {
+      const F = this.focus, u = (t - F.from) / (F.until - F.from), kk = u < 0.2 ? ss(u / 0.2) : 1 - ss((u - 0.2) / 0.8);
+      pivot.lerp(F.pt, 0.6 * kk); dist *= 1 - F.k * kk;
+    } else this.focus = null;
     cam.position.copy(pivot).addScaledVector(dir, dist);
     cam.up.set(0, 1, 0); cam.lookAt(pivot);
     // stepped shake (screen-space translation, % of viewport height at the pivot distance)

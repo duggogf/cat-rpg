@@ -25,7 +25,7 @@ Read this once to know the game, the slice and how the systems fit; each section
 **USP: Dual Story Progression.** Every in-game day advances both stories on one clock. The human story has no intelligible word, ever: only staging, objects, colour, light, music and wordless **Murmur**, seen from 30–60 cm off the floor. In Life 8 the food tax you extorted all game becomes food you carry home to a grieving family.
 
 **Key features.**
-- **Conduct the brawl:** FF7 Remake's structure, Pokémon's roster, a cat's verbs. Switch between four cats, time **Tag-Ins** into **Relays**, stagger with **Frazzle**, finish with the **Pile-On**. **You can lose:** a wipe ends the day, the clock jumps to Night and Mikan walks home to Haru's sticking plaster. No game over.
+- **Command the brawl:** FF7 Remake's structure, Pokémon's roster, a cat's verbs. Fight as Mikan with Light/Heavy strings, command three AI cats from the **skill bar**, stagger with **Frazzle**, press **F** for a shonen cut-in **Special**, and if the whole gang's Specials chain, finish with the **Team Pile-On**. **You can lose:** a wipe ends the day, the clock jumps to Night and Mikan walks home to Haru's sticking plaster. No game over.
 - **Rivals remember:** every unique cat sits on the **Rivals board**, each gang staged as an alley scene, silhouetted until you **discover** it; hover one to see its ties. Cats keep a Memory of you, wear the **Scars** you gave them, earn Titles for beating you. Every win ends in one of **three Verdicts**: **Recruit** (for a Bribe), **Chase Off** (gone for good) or **Nose-Touch** (a truce; it may later fight beside you against its own Rival).
 - **Six personalities** drive how a cat fights, guards, stays loyal, gets along, flinches at its old boss and behaves as a Rival.
 - **Territory that never stays won:** fight to clear, **spray to claim**; fill your **district influence** until the Boss comes down off his wall to be challenged; post Sentries against forecast raids and **challengers** new in town; collect **Tribute** as a pile of fish on Haru's Doorstep. Neglected influence fades.
@@ -47,7 +47,7 @@ Full text: [`gdd/game-pillars.md`](gdd/game-pillars.md).
 |---|---|---|
 | 1 | **Cat's-Eye Truth** | If a cat could not perceive, want or do it, it is not in the game. No intelligible human language, ever |
 | 2 | **Two Lives, One Clock** | Every day advances both Mikan's turf and Haru's life; home is mechanically and emotionally unavoidable |
-| 3 | **Conduct the Brawl** | Short, loud, readable cartoon brawls where you command four cats; feel beats simulation |
+| 3 | **Command the Brawl** | Short, loud, readable cartoon brawls: you fight as Mikan and command three AI cats through the skill bar and the Special chain; feel beats simulation |
 | 4 | **Rivals Remember** | Every named cat carries visible history with you; no Rival fight is anonymous or consequence-free |
 
 Conflicts resolve in table order. **Anti-pillars:** no survival meters; not collect-them-all; not dialogue-driven; not grimdark (nobody dies on the streets); no time-pressure fail states (a lost fight ends the day, never the game); no multiplayer or live service. **Tone:** scratches, dust clouds and sticking plasters, never blood; the streets a comedy of status, the house a quiet drama. The ending is sad, then warm.
@@ -142,7 +142,22 @@ Lives 1–2 in Hidamari Lane: Mikan arrives as a kitten in the rain and becomes 
 
 The garden wall blends Explore → Home in 1.0 s (no cut). Tag-Ins retarget in 0.3 s, so a Relay reads as one move. Camera only plays Combat's shake. Options: FOV, speed, auto-centre, invert, motion comfort.
 
-**Control map** (DR-08, full table in [`ux/hud.md`](ux/hud.md) §8; all remappable; every hold has a toggle, every chord a one-button option). **Pad:** West Swat / **Attack** (3-hit string; from the air or the High Road = **Pounce**) · South Hop · East Dash / **Skitter** · North Interact (Spray, Sniff, Nap) / **Hiss**, **Pile-On** · R1 **Brace** · R2 **Whisker Sense** (1 s on a cat within 10 m discovers it) / **Slow Blink** · L2 Stalk · L1 + face Moves 1–4, L1 + R1 **Zoomies** · D-pad Tail-Up, Meow, Sit (hold = **Head Home**) / switch cats (timed = **Tag-In**) · View **Rivals** board · Menu Pause. **KB/M:** WASD + mouse, LMB, RMB, Space, Shift, E, F, Tab, Ctrl, 1–4, R, Z X C V, V/T/C/H, **J Rivals**, Esc (Pause ▸ Rivals on the street and at the Lot, never at home).
+**Control map, combat** (owner direction M1.1, final bindings; the one table, verbatim from [`gdd/combat-system.md`](gdd/combat-system.md) §3.1 and [`ux/hud.md`](ux/hud.md) §8.1; all remappable; every hold has a toggle):
+
+| Action | KB+M | Gamepad | Rule |
+|---|---|---|---|
+| Move | WASD | Left stick | Free third-person camera on the mouse / right stick |
+| **Light attack** | LMB | West | Strings (§3.2). Airborne or from the High Road it becomes a **Pounce** |
+| **Heavy attack** | RMB | North | Hold to charge |
+| **Dodge** (Skitter) | Space | South | Cancels recovery after the hit |
+| **Dash** | Shift | East | Dash → Light is a string starter (lunge). Dashing at a reachable High Road ledge mantles onto it |
+| **Lock-on** | Tab | R3 | **Not locked by default.** Press: lock the nearest enemy. Press again: if the nearest enemy is now a *different* enemy, lock that one; otherwise **unlock** (free camera) |
+| **Special** | **F** (prompt) | R1 (prompt) | Only on a **Frazzled (staggered)** enemy while Mikan's Special meter is full; shown as a context prompt (§3.6) |
+| **Skill bar** | **R** | R2 | Opens the skill bar (time slows). Commands Mikan's Moves **and forces Crew Moves** (§3.3) |
+| Pause | Esc / P | Menu | — |
+
+*(Section numbers in the Rule column are `combat-system.md`'s.)* The player controls **Mikan only**; switching (Z X C V / D-pad), Tag-In, Relay, Pile-On, Zoomies and shortcut-Move inputs are removed; Hiss and Scram are skill-bar entries.
+**Control map, exploration** (DR-08; [`ux/hud.md`](ux/hud.md) §8.2). **Pad:** West Swat · South Jump / Hop · East Dash · North Interact (Spray, Sniff, Nap) · R2 **Whisker Sense** (1 s on a cat within 10 m discovers it) · L2 Stalk · D-pad Tail-Up, Meow, Sit (hold = **Head Home**) · View **Rivals** board · Menu Pause. **KB/M:** WASD + mouse, LMB Swat, Space Jump, Shift Dash, E Interact, Tab Whisker Sense, Ctrl Stalk, V/T/C/H, **J Rivals**, Esc (Pause ▸ Rivals on the street and at the Lot, never at home).
 
 ---
 
@@ -150,25 +165,27 @@ The garden wall blends Explore → Home in 1.0 s (no cut). Tag-Ins retarget in 0
 
 *Owner: combat designer · [`gdd/combat-system.md`](gdd/combat-system.md) · frames [`02`](previews/02-combat-clash.png), [`03`](previews/03-combat-slow-blink.png), [`04`](previews/04-combat-pile-on.png)*
 
-**Fantasy.** *"I'm the boss of a gang of very different cats, and I'm conducting a brawl."* Slapstick at maximum, but every big effect answers something you did or ordered.
+**Fantasy.** *"I'm the boss of a gang of very different cats, and I'm commanding a brawl."* Slapstick at maximum, but every big effect answers something you did or ordered. **Owner direction M1.1 (2026-11-24)** is binding: [`reviews/owner-feedback/combat-m1.1-spec.md`](reviews/owner-feedback/combat-m1.1-spec.md).
 
 **Rules.**
 - **No random encounters, no scene change, no combat inside Haru's wall.** A ≈ 10 m ring forms around visible opponents.
-- You drive one Posse cat and switch instantly. Each has **one 3-hit string**, **Hop**, **Skitter** (≈ 200 ms invulnerable), **Brace** and **Hiss** (interrupts yellow; a Tough at ≤ 15% Nerve **Backs Down**). **Telegraphs:** white = dodge or Brace; yellow = Hiss; red = get out.
-- Hits fill the **Pounce Gauge** (2 Paws per cat). **Moves** cost 1–2 Paws, by shortcut or in **Slow Blink** (time ×5%; command any cat). Every Move is a **Set-up** (Ruffled, Splat, Clumped, Cowed) or a **Pay-off**. AI cats fight by **personality**, fire Set-ups only when commanded and **never target their own Kin**.
-- **Frazzle** = stagger; **Ruffled** (4 s) doubles it; **Frazzled** = 6 s helpless, damage ×1.5. **Tag-In:** switch within **0.35 s** of a finisher, Pounce or Hiss interrupt; a **Relay** chains tags within 3 s. **Pile-On:** on a Frazzled enemy with ≥ 2 Posse cats standing, everyone dives into a dust cloud.
+- **You control Mikan only**; the three Crew are always AI. Mikan has **five strings**: L-L-L · **L-L-L-H finisher** · L-H launcher · hold H charged heavy · Dash-L lunge (Heavies build Frazzle faster). **Dodge** (Skitter, ≈ 200 ms invulnerable, cancels recovery after the hit) and **Dash** (mantles onto a reachable ledge). Slower than M1 (≈ 25–30% slower movement, longer follow-through) but responsive: a Light's first active frame ≤ 3 frames, a **one-slot buffer** in the last ≈ 150 ms of an attack, a **move-out gradient** from ≈ 60% of recovery. **Telegraphs:** white = dodge; yellow = Hiss (from the skill bar); red = get out. **Lock-on** is off by default; Tab cycles.
+- Hits fill the **Pounce Gauge** (2 Paws per cat). **Moves** cost 1–2 Paws and are fired from the **skill bar** (R; time ×5%): Mikan's Moves, and **forced** Crew Moves and Hisses. Every Move is a **Set-up** (Ruffled, Splat, Clumped, Cowed) or a **Pay-off**, and every Move is **visible** (name banner, the cat's colour, a wind-up pose, its own VFX, a highlight on its plate). AI Crew fight by **personality**, fire Set-ups only when commanded and **never target their own Kin**.
+- **AI thinks like cats** (enemies and Crew): **attack tokens** let only 1–2 enemies engage Mikan at once; the rest circle, stalk, posture (arched back, tail lash, hiss), flank and feint, then dash in for a combo and back out. Personality flavours it: the Braggart struts in front, the Schemer flanks, the Fraidy hangs back and darts, the Stalwart holds ground.
+- **Frazzle** = stagger; **Ruffled** (4 s) doubles it; **Frazzled** = 6 s helpless, damage ×1.5, opened by a ≤ 0.5 s **stagger presentation** (zoom, slow-down, shattered-glass blink; full for Captains, Bosses and the first stagger per fight; within the flash limits).
+- **Special and the team finisher (Zoomies folded in).** On a Frazzled enemy with Mikan's meter full, **F** fires Mikan's **Special**: punch-in, time stop, Mikan alone over an impact-frame background (≈ 1 s), then the hit. Crew in range with full meters **chain automatically**, each with its own cut-in. If **all four** land, the **Team Pile-On** plays: the KA-BLAM dust cloud (in the spirit of Granblue Fantasy Relink's Full Burst; our art and staging). Chain ≤ ≈ 6 s, shorter after the first. A Special Routs a Frazzled Tough; on leaders, earlier is worth more.
 - **Nobody dies:** at 0 **Nerve** a cat is **Routed** and bolts. **A wipe is a loss:** the victor Gloats (≤ 3 s), any guest slips away, Day Loop ends the day (§5).
-- **Fight-start statuses:** a Boss starts **Fired Up** (×1.25 damage) by his anger: Riled 20 s, Seething 40 s, Furious all fight (paused while Soggy). A recruit with **Old Gang Nerves** that sees its Old Boss starts **Cowed** (×0.75; won't target him) for 20 s (Fraidy 30 s) unless it resists or is Sworn; **a Tag-In to it clears it**.
-- **The Nose-Touch guest:** from Life 2 a truce cat or Friend whose own **Rival** is an opponent may join after a 3 s yowl as an **allied AI guest** (no control, no Pile-On, counts toward the 10-cat cap). The opposing Rival is unchanged (G7).
+- **Fight-start statuses:** a Boss starts **Fired Up** (×1.25 damage) by his anger: Riled 20 s, Seething 40 s, Furious all fight (paused while Soggy). A recruit with **Old Gang Nerves** that sees its Old Boss starts **Cowed** (×0.75; won't target him) for 20 s (Fraidy 30 s) unless it resists or is Sworn; **a skill-bar command to it clears it**.
+- **The Nose-Touch guest:** from Life 2 a truce cat or Friend whose own **Rival** is an opponent may join after a 3 s yowl as an **allied AI guest** (cannot be commanded, never in the Special chain, counts toward the 10-cat cap). The opposing Rival is unchanged (G7).
 - **Props and Fears:** bucket (Water), scooter horn (Loud Noise), cucumber (Cucumbers). Knock-offs from the High Road always Splat. Damage numbers Off by default.
 
-**The 12 Moves** (★ = the 8 prototype Moves): Scrapper (Mikan) ★ Face Swat, ★ Scruff Toss, ★ Bunny-Kick, Shred · Bruiser ★ Shoulder Check, ★ Belly Flop, Puff Up, Sit On It · Yowler ★ Withering Hiss, Howl, ★ Purr, ★ Banshee Screech. Zoomies: Midnight Laps · Landslide · Midnight Aria. Each Style resists its own damage type (×0.8) and is weak to one (×1.2).
+**The 12 Moves** (★ = the 8 prototype Moves): Scrapper (Mikan) ★ Face Swat, ★ Scruff Toss, ★ Bunny-Kick, Shred · Bruiser ★ Shoulder Check, ★ Belly Flop, Puff Up, Sit On It · Yowler ★ Withering Hiss, Howl, ★ Purr, ★ Banshee Screech. **Specials** (the old Zoomies): Midnight Laps · Landslide · Midnight Aria. Each Style resists its own damage type (×0.8) and is weak to one (×1.2).
 
-**Numbers.** Tough 6–10 s · normal encounter 30–60 s · Captain 30–45 s · **Daifuku 2–3 min** (sim 166–176 s; costed ≈ 3–3.5 paused min) · Fed Up at 75 s. Rank Nerve ×1 / ×8 / ×20, damage 1 / 1.3 / 1.6. A basic hit ≈ 4.5% of a same-level cat's Nerve. **Feel:** one tier table T0–T5 (hit-stop 40 → 230 ms, stepped shake, impact frames, one lettered word on player-authored T4/T5). Safety overrides it (§15).
+**Numbers.** Tough 6–10 s · normal encounter 30–60 s · Captain 30–45 s · **Daifuku 2–3 min** (sim 166–176 s before M1.1; costed ≈ 3–3.5 paused min) · Fed Up at 75 s. Rank Nerve ×1 / ×8 / ×20, damage 1 / 1.3 / 1.6. A basic hit ≈ 4.5% of a same-level cat's Nerve. **The M1.1 re-baseline of fight lengths and chain values is owned by the sim's data and tests** (bands unchanged). **Feel:** one tier table T0–T5 (hit-stop 40 → 230 ms, stepped shake, impact frames, one lettered word on player-authored T4/T5). Safety overrides it (§15).
 
-**Daifuku: "knock him off into the bucket"** at whichever **patrol stop** he is on (§10); each stop is an arena kit with a knock-off edge and a water prop. Knock-offs are deterministic; three phases add Toughs (a seeded pick), a horn and a crumbling wall top. Furious raises the Posse's median Nerve lost from 52% to 61%. Each wipe plasters him −10% for the rematch and spends his anger. Hige and a recruited Togemaru stare him down; a recruited Kagi flinches until you Tag-In to him.
+**Daifuku: "knock him off into the bucket"** at whichever **patrol stop** he is on (§10); each stop is an arena kit with a knock-off edge and a water prop. Knock-offs are deterministic (the L-L-L-H finisher can do it); three phases add Toughs (a seeded pick), a horn and a crumbling wall top. Furious raises the Posse's median Nerve lost from 52% to 61%. Each wipe plasters him −10% for the rematch and spends his anger. Hige and a recruited Togemaru stare him down; a recruited Kagi flinches until you command him from the skill bar.
 
-**Worked example: a Captain's Frazzle.** Pile-On at once: 4 × (2 + 6) × 1.5 = **48 MV**; beating first then Piling On: 34; two banked Moves in the ×1.5 window, then a Pile-On: **55**. Paw management makes the Pile-On a decision.
+**Worked example: a Captain's Frazzle** (combat F5, defaults pending the sim). All four meters full, **F** at once: 4 × (4 + 6) × 1.5 + Team Pile-On 8 × 1.5 = **72 MV**; beating first, then F at the end: 58; two banked Moves in the ×1.5 window, then F: **79**. Paw management and meter management make the Special a decision.
 
 **Connects to.** Reads `RivalCombatProfile` (+ `anger_stage`, `old_gang_nerves`, `old_boss_id`, `kin_ids`); spawns the guest on `AllyJoined`; emits the encounter events (§16); owns the tier table.
 
@@ -489,6 +506,7 @@ New or easily confused terms; the full canon glossary is [`creative-brief.md`](c
 
 ## Changelog
 
+- **Owner combat direction M1.1 (2026-11-24)** — From the owner's C10 via [`reviews/owner-feedback/combat-m1.1-spec.md`](reviews/owner-feedback/combat-m1.1-spec.md) (final bindings: **F** = Special on a staggered enemy, **R** = skill bar, **Tab** = lock-on cycle). Pillar 3 is **Command the Brawl** (§1 key feature, §2). §6 control map: the one final combat table plus exploration-only bindings. §7 combat: Mikan only (Tag-In, Relay and switching removed), five strings with the L-L-L-H finisher, the responsiveness rules, attack-token cat AI, the stagger presentation, the skill bar, the F Special with the automatic Crew chain and the Team Pile-On (Zoomies folded in; Full Burst resemblance on the counsel checklist), visible Moves, Cowed cleared by a command; worked example on the chain (numbers pending the sim). Not yet amended (outside this pass): §6 camera table, §8, §9, §16, §17, §18, §20, §21 glossary.
 - **1.2 (2026-11-24)** — Owner feedback C1–C6 compiled from OR-01…OR-21, F1–F12 and brief v1.6: losing ends the day (Night, closed street, the Routed Evening); the Rivals board replaces the Fence Line (discovery, tags; staged gang scenes per C6); three Verdicts (Humble removed; Chase Off final; gated Nose-Touch with truce and join-ins); Togemaru's three endings; Boss anger, Old Gang Nerves, Fired Up/Cowed; district influence, the Boss window and patrol (Den gate removed); challengers, newcomers, town events (no seats, promotions, wall events or Stewing); rare betrayal; the unified Turf Board; Bribe tiers; `MarkApplied` and the new events; pacing re-measured (143.5 min); patent risk re-based on the full claims (v2); owner answers recorded as settled.
 - **1.1 (2026-11-24)** — The user's engine, title and art-style decisions (brief v1.4).
 - **1.0 (2026-11-24)** — First compile from the round-3 design set.

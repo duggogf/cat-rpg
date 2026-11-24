@@ -4,9 +4,9 @@
 // (SwiftShader WebGL) through window.__cat and writes PNG evidence + README.md + results.json to
 // production/qa/evidence/artifact-slice/M1/:
 //   - 10 random-pause frames (seeded fights, seeds and pause frames; bots drive the controlled cat)
-//   - a Pile-On sequence (+ contact sheet), a full-screen impact frame (T4 Rout), a Tag-In frame,
-//     Slow Blink (menu + target step), the ally guest join, Daifuku's knock-off and phase break
-//   - flash screening on a Pile-On capture: every frame at 60 fps, relative-luminance frame differencing
+//   M1.1: a stagger cinematic, the Special cut-ins and the Team finisher, the skill bar (R), three rapid clicks
+//   (latency + one-slot buffer), AI stalking, the guest, Daifuku, a 10-cat brawl, a WebM clip
+//   - flash screening on the Special-chain capture: every frame at 60 fps, relative-luminance frame differencing
 //     against the DR-50 caps (a screening tool, NOT a certified Harding test)
 //   node tools/m1-shots.mjs [--only pile,flash,...] [--no-build]
 import { createRequire } from 'node:module';
@@ -70,91 +70,115 @@ function sheet(imgs, cols, k, name) {
 }
 function rng(seed) { let a = seed | 0; return () => { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
 
-/* ---------------------------------------------------------------- 1. random-pause frames */
+/* ---------------------------------------------------------------- 1. random-pause frames (M1.1: Mikan only, the demo player bot) */
 if (want('random')) {
-  const r = rng(2026), runs = [['toughs3', 'bot'], ['toughs3', 'median'], ['sandbox', 'bot'], ['captain', 'bot'], ['challenger', 'bot'], ['daifuku', 'daifuku'], ['toughs3', 'bot'], ['sandbox', 'median'], ['captain', 'median'], ['daifuku', 'daifuku']];
+  const r = rng(2026), runs = [['toughs3', 'demo'], ['toughs3', 'demo'], ['sandbox', 'demo'], ['captain', 'demo'], ['challenger', 'demo'], ['daifuku', 'demo'], ['toughs3', 'demo'], ['sandbox', 'demo'], ['captain', 'demo'], ['daifuku', 'demo']];
   const imgs = [];
   for (let i = 0; i < runs.length; i++) {
     const [fight, script] = runs[i], seed = 1 + Math.floor(r() * 50), at = 260 + Math.floor(r() * 1200);
     const p = await open(`fight=${fight}&seed=${seed}&script=${script}`);
     const st = await ev(p, `__cat.frames(${at})`);
-    imgs.push(await shot(p, `random-${String(i + 1).padStart(2, '0')}.png`, `random pause: ${fight}, seed ${seed}, ${script} bot, frame ${at} (${st.mode}, controlled ${st.controlled})`));
+    imgs.push(await shot(p, `random-${String(i + 1).padStart(2, '0')}.png`, `random pause: ${fight}, seed ${seed}, ${script} bot, frame ${at} (${st.mode})`));
     await p.ctx.close();
   }
   sheet(imgs, 5, 4, 'random-sheet.png');
 }
 
-/* ---------------------------------------------------------------- 2. Pile-On sequence, impact frame, Tag-In */
-if (want('pile')) {
-  const p = await open('fight=toughs3&seed=7&script=bot');
-  await ev(p, `__cat.until('CatRouted')`);
-  await shot(p, 'impact-t4-rout-inversion.png', 'T4 Tough Rout: drawing 1 of the full-screen impact frame (mid tone matched to the frame mean, Ink silhouettes, effect keeps its colour), radial lines, lettered word');
-  await ev(p, '__cat.frames(4)');
-  await shot(p, 'impact-t4-rout-after.png', 'the same Rout 4 frames later: normal colours, radial focus lines (40% of the edge), the word, the routed Tough taking off');
-  await ev(p, `__cat.until('TagIn')`); await ev(p, '__cat.frames(5)');
-  await shot(p, 'tagin.png', 'Tag-In: bell-gold streak with the Relay pip, Relay chain over the plates, 0.3 s camera retarget');
-  await ev(p, `__cat.until('PileOnStart')`);
-  const seq = [];
-  for (const [n, label] of [[1, 'wipe in (halftone, drawing 1)'], [5, 'panel + full-field lines'], [12, 'cloud boiling'], [24, 'a beat'], [40, 'the target bolts out of the cloud']]) {
-    await ev(p, `__cat.frames(${n === 1 ? 1 : n - (seq.lastN || 1)})`); seq.lastN = n;
-    seq.push(await shot(p, `pileon-${String(seq.length + 1).padStart(2, '0')}.png`, `Pile-On +${n} frames: ${label}`));
+/* ---------------------------------------------------------------- 2. stagger cinematic + Special chain + Team finisher */
+if (want('chain')) {
+  const p = await open('fight=toughs3&seed=3&script=demo');
+  const st = []; 
+  await ev(p, `__cat.until('Staggered')`);
+  for (const [n, label] of [[1, 'zoom-in + shattered-glass blink, drawing 1 (Cream shard tints <= 0.16 alpha)'], [3, 'blink off (cracks only)'], [6, 'shards drift apart, time slowed'], [24, 'back to play: the F Special prompt over the staggered cat']]) {
+    await ev(p, `__cat.frames(${n - (st.lastN || 0)})`); st.lastN = n;
+    st.push(await shot(p, `stagger-${String(st.length + 1).padStart(2, '0')}.png`, `stagger cinematic +${n} frames: ${label}`));
   }
-  await ev(p, `__cat.until('PileOnEnd')`); await ev(p, '__cat.frames(2)');
-  seq.push(await shot(p, 'pileon-06.png', 'Pile-On end: one big burst drawing, the giant word, the cloud blowing apart into four puffs'));
-  await ev(p, '__cat.frames(14)');
-  seq.push(await shot(p, 'pileon-07.png', 'Pile-On reveal: the Posse over the routed target'));
-  await ev(p, '__cat.frames(70)');
-  seq.push(await shot(p, 'pileon-08.png', 'outcome card'));
-  sheet(seq, 4, 4, 'pileon-sheet.png');
+  sheet(st, 4, 4, 'stagger-sheet.png');
+  const ch = [];
+  await ev(p, `__cat.until('SpecialChainStart')`);
+  const info = await ev(p, `JSON.stringify(__cat.events('SpecialChainStart'))`);
+  for (let k = 0; k < 4; k++) {
+    const ok = await ev(p, `__cat.until('SpecialCutIn', 600, ${k})`); if (!ok.ok) break;
+    await ev(p, '__cat.frames(2)'); ch.push(await shot(p, `special-cutin-${k + 1}a.png`, `Special cut-in ${k + 1}: halftone wipe / band sliding in`));
+    await ev(p, '__cat.frames(16)'); ch.push(await shot(p, `special-cutin-${k + 1}b.png`, `Special cut-in ${k + 1}: held (time stopped; only this cat over the impact-frame panel, its colour value-matched to the frame)`));
+  }
+  const tf = await ev(p, `__cat.until('TeamFinisher', 600)`);
+  if (tf.ok) { await ev(p, '__cat.frames(14)'); ch.push(await shot(p, 'team-finisher-1.png', 'Team finisher (all four landed): the Pile-On cloud, each cat one beat with its face and word'));
+    await ev(p, '__cat.frames(30)'); ch.push(await shot(p, 'team-finisher-2.png', 'Team finisher: a later beat')); }
+  await ev(p, `__cat.until('SpecialChainEnd', 600)`); await ev(p, '__cat.frames(6)');
+  ch.push(await shot(p, 'team-finisher-3.png', 'chain end: KA-BLAM, the cloud blows apart'));
+  sheet(ch, 4, 4, 'special-chain-sheet.png');
+  R.chain = { start: JSON.parse(info), teamFinisher: tf.ok };
   await p.ctx.close();
 }
 
-/* ---------------------------------------------------------------- 3. Slow Blink */
-if (want('slowblink')) {
-  // nobody drives Mikan (the Posse AI fights); run until she banks a Paw, then open Slow Blink
+/* ---------------------------------------------------------------- 3. skill bar (R) */
+if (want('skillbar')) {
   const p = await open('fight=captain&seed=3');
   for (let i = 0; i < 80; i++) {
-    const ok = await ev(p, `(() => { __cat.frames(30); const s = __cat.snapshot(); const m = s.entities.find(e => e.id === 'mikan'); return s.mode === 'fight' && m && !m.routed && m.paws - m.paws_reserved >= 1 && !s.pile_on; })()`);
+    const ok = await ev(p, `(() => { __cat.frames(30); const s = __cat.snapshot(); const m = s.entities.find(e => e.id === 'mikan'); return s.mode === 'fight' && m && !m.routed && m.paws - m.paws_reserved >= 1; })()`);
     if (ok) break;
   }
-  await ev(p, '__cat.inject({ slowBlink: true })'); await ev(p, '__cat.frames(16)');
-  await shot(p, 'slowblink-menu.png', 'Slow Blink: time x5%, lifted three-quarter view, grade -30% sat / -10% value, the command menu with Move costs, Set-up / Pay-off diamonds, props highlighted');
+  await ev(p, '__cat.inject({ skillBar: true })'); await ev(p, '__cat.frames(16)');
+  await shot(p, 'skillbar-menu.png', 'skill bar (R): time slowed, the low view behind Mikan, Move costs, Q/E to pick a crew cat and force its skill');
+  await ev(p, `__cat.menu('nextCat')`); await ev(p, '__cat.frames(2)');
+  await shot(p, 'skillbar-crew.png', 'skill bar on a crew cat: forcing its skill');
   await ev(p, `__cat.menu('confirm')`); await ev(p, '__cat.frames(2)');
-  await shot(p, 'slowblink-target.png', 'Slow Blink target step: bell-gold brackets on the target; a Pay-off whose condition the target meets lights in the menu');
-  await ev(p, `__cat.menu('confirm')`); await ev(p, '__cat.frames(2)');
-  await shot(p, 'slowblink-queued.png', 'command queued: the menu moves to the next cat that can afford a Move; the queued pom shows on the plate');
+  await shot(p, 'skillbar-target.png', 'target step: brackets on the target cat');
+  await ev(p, `__cat.menu('confirm')`); await ev(p, '__cat.frames(2)'); await ev(p, '__cat.inject({ skillBar: true })'); await ev(p, '__cat.frames(40)');
+  await shot(p, 'skillbar-cast.png', 'the forced skill: name banner in the cat colour, wind-up, plate highlight');
+  await p.ctx.close();
+}
+
+/* ---------------------------------------------------------------- 3b. three rapid clicks: latency and the one-slot buffer */
+if (want('latency')) {
+  const p = await open('fight=toughs3&seed=7');
+  await ev(p, '__cat.frames(200)');
+  // walk Mikan to her nearest enemy, then three light presses 4 ticks apart
+  await ev(p, `(() => { for (let i = 0; i < 240; i++) { const s = __cat.snapshot(); const c = s.entities.find(e => e.controlled), t = s.entities.filter(e => e.side === 'enemy' && !e.routed).sort((a, b) => Math.hypot(a.pos[0]-c.pos[0], a.pos[2]-c.pos[2]) - Math.hypot(b.pos[0]-c.pos[0], b.pos[2]-c.pos[2]))[0]; const d = Math.hypot(t.pos[0]-c.pos[0], t.pos[2]-c.pos[2]); if (d < 1.2) break; __cat.inject({ move: [t.pos[0]-c.pos[0], t.pos[2]-c.pos[2]] }); __cat.frames(1); } })()`);
+  const t0 = (await ev(p, '__cat.state()')).tick;
+  const imgs = [];
+  for (let k = 0; k < 3; k++) { await ev(p, '__cat.inject({ light: true })'); await ev(p, '__cat.frames(1)'); if (k === 0) { await ev(p, '__cat.frames(2)'); imgs.push(await shot(p, 'latency-click1-plus3.png', 'click 1, +3 ticks: the light hit is on screen')); await ev(p, '__cat.frames(1)'); } else await ev(p, '__cat.frames(3)'); }
+  await ev(p, '__cat.frames(70)');
+  imgs.push(await shot(p, 'latency-after.png', 'after three rapid clicks: one or two hits landed, not three queued'));
+  const log = await ev(p, `JSON.stringify(__cat.latency().filter(x => x.tick >= ${t0}))`);
+  R.latency = { pressTicks: [t0 + 1, t0 + 5, t0 + 9], log: JSON.parse(log) };
+  console.log('latency', log);
+  await p.ctx.close();
+}
+
+/* ---------------------------------------------------------------- 3c. AI stalking: cats squaring off */
+if (want('stalk')) {
+  const p = await open('fight=sandbox&seed=4');
+  const imgs = [];
+  await ev(p, '__cat.frames(230)');
+  for (let k = 0; k < 4; k++) { await ev(p, '__cat.frames(40)'); imgs.push(await shot(p, `stalk-${k + 1}.png`, `AI intents (+${40 * (k + 1)} frames, player idle): circling, stalking, posturing (arched puff, hiss), flanking, dash-in`)); }
+  R.intents = JSON.parse(await ev(p, `JSON.stringify(__cat.debug().cats.map(c => c.id + ':' + c.intent))`));
+  sheet(imgs, 4, 4, 'stalk-sheet.png');
   await p.ctx.close();
 }
 
 /* ---------------------------------------------------------------- 4. guest + Daifuku */
 if (want('guest')) {
-  const p = await open('fight=challenger&seed=4&script=bot');
+  const p = await open('fight=challenger&seed=4&script=demo');
   await ev(p, `__cat.until('GuestEntered')`); await ev(p, '__cat.frames(40)');
-  await shot(p, 'guest-join.png', 'challenger + Stray with the Nose-Touch guest: dashed gold guest plate above the stack (no glyph, no Paws), sprig tick, identity ribbon');
+  await shot(p, 'guest-join.png', 'challenger with the Nose-Touch guest: dashed-gold guest plate, sprig tick');
   await p.ctx.close();
 }
 if (want('daifuku')) {
-  const p = await open('fight=daifuku&seed=7&script=daifuku');
+  const p = await open('fight=daifuku&seed=7&script=demo');
   await ev(p, '__cat.frames(150)');
   await shot(p, 'daifuku-standoff.png', 'Daifuku Standoff: name-card slam, speed-line bands, push-in');
-  await ev(p, '__cat.frames(90)');
-  await shot(p, 'daifuku-wall.png', 'Daifuku on his yard wall over the wash tub: identity ribbon with 3-phase Nerve, anger puffs (Furious) and the Fired Up pom');
-  await ev(p, `__cat.until('KnockOff')`); await ev(p, '__cat.frames(8)');
-  await shot(p, 'daifuku-knockoff.png', 'knock-off: Hige shoves Daifuku off the wall toward the tub');
-  await ev(p, `__cat.until('BossLanded')`); await ev(p, '__cat.frames(6)');
-  await shot(p, 'daifuku-tub.png', 'he lands in the tub: opaque cream-and-cyan blob splat, dust and crack decal');
-  await ev(p, `__cat.until('PhaseBreak')`); await ev(p, '__cat.frames(1)');
-  await shot(p, 'daifuku-phasebreak-1.png', 'phase break (T5): impact frame, giant word');
-  await ev(p, '__cat.frames(24)');
-  await shot(p, 'daifuku-phasebreak-2.png', 'phase break +25 frames');
-  await ev(p, `__cat.until('EncounterEnded')`); await ev(p, '__cat.frames(90)');
-  await shot(p, 'daifuku-flees.png', 'phase-1 cap: Daifuku bolts for the Den (rival_fled)');
+  await ev(p, '__cat.frames(120)');
+  await shot(p, 'daifuku-wall.png', 'Daifuku on his yard wall over the wash tub, the free third-person camera');
+  await ev(p, `__cat.until('Staggered', 4000)`); await ev(p, '__cat.frames(2)');
+  await shot(p, 'daifuku-stagger.png', 'Daifuku staggered: the full stagger treatment');
   await p.ctx.close();
 }
 
 /* ---------------------------------------------------------------- 4b. 10-cat brawl triangle budget (0.5 M) */
 if (want('brawl')) {
-  const p = await open('fight=brawl10&seed=5&script=bot');
+  const p = await open('fight=brawl10&seed=5&script=demo');
   const samples = [];
   for (let i = 0; i < 8; i++) { const st = await ev(p, '__cat.frames(150)'); if (st.mode === 'fight') samples.push({ tick: st.tick, calls: st.stats.calls, triangles: st.stats.triangles }); }
   await shot(p, 'brawl10.png', '10-cat brawl (Mikan + 3 vs 6) for the triangle budget');
@@ -168,34 +192,34 @@ if (want('brawl')) {
 if (want('clip')) {
   const W = 960, H = 540, dir = path.join(OUT, '.clip'); fs.mkdirSync(dir, { recursive: true });
   for (const f of fs.readdirSync(dir)) fs.unlinkSync(path.join(dir, f));
-  const p = await open('fight=toughs3&seed=7&script=bot', { w: W, h: H });
-  // ~7 s around the first Tough Rout (impact frame, word, shake), at a fixed 60 fps
-  const st = await ev(p, `__cat.until('CatRouted')`); await p.ctx.close();
-  const q = await open('fight=toughs3&seed=7&script=bot', { w: W, h: H });
+  const p = await open('fight=toughs3&seed=3&script=demo', { w: W, h: H });
+  // ~10 s up to and through the first Special chain (strings, stagger, cut-ins, Team finisher), at a fixed 60 fps
+  const st = await ev(p, `__cat.until('SpecialChainStart')`); await p.ctx.close();
+  const q = await open('fight=toughs3&seed=3&script=demo', { w: W, h: H });
   await ev(q, `__cat.frames(${Math.max(1, st.tick - 300)})`);
-  for (let i = 0; i < 420; i++) { await ev(q, '__cat.frames(1)'); fs.writeFileSync(path.join(dir, `f${String(i).padStart(4, '0')}.png`), await q.screenshot()); }
+  for (let i = 0; i < 600; i++) { await ev(q, '__cat.frames(1)'); fs.writeFileSync(path.join(dir, `f${String(i).padStart(4, '0')}.png`), await q.screenshot()); }
   await q.ctx.close();
   const { execFileSync } = await import('node:child_process');
   execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-framerate', '60', '-i', path.join(dir, 'f%04d.png'), '-c:v', 'libvpx-vp9', '-b:v', '2M', '-pix_fmt', 'yuv420p', path.join(OUT, 'fight-clip.webm')]);
   for (const f of fs.readdirSync(dir)) fs.unlinkSync(path.join(dir, f)); fs.rmdirSync(dir);
-  console.log('clip fight-clip.webm (420 frames @ 60 fps)');
+  console.log('clip fight-clip.webm (600 frames @ 60 fps)');
 }
 
 /* ---------------------------------------------------------------- 5. flash screening on a Pile-On capture */
 if (want('flash')) {
   const W = 480, H = 270;
-  const p = await open('fight=toughs3&seed=7&script=bot', { w: W, h: H });
-  // start 2 s before the Pile-On (includes the preceding hits) and run 2.5 s past its end
-  await ev(p, `(() => { const r = __cat.until('PileOnStart'); return r; })()`);
+  const p = await open('fight=toughs3&seed=3&script=demo', { w: W, h: H });
+  // start 2 s before the Special chain (stagger, hits) and run through the cut-ins and the Team finisher
+  await ev(p, `(() => { const r = __cat.until('SpecialChainStart'); return r; })()`);
   const startTick = (await ev(p, '__cat.state()')).tick;
   // rewind is impossible: re-open and stop 120 frames earlier
   await p.ctx.close();
-  const q = await open('fight=toughs3&seed=7&script=bot', { w: W, h: H });
+  const q = await open('fight=toughs3&seed=3&script=demo', { w: W, h: H });
   const pre = Math.max(0, startTick - 120 - 2);
   await ev(q, `__cat.frames(${pre})`);
   const lin = (c) => { c /= 255; return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); };
   const LUT = new Float32Array(256); for (let i = 0; i < 256; i++) LUT[i] = lin(i);
-  const frames = [], N = 120 + 150 + 150;
+  const frames = [], N = 120 + 360 + 120;
   let prevL = null, prevRed = null;
   for (let i = 0; i < N; i++) {
     await ev(q, '__cat.frames(1)');
@@ -240,6 +264,9 @@ const merged = { ...prev, date: new Date().toISOString().slice(0, 10) };
 if (R.shots.length) { const keep = (prev.shots || []).filter((s) => !R.shots.some((x) => x.name === s.name)); merged.shots = keep.concat(R.shots).sort((a, b) => a.name.localeCompare(b.name)); }
 if (R.flash) merged.flash = R.flash;
 if (R.brawl) merged.brawl = R.brawl;
+if (R.chain) merged.chain = R.chain;
+if (R.latency) merged.latency = R.latency;
+if (R.intents) merged.intents = R.intents;
 fs.writeFileSync(path.join(OUT, 'results.json'), JSON.stringify(merged, null, 1));
 const errs = (merged.shots || []).flatMap((s) => s.errors || []);
 console.log('wrote', OUT, errs.length ? `ERRORS: ${errs.length}` : 'no page errors');

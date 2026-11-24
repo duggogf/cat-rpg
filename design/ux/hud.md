@@ -2,6 +2,7 @@
 
 *Owner: ux-designer · Date: 2026-11-23, revised 2026-11-24 (owner feedback pass; consistency pass by the creative director) · Status: round-2 slice rewrite (the first draft is archived at `design/backlog/first-drafts/hud.md`)*
 *Canon: owner comments C1–C5 → `design/reviews/owner-feedback-rulings.md` (OR-xx, binding), as settled by `design/reviews/owner-feedback/consistency-pass.md` → `design/creative-brief.md` v1.6 → `design/reviews/round-1/director-rulings.md` (DR-xx). Patent guardrails: `design/legal/nemesis-patent-analysis.md` v2 §5. Where this doc and a ruling disagree, the ruling wins and this doc is wrong.*
+*Owner combat direction M1.1 (2026-11-24): `design/reviews/owner-feedback/combat-m1.1-spec.md` is binding for the combat HUD and the combat control map (player controls Mikan only; **F** = Special prompt on a staggered enemy, **R** = skill bar, **Tab** = lock-on cycle).*
 *Companions: `design/ux/key-screens.md` (Rivals board, Rival card, Verdict and loss, Turf Board, Crew, onboarding) and `design/accessibility-requirements.md` (the project-wide floor every element here must meet).*
 
 **Scope.** The slice HUD for the three contexts of Lives 1–2: **street** (exploration), **combat** and **home**, under the **third-person camera behind the cat** (brief §4.1, DR-48). It also holds the **control map** (DR-08; UX owns the map, Combat owns the actions). It does not define any system rule: every value shown here is read from the owning system.
@@ -13,7 +14,7 @@
 There are three HUDs because there are three ways of being a cat:
 
 - **On the street, the world is the interface.** Scent wisps on the Scent Post, the sun over the roofline, a Rival's posture. The screen holds one small dial and nothing else unless asked.
-- **In a brawl, the HUD is a conductor's score.** The player directs four cats; the HUD may be dense, but it lives in the **corners**, keeps the **bottom-centre clear**, and puts the stagger decision **on the enemy**, where the eye already is.
+- **In a brawl, the HUD is a commander's board.** The player fights as Mikan and commands three AI cats; the HUD may be dense, but it lives in the **corners**, keeps the **bottom-centre clear**, and puts the stagger decision **on the enemy**, where the eye already is.
 - **At home, there is no interface.** No panels, bars, numbers, clocks or system text inside Haru's wall. Pictograms only (hearts, Sense Icons, the Call glyph), plus one licensed exception: the Doorstep Morning Sniff (DR-24).
 
 The HUD **falls away at the garden wall over 800 ms** and returns when Mikan crosses it outward. That disappearance is a designed Pillar 2 beat, not a side effect.
@@ -30,13 +31,13 @@ The HUD **falls away at the garden wall over 800 ms** and returns when Mikan cro
 
 ## 2. The camera and the frame
 
-Third-person, behind and above (DR-48): explore ≈ 3 m back / 1 m up; combat pulls to ≈ 6–8 m to frame the controlled cat and its lock target; Slow Blink lifts to a tactical three-quarter view; home is the same camera at 0.3–0.6 m.
+Third-person, behind and above (DR-48): explore ≈ 3 m back / 1 m up; combat sits ≈ 3.8 m behind Mikan, free by default and locked only on Tab (`camera-system.md` §3.2, §3.5); the skill bar pushes in low behind the cat; home is the same camera at 0.3–0.6 m.
 
 Consequences for the HUD:
-- The controlled cat sits in the lower-middle of the frame and is large (≈ 10–20% of screen height exploring; ≈ 18% at default, ≥ 6.7% in combat). All world-anchored marker sizes assume Art's **one global cat scale, 1.25× a real cat (≈ 0.56 m)** (`art-bible.md` §3.4, `camera-system.md` §4.1). **The bottom-centre band (middle 40% width, bottom 25% height) is a permanent keep-out** for screen-anchored elements; it belongs to the cat, hint cards and accessibility cues.
+- Mikan sits in the lower-middle of the frame and is large (≈ 10–20% of screen height exploring; ≥ 20% in combat). All world-anchored marker sizes assume Art's **one global cat scale, 1.25× a real cat (≈ 0.56 m)** (`art-bible.md` §3.4, `camera-system.md` §4.1). **The bottom-centre band (middle 40% width, bottom 25% height) is a permanent keep-out** for screen-anchored elements; it belongs to the cat, hint cards and accessibility cues.
 - The **centre 40% of the screen** never holds a persistent screen-anchored element.
 - The old top-down "ring under the corner panels" problem (UX-2.1) is moot: the ring is now in depth, ahead of the camera. The corners are genuinely free.
-- **Edge arrows** (Combat/Camera own the rule) point to off-screen Posse cats (bell-gold, with the cat's D-pad glyph) and off-screen attackers (Clowder colour, with a halftone pulse when a telegraph is winding up).
+- **Edge arrows** (Combat/Camera own the rule) point to off-screen Posse cats (bell-gold, with the cat's portrait pip) and off-screen attackers (Clowder colour, with a halftone pulse when a telegraph is winding up).
 
 ### 2.1 Zone map (all contexts)
 
@@ -51,13 +52,13 @@ Consequences for the HUD:
 |                     . . . centre 40%: no persistent HUD . . .            |
 |                                                                          |
 |                                                                          |
-| BL  Posse plates (combat)     BC  KEEP-OUT: hint cards,     BR  Zoomies  |
-|     Slow Blink menu               Head Home prompt,            pom,      |
-|     shortcut diamond              accessibility cues           tallies   |
+| BL  Posse plates (combat)     BC  KEEP-OUT: hint cards,     BR  Mikan's  |
+|     skill bar (R)                 Head Home prompt,            Special   |
+|                                   accessibility cues           pom, tally|
 +--------------------------------------------------------------------------+
 ```
 
-**Draw order** (back to front): world → VFX and dust → glyph bursts and lettered words → enemy outlines and telegraph decals → overhead bars, Frazzle ring, lock mark → controlled-cat marker → damage numerals → screen-anchored panels. A screen-wide effect never draws over the last four.
+**Draw order** (back to front): world → VFX and dust → glyph bursts and lettered words → enemy outlines and telegraph decals → overhead bars, Frazzle ring, lock mark, Special prompt → Mikan's marker → damage numerals → screen-anchored panels. A screen-wide effect never draws over the last four.
 
 ---
 
@@ -73,7 +74,7 @@ Consequences for the HUD:
 | **Rivals chip** | TR, under the phase dial | The Rivals board icon + the cat's chip (silhouette until met) + View glyph. Pressing View opens the board on that cat's scene, focused on it (`key-screens.md` §2.9) | 4 s after a key event (discovery, Verdict, first join-in); never in combat, at home or on the walk home | UX |
 | **Roaming-Boss call** | Edge ring toward the Boss's stop | A crown pom with a yowl contour (the Boss's sting, drawn) pointing to his current patrol stop | 3 s when the Boss window opens and at each phase change while it is open (he moves stop), current district only; the persistent cue is the compass tick (§3.2) | Territory (window), Nemesis (stop) |
 | **Caterwaul flare** | TL + edge arrow | Distress-yowl pom, Patch stamp, **shrinking ring = time left** | While the raid is defendable; current district only (DR-17) | Territory |
-| **Ambush sting flare** | Edge ring, direction of the attacker | Jagged pom + a 2.0 s draining arc; the last 0.75 s turns Ink (the Skitter/Brace window) | During a Rival Ambush (DR-36) | Combat |
+| **Ambush sting flare** | Edge ring, direction of the attacker | Jagged pom + a 2.0 s draining arc; the last 0.75 s turns Ink (the Dodge window) | During a Rival Ambush (DR-36) | Combat |
 | **Call glyph** | Edge ring toward the singer | Three smooth Haru-Yellow arcs drawn as the Call's contour, Ink-outlined | When the Call sounds (always on; DR-54) | Audio / Narrative |
 | **Head Home prompt** | BC (just above the cat) | Bell-gold paw on a thread + D-pad Down hold glyph | First 4 s after the Dusk Call, and while drowsy | Day loop |
 | **Interact prompt** | World-anchored at the object | North / E glyph + a verb pictogram (Spray puff, Sniff nose, Nap zZ) | In range; Spray only when the post is below Strong (DR-18) | Territory / Day loop |
@@ -178,29 +179,30 @@ Before the cat flap (Lives 1–2 up to L2D2 Dusk) the same HUD plays over the st
 
 ## 4. Combat HUD
 
-Goal: under T4/T5 VFX, shake and dust, the player must always find (1) the controlled cat, (2) the Frazzle window, (3) who can act, (4) the incoming red telegraph. Everything else is secondary.
+Goal: under T4/T5 VFX, shake and dust, the player must always find (1) Mikan, (2) the Frazzle (stagger) window and whether **F** is ready, (3) who can act, (4) the incoming red telegraph. Everything else is secondary.
 
 ### 4.1 Elements
 
 | Element | Zone | Shows | Rules |
 |---|---|---|---|
-| **Posse plates** (×4) | BL, stacked | One bean plate per cat: portrait, D-pad glyph, Nerve bar, **2 Paw pips** (partial fill visible), 1 status pom (Soggy / Cowed / Fired Up, max 1, DR-28; see §4.1.1), queued-command pom | **Fixed order by slot = D-pad order: Up (Mikan), Left (Crew 1), Down (Crew 2), Right (Crew 3).** Rows never reorder. The controlled cat's plate enlarges in place (×1.3) and gains the hiss-mouth pom. Routed cat: plate halftoned, portrait flattened, glyph struck through |
-| **Hiss pom** | On the controlled plate | Hiss-mouth icon that refills over the 8 s cooldown | Glows when a yellow telegraph is live and Hiss is ready |
-| **"Can act" bell** (conductor cue) | On each Crew plate | A small pad-bell lights when that cat can afford a Move (≥ 1 Paw) | The cue is the cat's D-pad direction plus the bell, not a command-button glyph (CX-C1) |
-| **Shortcut diamond** | Beside the controlled plate | Four Move icons at W/N/E/S with Paw cost pips, Set-up/Pay-off mark | Appears only while L1 is held. Life 1 shows it after the first Slow Blink lesson; never shown otherwise |
-| **Zoomies pom** (limit gauge) | BR | A round pom filling clockwise; Style icon in the centre; at full it bursts a crown and shows the L1+R1 / R glyph | Persists within a day; Well-Fed start shows as pre-filled segments with a small sun stamp, no status icon (DR-20) |
-| **Controlled-cat marker** | World, on the cat | Bell over the head (replaces its chevron) + Combat's ground ring | One overhead mark per Posse cat: allies keep the bell-gold chevron tick |
+| **Posse plates** (×4) | BL, stacked | One bean plate per cat: portrait in the cat's **colour** (Combat §3.3), Nerve bar, **2 Paw pips** (partial fill visible), a **Special meter ring** round the portrait, 1 status pom (Soggy / Cowed / Fired Up, max 1, DR-28; see §4.1.1), queued-command pom. **No control keys** (M1.1: the player controls Mikan only) | **Fixed order by slot: Mikan, Crew 1, Crew 2, Crew 3** (the skill bar's row order). Rows never reorder. Mikan's plate is always the large one (×1.3) and carries the hiss pom. Routed cat: plate halftoned, portrait flattened, ring emptied |
+| **Move highlight** | On the acting cat's plate | The plate's keyline lights in the cat's colour with the Move's icon for the Move's duration | Every Move, commanded or AI (Combat §3.3, M1.1 §7) |
+| **Hiss pom** | On Mikan's plate | Hiss-mouth icon that refills over the 8 s cooldown | Glows when a yellow telegraph is live and Hiss is ready; Hiss is fired from the skill bar (R) |
+| **"Can act" bell** (command cue) | On each Crew plate | A small pad-bell lights when that cat can afford a Move (≥ 1 Paw) | Read as "open the skill bar (R) and command this cat"; no control key on the plate |
+| **Special meter** | Ring round each plate portrait; **Mikan's also as the BR pom** | Fills clockwise (Combat F8). At full: the ring gets a crown notch; Mikan's BR pom bursts a crown and shows the **F** glyph (from the binding) | Persists within a day; Well-Fed start shows as pre-filled segments with a small sun stamp, no status icon (DR-20). Crew meters say who will **chain** |
+| **Lock-on indicator** | World, on the locked enemy + a small lock pip on its overhead bar | A bell-gold bracket mark; absent when unlocked (the default) | Tab cycle (Combat §3.1): lock nearest / switch to a new nearest / unlock. Releases without jumping when the target is Routed or leaves the ring |
+| **Mikan's marker** | World, on Mikan | Bell over the head (replaces the chevron) + Combat's ground ring | One overhead mark per Posse cat: Crew keep the bell-gold chevron tick |
+| **Move name banner** | World, over the acting cat | The Move's name on a small slanted strip in the cat's colour, ≈ 1.2 s | Every Move (Combat §3.3, M1.1 §7); max 2 on screen (newest wins; commanded Moves first); never over Mikan's ring or a telegraph |
 | **Enemy overhead bar** | World, over the enemy | Thin Nerve bar + **zigzag Frazzle bar** beneath it | Shown on the lock target, on any enemy hit in the last 3 s, and on any Frazzled enemy; otherwise hidden. Handheld: non-target bars drop first |
-| **Frazzled ring** | World, around the Frazzled enemy | Countdown ring over the 6 s window; on Captains and the Boss, **5 pips** that drain as the window passes (earlier Pile-On = worth more, DR-30) | No numeral, ever. Trash shows the ring without pips (Pile-On always Routs below Captain) |
-| **Pile-On prompt** | World, over the Frazzled enemy | North / F glyph inside a dust-cloud pom | Appears only when the Pile-On is legal (≥ 2 standing Posse cats; trash: 2+ Frazzled within 3 m or the last enemy). **No world text**: the word "Pile-On" is taught by a BC hint card |
+| **Frazzled ring** | World, around the Frazzled (staggered) enemy | Countdown ring over the 6 s window; on Captains and the Boss, **5 pips** that drain as the window passes (earlier Special = worth more, Combat F5) | No numeral, ever. Trash shows the ring without pips (a Special always Routs below Captain) |
+| **Special prompt** | World, over the Frazzled enemy | **F** / R1 glyph (from the binding) inside a starburst pom; the Crew portraits whose meters are full sit as small faces round it (who will chain; four faces = Team Pile-On) | Appears only on a Frazzled enemy while Mikan stands with a full meter (Combat §3.6). The word "Special" shows on its first 3 showings, then the glyph only |
 | **Identity ribbon** | TC | Slanted Clowder banner, name, Title, role mark (Tough 1 claw, Captain 2, Boss crown), ≤ 3 known Fear/Strength stamps, storm mark on the arc lead (*Sworn Enemy / Sworn Rival*), Old Score stamp if active, **1 status pom** (Fired Up from anger, §4.1.1). Boss: **segmented Nerve bar (3 phases)** and his **anger puffs** (0–3) beside the name | **Named Rivals, Captains and Daifuku only.** Strays and Crows get no ribbon. It is the Standoff name-card shrinking into place (one component) |
 | **Red callout** | Docked under the identity ribbon | Telegraph pictogram (zigzag) for a Captain's or Boss's red move | Never over the cat; no text |
-| **Telegraphs** | World decals + overhead glyph | White = dodge (solid ring), yellow = Hiss it (Paper Cream dashed + triangle), red = get out (Frazzle Magenta zigzag edge) | Owned by Combat/Art; render above the Pile-On dust |
+| **Telegraphs** | World decals + overhead glyph | White = dodge (solid ring), yellow = Hiss it (Paper Cream dashed + triangle), red = get out (Frazzle Magenta zigzag edge) | Owned by Combat/Art; render above the Team Pile-On dust |
 | **Damage numerals** | World | Size by hit tier, not magnitude. Weakness and resistance read from the **spark shape** (Art §10.3: extra crack wedge / blunted spark), not the numeral frame | Default **Off** in the slice (R3; the manga feel lives in glyphs and the single lettered word); options Off / Big hits (player-authored T3+) / All. AI basic hits never show. Multi-hits merge. Max 6 on screen |
-| **Lettered onomatopoeia** | World-anchored | One hand-lettered word at T4 (≈ 12% height) / T5 (≈ 30%) | Max one on screen; never over the controlled cat or the HUD (DR-49); T5 giant word only while the HUD is hidden for the cinematic |
+| **Lettered onomatopoeia** | World-anchored | One hand-lettered word at T4 (≈ 12% height) / T5 (≈ 30%) | Max one on screen; never over Mikan or the HUD (DR-49); T5 giant word only while the HUD is hidden for the cinematic |
 | **Bark balloon** | World | Fight barks are **icon-only** (DR-44); the Old Score bark and Standoff lines are text | One at a time |
-| **Tag-In cue** | Crew plates + world | See §4.3 | — |
-| **Relay chain** | Above the plate stack | Up to 4 cat-face poms lighting in order; 3 s drain line | Only during a Relay |
+| **Chain strip** | Above the plate stack | Up to 4 cat-face poms lighting in fire order during a Special chain; all four lit = the Team Pile-On stamp | Only during a chain (HUD otherwise hidden for the cut-ins, §4.5) |
 | **Ally guest plate** (Nose-Touch join-in) | BL, **above** the plate stack, separate from it | See §4.1.2 | Only while a truce cat or Friend fights beside the Posse (OR-13) |
 
 #### 4.1.1 Cowed and Fired Up from the Rivals rules
@@ -209,7 +211,7 @@ Both reuse Combat's existing statuses and the one status pom (no new HUD element
 
 | State | Where | Shows | Clears |
 |---|---|---|---|
-| **Cowed by Old Gang Nerves** (OR-06) | The recruit's own Posse plate | The Cowed pom (drooped ears) with a **small crown-with-a-nick badge** (its Old Boss) and a **drain ring** for the 20 s (Fraidy 30 s). The plate's D-pad glyph pulses gently: the answer is a Tag-In | **Tag-In to that cat** clears it at once: the pom pops off with a bell tick and the cat's own "steeled" bark. Or the ring runs out |
+| **Cowed by Old Gang Nerves** (OR-06) | The recruit's own Posse plate | The Cowed pom (drooped ears) with a **small crown-with-a-nick badge** (its Old Boss) and a **drain ring** for the 20 s (Fraidy 30 s). The plate's "can act" bell pulses gently: the answer is a command | **A skill-bar command to that cat** clears it at once: the pom pops off with a bell tick and the cat's own "steeled" bark. Or the ring runs out |
 | The flinch itself | World, at the Standoff | The recruit's ears flatten and it flinches; its **own** line in its balloon ("…That's Daifuku's wall."). A resisting cat instead plays its own defiant line ("Not your cat anymore.") and gets no pom | — |
 | **Fired Up from Boss anger** (OR-07) | The Boss's identity ribbon | The Fired Up pom (puffed chest) with his **steam-puff badge** (1–3 puffs = Riled / Seething / Furious) and a drain arc for 20 s / 40 s; **no arc when Furious** (all fight) | Runs out, or the fight ends. After any win, loss or `rival_fled` his ribbon's puffs empty on the next Standoff (anger spent) |
 
@@ -218,14 +220,14 @@ Both reuse Combat's existing statuses and the one status pom (no new HUD element
 #### 4.1.2 The ally guest plate (Nose-Touch join-in, OR-13)
 
 - **Arrival:** a 3 s yowl from off-screen; an **edge arrow** with the sprig icon points where it comes from; then the plate pops in above the stack and the cat leaps into the ring.
-- **The plate:** a smaller bean (×0.8) with a **dashed Bell-Gold keyline** (allied, not yours), the cat's chestnut portrait with its **truce sprig**, its name ribbon, a Nerve bar. **No D-pad glyph, no Paw pips, no "can act" bell, no command pom:** it cannot be switched to, commanded or join a Pile-On, and the plate says so by what it lacks.
+- **The plate:** a smaller bean (×0.8) with a **dashed Bell-Gold keyline** (allied, not yours), the cat's chestnut portrait with its **truce sprig**, its name ribbon, a Nerve bar. **No Paw pips, no Special ring, no "can act" bell, no command pom:** it cannot be commanded or join the Special chain, and the plate says so by what it lacks.
 - **In the world:** a sprig tick over its head instead of the Posse chevron, and the same dashed gold keyline, so it never reads as a sage-outlined enemy (colour twin: the dashed line and the sprig shape).
-- **Slow Blink:** it is not in the L1/R1 cycle; it shows in the tactical view with its sprig tick only.
+- **Skill bar:** it has no row; it shows in the world with its sprig tick only.
 - **Routed:** its plate halftones and slides off after 1.5 s.
 - **The opposing Rival:** nothing on its ribbon, outline or overhead changes (G7). No tag or line ties the two on screen in combat.
 - **Max one guest** per encounter (OR-13).
 
-**Rule of no world text (UX-2.5, as ruled; R3):** in real-time combat the only world-space text is **one bark balloon plus one lettered word** (Combat §3.17). Damage numerals are added only if the player turns them on. Ally Move ribbons are cut; the cut-in and VFX carry them.
+**Rule of no world text (UX-2.5, as ruled; R3):** in real-time combat the only world-space text is **one bark balloon, one lettered word, Move name banners and the Special prompt's word on its first 3 showings** (Combat §3.17; M1.1 §7 restores Move names because abilities were barely visible in M1). Damage numerals are added only if the player turns them on.
 
 ### 4.2 Wireframe — combat, real time (1080p)
 
@@ -241,17 +243,18 @@ Both reuse Combat's existing statuses and the one status pom (no new HUD element
 |                          ( >.< )      + cream rim                        |
 |                                                                          |
 |          ^ chevron              (bell)                  ^ chevron        |
-|         Crew 1                  /\_/\  <- controlled    Crew 3           |
+|         Crew 1                  /\_/\  <- Mikan         Crew 3           |
 |                                ( o.o )    ground ring                    |
 |+-----------------------+                                      .--.      |
-|| ^ [Mikan ] ===== oo  )|                                     ( ** )     |
+||  (M)[Mikan ] ===== oo )|                                     ( F  )     |
 ||   hiss(*)             |      <- BC keep-out: clear ->        '--'      |
-|| < [Crew 1] ===-- o.  b|                                    Zoomies     |
-|| v [Crew 2] ====- o.   |                                                |
-|| > [Crew 3] ===== oo  b|                                                |
+||  (1)[Crew 1] ===-- o. b|                                   Mikan's     |
+||  (2)[Crew 2] ====- o.  |                                   Special     |
+||  (3)[Crew 3] ===== oo b|                                                |
 |+-----------------------+                                                 |
 +--------------------------------------------------------------------------+
- oo = Paw pips (o. = half)   b = "can act" bell   ) = queued command
+ (M)(1).. = portrait with Special ring   oo = Paw pips (o. = half)
+ b = "can act" bell   ) = queued command   no control keys on plates (M1.1)
 ```
 
 **Variant: the Daifuku fight with the Rivals states** (Kagi Cowed by Old Gang Nerves; Daifuku Fired Up while Seething; Togemaru, in truce, joined in against his Rival Goma in the wave):
@@ -269,65 +272,56 @@ Both reuse Combat's existing statuses and the one status pom (no new HUD element
 |    Togemaru, guest                      /\_/\           Hige             |
 |                                        ( o.o )                          |
 |+---------------------------+                                    .--.     |
-|| (sprig) [Togemaru] ====-  |  <- guest plate: no glyph, no Paws ( ** )   |
+|| (sprig) [Togemaru] ====-  |  <- guest plate: no ring, no Paws  ( F  )   |
 |+---------------------------+                                    '--'     |
-|| ^ [Mikan ] ===== oo  )    |                                             |
-|| < [Hige  ] ===-- o.  b    |                                             |
-|| v [Kagi  ] ====- o.  [Cowed + nicked crown, ring 20 s]  <- glyph pulses |
-|| > [Pon   ] ===== oo  b    |                                             |
+||  (M)[Mikan ] ===== oo )   |                                             |
+||  (H)[Hige  ] ===-- o. b   |                                             |
+||  (K)[Kagi  ] ====- o. [Cowed + nicked crown, ring 20 s] <- bell pulses  |
+||  (P)[Pon   ] ===== oo b   |                                             |
 |+---------------------------+                                             |
 +--------------------------------------------------------------------------+
 ```
 
-### 4.3 Tag-In and switching
+### 4.3 Lock-on, the Special prompt and the chain (replaces Tag-In and switching, M1.1)
 
-The switch is the D-pad (Up = Mikan, Left/Down/Right = Crew 1/2/3) or Z/X/C/V. A switch within ≈ 0.35 s after the controlled cat lands a string finisher, a Pounce or a Hiss interrupt is a **Tag-In** (DR-29). The window is too short to read new information, so the cue is **peripheral, spatial and audible**:
+There is no switching: the player controls Mikan only. The real-time cues the player needs are:
+1. **Lock-on (Tab / R3).** Fights start unlocked (free camera). The bell-gold bracket appears on the locked enemy and a lock pip on its overhead bar; pressing again moves it to a new nearest enemy or removes it (Combat §3.1). The bracket never sits over a telegraph decal.
+2. **Stagger.** When an enemy is Frazzled, the stagger presentation plays (Combat §3.6: zoom, slow, shattered-glass blink; Captains, Bosses and the first stagger get the full one). The screen-anchored HUD does not hide for it; the Frazzled ring starts after it.
+3. **Special prompt (F).** If Mikan's meter is full, the **F** starburst appears over the Frazzled enemy with the faces of every Crew cat whose meter is also full. Four faces means a Team Pile-On if all land. Not full: no prompt; the BR pom shows how far.
+4. **The chain.** On F, all screen-anchored HUD hides for the cut-ins (§4.5); the chain strip lights each cat's face as its Special lands; four lit = the Team Pile-On stamp. A bonded pair fired back to back shows a heart-link between their faces (Combat §3.3).
 
-1. On the qualifying hit, a **bell-gold spark ring** pops on the controlled cat (world) and a bell tick sounds (Audio).
-2. Simultaneously, the D-pad glyphs on every standing Crew plate **pop to 115% with a bell-gold rim** for the window. A bonded partner's glyph adds a small heart-link stamp (stronger Tag-In, DR-37).
-3. On a successful Tag-In, the incoming plate flashes once, the camera eases over Camera's Tag-In blend (0.3 s, `camera-system.md` §3.5; never cuts) and the **Relay chain** lights its first two faces. Each further tag within 3 s lights the next face; a cat already in the chain shows its glyph halftoned (each cat once per Relay).
-4. A plain switch outside the window gives no spark and no Relay.
+Teaching note: the Life 1 hint card teaches "staggered + F" on the first two prompts only; after that the prompt alone carries it (Combat §3.16).
 
-Teaching note: the Life 1 hint card shows the timing on the first two windows only; after that the cue alone carries it. Accessibility requests a wider window option (see `design/accessibility-requirements.md` §5).
+### 4.4 The skill bar (R; was Slow Blink)
 
-### 4.4 Slow Blink (the slow-mo command menu)
+Opened by **R** / R2. Time drops to 5%; the camera eases low behind Mikan (`camera-system.md` §3.5); the HUD shows the **skill bar** in BL beside the plate stack. Props and known Fears are highlighted in the world (this replaces Whisker Sense in combat).
 
-Opened by R2 / Tab. Time drops to 5%; the camera lifts to the tactical three-quarter view; the HUD rearranges into the **command menu** in BL beside the plate stack. Props and known Fears are highlighted in the world (this replaces Whisker Sense in combat).
+**Controls (Combat §3.1, verbatim):** mouse / stick picks a slot, then a target (the lock target by default); LMB / South confirms; RMB / East goes back; R / R2 closes. Commands **chain** while any cat can afford one (CX-C6: chaining is the default).
 
-**Controls (DR-08, verbatim):** stick = cursor; L1/R1 = change cat; South = confirm; East = back; R2 = close. Commands **chain** while any cat can afford one (CX-C6: chaining is the default). Scram (flee) is a menu entry.
+**Bar structure (one level, one row per Posse cat, Mikan first):** each row is the cat's portrait (with its Special ring) and its **4 Move slots**, each slot an icon with its Paw cost (1–2 pips), Set-up (hollow diamond) or Pay-off (filled diamond) mark and the state icon it creates or exploits (Ruffled, Soggy, Cowed, Clumped, Splat), then the cat's **Hiss** slot (cooldown ring). Mikan's row ends with **Scram**. A row whose cat is Cowed by Old Gang Nerves shows the nicked-crown badge: any command on it steels the cat. The Special is **not** on the bar (it is the F prompt).
 
-**Menu structure (one level):**
-1. Pinned on top when present: **Pile-On** (when legal) and **Zoomies** (when full, for the selected cat).
-2. **Moves 1–4** of the selected cat, each row: icon, name, Paw cost (1–2 pips), Set-up (hollow diamond) or Pay-off (filled diamond), and the state icon it creates or exploits (Ruffled, Soggy, Cowed, Clumped, Splat).
-3. Footer: **Scram**.
-
-**Target step.** After a Move is confirmed, the stick moves a snapping target cursor between valid targets. On the hovered target, any Pay-off whose condition is met is **lit** (Bell-Gold) in the menu, so the Set-up → Pay-off chain is legible without reading rules. South confirms; the command pom appears on that cat's plate; the menu returns to the next cat that can afford a Move.
+**Target step.** After a slot is confirmed, the cursor snaps between valid targets. On the hovered target, any Pay-off whose condition is met is **lit** (Bell-Gold) on the bar, so the Set-up → Pay-off chain is legible without reading rules. Confirm queues it; the command pom appears on that cat's plate; focus returns to the next row that can afford a Move.
 
 ```
 +--------------------------------------------------------------------------+
-|              (tactical 3/4 view, world at 5%, desaturated 20%)           |
+|            (low behind Mikan, world at 5%, desaturated 20%)              |
 |        [bucket: Water!]                 /\_/\  [Ruffled]  <- target      |
 |              ^ prop highlight          ( >.< )  cursor (bell-gold ring)  |
 |                                                                          |
-|   +--------------------------------+                                     |
-|   | < L1   [Crew 1: Goofball] R1 > |                                     |
-|   |--------------------------------|                                     |
-|   |  * PILE-ON                     |  (pinned, only when legal)          |
-|   |--------------------------------|                                     |
-|   | > Tail Slap     o   <> Ruffle  |  <> hollow = Set-up                 |
-|   |   Pounce Drop   oo  <*> Splat  |  <*> filled = Pay-off (lit if met)  |
-|   |   ...           o              |                                     |
-|   |   ...           oo  (greyed:   |                                     |
-|   |                  not enough Paws: halftone, still focusable)         |
-|   |--------------------------------|                                     |
-|   |  Scram                         |   S confirm  E back  R2 close       |
-|   +--------------------------------+                                     |
+|   +------------------------------------------------------+               |
+|   | (M) Mikan  [<>Swat o][<*>Kick o][ .. ][ .. ] Hiss(*) Scram |         |
+|   | (1) Crew 1 [<>Slap o][<*>Drop oo][ .. ][ .. ] Hiss( )      |         |
+|   | (2) Crew 2 [ .. ][ .. ][ .. ][ .. ]   Hiss(*)  <- halftone: no Paws  |
+|   | (3) Crew 3 [ .. ][ .. ][ .. ][ .. ]   Hiss(*)              |         |
+|   +------------------------------------------------------+               |
+|    <> hollow = Set-up   <*> filled = Pay-off (lit if met)                |
+|    LMB/S confirm   RMB/E back   R/R2 close                               |
 |   [plates stay visible at the left edge; queued poms show the plan]      |
 +--------------------------------------------------------------------------+
 ```
 *(Move names are placeholders; Combat owns the 12 slice Moves.)*
 
-Unaffordable rows stay in place, focusable, halftoned, with the reason as an icon (missing Paw pip). Routed cats are skipped by L1/R1.
+Unaffordable slots stay in place, focusable, halftoned, with the reason as an icon (missing Paw pip). A Routed cat's row is halftoned and skipped.
 
 ### 4.5 Combat states
 
@@ -338,29 +332,31 @@ Unaffordable rows stay in place, focusable, halftoned, with the reason as an ico
 | **Ambush by player** | The target's identity ribbon slams in with a Ruffled stamp (no separate corner tag). |
 | **Ambush by Rival** | Sting flare from the attacker's direction (§3.1). |
 | **Real time** | §4.1–4.3 |
-| **Slow Blink** | §4.4 |
-| **Pile-On / Zoomies / Boss phase break** | Authored cuts: **all screen-anchored HUD hides** for the cinematic, returns over 200 ms. |
-| **Leader Routed** | Control passes to the next slot (not Mikan, DR-33); that plate enlarges; 1.5 s plate flash. |
+| **Stagger** | Presentation plays (≤ 0.5 s); HUD stays; the Frazzled ring and, if ready, the F prompt follow. |
+| **Skill bar** | §4.4 |
+| **Special chain / Team Pile-On / Boss phase break** | Authored cuts: **all screen-anchored HUD hides** for the cinematic (the chain strip alone shows during a chain), returns over 200 ms. |
+| **Mikan Routed** | Mikan's plate halftones with a 1.5 s flash; the skill bar still opens (the player commands the Crew); no F prompt. |
 | **Fed Up (75 s)** | Combat owns the behaviour; HUD shows nothing new. |
 | **Win** | HUD fades; Verdict prompt for the one highest-rank tracked Rival (`key-screens.md` §4); other tracked cats slip away. Then the encounter tally (BR, 2.5 s, any input dismisses): XP pips, Morsels, level-up pip. |
 | **Wipe** (a loss, OR-01) | HUD hides; the victor's **Gloat ≤ 3 s** reuses the name-card (its own line only); then the nightfall transition and the closed-street walk home (§3.6; `key-screens.md` §4.6). |
 
 ### 4.6 Readability under heavy VFX
 
-1. **The HUD does not shake.** Camera shake hits the world camera only; screen-anchored HUD is exempt. With Reduce Motion off, the controlled plate may bump ≤ 3 px for 80 ms on a T4+ hit taken.
+1. **The HUD does not shake.** Camera shake hits the world camera only; screen-anchored HUD is exempt. With Reduce Motion off, Mikan's plate may bump ≤ 3 px for 80 ms on a T4+ hit taken.
 2. **Hit-stop freezes the world, not the HUD.** Bars keep animating so a frozen frame still reads as responsive.
-3. **Impact frames** never invert screen-anchored panels, the Frazzled ring or the controlled-cat marker.
-4. **Identity channels have non-colour twins:** Posse = bell-gold keyline + chevron + D-pad glyph; enemies = Clowder outline + emblem pip on the overhead bar; controlled cat = bell + ground ring.
-5. **Dust may hide the cats in a Pile-On (that is the joke), never a telegraph.**
+3. **Impact frames** (and the stagger blink) never invert screen-anchored panels, the Frazzled ring, the F prompt or Mikan's marker.
+4. **Identity channels have non-colour twins:** Posse = bell-gold keyline + chevron + portrait plate; enemies = Clowder outline + emblem pip on the overhead bar; Mikan = bell + ground ring; each cat's Move colour has its Move icon as the twin.
+5. **Dust may hide the cats in a Team Pile-On (that is the joke), never a telegraph.**
 6. **Glyph-burst cap:** ≤ 3 bursts on screen, at most one T3+ size; one screen-wide effect at a time (brief §4.1).
-7. **Acceptance:** random-pause test, 19 of 20 testers find the controlled cat in < 1 s, with 6 enemies plus the Posse (the slice maximum) and T4 effects, at 1080p and at 720p (PC window; handheld check is Backlog).
+7. **Acceptance:** random-pause test, 19 of 20 testers find Mikan in < 1 s, with 6 enemies plus the Posse (the slice maximum) and T4 effects, at 1080p and at 720p (PC window; handheld check is Backlog).
 
 ### 4.7 Visual budget (combat)
 
 | Constraint | Limit |
 |---|---|
-| Screen-anchored elements, real time | 4 (plates, Zoomies pom, identity ribbon, 1 hint card); +1 ally guest plate when a join-in is live, stacked with the plates (same zone) |
-| HUD screen area, real time / Slow Blink | ≤ 15% / ≤ 28% |
+| Screen-anchored elements, real time | 4 (plates, Mikan's Special pom, identity ribbon, 1 hint card); +1 ally guest plate when a join-in is live, stacked with the plates (same zone) |
+| HUD screen area, real time / skill bar | ≤ 15% / ≤ 28% |
+| Move name banners in the world | 2 |
 | Centre 40%, screen-anchored | 0% |
 | Damage numerals on screen | 6 |
 | Lettered words | 1 |
@@ -450,20 +446,21 @@ Priority 1 is read first and must survive every VFX state; lower priorities hide
 
 | P | Information | Why it matters in the next 5 s | Channel (primary + non-colour twin) | Context |
 |---|---|---|---|---|
-| 1 | Which cat I control | Every input depends on it | Bell + ground ring; enlarged plate | Combat |
+| 1 | Where Mikan is | Every input depends on it | Bell + ground ring; large plate | Combat |
 | 1 | Incoming red telegraph / Ambush sting | Avoid a big hit | Zigzag decal + overhead glyph; edge flare with drain arc; vocal | Combat, street |
-| 2 | Frazzle window open / Pile-On legal | The signature payoff | Frazzled ring (+ pips on Captain/Boss); dust-pom prompt over the enemy | Combat |
-| 2 | Tag-In window | Conducting skill | Spark ring + plate glyph pop + bell tick | Combat |
+| 2 | Stagger (Frazzle window) open / F Special ready | The signature payoff | Stagger presentation; Frazzled ring (+ pips on Captain/Boss); F starburst with the faces who will chain | Combat |
+| 2 | Lock-on target | Which enemy the camera tracks | Bell-gold bracket + lock pip (absent = free camera) | Combat |
+| 3 | Which Move a cat just used | Read the fight; plan the next command | Name banner + cat colour + plate highlight; wind-up pose | Combat |
 | 3 | Yellow telegraph + Hiss ready | Interrupt and Ruffle | Dashed triangle decal; glowing hiss pom | Combat |
-| 3 | Who can act (Paws) | Slow Blink decision | Paw pips + "can act" bell | Combat |
-| 4 | Posse Nerve | Switch or protect | Bars on plates | Combat |
+| 3 | Who can act (Paws) | Skill-bar decision | Paw pips + "can act" bell | Combat |
+| 4 | Posse Nerve | Protect (command a heal or a Hiss) | Bars on plates | Combat |
 | 4 | Named Rival identity, known Fears | Use the bucket, the horn | Identity ribbon stamps | Combat |
-| 5 | Zoomies ready | Limit break | Pom crown burst + glyph | Combat |
+| 5 | Crew Special meters | Whether the chain reaches four | Portrait rings with crown notch | Combat |
 | 5 | Caterwaul / raid in progress | Optional defence | TL flare + shrinking ring + edge arrow | Street |
 | 6 | Time of day | Curfew trade | Phase dial; world light | Street |
 | 6 | Patch ownership and strength (the street's influence read) | Spray or post | World wisps; Patch tag with the cracked-wisp fading stamp; compass fading-post ticks | Street |
-| 4 | **Cowed by Old Gang Nerves** on a Posse cat | Tag-In to steady it | Cowed pom + nicked-crown badge + drain ring; pulsing D-pad glyph | Combat |
-| 4 | **Boss Fired Up** (anger) | Respect the bigger hits; time the Pile-On | Fired Up pom + puff badge + drain arc on the ribbon | Combat |
+| 4 | **Cowed by Old Gang Nerves** on a Posse cat | Command it from the skill bar to steady it | Cowed pom + nicked-crown badge + drain ring; pulsing "can act" bell | Combat |
+| 4 | **Boss Fired Up** (anger) | Respect the bigger hits; time the Special | Fired Up pom + puff badge + drain arc on the ribbon | Combat |
 | 5 | **Ally guest** in the fight | Know who is on your side | Dashed gold keyline + sprig tick (world); guest plate | Combat |
 | 5 | **Roaming Boss's stop** (window open) | Where to challenge him | Compass crown tick; edge crown pom at phase change | Street |
 | 6 | Challenger's staked post | Optional fight by day | Compass stake-flag tick | Street |
@@ -481,9 +478,9 @@ Priority 1 is read first and must survive every VFX state; lower priorities hide
 |---|---|---|---|---|---|
 | Ambush sting flare | Edge | 2.0 s | 2 | Critical | Never queued |
 | Caterwaul flare | TL + edge | While defendable | 1 (+N count) | Critical | Never queued; collapses in combat |
-| Pile-On prompt | World | Frazzle window | 1 per enemy | Critical | Never queued |
+| Special prompt (F) | World | Frazzle window | 1 per enemy | Critical | Never queued |
 | Call glyph | Edge | Motif length | 1 | High | In combat: suppressed, replayed once after |
-| Leader Routed | Plates | 1.5 s | 1 | High | Immediate |
+| Mikan Routed | Plates | 1.5 s | 1 | High | Immediate |
 | Phase change | TR dial enlarges | 4 s | 1 | Medium | Clock is paused in combat anyway |
 | Encounter tally | BR | 2.5 s | 1 | Medium | After the Verdict |
 | Clout rank-up | Centre card | Until dismissed | 1 | High | Held until roaming and outside the wall |
@@ -500,44 +497,58 @@ Rules: Low and Medium items are held in combat and flushed after the tally (≤ 
 
 ---
 
-## 8. Control map (DR-08, verbatim; UX owns the map, Combat owns the actions)
+## 8. Control map (DR-08; combat table per owner direction M1.1; UX owns the map, Combat owns the actions)
 
 Everything is remappable, and every chord or hold has a one-button or toggle alternative. Positional naming: West = X/□, North = Y/△, South = A/×, East = B/○. Prompt glyphs in every screen read from the player's current binding, never from this table.
 
-| Gamepad | Exploration | Combat |
-|---|---|---|
-| Left stick | Move | Move |
-| Right stick / R3 | Camera orbit / recentre | Camera orbit (soft-lock keeps the target framed) / **lock-on toggle**; flick = next target |
-| West | Swat | **Attack** (3-hit string; airborne or from the High Road = **Pounce**) |
-| South | Jump / Hop | Hop |
-| East | Dash (hold to sprint) | Skitter (dodge) |
-| North | Interact (Spray, Sniff, Nap, pick up/put down) | **Hiss**; becomes **Pile-On** while one is available |
-| R1 | — | Brace (hold) |
-| R2 | **Whisker Sense** (hold) | **Slow Blink** |
-| L2 | Stalk (hold) | — |
-| L1 hold + face button | — | Shortcut Move 1/2/3/4 (W/N/E/S) |
-| L1 + R1 | — | Zoomies |
-| D-pad | Left/Right = Tail-Up picker; Up = Meow; Down = Sit (hold = **Head Home** thread) | Direct switch: Up = Mikan, Left/Down/Right = Crew 1/2/3 (a switch at the right moment is a **Tag-In**) |
-| View / Menu | **Rivals** board / Pause | — / Pause |
+### 8.1 Combat (the one final table; verbatim from `combat-system.md` §3.1)
 
-Inside Slow Blink: stick = cursor; L1/R1 = change cat; South = confirm; East = back; R2 = close. Commands **chain** while any cat can afford one. Scram (flee) is a menu entry.
+| Action | KB+M | Gamepad | Rule |
+|---|---|---|---|
+| Move | WASD | Left stick | Free third-person camera on the mouse / right stick |
+| **Light attack** | LMB | West | Strings (§3.2). Airborne or from the High Road it becomes a **Pounce** |
+| **Heavy attack** | RMB | North | Hold to charge |
+| **Dodge** (Skitter) | Space | South | Cancels recovery after the hit |
+| **Dash** | Shift | East | Dash → Light is a string starter (lunge). Dashing at a reachable High Road ledge mantles onto it |
+| **Lock-on** | Tab | R3 | **Not locked by default.** Press: lock the nearest enemy. Press again: if the nearest enemy is now a *different* enemy, lock that one; otherwise **unlock** (free camera) |
+| **Special** | **F** (prompt) | R1 (prompt) | Only on a **Frazzled (staggered)** enemy while Mikan's Special meter is full; shown as a context prompt (§3.6) |
+| **Skill bar** | **R** | R2 | Opens the skill bar (time slows). Commands Mikan's Moves **and forces Crew Moves** (§3.3) |
+| Pause | Esc / P | Menu | — |
 
-| Keyboard & mouse | Exploration | Combat |
-|---|---|---|
-| WASD / mouse | Move / camera | Move / camera |
-| LMB | Swat | Attack |
-| RMB | — | Brace |
-| Space / Shift | Jump / Dash | Hop / Skitter |
-| E / F | Interact / — | — / Hiss (Pile-On when available) |
-| Tab | Whisker Sense (hold) | Slow Blink |
-| Ctrl | Stalk | — |
-| 1–4 / R | — | Shortcut Moves / Zoomies |
-| Z X C V | — | Switch Mikan / Crew 1 / 2 / 3 |
-| MMB / wheel | Recentre | Lock-on / next target |
-| V / T / C / H | Tail-Up / Meow / Sit / Head Home (hold) | — |
-| J / Esc | **Rivals** board / Pause | — / Pause |
+*(Section numbers in the Rule column are Combat's.)* The player controls **Mikan only**; there is no switching. Removed in M1.1: Z X C V / D-pad switching, Tag-In, Relay, the Pile-On input, Zoomies, Slow Blink on Tab / R2, shortcut Moves 1–4, Hop, Brace and Hiss buttons (Hiss and Scram are skill-bar entries; mantling is a Dash at a ledge; Combat §3.1). The gamepad column mirrors the owner's KB+M bindings and is UX's to refine after the prototype.
 
-Cut (DR-08): Whack, Bap, Righting input, hold-charge attacks, Tactics (slice), L3+R3 chord, Whisker Sense in combat, the bell ping, the Posse directive, right-stick peek.
+Inside the skill bar: mouse / stick picks a slot, then a target; LMB / South confirm; RMB / East back; R / R2 close. Commands **chain** while any cat can afford one. Scram (flee) is an entry on Mikan's row.
+
+### 8.2 Exploration
+
+| Gamepad | Exploration |
+|---|---|
+| Left stick | Move |
+| Right stick / R3 | Camera orbit / recentre |
+| West | Swat |
+| South | Jump / Hop |
+| East | Dash (hold to sprint) |
+| North | Interact (Spray, Sniff, Nap, pick up/put down) |
+| R2 | **Whisker Sense** (hold) |
+| L2 | Stalk (hold) |
+| D-pad | Left/Right = Tail-Up picker; Up = Meow; Down = Sit (hold = **Head Home** thread) |
+| View / Menu | **Rivals** board / Pause |
+
+| Keyboard & mouse | Exploration |
+|---|---|
+| WASD / mouse | Move / camera |
+| LMB | Swat |
+| Space / Shift | Jump / Dash |
+| E | Interact |
+| Tab | Whisker Sense (hold) |
+| Ctrl | Stalk |
+| MMB / wheel | Recentre |
+| V / T / C / H | Tail-Up / Meow / Sit / Head Home (hold) |
+| J / Esc | **Rivals** board / Pause |
+
+Context split: Tab and R2 are Whisker Sense while roaming and Lock-on / skill bar in combat (Whisker Sense is unavailable in combat); F and R are unbound while roaming.
+
+Cut (DR-08): Whack, Bap, Righting input, Tactics (slice), L3+R3 chord, Whisker Sense in combat, the bell ping, the Posse directive, right-stick peek.
 
 **UX notes on the map (no redefinition):**
 - At home, combat-only and Rivals bindings are inert; View does nothing (DR-24). On the walk home after a loss, View / J opens the Rivals board read-only (§3.6).
@@ -555,9 +566,9 @@ Cut (DR-08): Whack, Bap, Righting input, hold-charge attacks, Tactics (slice), L
 | Phase dial size / emphasis | 48 px / 4 s | 40–64 px / 2–6 s | Setting: Always / Contextual / Off |
 | Enemy bar linger after hit | 3 s | 1–5 s | Clutter vs info |
 | Damage numerals default | **Off** | Off / Big hits / All | R3 |
-| Tag-In plate glyph pop | 115%, window length | 105–130% | Window length is Combat's |
-| Relay chain drain | 3 s | Combat's value | Read, not owned |
-| Controlled plate scale | ×1.3 | ×1.15–1.5 | |
+| Move name banner duration / max on screen | 1.2 s / 2 | 0.8–1.6 s / 1–3 | M1.1 §7 visibility vs clutter |
+| Special prompt word showings | 3 | 0–5 | Then glyph only |
+| Mikan's plate scale | ×1.3 | ×1.15–1.5 | |
 | HUD scale | 100% | 80–150% | Accessibility doc §6 |
 | Sniff card max | 5 | 3–5 | Canon caps the Rivals items at 3 |
 | Rivals chip duration | 4 s | 3–6 s | Long enough to press View without stopping |
@@ -568,9 +579,9 @@ Cut (DR-08): Whack, Bap, Righting input, hold-charge attacks, Tactics (slice), L
 
 ## 10. Acceptance criteria
 
-1. Random-pause test: 19 of 20 testers find the controlled cat in < 1 s with 6 enemies plus the Posse (the slice maximum) and T4 effects, at 1080p and 720p (10 combatants is the full-game stress test, Backlog).
-2. In the combat prototype, ≥ 80% of testers can say, unprompted after one fight, "when the ring is on an enemy, press North for the Pile-On".
-3. ≥ 75% of testers perform ≥ 1 Tag-In per encounter without a hint after the Life 1 teaching (supports DR-02).
+1. Random-pause test: 19 of 20 testers find Mikan in < 1 s with 6 enemies plus the Posse (the slice maximum) and T4 effects, at 1080p and 720p (10 combatants is the full-game stress test, Backlog).
+2. In the combat prototype, ≥ 80% of testers can say, unprompted after one fight, "when an enemy is staggered, press F for the Special".
+3. ≥ 75% of testers open the skill bar and command a Crew cat ≥ 1 time per encounter without a hint after the Life 1 teaching (supports DR-02); ≥ 80% can name the Move a Crew cat just used (Move banners, M1.1 §7).
 4. No screen-anchored element enters the centre 40% or the bottom-centre keep-out, verified on capture at 16:9, 16:10 and 21:9.
 5. Inside Haru's wall, a frame audit of every slice vignette finds zero panels, bars, numerals or system text outside the Doorstep Sniff.
 6. No human utterance or writing is rendered, captioned or paraphrased in any HUD element, in any setting (string audit).
@@ -578,11 +589,12 @@ Cut (DR-08): Whack, Bap, Righting input, hold-charge attacks, Tactics (slice), L
 8. Every glyph-bearing element measures ≥ 28 px at 1080p / 18 px at 720p.
 9. A median-skill tester reads the Sniff and leaves the Doorstep in ≤ 30 s (DR-16).
 10. No playtester in the no-briefing test reports missing Dusk without noticing the dial.
-11. In the Daifuku fight with a Cowed recruit, ≥ 70% of testers Tag-In to it before its ring runs out after the first hint; ≥ 80% can say afterwards why it was scared ("its old boss").
+11. In the Daifuku fight with a Cowed recruit, ≥ 70% of testers command it from the skill bar before its ring runs out after the first hint; ≥ 80% can say afterwards why it was scared ("its old boss").
 12. In a fight with an ally guest, ≥ 90% of testers never mistake the guest for an enemy (no attacks aimed at it; post-fight question), at 1080p and in deuteranopia simulation.
 13. With the Boss window open, ≥ 80% of testers find Daifuku's current stop within 60 s of roaming using the compass tick.
 14. On the walk home after a loss, ≥ 90% of testers reach the garden wall or start the autopilot without trying another verb more than once.
 15. String and frame audit: no HUD element states or implies that a cat changed because of what Mikan did to a different cat; the Old Boss shows no defector-targeted mark.
+16. **M1.1:** no Posse plate shows a control key; the lock-on indicator is absent at fight start and follows the Tab cycle; the F prompt appears only on a Frazzled enemy with Mikan's meter full; every `MoveUsed` produces a banner and a plate highlight (capture audit across the 12 slice Moves).
 
 ---
 
@@ -596,14 +608,27 @@ Cut (DR-08): Whack, Bap, Righting input, hold-charge attacks, Tactics (slice), L
 - Tactics icons on plates (Tactics are Backlog).
 - Knack indicators.
 - Roof Run fast-travel prompt.
-- Diamond-shaped plate cluster mirroring the D-pad (test against the stack after the prototype).
 - One-handed control presets (UX-10; prototype before promising).
 - Per-screen split of HUD specs once the slice HUD is built.
 - Botan's identity ribbon variant (hand-bell, Trickster stamps).
-- Pile-On prompt word: HUD teaches "Pile-On" by hint card only; Combat §3.17 also letters the word on its first 3 showings. Pick one after the combat prototype (the hint card is enough for UX).
+- Special prompt word: HUD shows the word "Special" on the prompt's first 3 showings and a hint card teaches "staggered + F"; pick one after the combat prototype.
+- Gamepad column of §8.1 (a mirror of the owner's KB+M bindings): confirm after the prototype.
 - Random-pause test at 10 combatants (full-game stress test; the slice test runs at 6 enemies + Posse).
 
 ## Revision Log
+
+**2026-11-24, Owner combat direction M1.1 (2026-11-24)** (`design/reviews/owner-feedback/combat-m1.1-spec.md`; final bindings F = Special, R = skill bar, Tab = lock-on).
+
+| Item | How |
+|---|---|
+| Control map | §8 split: §8.1 the one final combat table (verbatim from Combat §3.1), §8.2 exploration only; switching, Tag-In, Relay, Pile-On, Zoomies, shortcut Moves, Hop/Brace/Hiss buttons removed |
+| Plates | §4.1, §4.2: crew plates without control keys; Special meter ring per cat; Move highlight; Mikan's plate always large; "can act" bell = command cue |
+| Special | §4.1 Special prompt (F) with chaining faces; Mikan's Special pom (BR) replaces the Zoomies pom; §4.3 rewritten (lock-on, stagger, prompt, chain strip); §4.5 stagger and chain rows; Relay chain replaced by the chain strip |
+| Skill bar | §4.4 rewritten: R opens it, one row per cat (4 Moves + Hiss; Mikan adds Scram), no pinned Pile-On/Zoomies |
+| Lock-on | §4.1 lock-on indicator; §6 priority row |
+| Visibility | §4.1 Move name banners, cat colours, plate highlight; no-world-text rule amended; §4.7 banner budget |
+| Cowed | §4.1.1 cleared by a skill-bar command |
+| Other | §1, §2 (camera 3.8 m, Mikan ≥ 20%), §2.1 zone map, §6, §7, §9 knobs, §10 ACs 2, 3, 11, 16, Backlog |
 
 **2026-11-24, Consistency pass (creative director; `design/reviews/owner-feedback/consistency-pass.md`).** §5.3 Sniff card priority set to the single order shared with Nemesis §3.13 (Wavering > Declaration/arc closing > challenger > Boss window > anger > town events). On the reference path the Boss-window card first appears in the L2D4 Sniff, beside the challenger's, because the window opens on L2D3 at the Tofu Shop Step Claim Spray (F7).
 

@@ -1,0 +1,6 @@
+[
+  {"Name": "_comment", "value": "PROTOTYPE - NOT FOR PRODUCTION. Specials: the Zoomies folded into one per-Style Special (owner decision, C10).", "_src": "M1.1 spec (design/reviews/owner-feedback/combat-m1.1-spec.md) §6"},
+  {"Name": "Scrapper", "special": "Midnight Laps", "hits": 4, "mv": 1.2, "fz": 15, "target": "all_enemies", "_src": "Combat §3.7 Zoomies (Scrapper): 4 hits of MV 1.2 on every enemy, FZ 15 per hit; M1.1 spec (design/reviews/owner-feedback/combat-m1.1-spec.md) §6"},
+  {"Name": "Bruiser", "special": "Landslide", "hits": 1, "mv": 12, "fz": 80, "others_mv": 4.8, "knock_off": true, "target": "line", "_src": "Combat §3.7 Zoomies (Bruiser): MV 12 and FZ 80 to the first target, MV 4.8 to others in the path, knocks targets off High Road edges; M1.1 spec (design/reviews/owner-feedback/combat-m1.1-spec.md) §6"},
+  {"Name": "Yowler", "special": "Midnight Aria", "hits": 1, "mv": 3.0, "fz": 0, "status": "cowed", "heal_pct": 0.15, "target": "all_enemies", "_src": "Combat §3.7 Zoomies (Yowler): ring-wide MV 3.0, all enemies Cowed, heals the Posse 15% of max Nerve (counted against the heal cap); M1.1 spec (design/reviews/owner-feedback/combat-m1.1-spec.md) §6"}
+]

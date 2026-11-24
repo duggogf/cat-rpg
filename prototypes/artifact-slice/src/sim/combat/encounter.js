@@ -7,6 +7,8 @@ import * as F from './formulas.js';
 import { Arbiter, BASE_TIER } from './feel.js';
 import { dist, len, norm, clamp, inCone, inShape, closestOnSeg } from './geom.js';
 import { posseThink, enemyThink, bossThink } from './ai.js';
+import { playerInput, atkTick, dashTick, canMoveFraction, lockOn } from './player.js';
+import { gainSpecial, specialPrompt, trySpecial, chainTick } from './special.js';
 
 const INF = Infinity;
 
@@ -29,14 +31,14 @@ export class Encounter {
     this.tick = 0; this.realT = 0; this.simT = 0; this.fightT = 0; this.timeScale = 1;
     this.mode = def.opener === 'standoff' ? 'standoff' : 'fight';
     this.modeT = 0;
-    this.slowBlink = false;
+    this.skillBar = false;
+    this.chain = null; this.chainCount = 0; this.slowMo = null; this.firstStagger = true;
     this.globalStop = 0;
     this.events = []; this.log = [];
     this.entities = []; this.byId = new Map();
     this.teles = []; this.teleSeq = 0;
-    this.tagWin = null; this.relay = null; this.relayLockUntil = -INF;
     this.orderSeq = 0; this.orderState = new Map(); this.sbChain = [];
-    this.pile = null; this.offer = null;
+    this.pile = null; // the old Pile-On (M1); replaced by the Special chain in M1.1
     this.lockId = null;
     this.scramT = 0; this.fedUp = false;
     this.outcome = null; this.victorIds = [];
@@ -55,7 +57,9 @@ export class Encounter {
       const g = this._spawn(def.guest.cat, 'guest', -1, this.arena.spawns.guest_edge);
       g.present = false; g.guest = { state: 'waiting', t: 0, cue: def.guest.cue };
     }
-    this.controlledId = opts.controlled || this.posse()[0].id;
+    this.controlledId = this.posse()[0].id; // M1.1: the player controls Mikan only
+    const sp = this.show.special_start;
+    for (const p of this.posse()) p.special = opts.special?.[p.cat] ?? (sp ? (p.cat === 'mikan' ? sp.mikan : sp.crew) : this.k.special_start);
     this._emit({ type: 'EncounterStarted', encounter_id: def.Name, opener: def.opener, arena: def.arena,
       posse: def.posse.slice(), enemies: this.enemies().map(e => e.id), guest: def.guest?.cat ?? null });
     if (this.mode === 'standoff') this._standoffStart(); else this._fightStart();
@@ -82,13 +86,13 @@ export class Encounter {
       nerve: stats.nerve, nerveMax: stats.nerve, healed: 0,
       paws: 0, fzg: 0, frazzledT: 0, lastFzGainT: -INF,
       ruffledT: 0, reruffleCd: 0, splatT: 0, clumpedT: 0, flinchT: 0, flinchImmuneT: 0, leaderFlinchCd: 0,
-      status: null, anger: null, angerBuffedS: 0, puffT: 0,
+      status: null, anger: null, angerBuffedS: 0, puffT: 0, special: 0, specialLost: 0, launchedT: 0,
       act: null, hitstop: 0, routed: false, gone: false, present: true,
       onHR: null, mantleAt: -INF, hrSince: 0, bracing: false,
       hissCd: 0, moveCd: {}, enemyPaws: 0, healedEnemy: 0,
       lastHitT: -INF, lastAttackerId: null, firstLeaderHit: false, fearCount: {},
       moves: (row.moves || []).slice(0, 4), orders: [], reserved: 0,
-      ai: { targetId: null, cd: 0, retarget: 0, hrWait: 0, avengeId: null, avengeT: 0, rollWait: 0, decided: {}, tokenOn: null, strings: 0 },
+      ai: { targetId: null, cd: 0, retarget: 0, hrWait: 0, avengeId: null, avengeT: 0, rollWait: 0, decided: {}, tokenOn: null, strings: 0, intent: 'stalk', phaseT: 0, engageOn: null, engageCd: 0, comboLeft: 0, circleSign: 1, decideT: 0 },
       boss: boss ? { kit: boss, phase: 1, state: 'wall', groundT: 0, swingCd: 2, pendingBreak: false, carry: 0, wasFrazzled: false } : null,
       guest: null, aiStream: this.rng.sub(`ai:${id}`),
     };
@@ -113,9 +117,9 @@ export class Encounter {
   _emit(ev) { ev.t = +this.realT.toFixed(6); ev.sim_t = +this.simT.toFixed(6); ev.tick = this.tick; this.events.push(ev); this.log.push(ev); return ev; }
 
   /** Emit with a feel request; applies the arbiter's hit-stop to the sim. */
-  _emitFeel(ev, req, att, tgt) {
+  _emitFeel(ev, req, att, tgt, noStop = false) {
     ev.feel = this.arbiter.filter(req, this.realT);
-    const hs = ev.feel.hitstop;
+    const hs = noStop ? { scope: 'none' } : ev.feel.hitstop;
     if (hs.scope === 'global') this.globalStop = Math.max(this.globalStop, hs.ms / 1000);
     else if (hs.scope === 'local') { for (const x of [att, tgt]) if (x) x.hitstop = Math.max(x.hitstop, hs.ms / 1000); }
     return this._emit(ev);
@@ -132,9 +136,11 @@ export class Encounter {
     if (this.mode === 'ended') return [];
     this.events = this._carry || []; this._carry = null;
     this.tick++; this.realT = this.tick * this.DT;
+    if (this.mode === 'special') { chainTick(this); this.timeScale = 0; return this.events; } // time stops for the chain
     let scale = 1;
+    if (this.slowMo) { scale = this.slowMo.scale; this.slowMo.left -= this.DT; if (this.slowMo.left <= 1e-9) this.slowMo = null; }
     if (this.globalStop > 1e-9) { this.globalStop = Math.max(0, this.globalStop - this.DT); scale = 0; }
-    else if (this.slowBlink) scale = this.k.slow_blink_scale;
+    else if (this.skillBar) scale = Math.min(scale, this.k.slow_blink_scale);
     this.timeScale = scale;
     const dt = this.DT * scale;
     this.simT += dt; this.modeT += this.DT;
@@ -147,7 +153,6 @@ export class Encounter {
       if (this.mode === 'fight') this.fightT += dt;
       this._input(input, dt);
       for (const e of this.entities) { e.edt = e.hitstop > 1e-9 ? 0 : dt; e.hitstop = Math.max(0, e.hitstop - this.DT); }
-      if (this.pile) { for (const e of this.entities) if (!this.pile.ids.has(e.id)) e.edt = 0; }
       this._timers(dt);
       this._guestTick(dt);
       if (!this.pile) this._think();
@@ -155,9 +160,6 @@ export class Encounter {
       this._orders();
       this._integrate();
       this._telegraphs();
-      if (this.pile) this._pileTick(dt);
-      this._tagWindow();
-      this._offerTick();
       this._bossBreakCheck();
       this._fedUpCheck();
       this._endCheck(dt);
@@ -230,43 +232,20 @@ export class Encounter {
   /* ------------------------------------------------------------ input (controlled cat + meta) */
 
   _input(inp, dt) {
-    const k = this.k;
-    // Slow Blink toggle (closed during Standoff and Pile-On).
-    if (inp.slowBlink) {
-      if (this.slowBlink) this._slowBlinkClose('input');
-      else if (this.mode === 'fight' && !this.pile) { this.slowBlink = true; this.sbChain = []; this._emit({ type: 'SlowBlinkOpen' }); }
+    // Skill bar (R; M1.1): time slows, Mikan's Moves and forced crew skills are commanded. Aliases: slowBlink.
+    if (inp.skillBar || inp.slowBlink) {
+      if (this.skillBar) this._skillBarClose('input');
+      else if (this.mode === 'fight') { this.skillBar = true; this.sbChain = []; this._emit({ type: 'SkillBarOpen' }); }
     }
     if (inp.command) this._command(inp.command);
-    if (inp.lockNext) this._lockNext();
-    if (inp.lockId && this.standing(this.byId.get(inp.lockId)) && this.byId.get(inp.lockId).side === 'enemy') this.lockId = inp.lockId;
-    if (inp.switchTo != null) this._switch(inp.switchTo);
-    this._ensureLock();
-
+    if (inp.lockOn) lockOn(this);
+    if (inp.lockId !== undefined && (inp.lockId === null || (this.standing(this.byId.get(inp.lockId)) && this.byId.get(inp.lockId).side === 'enemy'))) this.lockId = inp.lockId;
+    const l = this.byId.get(this.lockId); if (this.lockId && !this.standing(l)) { this.lockId = null; this._emit({ type: 'LockTarget', target: null, locked: false, reason: 'target_gone' }); }
     const c = this.controlled;
-    if (!this.standing(c) || this.pile || this.slowBlink) { if (c) c.bracing = false; return; }
-    const moveIn = inp.move ? norm(inp.move[0], inp.move[1]) : [0, 0];
-    const mag = inp.move ? Math.min(1, len(inp.move[0], inp.move[1])) : 0;
-    c.moveIntent = [moveIn[0] * mag, moveIn[1] * mag];
-    const free = this._canAct(c);
-    if (inp.aim && free && (inp.aim[0] || inp.aim[1])) { const [ax, az] = norm(inp.aim[0], inp.aim[1]); c.fx = ax; c.fz = az; }
-    c.bracing = !!inp.brace && free && !c.act;
-    if (inp.attack) c.attackBuf = k.string_buffer_s;
-    if (c.attackBuf > 0) c.attackBuf -= this.DT;
-
-    if (inp.hiss && free) {
-      if (this.offer) { this._pileStart(this.offer, 'player'); return; }
-      this._hiss(c, 'player');
-    } else if (inp.skitter && free) {
-      this._skitter(c, moveIn);
-    } else if (inp.moveSlot != null && free && c.moves[inp.moveSlot]) {
-      const t = this.byId.get(this.lockId);
-      if (t) this._queueOrder(c, { move: c.moves[inp.moveSlot], target: t.id, authored: 'player', shortcut: true });
-    } else if (inp.hop && free) {
-      this._hop(c, moveIn);
-    } else if (c.attackBuf > 0 && free) {
-      if (this._tryAttack(c, 'player')) c.attackBuf = 0;
-    }
-    if (c.onHR) c.wantPounce = false;
+    if (!this.standing(c) || this.skillBar) { if (c) { c.bracing = false; c.moveIntent = [0, 0]; } return; }
+    if (this.pendingHiss && this._canAct(c)) { this.pendingHiss = false; this._hiss(c, 'player'); }
+    if (inp.special) { if (trySpecial(this)) return; } // F on a staggered enemy
+    playerInput(this, c, inp);
   }
 
   /** Can this cat start a new verb now? Strings cancel into anything (Combat §3.2). */
@@ -274,18 +253,6 @@ export class Encounter {
     if (!this.standing(e) || e.splatT > 0 || e.flinchT > 0 || e.frazzledT > 0) return false;
     if (!e.act) return true;
     return e.act.kind === 'string' || e.act.kind === 'posture';
-  }
-
-  _tryAttack(c, authored) {
-    const a = c.act;
-    if (a && a.kind === 'string') { if (a.idx < 2 && !a.queued) { a.queued = true; return true; } return false; }
-    if (a && a.kind === 'hop') { const t = this.byId.get(this.lockId); if (t) { this._pounce(c, t, authored, 0, INF); return true; } return false; }
-    if (c.onHR) {
-      const t = this.byId.get(this.lockId);
-      if (t && !t.onHR && dist(c, t) <= this.k.pounce.range_m) { this._pounce(c, t, authored, this.simT - c.hrSince, this.simT - c.mantleAt); return true; }
-    }
-    this._startString(c, authored);
-    return true;
   }
 
   /* ------------------------------------------------------------ verbs */
@@ -299,8 +266,8 @@ export class Encounter {
   }
 
   /** Lock target if in reach and on the same level, else the nearest opponent in front within reach. */
-  _meleeTarget(e) {
-    const reach = this.k.string_reach_m + 0.6;
+  _meleeTarget(e, reachIn) {
+    const reach = reachIn ?? this.k.string_reach_m + 0.6;
     const lock = e.id === this.controlledId ? this.byId.get(this.lockId) : this.byId.get(e.ai.targetId);
     const ok = t => this.standing(t) && t.present && this._sameLevel(e, t) && dist(e, t) <= reach + t.radius;
     if (ok(lock)) return lock;
@@ -405,108 +372,18 @@ export class Encounter {
       this._flinch(a, 'hiss');
       this._emitFeel({ type: 'HissInterrupt', tele: tl.id, aimed_at: tl.aimedAt, authored, cat: e.id, target: a.id, move: tl.moveId }, { tier: BASE_TIER.hiss_interrupt, authored, victim: 'enemy', kind: 'hiss_interrupt' }, e, a);
     }
-    if (e.id === this.controlledId) this._openTagWindow(e, a, false);
   }
-
-  /* ------------------------------------------------------------ switch, Tag-In, Relay (DR-29) */
 
   _slotOrder() { return this.posse().slice().sort((a, b) => a.slot - b.slot); }
 
-  _switch(slot) {
-    const to = this._slotOrder().find(p => p.slot === slot);
-    const from = this.controlled;
-    if (!to || to === from || !this.standing(to)) return;
-    const w = this.tagWin;
-    const target = w && this.byId.get(w.targetId);
-    if (w && this.simT <= w.until + 1e-9 && this.standing(target) && dist(to, target) <= this.k.tag_in_range_m) {
-      // Relay membership (edge 8).
-      let r = this.relay;
-      const cont = r && w.byTagIn && !r.closed && this.simT - r.lastTagT <= this.k.relay_max_gap_s + 1e-9 && r.count < this.k.relay_max_tags;
-      if (cont) {
-        const eligible = !r.members.has(to.id) || (to.id === r.starter && r.count >= 1 && !r.members.has('__starter_closed'));
-        if (!eligible || (to.id === r.starter && r.members.has(to.id))) { this._plainSwitch(from, to); this._endRelay('ineligible'); return; }
-        r.count++;
-      } else {
-        if (r) this._endRelay('new');
-        r = this.relay = { starter: from.id, members: new Set(), count: 1, lastTagT: this.simT, closed: false };
-      }
-      r.members.add(to.id); r.lastTagT = this.simT;
-      if (to.id === r.starter || r.count >= this.k.relay_max_tags) r.closed = true;
-      this.tagWin = null;
-      this._tagIn(from, to, target, r.count);
-      return;
-    }
-    this._plainSwitch(from, to);
-    if (this.relay) this._endRelay('plain_switch');
-  }
+  /* ------------------------------------------------------------ skill bar and orders */
 
-  _plainSwitch(from, to) {
-    this.controlledId = to.id; to.orders = []; to.reserved = 0;
-    if (from) { from.bracing = false; from.attackBuf = 0; }
-    this._emit({ type: 'Switch', from: from?.id ?? null, to: to.id, tag_in: false });
-  }
-
-  _endRelay(reason) {
-    const r = this.relay; if (!r) return;
-    if (r.count >= 3) this.relayLockUntil = this.simT + this.k.relay_lockout_s;
-    this._emit({ type: 'RelayEnded', tags: r.count, reason, bonus_locked_until: r.count >= 3 ? +this.relayLockUntil.toFixed(6) : null });
-    this.relay = null;
-  }
-
-  _tagIn(from, to, target, n) {
-    const k = this.k;
-    this.controlledId = to.id; to.orders = []; to.reserved = 0;
-    const [dx, dz] = norm(to.x - target.x, to.z - target.z);
-    to.act = { kind: 'tagin', t: 0, dur: k.tag_in_leap_s, from: [to.x, to.z, to.y], to: [target.x + dx * 0.8, target.z + dz * 0.8, target.y], targetId: target.id, n, fromId: from.id };
-    if (target.onHR) to.onHR = target.onHR; else to.onHR = null;
-    this._grantPaw(from, k.tag_in_paw_grant); this._grantPaw(to, k.tag_in_paw_grant);
-    if (to.status?.kind === 'cowed' && to.status.src === 'nerves') { to.status = null; this._emit({ type: 'StatusEnded', cat: to.id, status: 'cowed', reason: 'tag_in' }); this._emit({ type: 'Bark', cat: to.id, kind: 'steeled' }); }
-    this._emit({ type: 'TagIn', from: from.id, to: to.id, relay_count: n, target: target.id });
-    this._emit({ type: 'Switch', from: from.id, to: to.id, tag_in: true });
-  }
-
-  _tagStrike(e, a) {
-    const k = this.k, t = this.byId.get(a.targetId);
-    const bonded = this._bonded(e, this.byId.get(a.fromId));
-    const bonusOk = this.simT >= this.relayLockUntil - 1e-9;
-    const flat = bonusOk ? F.relayFz(a.n, k) : 0;
-    const spec = { mv: k.tag_in_strike.mv * (bonded ? k.bonded_mv_mult : 1), fz: k.tag_in_strike.fz + (bonded ? k.bonded_fz_add : 0), flatFz: flat, kind: 'tag_in', authored: 'player' };
-    let landed = false;
-    if (e.style === 'Yowler') {
-      for (const x of this.opponentsOf(e)) if (this._sameLevel(e, x) && inCone(e, [e.fx, e.fz], 3, 60, x, x.radius)) { this._hit(e, x, { ...spec, flatFz: x === t ? flat : 0 }); landed = true; }
-    } else if (this.standing(t)) {
-      const kb = e.style === 'Bruiser' ? { m: k.tag_in_knockback_m.Bruiser, source: 'body_slam' } : null;
-      this._hit(e, t, { ...spec, knockback: kb }); landed = true;
-    }
-    if (landed && this.standing(t)) this._openTagWindow(e, t, true);
-  }
-
-  _bonded(a, b) {
-    if (!a || !b) return false;
-    return a.pers.bonds?.includes(b.pers.Name) && b.pers.bonds?.includes(a.pers.Name);
-  }
-
-  _openTagWindow(e, target, byTagIn) {
-    if (e.id !== this.controlledId) return;
-    this.tagWin = { from: e.id, targetId: target.id, until: this.simT + this.k.tag_in_window_s, byTagIn };
-  }
-
-  _tagWindow() {
-    if (this.tagWin && this.simT > this.tagWin.until + 1e-9) {
-      const byTag = this.tagWin.byTagIn; this.tagWin = null;
-      if (byTag && this.relay) this._endRelay('window_expired');
-    }
-    if (this.relay && this.relay.closed && !this.tagWin && !(this.controlled?.act?.kind === 'tagin')) this._endRelay('complete');
-  }
-
-  /* ------------------------------------------------------------ Slow Blink and orders */
-
-  _slowBlinkClose(reason) { if (!this.slowBlink) return; this.slowBlink = false; this._emit({ type: 'SlowBlinkClose', reason }); }
+  _skillBarClose(reason) { if (!this.skillBar) return; this.skillBar = false; this._emit({ type: 'SkillBarClose', reason }); }
 
   _command(cmd) {
-    if (!this.slowBlink) { this._emit({ type: 'CommandRejected', reason: 'slow_blink_closed', command: cmd }); return; }
-    if (cmd.action === 'scram') { this._end('player_fled', { by: 'slow_blink' }); return; }
-    if (cmd.action === 'pile_on') { if (this.offer) { this._slowBlinkClose('pile_on'); this._pileStart(this.offer, 'player'); } else this._emit({ type: 'CommandRejected', reason: 'no_pile_on', command: cmd }); return; }
+    if (!this.skillBar) { this._emit({ type: 'CommandRejected', reason: 'skill_bar_closed', command: cmd }); return; }
+    if (cmd.action === 'scram') { this._end('player_fled', { by: 'skill_bar' }); return; }
+    if (cmd.action === 'hiss') { const c = this.controlled; if (this.standing(c)) { this.pendingHiss = true; this._emit({ type: 'CommandQueued', id: null, cat: c.id, move: 'hiss', target: null }); } return; }
     const cat = this.byId.get(cmd.cat);
     if (!cat || cat.side !== 'posse' || !this.standing(cat)) { this._emit({ type: 'CommandRejected', reason: 'bad_cat', command: cmd }); return; }
     const moveId = typeof cmd.slot === 'number' ? cat.moves[cmd.slot] : cmd.move;
@@ -520,6 +397,8 @@ export class Encounter {
     const prev = (this.sbChain || []).filter(o => o.target === target.id && o.cat !== cat.id && this.orderState.get(o.id) !== 'dropped').pop();
     const o = { move: moveId, target: target.id, authored: 'player', waitFor: prev ? prev.id : null };
     if (!this._queueOrder(cat, o)) { this._emit({ type: 'CommandRejected', reason: 'paws', command: cmd }); return; }
+    // A skill-bar command to a cat steadies it: it clears Old Gang Nerves' Cowed (M1.1 §8; was the Tag-In).
+    if (cat.status?.kind === 'cowed' && cat.status.src === 'nerves') { cat.status = null; this._emit({ type: 'StatusEnded', cat: cat.id, status: 'cowed', reason: 'command' }); this._emit({ type: 'Bark', cat: cat.id, kind: 'steeled' }); }
     (this.sbChain = this.sbChain || []).push({ id: o.id, cat: cat.id, target: target.id });
   }
 
@@ -764,7 +643,7 @@ export class Encounter {
     }
     // Paws (F3).
     if (att.side !== 'enemy' && !spec.noPaw) {
-      const per = spec.kind === 'string' ? k.paw_per_hit : (spec.kind === 'finisher' || spec.kind === 'pounce') ? k.paw_per_finisher : 0;
+      const per = spec.kind === 'string' ? k.paw_per_hit : (spec.kind === 'finisher' || spec.kind === 'pounce' || spec.kind === 'heavy') ? k.paw_per_finisher : 0;
       if (per) this._grantPaw(att, per * this._fill(att));
     }
     // Poise.
@@ -778,15 +657,19 @@ export class Encounter {
     if (spec.knockback) splat = this._knockback(att, tgt, spec.knockback);
 
     const tierKind = frazzling ? 'frazzling' : (splat && BASE_TIER[spec.kind] < 2 ? 'splat' : spec.kind);
-    const ev = { type: 'Hit', attacker: att.id, target: tgt.id, kind: spec.kind, move: spec.moveId ?? null, dmg, mv: spec.mv, fz: +fzGain.toFixed(3),
+    const ev = { type: 'Hit', attacker: att.id, target: tgt.id, kind: spec.kind, move: spec.moveId ?? null, attack: spec.attack ?? null, dmg, mv: spec.mv, fz: +fzGain.toFixed(3),
       hit_type: type, blocked, frazzled: tgt.frazzledT > 0, nerve: tgt.nerve, cls: spec.cls ?? null, authored };
-    this._emitFeel(ev, { tier: BASE_TIER[tierKind] ?? 1, authored, victim: this._victimKind(tgt), kind: tierKind, hitType: type }, att, tgt);
+    this._emitFeel(ev, { tier: BASE_TIER[tierKind] ?? 1, authored, victim: this._victimKind(tgt), kind: tierKind, hitType: type }, att, tgt, spec.noStop);
+    // Special meter (Zoomies folded in): hits landed and Nerve lost (Combat F8 + M1.1 per-hit gains).
+    const G = this.k.special_gain;
+    if (att.side === 'posse' && tgt.side === 'enemy' && spec.kind !== 'special' && spec.kind !== 'pile_on_beat')
+      gainSpecial(this, att, att.id === this.controlledId ? (spec.kind === 'string' ? G.light : spec.kind.startsWith('move') ? G.move : G.heavy) : (spec.kind.startsWith('move') ? G.move : G.crew_hit));
+    if (tgt.side === 'posse' && dmg > 0) { const pct = Math.min(G.lost_cap - tgt.specialLost, 100 * dmg / tgt.nerveMax * G.per_pct_lost); if (pct > 0) { tgt.specialLost += pct; gainSpecial(this, tgt, pct); } }
+    if (spec.launch && tgt.side === 'enemy' && !tgt.rankRow.leader && this.standing(tgt) && tgt.frazzledT <= 0) { this._removeTeleOf(tgt); this._releaseToken(tgt); tgt.act = { kind: 'launched', t: 0, dur: spec.launch }; }
     if (tgt.nerve <= 0 && !tgt.routed) {
       if (tgt.side !== 'enemy' && this.def.tutorial && this.posse().filter(p => this.standing(p)).length <= 1 && tgt.side === 'posse') tgt.nerve = 1; // tutorial fights cannot be lost
       else this._rout(tgt, att, spec.kind === 'pile_on' ? 'by_pile_on' : 'by_hit');
     }
-    // Tag-In windows: finisher, Pounce (Hiss interrupts open theirs in _hissInterrupt).
-    if (att.id === this.controlledId && (spec.kind === 'finisher' || spec.kind === 'pounce') && this.standing(tgt)) this._openTagWindow(att, tgt, false);
     // Enemy-side: a landed hit stops a bolting Rival.
     if (tgt.act?.moveId === 'rival_bolt' && !tgt.row.flee_uninterruptible) { this._removeTeleOf(tgt); tgt.act = null; }
     return ev;
@@ -823,7 +706,11 @@ export class Encounter {
       tgt.fzg = k.frazzle_max; tgt.frazzledT = k.frazzled_s; tgt.frazzleTotal = k.frazzled_s;
       if (tgt.act && tgt.act.kind !== 'routed') { this._removeTeleOf(tgt); tgt.act = null; }
       this._releaseToken(tgt);
-      this._emit({ type: 'Frazzled', cat: tgt.id, by: att?.id ?? null, window_s: k.frazzled_s });
+      const full = tgt.rankRow.leader || this.firstStagger; this.firstStagger = false;
+      const slow = k.stagger_slow[full ? 'full' : 'light'];
+      this.slowMo = { scale: slow.scale, left: slow.ms / 1000 };
+      this._emit({ type: 'Staggered', cat: tgt.id, by: att?.id ?? null, window_s: k.frazzled_s, treatment: full ? 'full' : 'light', slow: { scale: slow.scale, ms: slow.ms } });
+      for (const p of this.posse()) if (this.standing(p)) gainSpecial(this, p, k.special_gain.per_stagger);
       return true;
     }
     return false;
@@ -841,10 +728,10 @@ export class Encounter {
     const k = this.k;
     if (this._armoured(t) || t.frazzledT > 0 || t.splatT > 0) return;
     if (!t.rankRow.leader) {
-      const stringHit = kind === 'string' || kind === 'finisher';
+      const stringHit = kind === 'string' || kind === 'finisher' || kind === 'heavy';
       if (stringHit && t.flinchImmuneT > 0) return;
       this._flinch(t, kind);
-    } else if (kind === 'finisher' || kind === 'tag_in') {
+    } else if (kind === 'finisher' || kind === 'heavy' || kind === 'tag_in') {
       if (t.leaderFlinchCd > 0) return;
       t.leaderFlinchCd = k.leader_flinch_cd_s; this._flinch(t, kind);
     }
@@ -935,13 +822,7 @@ export class Encounter {
     const kind = t.side !== 'enemy' ? 'string' : t.rankRow.leader ? 'leader_rout' : 'tough_rout';
     const authored = by && by.id === this.controlledId ? 'player' : how === 'by_pile_on' || how === 'by_back_down' ? 'player' : by?.side === 'enemy' ? 'enemy' : 'ai';
     this._emitFeel({ type: 'CatRouted', cat: t.id, by: by?.id ?? null, how, side: t.side }, { tier: t.side === 'enemy' ? BASE_TIER[kind] : 0, authored, victim: this._victimKind(t), kind }, null, null);
-    if (t.id === this.controlledId) {
-      const order = this._slotOrder();
-      for (let i = 1; i <= order.length; i++) {
-        const n = order[(t.slot + i) % order.length];
-        if (n && this.standing(n)) { this.controlledId = n.id; n.orders = []; n.reserved = 0; this._emit({ type: 'Switch', from: t.id, to: n.id, tag_in: false, reason: 'routed' }); break; }
-      }
-    }
+    // M1.1: control never passes to another cat; with Mikan Routed the crew fight on (skill bar still open to the player).
     if (t.side === 'guest') this._emit({ type: 'GuestLeft', cat: t.id, reason: 'routed' });
   }
 
@@ -1086,7 +967,7 @@ export class Encounter {
   _bossBreakCheck() {
     for (const b of this.enemies()) {
       if (!b.boss || !b.boss.pendingBreak || b.routed) continue;
-      if (b.frazzledT > 0 || (this.pile && this.pile.targetId === b.id)) continue;
+      if (b.frazzledT > 0 || this.chain?.target === b.id) continue;
       this._phaseBreak(b);
     }
   }
@@ -1113,79 +994,6 @@ export class Encounter {
     const ph = this.D.bosses[b.row.boss_kit].phases[b.boss.phase - 1];
     if (ph.bucket_refill) for (const p of this.props) if (p.refill_each_phase) p.usesLeft = p.uses;
     this._emit({ type: 'PhaseStarted', cat: b.id, phase: b.boss.phase });
-  }
-
-  /* ------------------------------------------------------------ Pile-On (DR-30) */
-
-  _offerTick() {
-    const k = this.k;
-    let offer = null;
-    const standingPosse = this.posse().filter(p => this.standing(p));
-    if (this.mode === 'fight' && !this.pile && standingPosse.length >= k.pile_on_min_cats) {
-      const c = this.controlled;
-      const fr = this.enemies().filter(e => this.standing(e) && e.frazzledT > 0);
-      if (fr.length) {
-        const lock = this.byId.get(this.lockId);
-        const t = fr.includes(lock) ? lock : fr.slice().sort((a, b) => dist(c, a) - dist(c, b))[0];
-        const others = this.enemies().filter(e => this.standing(e) && e !== t);
-        if (t.rankRow.leader) offer = { type: 'full', targetId: t.id, cluster: [t.id] };
-        else {
-          const cluster = fr.filter(e => !e.rankRow.leader && dist(e, t) <= k.quick_cluster_m + 1e-9);
-          if (cluster.length >= 2 || others.length === 0) offer = { type: 'quick', targetId: t.id, cluster: cluster.map(e => e.id) };
-        }
-        if (offer) { offer.t_rem = +t.frazzledT.toFixed(4); offer.pips = F.pips(t.frazzledT, k); }
-      }
-    }
-    const key = o => (o ? `${o.type}:${o.targetId}:${o.cluster.join(',')}` : '');
-    if (key(offer) !== key(this.offer)) {
-      if (offer) this._emit({ type: 'PileOnOffered', pile_type: offer.type, target: offer.targetId, cluster: offer.cluster });
-      else if (this.offer) this._emit({ type: 'PileOnWithdrawn', target: this.offer.targetId });
-    }
-    this.offer = offer;
-  }
-
-  _pileStart(offer, authored) {
-    const k = this.k, t = this.byId.get(offer.targetId);
-    this._slowBlinkClose('pile_on');
-    const cats = this.posse().filter(p => this.standing(p)).map(p => p.id);
-    const dur = offer.type === 'full' ? k.full_pile_s : k.quick_pile_s;
-    const tRem = t.frazzledT;
-    this.pile = { type: offer.type, targetId: t.id, cluster: offer.cluster.slice(), cats, t: 0, dur, tRem, beat: 0,
-      ids: new Set([...cats, ...offer.cluster]), home: cats.map(id => { const c = this.byId.get(id); return [id, c.x, c.z, c.y, c.onHR]; }) };
-    this.mode = 'pileon'; this.tagWin = null; this.offer = null;
-    cats.forEach((id, i) => { const c = this.byId.get(id); c.act = { kind: 'pileon', t: 0 }; c.orders = []; c.reserved = 0; c.bracing = false;
-      const ang = [[1, 0], [0, 1], [-1, 0], [0, -1]][i % 4]; c.x = t.x + ang[0] * 0.7; c.z = t.z + ang[1] * 0.7; c.y = t.y; });
-    for (const id of offer.cluster) { const e = this.byId.get(id); this._removeTeleOf(e); e.act = { kind: 'piled', t: 0 }; }
-    this._emitFeel({ type: 'PileOnStart', pile_type: offer.type, target: t.id, cluster: offer.cluster, cats, t_rem: +tRem.toFixed(4), pips: F.pips(tRem, k) },
-      { tier: BASE_TIER.pile_on, authored, victim: 'enemy', kind: 'pile_on', authoredT5: true }, null, null);
-  }
-
-  _pileTick(dt) {
-    const k = this.k, P = this.pile, t = this.byId.get(P.targetId);
-    P.t += dt;
-    const n = P.cats.length;
-    while (P.beat < n && P.t >= (P.beat + 1) * P.dur / (n + 1) - 1e-9) {
-      const c = this.byId.get(P.cats[P.beat]);
-      const ev = { type: 'PileOnBeat', cat: c.id, beat: P.beat + 1, of: n, style: c.style, flourish: c.pers?.Name ?? null };
-      if (P.type === 'full' && this.standing(t)) {
-        this._hit(c, t, { mv: F.pileOnBeatMV(P.tRem, k), fz: 0, kind: 'pile_on_beat', authored: 'player', noPaw: true });
-      }
-      this._emitFeel(ev, { tier: 3, authored: 'player', victim: 'enemy', kind: 'pile_on_beat' }, null, null);
-      P.beat++;
-    }
-    if (P.t >= P.dur - 1e-9) this._pileEnd();
-  }
-
-  _pileEnd() {
-    const k = this.k, P = this.pile, t = this.byId.get(P.targetId);
-    const routed = [];
-    if (P.type === 'quick') for (const id of P.cluster) { const e = this.byId.get(id); if (!e.routed) { e.act = null; this._rout(e, this.controlled, 'by_pile_on'); routed.push(id); } }
-    else if (t && !t.routed) { t.frazzledT = 0; t.fzg = 0; t.act = null; this._emit({ type: 'FrazzleEnded', cat: t.id, reason: 'pile_on' }); }
-    for (const [id, x, z, y, hr] of P.home) { const c = this.byId.get(id); if (!c) continue; c.x = x; c.z = z; c.y = y; c.onHR = hr; if (c.act?.kind === 'pileon') c.act = null; }
-    for (const id of P.cluster) { const e = this.byId.get(id); if (e.act?.kind === 'piled') e.act = null; }
-    this.pile = null; this.mode = 'fight';
-    this._emitFeel({ type: 'PileOnEnd', pile_type: P.type, target: P.targetId, routed }, { tier: BASE_TIER.pile_on, authored: 'player', victim: 'enemy', kind: 'pile_on', authoredT5: true }, null, null);
-    if (t?.boss?.pendingBreak) this._phaseBreak(t); // a Pile-On on a clamped Frazzle plays the break as its final beat
   }
 
   /* ------------------------------------------------------------ per-tick systems */
@@ -1215,8 +1023,7 @@ export class Encounter {
       }
       // Frazzle window and decay.
       if (e.side === 'enemy' && !e.routed) {
-        if (e.frazzledT > 0 && this.pile && this.pile.ids.has(e.id)) { /* the window is held while the Pile-On plays */ }
-        else if (e.frazzledT > 0) { e.frazzledT -= d; if (e.frazzledT <= 1e-9) { e.frazzledT = 0; e.fzg = 0; this._emit({ type: 'FrazzleEnded', cat: e.id, reason: 'window' }); } }
+        if (e.frazzledT > 0) { e.frazzledT -= d; if (e.frazzledT <= 1e-9) { e.frazzledT = 0; e.fzg = 0; this._emit({ type: 'StaggerEnded', cat: e.id, reason: 'window' }); } }
         else if (e.fzg > 0 && this.simT - e.lastFzGainT >= e.rankRow.fz_decay_after_s) e.fzg = Math.max(0, e.fzg - e.rankRow.fz_decay * d);
         const ps = k.enemy_paw_s[e.rank] / this.diff.enemy_paw;
         e.enemyPaws = Math.min(k.paw_cap, e.enemyPaws + k.paw_points / ps * d);
@@ -1256,6 +1063,11 @@ export class Encounter {
           }
           break;
         }
+        case 'atk': atkTick(this, e, a, d); break;
+        case 'dash': dashTick(this, e, a, d); break;
+        case 'charge': break;
+        case 'launched': e.y = 1.2 * 4 * Math.min(1, a.t / a.dur) * (1 - Math.min(1, a.t / a.dur)); if (a.t >= a.dur - 1e-9) { e.act = null; e.y = 0; } break;
+        case 'sidestep': e.x += a.vx * d; e.z += a.vz * d; if (a.t >= a.dur - 1e-9) e.act = null; break;
         case 'move': if (!a.committed && a.t >= a.windup - 1e-9) this._commitMove(e); if (e.act === a && a.t >= a.dur - 1e-9) { e.act = null; if (a.orderId) this.orderState.set(a.orderId, 'done'); } break;
         case 'windup': if (a.t >= a.dur - 1e-9) this._resolveWindup(e); break;
         case 'skitter': case 'enter': case 'knockback': case 'routed': {
@@ -1349,8 +1161,8 @@ export class Encounter {
       const speed = k.move_speed_mps * (e.status?.kind === 'soggy' ? k.soggy_mult : 1) * (e.id === this.controlledId ? 1 : k.ai_speed_mult) * (e.boss ? 0.5 : 1);
       if (e.id === this.controlledId && !e.orders.length) { vx = (e.moveIntent?.[0] || 0) * speed; vz = (e.moveIntent?.[1] || 0) * speed; }
       else if (e.goal) {
-        const dx = e.goal.x - e.x, dz = e.goal.z - e.z, l = len(dx, dz), stop = e.goal.stopAt ?? 0.05;
-        if (l > stop) { const s = Math.min(speed, (l - stop) / e.edt); vx = dx / l * s; vz = dz / l * s; }
+        const dx = e.goal.x - e.x, dz = e.goal.z - e.z, l = len(dx, dz), stop = e.goal.stopAt ?? 0.05, sp = speed * (e.goal.speed ?? 1);
+        if (l > stop) { const s = Math.min(sp, (l - stop) / e.edt); vx = dx / l * s; vz = dz / l * s; }
       }
       if (e.onHR) { // constrained to the High Road line
         const hr = this.hr(e.onHR), ax = norm(hr.b[0] - hr.a[0], hr.b[1] - hr.a[1]);
@@ -1407,31 +1219,15 @@ export class Encounter {
     this._emit({ type: 'FedUp' });
   }
 
-  _ensureLock() {
-    const l = this.byId.get(this.lockId);
-    if (this.standing(l) && l.side === 'enemy') return;
-    const c = this.controlled; if (!c) return;
-    let best = null, bd = INF;
-    for (const e of this.enemies()) if (this.standing(e)) { const d = dist(c, e); if (d < bd) { bd = d; best = e; } }
-    const prev = this.lockId; this.lockId = best?.id ?? null;
-    if (prev !== this.lockId) this._emit({ type: 'LockTarget', target: this.lockId });
-  }
-
-  _lockNext() {
-    const list = this.enemies().filter(e => this.standing(e));
-    if (!list.length) return;
-    const i = list.findIndex(e => e.id === this.lockId);
-    this.lockId = list[(i + 1) % list.length].id;
-    this._emit({ type: 'LockTarget', target: this.lockId });
-  }
+  _ensureLock() { /* M1.1: not locked by default; Tab (lockOn) locks */ }
 
   _endCheck(dt) {
     if (this.mode === 'ended' || this.mode === 'gloat') return;
-    if (this.pile) return;
+    if (this.chain) return;
     const enemiesLeft = this.enemies().some(e => !e.routed && !e.gone);
     if (!enemiesLeft) { this._end('win'); return; }
     if (this.posse().every(p => p.routed) && !this.def.tutorial) {
-      this.mode = 'gloat'; this.modeT = 0; this.slowBlink = false;
+      this.mode = 'gloat'; this.modeT = 0; this.skillBar = false;
       this.victorIds = this.enemies().filter(e => this.standing(e)).map(e => e.id);
       for (const t of this.teles.slice()) this._removeTele(t.id, 'gloat');
       this._emit({ type: 'Gloat', victors: this.victorIds, duration_s: this.k.gloat_s });
@@ -1453,7 +1249,7 @@ export class Encounter {
         else if (!p.routed) p.nerve = Math.min(p.nerveMax, p.nerve + Math.round((p.nerveMax - p.nerve) * k.lick_wounds));
       }
     }
-    this.slowBlink = false; this.pile = null; this.offer = null;
+    this.skillBar = false; this.chain = null;
     for (const t of this.teles.slice()) this._removeTele(t.id, 'ended');
     const g = this.guestE(); if (g && g.present && !g.gone) { g.gone = true; this._emit({ type: 'GuestLeft', cat: g.id, reason: 'encounter_ended' }); }
     this.outcome = outcome;
@@ -1473,7 +1269,10 @@ export class Encounter {
       controlled: e.id === this.controlledId, invulnerable: this._invuln(e), bracing: e.bracing, on_high_road: e.onHR,
       nerve: e.nerve, nerve_max: e.nerveMax, paws: e.side === 'enemy' ? null : +(e.paws / k.paw_points).toFixed(4), paw_points: e.side === 'enemy' ? null : e.paws,
       paws_reserved: e.reserved / k.paw_points, orders: e.orders.map(o => ({ move: o.move, target: o.target })),
-      frazzle: e.side === 'enemy' ? e.fzg : null, frazzled_s: e.frazzledT, pips: e.frazzledT > 0 ? F.pips(e.frazzledT, k) : 0,
+      stagger: e.side === 'enemy' ? e.fzg : null, staggered_s: e.frazzledT, pips: e.frazzledT > 0 ? F.pips(e.frazzledT, k) : 0,
+      can_move: canMoveFraction(this, e), intent: e.id === this.controlledId ? null : e.ai.intent, engaging: e.ai.engageOn,
+      attack: e.act?.kind === 'atk' ? { id: e.act.id, t: e.act.t, charge: e.act.charge } : e.act?.kind === 'charge' ? { id: 'charging', t: e.act.t, charge: Math.min(1, e.act.t / this.D.strings.HC.charge_max_s) } : null,
+      special: e.side === 'posse' ? e.special : null, special_ready: e.side === 'posse' ? e.special >= k.special.max - 1e-9 : null,
       ruffled_s: e.ruffledT === INF ? -1 : e.ruffledT, splat_s: e.splatT, clumped_s: e.clumpedT,
       status: e.status ? { kind: e.status.kind, left_s: e.status.t, source: e.status.src } : null,
       anger_fired_up: e.anger ? { active: this._angerActive(e), left_s: e.anger.left === INF ? -1 : e.anger.left, stage: e.angerStage } : null,
@@ -1483,16 +1282,16 @@ export class Encounter {
     });
     return {
       tick: this.tick, t: this.realT, sim_t: this.simT, fight_t: this.fightT, time_scale: this.timeScale, mode: this.mode,
-      slow_blink: this.slowBlink, controlled: this.controlledId, lock: this.lockId,
+      skill_bar: this.skillBar, controlled: this.controlledId, lock: this.lockId, locked: !!this.lockId,
       arena: { id: this.def.arena, origin: this.arena.origin, ring_center: [this.ringC.x, this.ringC.z], ring_radius: this.ringR, high_roads: this.hrs, bounds: this.ringBounds() },
       props: this.props.map(p => ({ id: p.id, kind: p.kind, pos: [p.x, 0, p.z], uses_left: p.usesLeft })),
       entities: this.entities.map(ent),
       telegraphs: this.teles.map(t => ({ id: t.id, attacker: t.attackerId, cls: t.cls, move: t.moveId, aimed_at: t.aimedAt, shape: t.shape, t: this.simT - t.t0, dur: t.dur, fill: Math.min(1, (this.simT - t.t0) / t.dur) })),
-      tag_window: this.tagWin ? { target: this.tagWin.targetId, left_s: Math.max(0, this.tagWin.until - this.simT), relay: !!this.tagWin.byTagIn } : null,
-      relay: this.relay ? { starter: this.relay.starter, count: this.relay.count, members: [...this.relay.members], bonus_locked: this.simT < this.relayLockUntil } : null,
-      relay_bonus_locked_s: Math.max(0, this.relayLockUntil - this.simT),
-      pile_on_offer: this.offer ? { ...this.offer } : null,
-      pile_on: this.pile ? { type: this.pile.type, target: this.pile.targetId, cats: this.pile.cats.slice(), t: this.pile.t, dur: this.pile.dur } : null,
+      special_prompt: specialPrompt(this),
+      special_chain: this.chain ? { target: this.chain.target, t: this.chain.t, total_s: this.chain.total, team_finisher: this.chain.team, shortened: this.chain.short,
+        steps: this.chain.steps.map(x => ({ cat: x.cat, start_s: x.start, dur_s: x.dur, done: x.done })) } : null,
+      chains_this_fight: this.chainCount, next_chain_shortened: this.chainCount > 0,
+      stagger_slow: this.slowMo ? { scale: this.slowMo.scale, left_s: this.slowMo.left } : null,
       fed_up: this.fedUp, outcome: this.outcome,
     };
   }
@@ -1513,11 +1312,11 @@ export class Encounter {
   state() {
     const ent = e => ({ id: e.id, x: e.x, y: e.y, z: e.z, fx: e.fx, fz: e.fz, n: e.nerve, p: e.paws, fzg: e.fzg, fr: e.frazzledT, ru: e.ruffledT === INF ? -1 : e.ruffledT,
       sp: e.splatT, st: e.status, an: e.anger ? { l: e.anger.left === INF ? -1 : e.anger.left } : null, act: e.act ? { k: e.act.kind, t: e.act.t, i: e.act.idx, m: e.act.moveId } : null,
-      r: e.routed, g: e.gone, pr: e.present, hr: e.onHR, ep: e.enemyPaws, ai: { t: e.ai.targetId, cd: e.ai.cd, tok: e.ai.tokenOn }, b: e.boss ? { s: e.boss.state, ph: e.boss.phase, gt: e.boss.groundT, sw: e.boss.swingCd } : null,
+      r: e.routed, g: e.gone, pr: e.present, hr: e.onHR, ep: e.enemyPaws, ai: { t: e.ai.targetId, cd: e.ai.cd, tok: e.ai.tokenOn, in: e.ai.intent, eo: e.ai.engageOn, ph: e.ai.phaseT }, spc: e.special, act2: e.act?.id ?? null, b: e.boss ? { s: e.boss.state, ph: e.boss.phase, gt: e.boss.groundT, sw: e.boss.swingCd } : null,
       rng: e.aiStream.draws });
-    return { tick: this.tick, simT: this.simT, mode: this.mode, ctl: this.controlledId, lock: this.lockId, sb: this.slowBlink, gs: this.globalStop,
+    return { tick: this.tick, simT: this.simT, mode: this.mode, ctl: this.controlledId, lock: this.lockId, sb: this.skillBar, gs: this.globalStop, ch: this.chain ? [this.chain.target, this.chain.t] : null, cc: this.chainCount, sm: this.slowMo,
       ents: this.entities.map(ent), teles: this.teles.map(t => [t.id, t.attackerId, t.moveId, t.t0, t.dur]), props: this.props.map(p => p.usesLeft),
-      relay: this.relay ? [this.relay.count, [...this.relay.members]] : null, out: this.outcome, arb: this.arbiter.state() };
+      out: this.outcome, arb: this.arbiter.state() };
   }
 
   hash() { return hashOf(this.state()); }

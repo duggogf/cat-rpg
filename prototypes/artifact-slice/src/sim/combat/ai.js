@@ -63,7 +63,7 @@ export function posseThink(enc, e) {
   if (P.target === 'props_or_random2') {
     const prop = enc.props.find(p => p.usesLeft > 0 && len(p.x - e.x, p.z - e.z) <= k.ai_prop_m && opp.some(x => x.y < 0.5 && len(x.x - p.x, x.z - p.z) <= p.splash_m));
     if (prop && e.ai.cd <= 0 && e.y < 0.5) {
-      if (len(prop.x - e.x, prop.z - e.z) <= k.string_reach_m + prop.radius - 0.2) { e.fx = norm(prop.x - e.x, prop.z - e.z)[0]; e.fz = norm(prop.x - e.x, prop.z - e.z)[1]; enc._startString(e, 'ai', false); e.act.targetId = null; e.ai.cd = postureTime(enc, e); return; }
+      if (len(prop.x - e.x, prop.z - e.z) <= k.string_reach_m + prop.radius - 0.2) { e.fx = norm(prop.x - e.x, prop.z - e.z)[0]; e.fz = norm(prop.x - e.x, prop.z - e.z)[1]; enc._startString(e, 'ai', false); e.act.targetId = null; e.ai.cd = 2; e.ai.intent = 'attack'; e.ai.comboLeft = 0; return; }
       e.goal = { x: prop.x, z: prop.z, stopAt: k.string_reach_m + prop.radius - 0.4 }; return;
     }
   }
@@ -92,29 +92,98 @@ export function posseThink(enc, e) {
   e.ai.hrWait = 0;
   if (e.onHR && !t.onHR) { enc._hop(e, [0, 0]); return; }
 
-  // 6. Cadence: a full string at ~35% uptime, posture between strings.
-  e.ai.cd -= e.edt;
+  // 6. Engagement (M1.1 §4): circle, stalk, posture, flank; dash in for a combo when a slot is free; back out.
+  const S = P.ai_style, c = enc.controlled;
   const reach = k.string_reach_m + t.radius;
-  const wantsAttack = P.target !== 'avenge' || (e.ai.avengeId === t.id && e.ai.avengeT > 0);
-  if (e.ai.cd <= 0 && wantsAttack) {
-    if (dist(e, t) <= reach && enc._sameLevel(e, t)) { enc._face(e, t); enc._startString(e, 'ai', true); e.act.targetId = t.id; e.ai.cd = postureTime(enc, e); return; }
-    e.goal = { x: t.x, z: t.z, stopAt: reach - 0.35 }; e.ai.faceId = t.id; return;
+  if (S.hold_near_controlled_m && c && c !== e && enc.standing(c) && !ENGAGED.has(e.ai.intent) && e.ai.intent !== 'attack' && dist(t, c) > S.hold_near_controlled_m + 0.5) {
+    const [dx, dz] = norm(t.x - c.x, t.z - c.z); // the Stalwart holds its ground beside the controlled cat
+    e.ai.intent = 'hold'; e.ai.engageOn = null;
+    e.goal = { x: c.x + dx * 1.4, z: c.z + dz * 1.4, stopAt: 0.3, speed: 0.8 }; e.ai.faceId = t.id; return;
   }
-  // Posture at the personality's distance band.
-  const c = enc.controlled;
-  if (P.target === 'guard_controlled' && c && c !== e) {
-    const [dx, dz] = norm(t.x - c.x, t.z - c.z);
-    e.goal = { x: c.x + dx * 1.4, z: c.z + dz * 1.4, stopAt: 0.3 }; e.ai.faceId = t.id; return;
-  }
-  if (P.target === 'rear_opportunist') { e.goal = { x: t.x - t.fx * 1.8, z: t.z - t.fz * 1.8, stopAt: 0.3 }; e.ai.faceId = t.id; return; }
-  const band = P.target === 'avenge' && !(e.ai.avengeT > 0) ? P.band_m : P.target === 'keep_distance' || P.target === 'controlled_lock' ? P.band_m : [1.8, 2.6];
-  hold(enc, e, t, (band[0] + band[1]) / 2);
-  e.ai.faceId = t.id;
+  const aggr = P.target === 'avenge' ? (e.ai.avengeId === t.id && e.ai.avengeT > 0 ? S.avenge_aggression : S.aggression) : S.aggression;
+  engage(enc, e, t, S, aggr, reach, () => {
+    enc._face(e, t); enc._startString(e, 'ai', (S.combo ?? 3) > 1); e.act.targetId = t.id; e.ai.comboLeft = 0;
+  });
 }
 
-function postureTime(enc, e) {
-  const k = enc.k, u = k.ai_attack_uptime;
-  return k.string_cycle_s * (1 - u) / u * e.aiStream.range(0.8, 1.2);
+/* ------------------------------------------------------------------ engagement (shared by both sides) */
+
+export const ENGAGED = new Set(['dash_in', 'attack', 'feint']);
+const ROT = 0.45, COS_R = Math.cos(ROT), SIN_R = Math.sin(ROT);
+
+/** How many fighters are engaging t right now (dashing in, attacking or feinting). */
+export function engagersOf(enc, t, except = null) {
+  return enc.entities.filter(x => x !== except && enc.standing(x) && x.ai.engageOn === t.id && ENGAGED.has(x.ai.intent)).length;
+}
+
+/** Engagement slots on a target: the controlled cat 2 (1-2 enemies engage the player at once), an AI cat 1, an enemy 2. */
+function engageCap(enc, t) {
+  const E = enc.k.engage;
+  if (t.id === enc.controlledId) return enc.diff.tokens_controlled;
+  return t.side === 'enemy' ? E.crew_per_enemy : E.per_ai_cat;
+}
+
+const pickInt = (rng, v) => (Array.isArray(v) ? Math.floor(rng.range(v[0], v[1] + 1 - 1e-9)) : v);
+
+function retreat(enc, e, t, S) {
+  const A = e.ai, rng = e.aiStream, E = enc.k.engage;
+  A.intent = 'retreat'; A.phaseT = rng.range(E.retreat_s[0], E.retreat_s[1]);
+  A.engageOn = null; A.engageCd = rng.range(S.engage_cd[0], S.engage_cd[1]);
+  hold(enc, e, t, (S.band[0] + S.band[1]) / 2 + 0.4); e.ai.faceId = t.id;
+}
+
+/**
+ * One tick of the engagement loop for a fighter e against its focus t. attackFn starts one attack and must
+ * leave e.act set (crew string or enemy windup).
+ */
+function engage(enc, e, t, S, aggression, reach, attackFn) {
+  const E = enc.k.engage, A = e.ai, rng = e.aiStream;
+  A.phaseT -= e.edt; A.engageCd -= e.edt; A.decideT -= e.edt;
+  const d = dist(e, t), bandMid = (S.band[0] + S.band[1]) / 2;
+  A.faceId = t.id;
+  switch (A.intent) {
+    case 'dash_in':
+      if (d <= reach && enc._sameLevel(e, t)) { A.intent = 'attack'; attackFn(); return; }
+      if (A.phaseT <= 0) { retreat(enc, e, t, S); return; }
+      e.goal = { x: t.x, z: t.z, stopAt: Math.max(0.3, reach - 0.3), speed: E.dash_speed_mult }; return;
+    case 'feint':
+      if (d <= Math.max(reach + 0.5, S.band[0] * 0.6) || A.phaseT <= 0) { retreat(enc, e, t, S); return; }
+      e.goal = { x: t.x, z: t.z, stopAt: reach, speed: E.dash_speed_mult }; return;
+    case 'attack':
+      if (A.comboLeft > 0 && d <= reach + 0.3 && enc.standing(t) && enc._sameLevel(e, t)) { attackFn(); return; }
+      retreat(enc, e, t, S); return;
+    case 'retreat':
+      if (A.phaseT > 0) { hold(enc, e, t, bandMid + 0.4); return; }
+      A.intent = 'circle'; A.phaseT = 0; A.engageOn = null; break;
+    default: break;
+  }
+  A.engageOn = null;
+  if (A.decideT <= 0) {
+    A.decideT = E.decide_s;
+    if (A.engageCd <= 0 && engagersOf(enc, t, e) < engageCap(enc, t) && rng.chance(aggression)) {
+      A.engageOn = t.id;
+      if (rng.chance(S.feint_p)) { A.intent = 'feint'; A.phaseT = 1.5; }
+      else { A.intent = 'dash_in'; A.phaseT = 2.5; A.comboLeft = pickInt(rng, S.combo ?? 1); }
+      return;
+    }
+    if (A.phaseT <= 0) {
+      const r = rng.float();
+      A.intent = r < S.posture_p ? 'posture' : r < S.posture_p + S.flank_p ? 'flank' : S.front ? 'strut' : rng.chance(0.5) ? 'circle' : 'stalk';
+      A.phaseT = A.intent === 'posture' ? rng.range(E.posture_s[0], E.posture_s[1]) : rng.range(E.circle_switch_s[0], E.circle_switch_s[1]);
+      A.circleSign = rng.chance(0.5) ? 1 : -1;
+    }
+  }
+  let vx = e.x - t.x, vz = e.z - t.z; const l = len(vx, vz) || 1; vx /= l; vz /= l;
+  switch (A.intent) {
+    case 'posture': e.goal = null; break; // arched back, tail lash, hiss: hold still and face it
+    case 'flank': e.goal = { x: t.x - t.fx * bandMid, z: t.z - t.fz * bandMid, stopAt: 0.3, speed: 0.75 }; break;
+    case 'strut': e.goal = { x: t.x + t.fx * bandMid + (-t.fz) * A.circleSign * 0.8, z: t.z + t.fz * bandMid + t.fx * A.circleSign * 0.8, stopAt: 0.3, speed: 0.6 }; break;
+    case 'stalk': e.goal = { x: t.x + vx * S.band[0], z: t.z + vz * S.band[0], stopAt: 0.2, speed: 0.4 }; break;
+    default: { // circle: step round the target at the band's middle
+      const sg = A.circleSign, rx = vx * COS_R - vz * SIN_R * sg, rz = vx * SIN_R * sg + vz * COS_R;
+      e.goal = { x: t.x + rx * bandMid, z: t.z + rz * bandMid, stopAt: 0.1, speed: 0.6 };
+    }
+  }
 }
 
 /** Move to distance d from target t along the current bearing. */
@@ -252,54 +321,57 @@ function habitAllows(enc, e, m, t) {
 
 /* ------------------------------------------------------------------ enemies */
 
-function tokenCap(enc, c) { return c.id === enc.controlledId ? enc.diff.tokens_controlled : enc.k.tokens_ai; }
-
-function acquireToken(enc, e) {
-  const k = enc.k;
+/** The enemy's focus: the nearest opponent (a Stalwart beside the controlled cat draws it, its perk), kept ~2 s. */
+function focusTarget(enc, e) {
+  const k = enc.k, c = enc.controlled;
+  let t = enc.byId.get(e.ai.tokenOn);
+  if (t && enc.standing(t) && t.present && e.ai.retarget > 0) return t;
   const cands = enc.opponentsOf(e).filter(x => x.present);
-  const c = enc.controlled;
-  const score = x => {
-    let s = dist(e, x);
-    // Stalwart perk: takes attack-token priority (the perk of the target, not Posse membership).
-    if (x.pers?.perk === 'guard_allies' && c && dist(x, c) <= k.stalwart_guard_m) s -= 1.5;
-    return s;
-  };
+  const score = x => dist(e, x) - (x.pers?.perk === 'guard_allies' && c && dist(x, c) <= k.stalwart_guard_m ? 1.5 : 0);
   cands.sort((a, b) => score(a) - score(b) || (a.id < b.id ? -1 : 1));
-  for (const x of cands) {
-    const held = enc.enemies().filter(o => o !== e && o.ai.tokenOn === x.id && enc.standing(o)).length;
-    if (held < tokenCap(enc, x)) { e.ai.tokenOn = x.id; return x; }
-  }
-  return null;
+  t = cands.find(x => engagersOf(enc, x, e) < engageCapOf(enc, x)) || cands[0] || null;
+  e.ai.tokenOn = t ? t.id : null; e.ai.retarget = 2;
+  return t;
+}
+const engageCapOf = (enc, t) => (t.id === enc.controlledId ? enc.diff.tokens_controlled : enc.k.engage.per_ai_cat);
+
+function planAttack(enc, e, t) {
+  const k = enc.k, D = enc.D, rng = e.aiStream;
+  const redActive = enc.teles.some(x => x.cls === 'red');
+  const usable = e.moves.map(id => D.moves[id]).filter(m => m && e.enemyPaws >= m.cost * k.paw_points - 1e-9 && !(e.moveCd[m.Name] > 0)
+    && (m.cost < 2 || !redActive) && m.ai_use !== 'support'
+    && (m.role === 'payoff' ? m.pays_on.some(st => enc._hasState(t, st)) : true));
+  return usable.length && rng.chance(0.5) ? rng.pick(usable).Name : 'enemy_swipe';
 }
 
 export function enemyThink(enc, e) {
-  const k = enc.k, D = enc.D, rng = e.aiStream;
+  const k = enc.k, D = enc.D, rng = e.aiStream, A = e.ai;
   if (enc.mode !== 'fight' || e.act || e.splatT > 0 || e.frazzledT > 0 || e.flinchT > 0) return;
-  e.goal = null; e.ai.faceId = null;
-  if (e.row.flee_threshold != null && !e.ai.fled && e.nerve / e.nerveMax <= e.row.flee_threshold) { e.ai.fled = true; enc._enemyWindup(e, 'rival_bolt', null); return; }
-  e.ai.cd -= e.edt;
-  let t = enc.byId.get(e.ai.tokenOn);
-  if (!t || !enc.standing(t) || !t.present) { e.ai.tokenOn = null; t = null; }
-  if (!t && e.ai.cd <= 0) t = acquireToken(enc, e);
-  const opp = enc.opponentsOf(e).filter(x => x.present);
-  if (!opp.length) return;
-  if (!t) { const n = opp.slice().sort((a, b) => dist(e, a) - dist(e, b))[0]; hold(enc, e, n, e.pers.band_m[1]); e.ai.faceId = n.id; return; }
-  if (e.ai.cd > 0) { hold(enc, e, t, (e.pers.band_m[0] + e.pers.band_m[1]) / 2); e.ai.faceId = t.id; return; }
-  if (!e.ai.plan) {
-    const redActive = enc.teles.some(x => x.cls === 'red');
-    const usable = e.moves.map(id => D.moves[id]).filter(m => m && e.enemyPaws >= m.cost * k.paw_points - 1e-9 && !(e.moveCd[m.Name] > 0)
-      && (m.cost < 2 || !redActive)
-      && (m.ai_use === 'support' ? e.nerve / e.nerveMax < k.purr_ally_pct && e.healed < k.enemy_heal_cap * e.nerveMax - 1 : true)
-      && (m.role === 'payoff' && m.ai_use !== 'support' ? m.pays_on.some(s => enc._hasState(t, s)) : true));
-    e.ai.plan = usable.length && rng.chance(0.6) ? rng.pick(usable).Name : 'enemy_swipe';
+  e.goal = null; A.faceId = null; A.retarget -= e.edt;
+  if (e.row.flee_threshold != null && !A.fled && e.nerve / e.nerveMax <= e.row.flee_threshold) { A.fled = true; enc._enemyWindup(e, 'rival_bolt', null); return; }
+  // Self-heal when low (a support Move), outside the engagement loop.
+  const heal = e.moves.map(id => D.moves[id]).find(m => m?.ai_use === 'support' && e.enemyPaws >= m.cost * k.paw_points && e.nerve / e.nerveMax < k.purr_ally_pct && e.healed < k.enemy_heal_cap * e.nerveMax - 1);
+  if (heal && !ENGAGED.has(A.intent)) { enc._enemyWindup(e, heal.Name, e); return; }
+  const t = focusTarget(enc, e);
+  if (!t) return;
+  // Side-step the controlled cat's swing when not engaged (cats watch each other).
+  const c = enc.controlled;
+  if (c && c.act?.kind === 'atk' && c.act.targetId === e.id && !c.act.hit && A.sideFor !== c.act && !ENGAGED.has(A.intent)) {
+    A.sideFor = c.act;
+    if (rng.chance(e.pers.ai_style.sidestep_p)) {
+      const [dx, dz] = norm(e.x - c.x, e.z - c.z), sg = rng.chance(0.5) ? 1 : -1, E = k.engage;
+      e.act = { kind: 'sidestep', t: 0, dur: 0.3, vx: (-dz * sg) * E.sidestep_m / 0.3, vz: (dx * sg) * E.sidestep_m / 0.3 };
+      A.intent = 'sidestep'; return;
+    }
   }
-  const mv = D.moves[e.ai.plan];
-  if (mv.ai_use === 'support') { enc._enemyWindup(e, mv.Name, e); e.ai.plan = null; e.ai.cd = k.enemy_attack_period_s * rng.range(0.8, 1.2); return; }
-  const range = mv.shape === 'ring' ? 99 : mv.range;
-  if (dist(e, t) - t.radius > range - 0.25 || !enc._sameLevel(e, t)) { e.goal = { x: t.x, z: t.z, stopAt: Math.max(0.5, range - 0.4) }; e.ai.faceId = t.id; return; }
-  enc._face(e, t);
-  enc._enemyWindup(e, mv.Name, t);
-  e.ai.plan = null; e.ai.cd = k.enemy_attack_period_s * rng.range(0.8, 1.2);
+  if (A.intent === 'sidestep') A.intent = 'circle';
+  if (A.intent === 'dash_in' && !A.plan) A.plan = planAttack(enc, e, t);
+  const reach = A.plan ? D.moves[A.plan].range + t.radius - 0.1 : D.moves.enemy_swipe.range + t.radius - 0.1;
+  engage(enc, e, t, e.pers.ai_style, e.pers.ai_style.aggression, reach, () => {
+    const plan = A.plan || planAttack(enc, e, t);
+    enc._face(e, t); enc._enemyWindup(e, plan, t);
+    A.plan = null; A.comboLeft = Math.max(0, A.comboLeft - 1);
+  });
 }
 
 /* ------------------------------------------------------------------ Daifuku (phase 1 kit) */
@@ -311,6 +383,7 @@ export function bossThink(enc, b) {
   B.swingCd -= b.edt;
   const opp = enc.opponentsOf(b).filter(x => x.present);
   if (!opp.length) return;
+  b.ai.intent = B.state === 'wall' ? 'pace' : 'ground';
   if (B.state === 'wall' && b.onHR) {
     const perched = opp.filter(x => x.onHR === b.onHR).sort((p, q) => dist(b, p) - dist(b, q));
     const ground = opp.filter(x => !x.onHR && x.y < 0.5).sort((p, q) => dist(b, p) - dist(b, q));

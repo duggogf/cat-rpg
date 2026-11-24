@@ -752,21 +752,21 @@ Top half is personality; bottom half is the build.
 |---|---|
 | **Personality panel** (largest) | Animated idle; icon and name; three one-liners in the brief §3.5 shape: **Fights like** · **On guard** · **Likes / dislikes**; bonds with / clashes with (portraits of Crew who match) |
 | Loyalty | **Tier word** (Shifty / Aloof / Steady / True / Sworn) on a 5-segment tier bar with the current tier lit, no numeral, plus **what it opens**: "Can be taught" (Steady+), "Can be Warden" (True+). Recent change shown as a heart pop or cloud with its cause ("Shared a Morsel", "Benched 2 days", "Its post was Scuffed") |
-| **Old Gang stamp** (OR-06) | For a recruit whose own Memory holds `OLD_GANG`: the Old Boss's chip and one of two words: **"Nerves"** (it flinches at the sight of him: Cowed until you Tag-In to it) or **"Steady"** (its personality resists: Braggart, Stalwart, Brooder, or it is Sworn). Hige: "Old Boss: Daifuku · Steady" |
+| **Old Gang stamp** (OR-06) | For a recruit whose own Memory holds `OLD_GANG`: the Old Boss's chip and one of two words: **"Nerves"** (it flinches at the sight of him: Cowed until you command it from the skill bar) or **"Steady"** (its personality resists: Braggart, Stalwart, Brooder, or it is Sworn). Hige: "Old Boss: Daifuku · Steady" |
 | Ties | Its relationship tags to discovered cats (Kin, Rival), as on the Rival card |
 | Style and level | Style icon; level; XP pips |
 | Moves | 4 slots: icon, name, Paw cost, Set-up/Pay-off mark |
 | Signature perk | Ex-Rivals only: their Strength, now always on. Strays have none |
 | History | Ex-Rivals keep their Memory strip, Scars and Title; Old Score marks against current Rivals |
-| Assignment | Posse (with its D-pad slot) / Posted (Patch) / Lounging |
+| Assignment | Posse (with its slot) / Posted (Patch) / Lounging |
 | Wavering (OR-11) | Posted ex-Rival recruits only. A turned-away pose, the two-pip morning mark ("last warning" on the second) and the fix line ("Bring it into the Posse, or off its post.") |
-| Zoomies | Its Style Zoomies (read-only) |
+| Special | Its Style Special (Zoomies folded in, M1.1; read-only) |
 
 ### 6.3 Posse builder
 
-At the Lot: Mikan is fixed on **Up**; three slots on **Left / Down / Right** match the D-pad switch and the combat plates (`hud.md` §4.1). Slots unlock as recruits arrive; four cats by Life 2 day 2 (DR-01).
+At the Lot: Mikan is fixed in the **first slot**; three Crew slots follow in the order of the combat plates and the skill-bar rows (`hud.md` §4.1, §4.4). There is no switching (M1.1: the player controls Mikan only). Slots unlock as recruits arrive; four cats by Life 2 day 2 (DR-01).
 
-Each slot shows the cat's personality icon, Style, Moves. The builder draws **bonded pair links** ("stronger Tag-In between these two") and **clashing warnings** ("−1 Loyalty each per day together"), and an **Old Gang note** when a slotted cat has Nerves ("Flinches at Daifuku"), so the player can plan the Tag-In. A posted cat placed here leaves its post (confirm shows the Patch it vacates).
+Each slot shows the cat's personality icon, Style, Moves. The builder draws **bonded pair links** ("stronger Specials back to back in a chain") and **clashing warnings** ("−1 Loyalty each per day together"), and an **Old Gang note** when a slotted cat has Nerves ("Flinches at Daifuku"), so the player can plan the command that steadies it. A posted cat placed here leaves its post (confirm shows the Patch it vacates).
 
 **Away from the Lot: Tail-Up only** (DR-38). D-pad Left/Right (V) in exploration opens the compact picker; only Lounging cats appear selectable; posted cats are halftoned: "On guard at Gatepost. Change at the Lot." Not usable inside Haru's wall or on the walk home after a loss. There is no Posse editing from the pause menu.
 
@@ -814,14 +814,14 @@ A single button on its tab: the cost (Σ Crew levels), the Stash, and a preview 
 |---|---|---|---|---|
 | 0:00–0:04 | **K1.1 The Box in the Rain.** Haru **hums** (not the Call). | Camera orbit (right stick / mouse) at the very end | The kitten looks up at the yellow raincoat; a stick pictogram fades in once | Player orbits |
 | 0:04–0:05 | The garden | **Move**, **Jump/Hop** to the low wall (South / Space) | A butterfly lands on the wall; South glyph on first approach | Reaches the wall |
-| 0:05–0:06:30 | A crow on the **lane-side wall top**, outside the garden (R4: no combat inside the wall) | **Swat / Attack** (West / LMB): the 3-hit string | West glyph as the crow lands; the third hit's finisher gets its T2 burst | Crow hit |
-| 0:06:30–0:08 | The crow dives (still on the lane-side wall top) | **Skitter** (East / Shift) on a white telegraph | Slow first dive; white ring decal + East glyph | One Skitter |
+| 0:05–0:06:30 | A crow on the **lane-side wall top**, outside the garden (R4: no combat inside the wall) | **Light attack** (West / LMB): L-L-L; **Lock-on** (R3 / Tab) | West glyph as the crow lands; the third hit's Flurry gets its T2 burst; Tab glyph once the crow takes off | Crow hit |
+| 0:06:30–0:08 | The crow dives (still on the lane-side wall top) | **Dodge** (South / Space) on a white telegraph | Slow first dive; white ring decal + Dodge glyph | One Dodge |
 | ≈ 0:08–0:10 | **The old wall cat**: "Use your whiskers, Collar." | **Whisker Sense** (R2 / Tab hold): trail and compass ring | The cat says it; R2 glyph; the trail leads to the cat's spot | Follows the trail; **Hige joins** (free) |
-| 0:10–0:11 | Two Strays in the lane | **Switch** (D-pad Left / X to Hige, Up / Z back to Mikan) | Hige gets cornered; his plate pulses with its D-pad glyph | One switch |
+| 0:10–0:11 | Two Strays in the lane | **Heavy** (North / RMB) and the **L-L-L-H finisher** | Hint card "Light, Light, Light, Heavy" the first time the third Light lands | One finisher |
 | 0:11–0:12 | | **First Paw** fills | Paw pip pops with a bell tick; hint "Paws buy Moves" | — |
-| 0:12–0:13 | | **Slow Blink** (R2 / Tab): choose a Move | Slow Blink opens itself once the first time a Paw fills, cursor on Move 1 | One Move used |
-| 0:13–0:14 | | **Command the other cat** (L1/R1 in Slow Blink) | Hige's "can act" bell lights; hint "L1/R1: other cats" | One commanded Move |
-| 0:14–0:15 | Last Stray | **Frazzle → Quick Pile-On** (North / F) | Frazzled ring on the last enemy; dust-pom prompt; hint card "North: PILE-ON" | **Two-cat Pile-On** by minute 15 |
+| 0:12–0:13 | | **Skill bar** (R2 / R): choose a Move for Mikan | The skill bar opens itself once the first time a Paw fills, cursor on Mikan's Move 1 | One Move used |
+| 0:13–0:14 | | **Command the other cat** (Hige's row on the skill bar) | Hige's "can act" bell lights; hint "Hige's row: tell him what to do" | One commanded Move |
+| 0:14–0:15 | Last Stray | **Stagger → Special** (R1 / **F**); Hige's Special chains | Stagger presentation on the last enemy; F starburst with Hige's face; hint card "Staggered: press F" (both meters start full in this fight, Combat F8) | **First Special chain** by minute 15 |
 
 ### 7.3 The rest of the first hour (Life 1, days 1–2)
 
@@ -831,21 +831,21 @@ A single button on its tab: the cost (Σ Crew levels), the Stash, and a preview 
 | 0:17–0:19 | One wave, then the Keeper (an **untracked Stray**: Routing it gives no Verdict) | **Hiss** on the Keeper's **yellow** telegraph |
 | 0:19–0:20 | A Tough at low Nerve in the wave | **Back Down** (Hiss at ≤ 15%). Hint after, not before |
 | 0:20–0:21 | The post has no Keeper now | **Spray** (North / E): **Claim Spray**, Patch claimed; the tag flips to the Bell. "Fight to clear, spray to claim" is taught by doing it |
-| 0:21–0:22 | **The First Thorn Standoff**: **Togemaru** (Braggart Scrapper), after the claim (name-card, sting contour) | **Brace** (R1 / RMB hold) against his string. **His flee at 25% cannot be interrupted on day 1** (OR-14), so the first Verdict is always day 2's |
+| 0:21–0:22 | **The First Thorn Standoff**: **Togemaru** (Braggart Scrapper), after the claim (name-card, sting contour) | **Launcher** (L → H) and **charged Heavy** (hold North / RMB) against a cat that circles and struts (attack tokens, Combat §3.11). **His flee at 25% cannot be interrupted on day 1** (OR-14), so the first Verdict is always day 2's |
 | 0:22–0:23 | Sunspot | **Nap**: the **phase dial** jumps half a phase; heal |
 | 0:23–0:25 | Dusk chime, the lamp wave; **K1.3 The first Call**; evening at home; sleep | **Call glyph**; **Head Home** thread (D-pad Down / H hold); home verbs by pictogram; Bond hearts |
 | 0:25–0:26 | **Day 2 Doorstep**: the first 1-item Sniff ("the Thorn waits at the gatepost") + first Tribute | **Doorstep Sniff**, the pile |
 | 0:26–0:27 | The Lot (Crew tab only) | **Crew card**: personality front and centre for Hige |
-| ≈ 0:28–0:31 | **The Thorn at the Laundry Pole Yard gatepost**: memory-citing Standoff line ("I ran yesterday. Not off my own post, Collar."), unskippable for 1 s; the contest | **Tag-In** (spark ring + plate glyph pop; hint on the first two windows) |
+| ≈ 0:28–0:31 | **The Thorn at the Laundry Pole Yard gatepost**: memory-citing Standoff line ("I ran yesterday. Not off my own post, Collar."), unskippable for 1 s; the contest | **Hiss from the skill bar** on his yellow; **Dash → Light** lunge (hint on the first two openings) |
 | 0:31–0:32 | Togemaru Routed | **First Verdict**: three cards; hint line "Choose what they become. Chasing off is for good." Then the **Claim Spray** of the gatepost (the prompt appears at once) |
 | 0:32–0:33 | From the yard, Daifuku is on his wall; Hige: "That's Daifuku up there." | **Sniff to discover** (hold Whisker Sense on him for 1 s within 10 m): the scent-outline confirmation (`hud.md` §3.2). In Life 1 there is no Rivals chip: the payoff is on Life 2 day 1, when he is the only coloured cat on his perch in the Lane scene |
-| 0:33–0:40 | **Pon** joins (story recruit 2); free roaming, 1–2 fights | Posse of three; **Relay** happens if it happens (not taught by card) |
+| 0:33–0:40 | **Pon** joins (story recruit 2); free roaming, 1–2 fights | Posse of three; a three-cat Special chain happens if the meters line up (not taught by card) |
 | 0:40–0:45 | Dusk, home, **K1.4** (Life 1 Closing); sleep | Life 1 ends |
 | 0:45–0:47 | Montage 1→2; **Life 2 day 1** Doorstep: the 3-item Sniff | **Rivals board** reveal: "(N) See the Rivals" on a Sniff card (§7.4) |
 
 *Times follow `day-loop.md` §3.9 (the budget owner; aligned in the consistency pass).*
 
-**Slice tests covered:** two cats and a Pile-On by 0:15; first memory-citing Rival line at ≈ 0:28 (target < 1:00, 100% of testers).
+**Slice tests covered:** two cats and a Special chain by 0:15; first memory-citing Rival line at ≈ 0:28 (target < 1:00, 100% of testers).
 
 ### 7.4 Life 2: one headline per day (DR-22; days per `day-loop.md` §3.9 and the rulings)
 
@@ -853,10 +853,10 @@ A single button on its tab: the cost (Σ Crew levels), the Stash, and a preview 
 
 | Day | Headline teach | Also switching on (each one look, no extra verb) |
 |---|---|---|
-| **L2D1** | **Ambush** (from the High Road, Pounce opener; the Rival yowl-sting with its Skitter/Brace counter) | **The Rivals board** from the 3-item Sniff: opens focused on the Sniff's cat; one hint card "Hover a cat: see who it knows." The first ties the player can see: Hige → Daifuku **Old Boss** (if sniffed), Togemaru ↔ Goma **Rival** once Goma is met, Daifuku's **anger puffs** if Life 1's Counter-Sprays left him Riled. **Kinako's favour**, the required first objective (Interact / E within 4 m); the Lot opens after it. **Turf Board look**: the influence bar as Life 2's goal ("Fill the bar. Daifuku comes down."). Persimmon Alley taken |
-| **L2D2** | **Props and Fears** (bucket, scooter horn, cucumber junk) | **The first raid forecast** in that morning's Sniff, often beside the Declaration card → **Sentries and the Turf Board's one decision** at the Lot. Relay with the Posse of 4; **Share a Morsel**; K2.3 the cat flap at Dusk → **Night**; the raid fires as **the Caterwaul**, with one hint "Get there in time: your guard holds better" (the presence rule) |
-| **L2D3** | **Zoomies** (the hint fires the first time the gauge is full; Captain **Kagi** at Tofu Shop Step) | **Lessons** (Rank I). **The Tofu Shop Step Claim Spray fills the bar: Daifuku comes down** (the Boss window; reference day per the consistency pass): his yowl rolls down and he climbs to the wall above the post, in view, with control kept; the compass crown tick appears (`hud.md` §3.2). Fighting him today is optional. If Daifuku reaches Seething, the Sniff's anger card ("The big wall is seething.") and a puff on the board. Recruiting Kagi writes his **Old Gang** (Nerves) on his Crew card |
-| **L2D4** | **The Daifuku fight** at his patrol stop (the Sniff's Boss-window card lists today's three stops): "knock him off into the bucket" at any stop | **The challenger**, announced in that morning's Sniff (silhouette, stake flag on the Turf Board, a tick on the compass); optional by day. **Old Gang Nerves** first seen in the Daifuku fight: Kagi flinches and is Cowed → hint "Tag-In to steady it."; Hige resists with his own line. A lost attempt plays the loss-to-night (§4.6) |
+| **L2D1** | **Ambush** (from the High Road, Pounce opener; the Rival yowl-sting with its Dodge counter). **First Team Pile-On possible** with the 4-cat Posse | **The Rivals board** from the 3-item Sniff: opens focused on the Sniff's cat; one hint card "Hover a cat: see who it knows." The first ties the player can see: Hige → Daifuku **Old Boss** (if sniffed), Togemaru ↔ Goma **Rival** once Goma is met, Daifuku's **anger puffs** if Life 1's Counter-Sprays left him Riled. **Kinako's favour**, the required first objective (Interact / E within 4 m); the Lot opens after it. **Turf Board look**: the influence bar as Life 2's goal ("Fill the bar. Daifuku comes down."). Persimmon Alley taken |
+| **L2D2** | **Props and Fears** (bucket, scooter horn, cucumber junk) | **The first raid forecast** in that morning's Sniff, often beside the Declaration card → **Sentries and the Turf Board's one decision** at the Lot. **Team Pile-On** taught with the Posse of 4 (hint the first time four faces sit on the F prompt); **Share a Morsel**; K2.3 the cat flap at Dusk → **Night**; the raid fires as **the Caterwaul**, with one hint "Get there in time: your guard holds better" (the presence rule) |
+| **L2D3** | **A four-cat Special chain on a Captain** (Zoomies are folded into the Special, M1.1; early F is worth more; Captain **Kagi** at Tofu Shop Step) | **Lessons** (Rank I). **The Tofu Shop Step Claim Spray fills the bar: Daifuku comes down** (the Boss window; reference day per the consistency pass): his yowl rolls down and he climbs to the wall above the post, in view, with control kept; the compass crown tick appears (`hud.md` §3.2). Fighting him today is optional. If Daifuku reaches Seething, the Sniff's anger card ("The big wall is seething.") and a puff on the board. Recruiting Kagi writes his **Old Gang** (Nerves) on his Crew card |
+| **L2D4** | **The Daifuku fight** at his patrol stop (the Sniff's Boss-window card lists today's three stops): "knock him off into the bucket" at any stop | **The challenger**, announced in that morning's Sniff (silhouette, stake flag on the Turf Board, a tick on the compass); optional by day. **Old Gang Nerves** first seen in the Daifuku fight: Kagi flinches and is Cowed → hint "Command Kagi to steady it." (skill bar, R); Hige resists with his own line. A lost attempt plays the loss-to-night (§4.6) |
 | **L2D5** | **The claim:** Rout Daifuku at any stop, give a Verdict, **Claim Spray the Den corner stone** (a gold thread leads there) | No new verbs |
 
 **Taught when they first happen (no fixed day):**
@@ -872,7 +872,7 @@ A single button on its tab: the cost (Σ Crew levels), the Stash, and a preview 
 
 ### 7.5 First-hour and Life 2 acceptance
 
-1. ≥ 80% of first-hour testers, unprompted, have: used Slow Blink, commanded the second cat, performed a Pile-On, Sprayed, given a Verdict, and gone home when called.
+1. ≥ 80% of first-hour testers, unprompted, have: opened the skill bar, commanded the second cat, fired a Special (F), Sprayed, given a Verdict, and gone home when called.
 2. ≥ 80% of testers open the Rivals board on L2D1 and hover or focus at least one cat; ≥ 60% can name one tie afterwards.
 3. ≥ 80% of testers can say on L2D2, after the Lot, which Patch they guarded and why (the threat).
 4. ≥ 70% of testers use at least two of the three Verdicts across the slice (OR-12; Nemesis owns the measure, UX logs it).
@@ -888,7 +888,7 @@ A single button on its tab: the cost (Σ Crew levels), the Stash, and a preview 
 | The player loses a Life 1 fight | Tutorial fights cannot be lost. Any other Life 1 loss plays §4.6 (staged nightfall), with no haul lost; Haru's plaster |
 | The player never sniffs Daifuku | He stays a crowned silhouette until met; the name-card says how to discover him |
 | The player skips Hige's trail | Hige walks to Mikan after 60 s; the recruit is not optional |
-| Slow Blink's self-opening collides with a telegraph | It waits until no telegraph is live within 3 m |
+| The skill bar's self-opening collides with a telegraph | It waits until no telegraph is live within 3 m |
 | Player ignores Dusk | Drowsy at end of Dusk, 1-minute grace, then the thread walks Mikan home (DR-15) |
 | L2D1 Turf Board look with no fading posts | The bar fill and the crown are the whole look; "Quiet tonight" |
 
@@ -926,6 +926,8 @@ A single button on its tab: the cost (Σ Crew levels), the Stash, and a preview 
 - Handheld-console framing check for the Rivals board (fit at 720p).
 
 ## Revision Log
+
+**Owner combat direction M1.1 (2026-11-24)** (`design/reviews/owner-feedback/combat-m1.1-spec.md`; final bindings F = Special, R = skill bar, Tab = lock-on; combat and skill-bar parts only). §6.2 Crew card: Old Gang "Nerves" cleared by a skill-bar command; Posse slot without a D-pad key; Zoomies row → Special. §6.3 Posse builder: slot order matches plates and skill-bar rows (no switching); bonded link reads as back-to-back Specials. §7.2 first 15 minutes: Light/Lock-on/Dodge on the crow, Heavy and the L-L-L-H finisher replace the switch beat, skill bar on R2 / R, commanding Hige's row, stagger → F Special with Hige chaining replaces the Quick Pile-On. §7.3: launcher and charged Heavy replace Brace; skill-bar Hiss and the lunge replace the Tag-In beat; three-cat chain replaces the Relay. §7.4: Dodge counter, Team Pile-On (L2D1–L2D2), four-cat chain on Kagi replaces Zoomies (L2D3), Cowed hint (L2D4). §7.5 AC 1 and §7.6 skill-bar edge case.
 
 **Owner: Rivals board declutter (2026-11-24).** Owner on preview 06: 'very crowded and cramped'. `design/ux/rivals-board-cleanup.md`: names only at rest (one label per cat), role tags and ties on focus only (≤ 3 tags, Gang/Boss by arrows), card on focus only, fact column and influence bar removed (Turf Board owns them), compact emblem scene strip, faint merged arrows, ≤ 1 mark per cat; §2.1–2.9, §2.12, §3.2 updated; §2.6.1 deleted.
 

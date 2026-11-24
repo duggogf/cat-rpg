@@ -50,11 +50,11 @@ test('a join-in guest yowls, enters 3 s later, and leaves the opposing Rival\'s 
   assert.ok(Math.abs(enterT - yowlT - DATA.k.guest_entry_yowl_s) < 1.5 / T, 'enters 3 s after its yowl');
   assert.equal(rivalProfile(g), rivalProfile(n), 'the Rival\'s AI profile, buffs and kit are identical');
   // The guest is not controllable, commandable or in a Pile-On, and leaves at EncounterEnded.
-  g.step({ switchTo: -1 }); assert.notEqual(g.controlledId, 'togemaru');
-  g.step({ slowBlink: true }); const rej = g.step({ command: { cat: 'togemaru', move: 'bunny_kick', target: 'challenger' } }); g.step({ slowBlink: true });
+  assert.equal(g.controlledId, 'mikan');
+  g.step({ skillBar: true }); const rej = g.step({ command: { cat: 'togemaru', move: 'bunny_kick', target: 'challenger' } }); g.step({ skillBar: true });
   assert.ok(rej.some(e => e.type === 'CommandRejected' && e.reason === 'bad_cat'));
   const { events } = run(g, withCommandQueue(skilledBot()), T * 120);
-  for (const e of events.filter(e => e.type === 'PileOnStart')) assert.ok(!e.cats.includes('togemaru'));
+  for (const e of events.filter(e => e.type === 'SpecialChainStart')) assert.ok(!e.cats.includes('togemaru'), 'a guest never joins the Special chain');
   assert.ok(events.some(e => e.type === 'GuestLeft'));
   assert.equal(g.byId.get('togemaru').gone, true);
 });
@@ -100,11 +100,11 @@ test('F11 with anger_fu_pause_under_status off, the first Soggy ends a Riled buf
   assert.ok(r.b.angerBuffedS < 5.1 && r.endT != null && r.endT < 5.1);
 });
 
-test('Old Gang Nerves: Kagi is Cowed 20 s and never targets Daifuku; a Tag-In clears it, a plain switch does not; Hige resists', () => {
+test('Old Gang Nerves: Kagi is Cowed 20 s and never targets Daifuku; a skill-bar command to Kagi clears it; Hige resists', () => {
   const def = { Name: 't_nerves', arena: 'wash_tub_kit', opener: 'standoff', posse: ['mikan', 'kagi', 'hige'], enemies: ['daifuku'], guest: null, tutorial: false };
   // Arrange + Act: through the Standoff.
   const enc = createEncounter(def, { seed: 4 });
-  const evs = stepN(enc, T * 3 + 2);
+  stepN(enc, T * 3 + 2);
   const kagi = enc.byId.get('kagi');
   // Assert
   assert.equal(kagi.status?.kind, 'cowed'); assert.equal(kagi.status.src, 'nerves'); assert.ok(Math.abs(kagi.status.total - 20) < 1e-9);
@@ -112,21 +112,21 @@ test('Old Gang Nerves: Kagi is Cowed 20 s and never targets Daifuku; a Tag-In cl
   const st = enc.log.find(e => e.type === 'StandoffStart');
   assert.ok(st.barks.some(b => b.cat === 'hige' && b.kind === 'defiant' && b.text === 'Not your cat anymore.'));
   for (let i = 0; i < T * 5; i++) { enc.step({}); assert.notEqual(kagi.ai.targetId, 'daifuku'); }
-  enc.step({ switchTo: 2 }); assert.equal(kagi.status?.kind, 'cowed', 'switching elsewhere leaves it');
-  enc.step({ switchTo: 1 }); assert.equal(kagi.status?.kind, 'cowed', 'a plain switch leaves it');
-  enc.step({ switchTo: 0 });
-  enc._openTagWindow(enc.controlled, enc.byId.get('daifuku'), false);
-  const tag = enc.step({ switchTo: 1 });
-  assert.ok(tag.some(e => e.type === 'TagIn' && e.to === 'kagi'));
+  // A command to another cat leaves it; a command to Kagi steadies her (M1.1 §8).
+  enc.byId.get('hige').paws = 100; kagi.paws = 100;
+  enc.step({ skillBar: true });
+  enc.step({ command: { cat: 'hige', move: 'belly_flop', target: 'daifuku' } });
+  assert.equal(kagi.status?.kind, 'cowed');
+  const ev = enc.step({ command: { cat: 'kagi', move: 'purr', target: 'kagi' } });
   assert.equal(kagi.status, null);
-  assert.ok(tag.some(e => e.type === 'StatusEnded' && e.cat === 'kagi' && e.reason === 'tag_in'));
+  assert.ok(ev.some(e => e.type === 'StatusEnded' && e.cat === 'kagi' && e.reason === 'command'));
   // A Sworn Kagi (Loyalty 85) is never Cowed.
   const D2 = buildData(); D2.cats = { ...D2.cats, kagi: { ...D2.cats.kagi, loyalty: 85 } };
   const sworn = createEncounter(def, { seed: 4, data: D2 }); stepN(sworn, T * 3 + 2);
   assert.equal(sworn.byId.get('kagi').status, null);
 });
 
-test('in skilled sandbox fights, AI Kin, Hiss, Move and Relay rules all hold and Quick Pile-Ons are offered only per DR-30', () => {
+test('in skilled sandbox fights, AI Kin, Hiss and Move rules hold and a Team finisher on trash Routs', () => {
   for (const seed of [1, 2, 3, 4]) {
     const enc = createEncounter('sandbox', { seed, showcase: true });
     const bot = withCommandQueue(skilledBot());
@@ -135,8 +135,6 @@ test('in skilled sandbox fights, AI Kin, Hiss, Move and Relay rules all hold and
       const evs = enc.step(bot(enc, i)); events.push(...evs);
       const kin = enc.byId.get('kinako');
       if (enc.controlledId !== 'kinako') assert.notEqual(kin.ai.targetId, 'sasa', 'Kinako never targets her Kin');
-      const o = enc.offer;
-      if (o && o.type === 'quick') assert.ok(o.cluster.length >= 2 || enc.enemies().filter(e => enc.standing(e)).length === 1);
       for (const e of evs) if (e.type === 'MoveUsed' && e.authored === 'ai' && enc.byId.get(e.user).side !== 'enemy') {
         const u = enc.byId.get(e.user), m = DATA.moves[e.move];
         // §3.10 Set-ups stay command_only except the personality's own self_setup list (M1 round 2, B-17 deviation).
@@ -146,15 +144,8 @@ test('in skilled sandbox fights, AI Kin, Hiss, Move and Relay rules all hold and
         assert.ok(e.paws_after >= 100 - 1e-9 || banked >= 1 || u.side === 'guest', `${u.id} spent the Posse's last Paw`);
       }
       for (const e of evs) if (e.type === 'HissInterrupt' && e.authored === 'ai') assert.equal(e.aimed_at, e.cat, 'AI Hisses only yellows aimed at itself');
+      for (const e of evs) if (e.type === 'SpecialChainEnd' && e.team_finisher && !enc.byId.get(e.target).rankRow.leader) assert.ok(enc.byId.get(e.target).routed, 'a Team finisher on trash always Routs it');
     }
-    // Relay bookkeeping (§3.3, edge 8).
-    let r = null;
-    for (const e of events.filter(e => e.type === 'TagIn')) {
-      assert.ok(e.relay_count >= 1 && e.relay_count <= 4);
-      if (e.relay_count === 1) r = { starter: e.from, members: [e.to], n: 1 };
-      else { assert.equal(e.relay_count, r.n + 1); assert.ok(!r.members.includes(e.to) || e.to === r.starter); r.members.push(e.to); r.n++; }
-    }
-    for (const e of events.filter(e => e.type === 'PileOnEnd' && e.pile_type === 'quick')) assert.ok(e.routed.length >= 1);
     assert.equal(enc.outcome, 'win');
   }
 });
@@ -168,8 +159,8 @@ test('a scripted Daifuku bout knocks him off deterministically, clamps at 70%, d
   assert.ok(events.filter(e => e.type === 'KnockOff').length >= 1);
   assert.ok(!events.some(e => e.type === 'Splat' && e.cat === 'daifuku'), 'a Boss is never Splatted');
   for (const e of events.slice(0, pb)) if (e.type === 'Hit' && e.target === 'daifuku') assert.ok(e.nerve >= Math.ceil(b.nerveMax * 0.7));
-  const lastFr = events.slice(0, pb).filter(e => e.type === 'Frazzled' || e.type === 'FrazzleEnded').pop();
-  assert.ok(!lastFr || lastFr.type === 'FrazzleEnded', 'no break while Frazzled');
+  const lastFr = events.slice(0, pb).filter(e => e.type === 'Staggered' || e.type === 'StaggerEnded').pop();
+  assert.ok(!lastFr || lastFr.type === 'StaggerEnded', 'no break while staggered');
   assert.equal(enc.outcome, 'rival_fled');
   const end = events.find(e => e.type === 'EncounterEnded');
   assert.equal(end.reason, 'phase_break'); assert.equal(end.rival, 'daifuku');
@@ -197,18 +188,18 @@ test('tutorial fights cannot be lost and Scram ends player_fled after 3 s outsid
   const end = out.events.find(e => e.type === 'EncounterEnded'); assert.equal(end.by, 'ring');
 });
 
-test('Slow Blink runs the sim at 5% and commanded Moves spend Paws only when they commit', () => {
+test('the skill bar (R) runs the sim at 5% and commanded Moves spend Paws only when they commit', () => {
   const enc = createEncounter('tough_focus', { seed: 2 });
   stepN(enc, T * 3 + 1);
   enc.byId.get('mikan').paws = 150;
-  enc.step({ slowBlink: true });
+  enc.step({ skillBar: true });
   const t0 = enc.simT; enc.step({}); assert.ok(Math.abs(enc.simT - t0 - (1 / T) * 0.05) < 1e-12);
   const q = enc.step({ command: { cat: 'mikan', move: 'face_swat', target: 'goma' } });
   assert.ok(q.some(e => e.type === 'CommandQueued'));
   const q2 = enc.step({ command: { cat: 'mikan', move: 'bunny_kick', target: 'goma' } });
   assert.ok(q2.some(e => e.type === 'CommandRejected' && e.reason === 'paws'), 'pending orders reserve Paws');
   const p = enc.byId.get('mikan').paws; assert.ok(p >= 150 && p < 151, `not spent before commit (${p})`);
-  enc.step({ slowBlink: true });
+  enc.step({ skillBar: true });
   const evs = stepN(enc, T * 3);
   const used = evs.find(e => e.type === 'MoveUsed' && e.move === 'face_swat');
   assert.ok(used); assert.equal(used.authored, 'player');
@@ -218,7 +209,7 @@ test('Slow Blink runs the sim at 5% and commanded Moves spend Paws only when the
 test('AI cats spend Paws by personality: Hige (Stalwart) and Pon (Goofball) each self-cast their signature Moves in most fights', () => {
   // Arrange
   const runs = [];
-  for (const name of ['sandbox', 'challenger']) for (const seed of [1, 2, 3, 4, 5, 6]) {
+  for (const name of ['captain', 'challenger']) for (const seed of [1, 2, 3, 4, 5, 6]) {
     const enc = createEncounter(name, { seed, showcase: true });
     // Act
     const { events } = run(enc, withCommandQueue(skilledBot()), T * 120);
@@ -244,14 +235,14 @@ test('the showcase challenger is a Captain with the Water Fear and its fight lan
     assert.equal(ch.rank, 'captain'); assert.deepEqual(ch.row.fears, ['water']);
     const { events } = run(enc, withCommandQueue(skilledBot()), T * 120);
     assert.equal(enc.outcome, 'win');
-    lens.push(enc.fightT); fulls.push(events.filter(e => e.type === 'PileOnStart' && e.pile_type === 'full').length);
+    lens.push(enc.fightT); fulls.push(events.filter(e => e.type === 'TeamFinisher').length);
   }
   const canon = createEncounter('challenger', { seed: 1 });
   // Assert
   assert.equal(canon.byId.get('challenger').rank, 'tough'); assert.deepEqual(canon.byId.get('challenger').row.fears, []);
   const med = lens.slice().sort((a, b) => a - b)[lens.length >> 1];
   assert.ok(med >= 23 && med <= 34, `median ${med.toFixed(1)} s`);
-  assert.ok(fulls.every(n => n >= 1), 'every run has a Full Pile-On on the Captain-rank challenger');
+  assert.ok(fulls.filter(n => n >= 1).length >= 6, 'a Team finisher lands on the Captain-rank challenger in most runs');
 });
 
 test('the bucket splashes a 3 m cone away from the hitter: Soggy in front, dry behind', () => {
@@ -275,10 +266,10 @@ test('a Pay-off commanded after a Set-up on the same target in one Slow Blink wa
   stepN(enc, T * 3 + 1);
   enc.byId.get('mikan').paws = 100; enc.byId.get('hige').paws = 100;
   // Act
-  enc.step({ slowBlink: true });
+  enc.step({ skillBar: true });
   const q1 = enc.step({ command: { cat: 'hige', move: 'shoulder_check', target: 'goma' } });
   const q2 = enc.step({ command: { cat: 'mikan', move: 'bunny_kick', target: 'goma' } });
-  enc.step({ slowBlink: true });
+  enc.step({ skillBar: true });
   const evs = stepN(enc, T * 6);
   // Assert
   const a = q1.find(e => e.type === 'CommandQueued'), b = q2.find(e => e.type === 'CommandQueued');

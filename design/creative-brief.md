@@ -26,7 +26,7 @@ A 3D third-person action RPG. You are **Mikan**, a house cat in the seaside town
 |---|---|---|
 | 1 | **Cat's-Eye Truth** | If a cat could not perceive, want or do it, it is not in the game. No intelligible human language, ever. |
 | 2 | **Two Lives, One Clock** | Every in-game day advances both Mikan's turf and Haru's life; home is mechanically and emotionally unavoidable. |
-| 3 | **Conduct the Brawl** | Fights are short, loud, readable cartoon brawls where you command four cats; feel beats simulation. |
+| 3 | **Command the Brawl** | Fights are short, loud, readable cartoon brawls: you fight as Mikan and command three AI cats through the skill bar and the Special chain; feel beats simulation. |
 | 4 | **Rivals Remember** | Every named cat carries visible history with you; no fight with a Rival is ever anonymous or consequence-free. |
 
 Conflict priority follows the table order. Priority is not investment: **combat, nemesis and the dual story make the game stand out; territory and economy carry half the play time and get equal design weight.**
@@ -100,26 +100,30 @@ Anti-pillars:
 | **Whisker Sense** | Hold mode. The world desaturates; scent trails glow; a **scent compass ring** around Mikan points to rival marks, Rivals and hidden finds (v1.5: also the roaming Boss's stop and an active challenger). Holding it on a cat within 10 m for 1 s **discovers** it. Not usable in combat. |
 | **Head Home** | A bell-gold High Road scent thread to Haru's wall. It appears at the Dusk Call or on request, and is ≤ 60 s long in the slice. |
 | **Standoff** | The pre-fight beat (2–4 s name-card and one taunt). A memory-citing line cannot be skipped for 1 s. |
-| **Ambush** | Opening a fight unseen or from the High Road; the target starts Ruffled. A Rival Ambush gives a 2.0 s directional yowl-sting; Skitter or Brace in its last 0.75 s gives a neutral start. |
-| **Attack / string** | The Attack button runs a 3-hit string; the 3rd hit is the Style finisher. Airborne or from the High Road it becomes a **Pounce**. |
-| **Hop · Skitter · Brace** | Jump (High Road), dodge, guard (hold). |
-| **Hiss** | 8 s cooldown. Interrupts a yellow telegraph and Ruffles the attacker; a Tough at ≤ 15% Nerve **Backs Down** (Routed by intimidation). |
+| **Ambush** | Opening a fight unseen or from the High Road; the target starts Ruffled. A Rival Ambush gives a 2.0 s directional yowl-sting; a Dodge in its last 0.75 s gives a neutral start. |
+| **Control (M1.1)** | **The player controls Mikan only**; the three Crew are always AI and are commanded from the skill bar. The one control table is Combat §3.1 (KB+M: LMB Light, RMB Heavy (hold to charge), Space Dodge, Shift Dash, **Tab** Lock-on, **F** Special, **R** skill bar, Esc/P Pause). |
+| **Light / Heavy strings** (M1.1) | Mikan's five strings: L-L-L; **L-L-L-H finisher**; L-H launcher; hold H charged heavy; Dash-L lunge. Heavies build Frazzle faster. A Light's first active frame is ≤ 3 frames; one-slot input buffer (last ≈ 150 ms); move-out gradient from ≈ 60% of recovery. A Light airborne or from the High Road is a **Pounce**. Crew and enemies have no player strings (AI dash-in combos). |
+| **Dodge (Skitter) · Dash** | Dodge cancels recovery after the hit; Dash → Light is the lunge, and a Dash at a reachable ledge mantles onto the High Road. **Brace** is an AI guard posture only; there is no jump button in combat. |
+| **Lock-on** (M1.1) | Not locked by default. Tab locks the nearest enemy; again: a different nearest enemy, or unlock (free camera). |
+| **Hiss** | A skill-bar entry for every cat (M1.1). 8 s cooldown. Interrupts a yellow telegraph and Ruffles the attacker; a Tough at ≤ 15% Nerve **Backs Down** (Routed by intimidation). |
 | **Pounce Gauge / Paws** | The command resource. 2 Paws per cat (Mikan 3 from Life 4). Fills over time and from hits. |
-| **Slow Blink** | Tactical mode: time at 5%; choose Moves and targets for any Posse cat; commands chain. |
+| **Skill bar** (Slow Blink; M1.1) | Opened with **R**: time at 5%; one row per Posse cat; fire Mikan's Moves and **force** any Crew cat's Move or Hiss; commands chain. A command to a Cowed recruit steadies it. |
 | **Move** | An active skill costing 1–2 Paws, either a **Set-up** or a **Pay-off**. 4 slots per cat. |
 | **Knack** | Passive skill. **Backlog** (not in the slice). |
-| **Tag-In / Relay** | Switching control right after a string finisher, Pounce or Hiss interrupt: the incoming cat leaps in with a free Style strike. Chaining Tag-Ins within 3 s is a Relay (each cat once). The heart of conducting. |
-| **Zoomies** | The limit-break, one per Style. Charges from damage taken and from Frazzling enemies; persists within a day. |
+| ~~Tag-In / Relay~~ | **Removed (M1.1):** no control switching. Commanding from the skill bar and the Special chain are the heart of commanding. |
+| **Special** (Zoomies folded in, M1.1) | **F** on a Frazzled (staggered) enemy while Mikan's Special meter is full: the camera punches in, time stops, Mikan alone over an impact-frame background (≈ 1 s cut-in), then the hit. One Special per Style (the old Zoomies: Midnight Laps, Landslide, Midnight Aria). Each cat's meter fills from hits, damage taken and Frazzles; persists within a day. |
+| **Special chain** (M1.1) | After Mikan's Special, every Crew cat in range with a full meter fires its own Special and cut-in **automatically**, in turn. ≤ ≈ 6 s; shortened after the first in a fight. |
+| **Attack tokens** (M1.1) | Only 1–2 enemies engage Mikan at once; the rest circle, stalk, posture, flank and feint, then dash in for a combo and back out. Crew follow the same rules. Cats think before they charge. |
 | **Ruffled** | For 4 s, Frazzle builds ×2. A leader cannot be re-Ruffled for 6 s after it ends. |
-| **Frazzle / Frazzled** | The stagger gauge. When full: 6 s helpless, damage taken ×1.5. |
+| **Frazzle / Frazzled** | The stagger gauge; Frazzled = staggered. When full: 6 s helpless, damage taken ×1.5. The stagger plays a brief zoom, slow-down and shattered-glass blink (≤ 0.5 s; full for Captains, Bosses and the first stagger per fight), inside the flash limits. |
 | **Statuses** | Only three: **Soggy** (slower), **Cowed** (deals less), **Fired Up** (deals more). |
-| **Pile-On** | Posse finisher on a Frazzled enemy: four cats vanish into a cartoon dust cloud. Needs ≥ 2 standing Posse cats. Always Routs below Captain. On trash it is offered only with 2+ enemies Frazzled within 3 m, or on the last enemy standing. The signature street image. |
+| **Team Pile-On** (M1.1; was the Pile-On) | The **team finisher**: when all four Posse cats land their Specials in one chain, they vanish into the KA-BLAM cartoon dust cloud. Routs every Frazzled enemy below Captain within 3 m. In the spirit of Granblue Fantasy Relink's Full Burst, with our own art and staging (counsel watch item). The signature street image. The old Quick and Full Pile-On inputs are gone. |
 | **Old Score** | A Crew cat fighting a Rival it has Routed, or been Routed by, deals extra Frazzle, and both bark. |
 | **Nerve / Routed** | HP. At 0 the cat bolts in a dust puff. Nobody is killed, ever. |
 | **Verdict** | After Routing a Rival (one full Verdict per fight; other tracked cats slip away): **three options (v1.5): Recruit, Chase Off, Nose-Touch** (§7). Humble is removed. Every Verdict clears the post; Mikan then **Claim Sprays** it ("fight to clear, spray to claim"). No other cat moves up or in. |
 | **Chase Off** (v1.5) | The cat is **Gone** for good: no comeback, and a legend card on the Rivals board. Empty places wait for newcomers and challengers. |
 | **Nose-Touch** (v1.5; gate v1.6) | Offered when the cat's pending Grudge is below 50 + a personality shift **and, from Life 2, the take was quiet**: not after two or more Counter-Sprays on its own post, and, for a Boss, not if it came to the fight Seething or Furious (deterministic; no roll). Grudge 0, Regard +25. The cat **steps down** (Mikan Claim Sprays the post) into a **10-day truce**. During the truce, and as a Friend afterwards, it may **join** Mikan's fight against its own tagged Rival (p 0.35–0.65, seeded), as an allied AI guest; the opposing Rival is unchanged. A truce that ends with Regard < 75 turns the cat into a challenger. |
-| **Old Gang Nerves** (v1.5; the "stare-down") | A trait written into a recruit's **own** Memory when it joins. When it sees its Old Boss among the opponents it flinches and is **Cowed** for 20 s (Fraidy 30 s) until the player Tag-Ins to it. Braggart, Stalwart, Brooder and Sworn cats resist. The old boss behaves exactly as it would with any Posse. |
+| **Old Gang Nerves** (v1.5; the "stare-down") | A trait written into a recruit's **own** Memory when it joins. When it sees its Old Boss among the opponents it flinches and is **Cowed** for 20 s (Fraidy 30 s) until the player commands it from the skill bar. Braggart, Stalwart, Brooder and Sworn cats resist. The old boss behaves exactly as it would with any Posse. |
 | **Boss anger** (v1.5) | A Boss-only meter, 0–100, shown as 0–3 steam puffs. Fed only by marking acts in its district (Over-mark +5, Counter-Spray +15), never by fights; −15 a night. It gives the Boss **Fired Up** for 20 s / 40 s / the whole fight (Riled / Seething / Furious). Spent after any fight with the Boss that ends in a win, a loss or `rival_fled`; not after a Scram. |
 | **Discovered** (v1.5) | A cat met in any encounter, or sniffed for 1 s in Whisker Sense within 10 m. Until then it is a silhouette on the Rivals board and on Sniff cards. |
 | **Grudge / Regard / Memory** | Grudge 0–100 and Regard 0–100 are never shown as numbers. Memory is a Rival's log of you (10 entries, ≤ 6 pinned). |
@@ -165,12 +169,12 @@ Assigned at generation by Nemesis; never changes. Each owning doc sets the numbe
 | **Brooder** | Hangs back, avenges allies | Old Score doubled | Never leaves; slower decay | Long service (half-speed both ways) / being dismissed | Stalwart / Schemer | Grudge decays at half rate |
 | **Schemer** | Flanks; hunts Ruffled/Frazzled | Bonus on Frazzled | The district forecast names the motive | Lessons / soft choices | Fraidy / Brooder | Ambushes; as Crew, Wavers below 35 |
 | **Fraidy** | Keeps distance, supports | Perfect Skitter gives Pounce | Weak defence; raises the Caterwaul early | Never being Routed / being Routed | Stalwart / Braggart | Flees early; returns slowly |
-| **Stalwart** | Guards the controlled cat, Braces | Allies within 3 m take less damage | Best raid defence | Fair play / a Scuffed or Lost night on its own post (v1.5) | Brooder / Schemer | Honourable; Nose-Touch gate +15 |
+| **Stalwart** | Guards Mikan, Braces (AI), holds ground | Allies within 3 m take less damage | Best raid defence | Fair play / a Scuffed or Lost night on its own post (v1.5) | Brooder / Schemer | Honourable; Nose-Touch gate +15 |
 | **Goofball** | Plays; goes for props | Props it triggers hit harder | Laughs off a challenge: a challenger staking its Patch over-marks 0 (v1.5) | Share a Morsel counts double / being left at the Lot | everyone but Brooder / Brooder | Clowns about; easy to Nose-Touch (gate +10) |
 
-**Social pairs.** A bonded pair in the Posse gets a stronger Tag-In; bonded cats posted in the same district gain +1 Loyalty per night. A clashing pair loses 1 Loyalty each per day when together.
+**Social pairs.** A bonded pair in the Posse gets stronger Specials back to back in a chain; bonded cats posted in the same district gain +1 Loyalty per night. A clashing pair loses 1 Loyalty each per day when together.
 
-**Shown, not listed.** Each personality has its own idle, walk, posture, bark intents and Pile-On flourish. A recruited Rival also keeps its Memory, Scars and Title, and its Nemesis **Strength becomes an always-on signature perk** (its Fear stays).
+**Shown, not listed.** Each personality has its own idle, walk, posture, bark intents, movement in a fight (circling, stalking, posturing; M1.1) and Team Pile-On flourish. A recruited Rival also keeps its Memory, Scars and Title, and its Nemesis **Strength becomes an always-on signature perk** (its Fear stays).
 
 ---
 
@@ -557,6 +561,11 @@ The **Morning Sniff** shows the Tribute line, tonight's raid forecast (always, w
 ---
 
 ## Changelog
+
+- **Owner combat direction M1.1 (2026-11-24)** — glossary and pillar amendment to v1.6, from the owner's C10 and `design/reviews/owner-feedback/combat-m1.1-spec.md` (final bindings: F = Special on a staggered enemy, R = skill bar, Tab = lock-on cycle):
+  - **Pillar 3** renamed **Command the Brawl** (skill bar + Special chain) (§2).
+  - **Glossary (§3.3, §3.5):** player controls Mikan only (new Control row); Light/Heavy strings with the L-L-L-H finisher and the responsiveness rules; Dodge · Dash (Hop and Brace leave the player's verbs); Lock-on; Hiss on the skill bar; Slow Blink becomes the **skill bar**; **Tag-In / Relay removed**; **Zoomies folded into the Special**; new Special chain, Attack tokens and **Team Pile-On** (replaces the Pile-On; Full Burst resemblance on the counsel checklist); stagger presentation on Frazzle; Old Gang Nerves cleared by a skill-bar command; Stalwart, social pairs and personality flourish rows.
+  - **Not yet amended** (outside this pass): §4.1 camera canon, §5.1 loops, §6 ownership and `TagIn` event, §7, §8 numeric frame, §10 scope; `combat-system.md` §3.1 and the spec win where they differ.
 
 - **v1.6 (2026-11-24, consistency pass)** — Records `design/reviews/owner-feedback/consistency-pass.md` (rulings F1–F12), the last pass before the docs are compiled:
   - **Togemaru's arc (F11):** every Verdict on him is a complete ending (Chase Off = gone with a farewell; Recruit = he joins; Nose-Touch = a truce his greeting and join-ins carry); his first Rout always scars; a truce greeting counts as an encounter, so a Nose-Touched lead is declared on night 3 (§3.1).

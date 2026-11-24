@@ -160,7 +160,7 @@ export class WorldFX {
     this.items.push({ ground: true, mesh: m, t: 0, life, list });
   }
 
-  tagRing(at) { const d = decal(5, { R: 0.4 }); d.scale.setScalar(1.4); d.position.set(at.x, at.y + 0.02, at.z); this.decals.add(d); this.tagRings.push({ d, t: 0 }); }
+  tagRing(at, col) { const d = decal(5, { R: 0.4, colA: col || '#F2B01E' }); d.scale.setScalar(1.4); d.position.set(at.x, at.y + 0.02, at.z); this.decals.add(d); this.tagRings.push({ d, t: 0 }); }
 
   /** Per-frame: telegraphs from the snapshot, Frazzle rings, orbits; advance drawings on twos. */
   update(dt, tw, s, fighters, controlledId) {

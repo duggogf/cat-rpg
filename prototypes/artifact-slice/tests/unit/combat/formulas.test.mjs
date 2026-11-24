@@ -55,8 +55,9 @@ test('F2 a full string gives a Tough 30 FZ and a Captain 6 FZ, doubled while Ruf
 });
 
 test('F3 controlled cat fills 9.1 points/s and an AI cat 3.4 points/s', () => {
-  near(F.pawRate(0.65, 1.0, k), 9.1, 0.06);
-  near(F.pawRate(0.35, k.ai_fill, k), 3.4, 0.06);
+  // The worked example's 1.8 s string (M1.1 slows the crew cycle to 2.2 s; the formula is unchanged).
+  near(F.pawRate(0.65, 1.0, k, 1.8), 9.1, 0.06);
+  near(F.pawRate(0.35, k.ai_fill, k, 1.8), 3.4, 0.06);
 });
 
 test('F4 Purr heals 13.5% of neutral Nerve, 20.3% with a Cowed enemy, 15.6% of a Bruiser bar', () => {
@@ -67,7 +68,7 @@ test('F4 Purr heals 13.5% of neutral Nerve, 20.3% with a Cowed enemy, 15.6% of a
   near(hc / (F.nRef(L, k) * 1.3), 0.156, 0.001);
 });
 
-test('F5 Pile-On decision worked example gives 48 / 34.3 / 55.1 MV', () => {
+test('F5 Team finisher (formerly Full Pile-On) decision worked example gives 48 / 34.3 / 55.1 MV', () => {
   // (a) cash in at once, 4 cats
   const a = F.windowValue({ cats: 4, wait: 0, basicsRate: 2.48 }, k);
   // (b) no Paws, wait to the end of the 6 s window
@@ -84,11 +85,6 @@ test('F5 Pile-On decision worked example gives 48 / 34.3 / 55.1 MV', () => {
 test('F5 a Full Pile-On is worth more at T_rem 6 than at 0, and pips run 5 to 0', () => {
   assert.ok(F.pileOnMV([1, 1, 1, 1], 6, k) > F.pileOnMV([1, 1, 1, 1], 0, k));
   assert.deepEqual([6, 4.8, 3.6, 2.4, 1.2, 0.5, 0].map(t => F.pips(t, k)), [5, 4, 3, 2, 1, 1, 0]);
-});
-
-test('F6 a four-cat Relay adds 61 FZ to a Captain', () => {
-  near(F.relayTotalFz(4, 0.2, k), 61, 1e-9);
-  assert.deepEqual([1, 2, 3, 4].map(n => F.relayFz(n, k)), [0, 10, 15, 20]);
 });
 
 test('F7 High Road Pounce caps at MV 3.0 / FZ 45 and pays x0.6 with no Paw within 1.5 s of mantling', () => {

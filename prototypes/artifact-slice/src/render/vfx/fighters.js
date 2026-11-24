@@ -9,6 +9,18 @@
 import * as THREE from 'three';
 import { createCat } from '../cats/index.js';
 
+/** Read an AI intent from motion: circle / stalk / flank (lateral or slow creep), posture (still, squared off),
+ * retreat (backing off), dash_in (fast toward the opponent), else 'neutral'. opp = {dir:[x,z] unit, dist}. */
+export function deriveIntent(e, vel, opp) {
+  if (!opp || e.controlled || e.routed || opp.dist > 6.5) return 'neutral';
+  const sp = Math.hypot(vel.x, vel.z); if (sp < 0.15) return opp.dist < 5 && opp.dist > 1.2 ? 'posture' : 'neutral';
+  const along = (vel.x * opp.dir[0] + vel.z * opp.dir[1]) / sp;
+  if (along > 0.6 && sp > 2.0) return 'dash_in';
+  if (along < -0.5) return 'retreat';
+  if (Math.abs(along) < 0.55) return opp.dist < 3.2 ? 'circle' : 'flank';
+  return sp < 1.3 ? 'stalk' : 'neutral';
+}
+
 /**
  * THE cast mapping table: sim catalogue id -> render cast (src/render/cats/index.js contract) and the matching
  * kit portrait, so the 3D coat and the HUD plate are one design. Named cats use their own casts; gang members
@@ -129,19 +141,30 @@ export class Fighter {
     if (dtReal > 0) this.vel.subVectors(this.pos, this.prevPos).divideScalar(Math.max(1e-3, dtReal));
     this.prevPos.copy(this.pos);
     this.root.position.copy(this.pos);
-    const wantYaw = Math.atan2(e.facing[0], e.facing[1]);
-    this.yaw = lerpAngle(this.yaw, wantYaw, Math.min(1, dtReal * 18));
+    // AI intent (M1.1 §4): the sim's `intent` when it publishes one, else read from motion vs the nearest opponent
+    const SIM_INTENT = { circle: 'circle', circling: 'circle', posture: 'posture', flank: 'flank', dash_in: 'dash_in', dash: 'dash_in', engage: 'dash_in', retreat: 'retreat', back_off: 'retreat', feint: 'posture', strut: 'posture', hang_back: 'retreat' };
+    // the sim's intent when it is specific; its default 'stalk' (or none) is refined from motion
+    const intent = this.intent = (e.intent && SIM_INTENT[e.intent]) || deriveIntent(e, this.vel, e._opp);
+    // cats square off: while circling, stalking, posturing or backing off, the body faces the opponent
+    let wantYaw = Math.atan2(e.facing[0], e.facing[1]);
+    if (e._opp && ['circle', 'stalk', 'posture', 'flank', 'retreat'].includes(intent)) wantYaw = Math.atan2(e._opp.dir[0], e._opp.dir[1]);
+    this.yaw = lerpAngle(this.yaw, wantYaw, Math.min(1, dtReal * 9));
     this.root.rotation.y = this.yaw;
 
     // base pose by sim anim
     const P = this.pose; let lean = 0, fwd = 0, sy = 1, sxz = 1, up = 0, roll = 0, sz = 1;
     const a = e.anim || 'idle', at = e.anim_t || 0;
     const speed = Math.hypot(this.vel.x, this.vel.z);
-    if (a === 'run' || (speed > 0.4 && (a === 'idle' || a === 'skitter'))) this.cat.setGait('walk', Math.min(3.2, Math.max(1.2, speed)));
+    // move-out gradient: after an attack the walk cadence ramps up over ~0.25 s instead of snapping
+    const attacking = a === 'string' || a === 'atk' || a === 'charge' || a.startsWith('move_');
+    if (attacking) this.walkRamp = 0; else this.walkRamp = Math.min(1, (this.walkRamp ?? 1) + dtReal * 4);
+    const stalkSlow = ['circle', 'stalk', 'flank', 'retreat'].includes(intent) ? 0.75 : 1;
+    if (speed > 0.25 && !attacking && a !== 'skitter') this.cat.setGait('walk', Math.min(3.2, Math.max(0.9, speed * stalkSlow)) * (0.35 + 0.65 * this.walkRamp));
     else this.cat.setGait('idle', 0);
     const vy = this.vel.y;
     switch (a) {
       case 'brace': sy = 0.88; sxz = 1.06; lean = -0.12; break;
+      case 'dash': sz = 1.3; sy = 0.86; lean = 0.25; break;
       case 'skitter': lean = -0.18; sy = 0.86; sxz = 1.1; roll = 0.0; break;
       case 'hop': case 'mantle': case 'pounce': case 'leap': case 'tagin': case 'drop': case 'fall': case 'climb':
         lean = THREE.MathUtils.clamp(-vy * 0.12, -0.6, 0.6); sy = 1 + Math.min(0.12, Math.abs(vy) * 0.03); sxz = 1 / Math.sqrt(sy); break;
@@ -159,7 +182,18 @@ export class Fighter {
       case 'yowl': sy = 1.06; lean = -0.1; break;
       default: if (a.startsWith('move_')) { sy = 1.04; } break;
     }
-    if (a === 'string' || a.startsWith('move_')) { /* strikes come from Hit/MoveUsed impulses */ }
+    // intent postures (cats squaring off): low creep while circling/stalking/flanking, the arched-back puff while
+    // posturing (tail lash and hiss glyphs come from the entry), stretched dash-in, crouched back-off
+    if (a === 'idle' || a === 'run') {
+      if (intent === 'posture') { const j = Math.floor(tw * 6) % 2; sy *= 1.13; sxz *= 1.07; lean -= 0.14; roll += j ? 0.025 : -0.025; }
+      else if (intent === 'circle' || intent === 'stalk' || intent === 'flank') { sy *= 0.86; sxz *= 1.05; lean += 0.1; roll += (e._side || 1) * 0.05; }
+      else if (intent === 'retreat') { sy *= 0.84; lean -= 0.16; }
+      else if (intent === 'dash_in') { sz *= 1.22; sy *= 0.9; lean += 0.22; }
+    }
+    // anticipation: the attack anim's first frames coil back (light: 2 frames; heavy / Moves: longer wind-up)
+    if (a.startsWith('move_') && this.lastAnim !== a) this.impulse('coil', tw, { dur: 0.3 });
+    if (a === 'charge') { const ch = (e.attack && e.attack.charge) || 0; sy *= 1 - 0.18 * ch; sxz *= 1 + 0.08 * ch; lean -= 0.12 * ch; roll += (Math.floor(tw * 30) % 2 ? 0.02 : -0.02) * ch; }
+    this.lastAnim = a;
     // impulses (on twos: quantised time)
     this.impulses = this.impulses.filter((im) => tw - im.t0 < im.dur);
     for (const im of this.impulses) {
@@ -170,12 +204,21 @@ export class Fighter {
       if (im.kind === 'hurt') { const s = 1 - ss(k); fwd -= 0.2 * im.mag * s; lean -= 0.36 * im.mag * s; sy *= 1 - 0.16 * im.mag * s; sxz *= 1 + 0.1 * im.mag * s; roll += (Math.floor(tw * 30) % 2 ? 0.08 : -0.08) * s * im.mag; }
       if (im.kind === 'take') { const s = k < 0.5 ? 1 : 1 - ss((k - 0.5) * 2); sy *= 1 + 0.14 * s; sxz *= 1 - 0.05 * s; }
       if (im.kind === 'hiss') { const s = Math.sin(Math.PI * k); sy *= 1 + 0.12 * s; lean -= 0.2 * s; }
+      if (im.kind === 'coil') { const s = Math.sin(Math.PI * Math.min(1, k)); fwd -= 0.07 * s; lean -= 0.16 * s; sy *= 1 - 0.1 * s; sxz *= 1 + 0.05 * s; }
       if (im.kind === 'land') { const s = 1 - ss(k); sy *= 1 - 0.2 * s; sxz *= 1 + 0.12 * s; }
     }
     if (e.ruffled_s > 0 || e.ruffled_s === -1) { sy *= 1.04; }
-    P.position.set(0, up, fwd);
-    P.rotation.set(lean, 0, roll);
-    P.scale.set(sxz, sy, sxz * sz);
+    // follow-through: the pose chases its target through a damped spring (weight; overshoot settles in ~0.25 s)
+    const S = this.spring || (this.spring = { v: [0, 0, 0, 0, 0, 0], x: [fwd, lean, roll, sy, sxz, sz] });
+    const tgt = [fwd, lean, roll, sy, sxz, sz], k = 240, c = 22, hs = Math.min(dtReal, 1 / 30);
+    for (let i = 0; i < 6; i++) { const acc = k * (tgt[i] - S.x[i]) - c * S.v[i]; S.v[i] += acc * hs; S.x[i] += S.v[i] * hs; }
+    // strikes stay snappy (hit on the first active frame): fwd and stretch use the target directly while striking
+    const striking = this.impulses.some((im) => im.kind === 'strike' && (tw - im.t0) / im.dur < 0.3);
+    const [ff, ll, rr, yy, xx, zz] = striking ? [fwd, lean, roll, sy, sxz, sz] : S.x;
+    if (striking) { S.x = tgt.slice(); S.v = [0, 0, 0, 0, 0, 0]; }
+    P.position.set(0, up, ff);
+    P.rotation.set(ll, 0, rr);
+    P.scale.set(xx, yy, xx * zz);
     // keyline: Frazzle Magenta while Frazzled; the Ruffled rim pulses in two steps (≤ 3 Hz)
     if (this.kl) {
       const want = e.frazzled_s > 0 ? 'magenta' : (this.side === 'enemy' ? 'sage' : 'gold');
