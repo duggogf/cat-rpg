@@ -157,6 +157,33 @@ Live: \`node tools/serve.mjs\` then open \`/dist/dev.html\` (drag to orbit, whee
 | \`view01-day.png\`, \`view01-dusk.png\` | our frames at full size |
 | \`orbit-day-sheet.png\`, \`orbit-dusk-sheet.png\` | 8 orbit shots 45° apart (yaw 0 = behind Mikan); singles are \`orbit-<phase>-<k>.png\` |
 
+## Fix pass 2 (art-director and creative-director reviews, GO WITH FIXES)
+
+- **Sunlight:** animated dappled leaf-light (komorebi): every foliage clump casts its shadow through sun-flecks cut in sun-view space,
+  re-rendered each frame and drifting with the wind; crisper cast light on upright planes (the Dusk wall banding); a warm glow at the sea gap.
+- **Set dressing on every side:** inked bucket and pots (aloe and a clipped shrub), drain covers, two posters and the notice, rain-streak
+  and moss stains, drainpipes, a wall gate and a fence gate, a broom, ivy over the fence, more tree mass over the coping, a vending machine
+  (lit at Dusk), an air-con unit, a layered mountain skyline, and the passer-by's legs (a kit-drawn stand-in card, shown only when the
+  camera looks down the lane, its one valid side).
+- **Stone lantern repainted:** round lathe parts with no facets, painted moss patches and a green drip, a softer painted terminator.
+- **Ground:** lit lane re-valued toward #D2C4A4; the paint post's Kuwahara radius halved and its wobble reduced (no vertical streaks).
+- **Fixes:** no half-transparent set pieces (camera-soft props are hidden outright; foliage cards the lens would pass through are dropped);
+  the end-of-lane town repainted as two crisp layers with dusk-lit windows.
+- **Wind:** foliage sway, laundry flutter, grass bend, cloud drift (sim time, so test frames stay deterministic).
+- **Cats and the dapple:** the dapple falls on the environment only; the cat module is lit through \`setLighting\` and was not changed.
+
+**E-5 and the ground (owner's reference look kept).** The lane is now lit near the 01 cream, so a white coat on it measures closer to the
+ground in greyscale. That is the owner's look; readability of white cats is carried by the 2 px ink line, the Wisteria contact blob and
+the dappled shade. The E-5 numbers below are reported as measured.
+
+## Motion
+
+| File | What |
+|---|---|
+| \`motion/walk-day-sheet.png\`, \`motion/walk-dusk-sheet.png\` | 12 frames: Mikan walks down the lane toward the sea while the camera orbits from behind to her side |
+| \`motion/walk-<phase>-NN.png\` | the frames at 1280 × 720 |
+| \`motion/orbit-walk-day.webm\`, \`motion/orbit-walk-dusk.webm\` | the same, recorded headlessly (SwiftShader, so the frame rate is not representative) |
+
 ## Pixel checks
 
 | Check | Measurement | Threshold | |
@@ -183,7 +210,7 @@ These run on the environment as built; the cat checks measure whatever \`src/ren
 | | Day 01 view | Dusk 01 view | Budget |
 |---|---|---|---|
 | Draw calls per frame (env + post + cats + lantern + wires) | ${R.perf.day.calls} | ${R.perf.dusk.calls} | ≤ 350 street |
-| Shadow-map pass draw calls (re-rendered only on phase change) | ${R.perf.day.shadowCalls} | ${R.perf.dusk.shadowCalls} | |
+| Sun shadow-map pass draw calls (re-rendered every frame for the moving dapple) | ${R.perf.day.shadowCalls} | ${R.perf.dusk.shadowCalls} | |
 | Triangles per frame | ${R.perf.day.triangles} | ${R.perf.dusk.triangles} | ≤ 500k |
 | Texture memory (GPU estimate incl. mips, shadow map, post target) | ${R.perf.day.texMB} MB | ${R.perf.dusk.texMB} MB | ≤ 160 MB |
 | Baked environment textures (download) | ${(texBytes / 1048576).toFixed(2)} MB in ${Object.keys(man).length} WebP files | | ≤ 8 MB |

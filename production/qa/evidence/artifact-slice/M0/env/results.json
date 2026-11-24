@@ -8,7 +8,7 @@
     2.954
    ],
    "dist": 3,
-   "calls": 62
+   "calls": 117
   },
   "day-1": {
    "camera": [
@@ -17,7 +17,7 @@
     1.421
    ],
    "dist": 2.041,
-   "calls": 59
+   "calls": 68
   },
   "day-2": {
    "camera": [
@@ -26,7 +26,7 @@
     0
    ],
    "dist": 1.456,
-   "calls": 34
+   "calls": 65
   },
   "day-3": {
    "camera": [
@@ -35,7 +35,7 @@
     -1.421
    ],
    "dist": 2.041,
-   "calls": 33
+   "calls": 71
   },
   "day-4": {
    "camera": [
@@ -44,7 +44,7 @@
     -2.954
    ],
    "dist": 3,
-   "calls": 47
+   "calls": 91
   },
   "day-5": {
    "camera": [
@@ -53,7 +53,7 @@
     -1.386
    ],
    "dist": 1.991,
-   "calls": 33
+   "calls": 46
   },
   "day-6": {
    "camera": [
@@ -62,7 +62,7 @@
     0
    ],
    "dist": 1.421,
-   "calls": 34
+   "calls": 62
   },
   "day-7": {
    "camera": [
@@ -71,7 +71,7 @@
     1.386
    ],
    "dist": 1.991,
-   "calls": 58
+   "calls": 91
   },
   "dusk-0": {
    "camera": [
@@ -80,7 +80,7 @@
     2.954
    ],
    "dist": 3,
-   "calls": 62
+   "calls": 117
   },
   "dusk-1": {
    "camera": [
@@ -89,7 +89,7 @@
     1.421
    ],
    "dist": 2.041,
-   "calls": 59
+   "calls": 68
   },
   "dusk-2": {
    "camera": [
@@ -98,7 +98,7 @@
     0
    ],
    "dist": 1.456,
-   "calls": 34
+   "calls": 65
   },
   "dusk-3": {
    "camera": [
@@ -107,7 +107,7 @@
     -1.421
    ],
    "dist": 2.041,
-   "calls": 33
+   "calls": 71
   },
   "dusk-4": {
    "camera": [
@@ -116,7 +116,7 @@
     -2.954
    ],
    "dist": 3,
-   "calls": 47
+   "calls": 91
   },
   "dusk-5": {
    "camera": [
@@ -125,7 +125,7 @@
     -1.386
    ],
    "dist": 1.991,
-   "calls": 33
+   "calls": 46
   },
   "dusk-6": {
    "camera": [
@@ -134,7 +134,7 @@
     0
    ],
    "dist": 1.421,
-   "calls": 34
+   "calls": 62
   },
   "dusk-7": {
    "camera": [
@@ -143,144 +143,144 @@
     1.386
    ],
    "dist": 1.991,
-   "calls": 58
+   "calls": 91
   }
  },
  "line": {
   "day-100": {
-   "samples": 310,
-   "widthMedian": 1.6,
+   "samples": 357,
+   "widthMedian": 2.45,
    "widthP10": 0,
-   "widthP90": 2.02,
-   "inkSamples": 183,
+   "widthP90": 2.92,
+   "inkSamples": 267,
    "inkDEMedian": 0,
    "inkDEP90": 0
   },
   "day-orbit0": {
-   "samples": 223,
-   "widthMedian": 1.64,
+   "samples": 218,
+   "widthMedian": 2.36,
    "widthP10": 0,
-   "widthP90": 2.3,
-   "inkSamples": 133,
+   "widthP90": 3.02,
+   "inkSamples": 147,
    "inkDEMedian": 0,
    "inkDEP90": 0
   },
   "dusk-100": {
-   "samples": 298,
-   "widthMedian": 1.57,
+   "samples": 338,
+   "widthMedian": 2.41,
    "widthP10": 0,
-   "widthP90": 1.92,
-   "inkSamples": 171,
+   "widthP90": 2.92,
+   "inkSamples": 247,
    "inkDEMedian": 0,
    "inkDEP90": 0
   },
   "dusk-orbit0": {
-   "samples": 211,
-   "widthMedian": 1.58,
+   "samples": 207,
+   "widthMedian": 2.26,
    "widthP10": 0,
-   "widthP90": 2.14,
-   "inkSamples": 123,
+   "widthP90": 2.86,
+   "inkSamples": 136,
    "inkDEMedian": 0,
    "inkDEP90": 0
   },
   "day-85": {
-   "samples": 320,
-   "widthMedian": 1.44,
+   "samples": 354,
+   "widthMedian": 2.48,
    "widthP10": 0,
-   "widthP90": 1.91,
-   "inkSamples": 31,
-   "inkDEMedian": 1.34,
-   "inkDEP90": 3.1
+   "widthP90": 2.89,
+   "inkSamples": 232,
+   "inkDEMedian": 0,
+   "inkDEP90": 2.75
   }
  },
  "sep": {
   "day-view01": {
-   "catL": 80.7,
-   "ringL": 59.9,
-   "diff": 20.8,
-   "catPx": 31141
+   "catL": 78.1,
+   "ringL": 63.6,
+   "diff": 14.5,
+   "catPx": 29670
   },
   "day-orbit0": {
-   "catL": 77.7,
-   "ringL": 59,
-   "diff": 18.6,
-   "catPx": 16355
+   "catL": 75.7,
+   "ringL": 62.5,
+   "diff": 13.3,
+   "catPx": 15655
   },
   "dusk-view01": {
-   "catL": 75.1,
-   "ringL": 52.8,
-   "diff": 22.2,
-   "catPx": 31141
+   "catL": 72.8,
+   "ringL": 55.3,
+   "diff": 17.5,
+   "catPx": 29670
   },
   "dusk-orbit0": {
-   "catL": 72.4,
-   "ringL": 52.8,
-   "diff": 19.6,
-   "catPx": 16355
+   "catL": 70.6,
+   "ringL": 54.7,
+   "diff": 15.9,
+   "catPx": 15655
   }
  },
  "shadow": {
   "day-view=01": {
-   "shadedPx": 586759,
-   "skippedHazed": 224100,
+   "shadedPx": 549074,
+   "skippedHazed": 217361,
    "neutralPct": 0,
    "meanTint": [
-    0.725,
-    0.716,
-    0.89
+    0.734,
+    0.721,
+    0.889
    ],
    "hueCos": 1,
-   "chromaMedian": 8.6
+   "chromaMedian": 14.5
   },
   "dusk-view=01": {
-   "shadedPx": 1152459,
-   "skippedHazed": 10347,
-   "neutralPct": 0.01,
+   "shadedPx": 728344,
+   "skippedHazed": 199082,
+   "neutralPct": 0.06,
    "meanTint": [
-    0.801,
-    0.695,
-    0.799
+    0.786,
+    0.693,
+    0.79
    ],
-   "hueCos": 0.95,
-   "chromaMedian": 16.9
+   "hueCos": 0.97,
+   "chromaMedian": 17.6
   },
   "day-orbit=2": {
-   "shadedPx": 792342,
-   "skippedHazed": 745467,
-   "neutralPct": 0,
+   "shadedPx": 766004,
+   "skippedHazed": 688938,
+   "neutralPct": 0.01,
    "meanTint": [
-    0.784,
-    0.759,
-    0.892
+    0.794,
+    0.761,
+    0.881
    ],
-   "hueCos": 0.99,
-   "chromaMedian": 7.2
+   "hueCos": 0.98,
+   "chromaMedian": 8.5
   },
   "dusk-orbit=5": {
-   "shadedPx": 1147298,
-   "skippedHazed": 23485,
+   "shadedPx": 954407,
+   "skippedHazed": 22396,
    "neutralPct": 0,
    "meanTint": [
-    0.833,
-    0.718,
-    0.807
+    0.858,
+    0.745,
+    0.828
    ],
-   "hueCos": 0.88,
-   "chromaMedian": 23.6
+   "hueCos": 0.85,
+   "chromaMedian": 27.6
   }
  },
  "perf": {
   "day": {
-   "shadowCalls": 29,
-   "calls": 62,
-   "triangles": 66248,
-   "texMB": 106.9
+   "shadowCalls": 66,
+   "calls": 98,
+   "triangles": 137108,
+   "texMB": 119.6
   },
   "dusk": {
-   "shadowCalls": 29,
-   "calls": 62,
-   "triangles": 66248,
-   "texMB": 106.9
+   "shadowCalls": 66,
+   "calls": 98,
+   "triangles": 137108,
+   "texMB": 119.6
   }
  },
  "card": {
@@ -293,6 +293,20 @@
    "card": false,
    "scrollW": 1920,
    "innerW": 1920
+  }
+ },
+ "motion": {
+  "day": {
+   "frames": 12,
+   "webm": "orbit-walk-day.webm",
+   "bytes": 5801124,
+   "errors": []
+  },
+  "dusk": {
+   "frames": 12,
+   "webm": "orbit-walk-dusk.webm",
+   "bytes": 6264527,
+   "errors": []
   }
  }
 }

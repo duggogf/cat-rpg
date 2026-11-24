@@ -46,14 +46,12 @@ Controls: drag (or double-click for pointer lock) to orbit, wheel to zoom, WASD 
 ## Findings
 
 Evidence: `production/qa/evidence/artifact-slice/M0/env/README.md` (comparison sheets, orbit sheets, pixel checks,
-draw calls and texture budget). Environment observations after 8 look passes (for the directors' review, not a verdict):
+draw calls and texture budget), plus `motion/` (orbit-and-walk frames and WebM).
 
-- **Reads as painted:** sky gradient and cumulus, gouache foliage masses, plaster and board textures, coloured
-  (wisteria / plum) soft-edged shadows with leaf-edged borders, haze to the sea; every orbit angle is a painted surface.
-  Dusk is the strongest frame.
-- **Still reads as 3D:** straight box silhouettes of houses and roofs at mid distance, roof tiles as stripes, the
-  dithered Scent Post when the camera stands beside it, large untextured-looking plaster spans in side views.
-- **Gaps against 01:** the lit lane is greyer than 01's cream (darkened on purpose to keep walkable ground at
-  L* ≤ 80 and E-5 ≥ 20); less foliage lushness; smaller cumulus.
-- **Measured:** 62 draw calls, 66k triangles, ≈ 107 MB GPU texture estimate, 0.75 MB of baked WebP; E-5 misses by
-  1–2 L* at the Explore orbit; the cat line at 85% render scale measures 1.44 px (cat module).
+Fix pass 2 (after the art-director and creative-director GO WITH FIXES reviews): animated leaf dapple through every
+foliage shadow, sea-gap glow, 01-density set dressing on every side (inked bucket and pots, drains, posters, stains,
+drainpipes, gates, broom, ivy, vending machine lit at Dusk, air-con, mountain skyline, passer-by stand-in), a smooth
+painted-moss lantern, lane lit near #D2C4A4, lighter Kuwahara, camera-soft props hidden instead of dithered, a crisp
+two-layer town with Dusk windows, wind on foliage/laundry/grass/clouds. Measured: 98 + 66 (shadow) draw calls, 137k
+triangles, ≈ 120 MB GPU textures, 1.03 MB baked WebP. E-5 measures Δ13–18 L* on the lighter (owner's reference) ground;
+readability rests on the ink line, contact blob and dapple. The passer-by is a one-sided card shown only looking down-lane.

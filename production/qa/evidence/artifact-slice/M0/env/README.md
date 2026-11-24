@@ -24,23 +24,50 @@ Live: `node tools/serve.mjs` then open `/dist/dev.html` (drag to orbit, wheel zo
 | `view01-day.png`, `view01-dusk.png` | our frames at full size |
 | `orbit-day-sheet.png`, `orbit-dusk-sheet.png` | 8 orbit shots 45° apart (yaw 0 = behind Mikan); singles are `orbit-<phase>-<k>.png` |
 
+## Fix pass 2 (art-director and creative-director reviews, GO WITH FIXES)
+
+- **Sunlight:** animated dappled leaf-light (komorebi): every foliage clump casts its shadow through sun-flecks cut in sun-view space,
+  re-rendered each frame and drifting with the wind; crisper cast light on upright planes (the Dusk wall banding); a warm glow at the sea gap.
+- **Set dressing on every side:** inked bucket and pots (aloe and a clipped shrub), drain covers, two posters and the notice, rain-streak
+  and moss stains, drainpipes, a wall gate and a fence gate, a broom, ivy over the fence, more tree mass over the coping, a vending machine
+  (lit at Dusk), an air-con unit, a layered mountain skyline, and the passer-by's legs (a kit-drawn stand-in card, shown only when the
+  camera looks down the lane, its one valid side).
+- **Stone lantern repainted:** round lathe parts with no facets, painted moss patches and a green drip, a softer painted terminator.
+- **Ground:** lit lane re-valued toward #D2C4A4; the paint post's Kuwahara radius halved and its wobble reduced (no vertical streaks).
+- **Fixes:** no half-transparent set pieces (camera-soft props are hidden outright; foliage cards the lens would pass through are dropped);
+  the end-of-lane town repainted as two crisp layers with dusk-lit windows.
+- **Wind:** foliage sway, laundry flutter, grass bend, cloud drift (sim time, so test frames stay deterministic).
+- **Cats and the dapple:** the dapple falls on the environment only; the cat module is lit through `setLighting` and was not changed.
+
+**E-5 and the ground (owner's reference look kept).** The lane is now lit near the 01 cream, so a white coat on it measures closer to the
+ground in greyscale. That is the owner's look; readability of white cats is carried by the 2 px ink line, the Wisteria contact blob and
+the dappled shade. The E-5 numbers below are reported as measured.
+
+## Motion
+
+| File | What |
+|---|---|
+| `motion/walk-day-sheet.png`, `motion/walk-dusk-sheet.png` | 12 frames: Mikan walks down the lane toward the sea while the camera orbits from behind to her side |
+| `motion/walk-<phase>-NN.png` | the frames at 1280 × 720 |
+| `motion/orbit-walk-day.webm`, `motion/orbit-walk-dusk.webm` | the same, recorded headlessly (SwiftShader, so the frame rate is not representative) |
+
 ## Pixel checks
 
 | Check | Measurement | Threshold | |
 |---|---|---|---|
-| Silhouette line width, Day, 1080p (cats) | median 1.6 px (p10 0, p90 2.02; 310 samples) | 2.0 ± 0.5 px | within |
-| Silhouette line width, Dusk, 1080p | median 1.57 px (298 samples) | 2.0 ± 0.5 px | within |
-| Silhouette line width, Day, 85% render scale | median 1.44 px (320 samples) | 2.0 ± 0.5 px at output | **outside** |
-| Silhouette line width, orbit 0 (Explore 3.0 m), Day / Dusk | 1.64 / 1.58 px | 2.0 ± 0.5 px | within |
+| Silhouette line width, Day, 1080p (cats) | median 2.45 px (p10 0, p90 2.92; 357 samples) | 2.0 ± 0.5 px | within |
+| Silhouette line width, Dusk, 1080p | median 2.41 px (338 samples) | 2.0 ± 0.5 px | within |
+| Silhouette line width, Day, 85% render scale | median 2.48 px (354 samples) | 2.0 ± 0.5 px at output | within |
+| Silhouette line width, orbit 0 (Explore 3.0 m), Day / Dusk | 2.36 / 2.26 px | 2.0 ± 0.5 px | within |
 | Ink ΔE2000 of line-core pixels vs #33273B, Day / Dusk | median 0 / 0 (p90 0 / 0) | ≤ 3 | within |
-| E-5 separation, day-view01 | cat L* 80.7 vs ring 59.9: Δ 20.8 | ≥ 20 L* | within |
-| E-5 separation, day-orbit0 | cat L* 77.7 vs ring 59: Δ 18.6 | ≥ 20 L* | **outside** |
-| E-5 separation, dusk-view01 | cat L* 75.1 vs ring 52.8: Δ 22.2 | ≥ 20 L* | within |
-| E-5 separation, dusk-orbit0 | cat L* 72.4 vs ring 52.8: Δ 19.6 | ≥ 20 L* | **outside** |
-| No neutral-grey shadow, day-view=01 | 0% of 586759 shaded px neutral; mean shade multiplier (R,G,B) 0.725, 0.716, 0.89; hue agreement with the phase shadow colour cos 1 | 0% neutral; tint toward the phase shadow (cos > 0.5) | within |
-| No neutral-grey shadow, dusk-view=01 | 0.01% of 1152459 shaded px neutral; mean shade multiplier (R,G,B) 0.801, 0.695, 0.799; hue agreement with the phase shadow colour cos 0.95 | 0% neutral; tint toward the phase shadow (cos > 0.5) | within |
-| No neutral-grey shadow, day-orbit=2 | 0% of 792342 shaded px neutral; mean shade multiplier (R,G,B) 0.784, 0.759, 0.892; hue agreement with the phase shadow colour cos 0.99 | 0% neutral; tint toward the phase shadow (cos > 0.5) | within |
-| No neutral-grey shadow, dusk-orbit=5 | 0% of 1147298 shaded px neutral; mean shade multiplier (R,G,B) 0.833, 0.718, 0.807; hue agreement with the phase shadow colour cos 0.88 | 0% neutral; tint toward the phase shadow (cos > 0.5) | within |
+| E-5 separation, day-view01 | cat L* 78.1 vs ring 63.6: Δ 14.5 | ≥ 20 L* | **outside** |
+| E-5 separation, day-orbit0 | cat L* 75.7 vs ring 62.5: Δ 13.3 | ≥ 20 L* | **outside** |
+| E-5 separation, dusk-view01 | cat L* 72.8 vs ring 55.3: Δ 17.5 | ≥ 20 L* | **outside** |
+| E-5 separation, dusk-orbit0 | cat L* 70.6 vs ring 54.7: Δ 15.9 | ≥ 20 L* | **outside** |
+| No neutral-grey shadow, day-view=01 | 0% of 549074 shaded px neutral; mean shade multiplier (R,G,B) 0.734, 0.721, 0.889; hue agreement with the phase shadow colour cos 1 | 0% neutral; tint toward the phase shadow (cos > 0.5) | within |
+| No neutral-grey shadow, dusk-view=01 | 0.06% of 728344 shaded px neutral; mean shade multiplier (R,G,B) 0.786, 0.693, 0.79; hue agreement with the phase shadow colour cos 0.97 | 0% neutral; tint toward the phase shadow (cos > 0.5) | within |
+| No neutral-grey shadow, day-orbit=2 | 0.01% of 766004 shaded px neutral; mean shade multiplier (R,G,B) 0.794, 0.761, 0.881; hue agreement with the phase shadow colour cos 0.98 | 0% neutral; tint toward the phase shadow (cos > 0.5) | within |
+| No neutral-grey shadow, dusk-orbit=5 | 0% of 954407 shaded px neutral; mean shade multiplier (R,G,B) 0.858, 0.745, 0.828; hue agreement with the phase shadow colour cos 0.85 | 0% neutral; tint toward the phase shadow (cos > 0.5) | within |
 | "Best on desktop" card, 390 × 844 touch | card shown; scrollWidth 390 / viewport 390 | shown, no horizontal scroll | within |
 | Card at 1920 × 1080, fine pointer | card not shown | not shown | within |
 
@@ -48,19 +75,19 @@ Method notes. Line width: from each edge pixel of the cat mask (`?mask=cats`), w
 and integrate line coverage `(L*bg − L*) / (L*bg − L*ink)` (anti-aliasing counted fractionally). Ink ΔE: pixels with coverage > 0.92.
 E-5: greyscale L*, Gaussian σ = 4 px, cat interior (eroded 3 px) vs a ring 6–24 px outside. Shadows: `?mask=shade` marks shaded
 environment pixels, `?mask=albedo` gives the unlit albedo with the same haze; the shade multiplier actual / albedo is "neutral" when its
-channel spread is under 6% of its mean (very light shade or heavy haze, multiplier > 0.93, is skipped and counted: 224100 / 10347 / 745467 / 23485).
+channel spread is under 6% of its mean (very light shade or heavy haze, multiplier > 0.93, is skipped and counted: 217361 / 199082 / 688938 / 22396).
 These run on the environment as built; the cat checks measure whatever `src/render/cats/` currently draws.
 
 ## Performance (SwiftShader counts; frame time needs a real laptop, plan §4.8)
 
 | | Day 01 view | Dusk 01 view | Budget |
 |---|---|---|---|
-| Draw calls per frame (env + post + cats + lantern + wires) | 62 | 62 | ≤ 350 street |
-| Shadow-map pass draw calls (re-rendered only on phase change) | 29 | 29 | |
-| Triangles per frame | 66248 | 66248 | ≤ 500k |
-| Texture memory (GPU estimate incl. mips, shadow map, post target) | 106.9 MB | 106.9 MB | ≤ 160 MB |
-| Baked environment textures (download) | 0.75 MB in 18 WebP files | | ≤ 8 MB |
-| game.js | 100 KB | | ≤ 1.5 MB |
+| Draw calls per frame (env + post + cats + lantern + wires) | 98 | 98 | ≤ 350 street |
+| Sun shadow-map pass draw calls (re-rendered every frame for the moving dapple) | 66 | 66 | |
+| Triangles per frame | 137108 | 137108 | ≤ 500k |
+| Texture memory (GPU estimate incl. mips, shadow map, post target) | 119.6 MB | 119.6 MB | ≤ 160 MB |
+| Baked environment textures (download) | 1.03 MB in 25 WebP files | | ≤ 8 MB |
+| game.js | 130 KB | | ≤ 1.5 MB |
 
 ## Run log
 

@@ -19,7 +19,7 @@ export const PHASES = {
   },
   dusk: {
     zenith: '#8E6FB0', horizon: '#F7A45A', key: '#FFC27A', shadow: '#7A4E8C', cel: '#FFDDB5',
-    sunEl: 12, sunAz: 7,
+    sunEl: 16, sunAz: 3,
     shadeK: 0.62,
     shadowTint: '#7A4E8C',
     bounce: '#FFB070', bounceK: 0.2,

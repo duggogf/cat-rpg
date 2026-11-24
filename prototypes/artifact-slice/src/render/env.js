@@ -155,6 +155,8 @@ attribute vec3 iPos; attribute vec4 iParam; attribute vec4 iClump;
 uniform float cylindrical, cols, rows, time, wind, sway;
 varying vec2 vUv; varying vec3 vN; varying vec3 vP; varying float vBright; varying vec3 vCtr; varying vec2 vV;
 void main() {
+  // camera-soft: a card the lens is about to pass through is dropped (never a screen-filling blob)
+  if (distance(iPos, cameraPosition) < iParam.x * 0.55 + 0.35) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); return; }
   vec2 corner = position.xy;
   float c = cos(iParam.y), s = sin(iParam.y);
   vec2 off = vec2(c * corner.x - s * corner.y, s * corner.x + c * corner.y) * iParam.x;
