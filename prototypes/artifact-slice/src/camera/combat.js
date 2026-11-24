@@ -64,7 +64,7 @@ export class CombatCamera {
     }
     // M1.1: UNLOCKED (default) = a free third-person orbit around Mikan, driven only by the mouse / right stick
     if (ctx.free && !ctx.slowBlink) {
-      s.px = C.x; s.pz = C.z; s.py = C.y + c.pivotH; s.dist = c.dist; s.shoulder = c.shoulder * 0.6;
+      s.px = C.x; s.pz = C.z; s.py = C.y + c.pivotH + Math.max(0, (ctx.bigK || 1) - 1) * 0.25; s.dist = c.dist * (1 + Math.max(0, (ctx.bigK || 1) - 1) * 0.3); s.shoulder = c.shoulder * 0.6;   // a big opponent nearby: pull back and up so the heavyweight fits
       s.pitch = this.freePitch ?? c.pitch; s.yaw = this.pose.yaw; this.userYaw = 0;
       return s;
     }
@@ -78,7 +78,7 @@ export class CombatCamera {
       const far = Math.max(0, Math.min(1, (sep - c.farFrom) / 3));
       s.dist = c.dist + (c.distFar - c.dist) * far;
       s.pitch = ctx.highRoad ? c.pitchHigh : c.pitch + (c.pitchFar - c.pitch) * far;
-      s.shoulder = c.shoulder;
+      s.shoulder = c.shoulder; s.dist *= 1 + Math.max(0, (ctx.bigK || 1) - 1) * 0.3; s.py += Math.max(0, (ctx.bigK || 1) - 1) * 0.25;
       if (this.relayHold > t) s.dist = Math.max(s.dist, this.pose.dist);
     }
     // yaw: behind the cat on the target->cat line; free orbit wins for 1 s after input

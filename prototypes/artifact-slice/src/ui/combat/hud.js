@@ -217,7 +217,9 @@ export class CombatHUD {
   /** Screen rectangles the lettering must avoid (BL plates, TC ribbon, Slow Blink menu). */
   rects() {
     const out = [];
-    for (const el of [this.bl.querySelector('.ch-plates'), this.tc.firstElementChild, this.sbEl && this.sbEl.firstElementChild]) {
+    // world-anchored HUD too (bars, reticle, ticks, prompts, balloons): lettering never covers them
+    for (const el of this.wEls.values()) { if (el.style.display === 'none') continue; const r = el.getBoundingClientRect(); if (r.width) out.push({ x: r.left - 8, y: r.top - 8, w: r.width + 16, h: r.height + 16 }); }
+    for (const el of [this.bl.querySelector('.ch-plates'), this.tc.firstElementChild, this.tc.children[1], this.keysEl, this.sbEl && this.sbEl.firstElementChild]) {
       if (!el) continue; const r = el.getBoundingClientRect(); if (r.width) out.push({ x: r.left, y: r.top, w: r.width, h: r.height });
     }
     return out;

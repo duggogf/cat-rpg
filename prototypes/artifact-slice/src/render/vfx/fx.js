@@ -78,10 +78,17 @@ const decalFrag = /* glsl */`
       if (d < 0.07) { col = d < 0.045 ? (an <= fill ? MAG : CREAM) : INK; gl_FragColor = vec4(col, 1.0); return; }
       discard;
     }
-    if (kind == 6) { // shockwave: a thick Cream ring with Ink edges, the slam front (fill = progress 0..1)
-      float d = abs(r - R); float band = 0.09 + 0.06 * (1.0 - fill);
-      if (d < band) { col = d < band - 0.04 ? CREAM : INK; gl_FragColor = vec4(col, 1.0); return; }
-      if (r < R && r > R - 0.35 && fract(atan(p.y, p.x) * 3.0) < 0.2) { gl_FragColor = vec4(INK, 1.0); return; }   // speed ticks behind the front
+    if (kind == 6) { // shockwave (M1.2 §9): the hitting band (wid = the sim's width) as a Cream ring with magenta hatching and
+      // heavy Ink edges, a dashed magenta boundary at the max radius (the whole danger zone), ink speed ticks behind the front
+      float hw = wid * 0.5, d = abs(r - R);
+      if (d < hw + 0.06) {
+        if (d > hw) col = INK;
+        else col = fract((p.x + p.y) * 3.2) < 0.32 ? MAG : CREAM;
+        gl_FragColor = vec4(col, 1.0); return;
+      }
+      float dm = abs(r - len);
+      if (dm < 0.07 && fract(atan(p.y, p.x) * 9.0) < 0.55) { gl_FragColor = vec4(dm < 0.035 ? MAG : INK, 1.0); return; }
+      if (r < R - hw && r > R - hw - 0.5 && fract(atan(p.y, p.x) * 5.0) < 0.12) { gl_FragColor = vec4(INK, 1.0); return; }
       discard;
     }
     if (kind == 5) { // Tag-In spark ring: a Bell-Gold ring with spikes popping outward
@@ -170,7 +177,7 @@ export class WorldFX {
   clearNear(at, r) { for (const it of this.items) if (!it.ground && !it.keep && it.mesh.position.distanceTo(at) < r) it.dead = true; }
 
   /** Belly-flop shockwave (M1.2 §9): a ring expanding from `at` to `radius` m over `dur` s, stepped on twos. */
-  shockwave(at, radius, dur, o = {}) { const d = decal(6, { R: o.r0 || 0.3 }); d.position.set(at.x, 0.02, at.z); d.scale.setScalar(radius + 0.5); d.renderOrder = 7; this.decals.add(d); this.waves.push({ d, t: 0, radius, dur, linear: !!o.linear, r0: o.r0 || 0.3 }); }
+  shockwave(at, radius, dur, o = {}) { const d = decal(6, { R: o.r0 || 0.3 }); d.material.uniforms.wid.value = o.width || 0.7; d.material.uniforms.len.value = radius; d.position.set(at.x, 0.02, at.z); d.scale.setScalar(radius + 0.5); d.renderOrder = 7; this.decals.add(d); this.waves.push({ d, t: 0, radius, dur, linear: !!o.linear, r0: o.r0 || 0.3 }); }
 
   tagRing(at, col) { const d = decal(5, { R: 0.4, colA: col || '#F2B01E' }); d.scale.setScalar(1.4); d.position.set(at.x, at.y + 0.02, at.z); this.decals.add(d); this.tagRings.push({ d, t: 0 }); }
 

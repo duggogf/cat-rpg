@@ -597,7 +597,8 @@ function present(dt, alpha, menu = [], cut = null) {
   let offFrame = false;
   if (T && C) { const a = project(T.head), b = project(C.pos); offFrame = Math.abs(a.nx) > 0.6 || Math.abs(b.nx) > 0.8 || b.ny < -0.75 || a.ny > 0.75; }
   const standoffK = s.mode === 'standoff' ? Math.min(1, s.t / 3) : 0;
-  ccam.update(dt, realT, { free: !T, C: C ? C.pos.clone() : new THREE.Vector3(), T: T ? T.pos.clone() : null, enemiesCentroid: cen, aspect: cam.aspect, slowBlink: s.slow_blink,
+  const bigK = C ? Math.max(1, ...[...fighters.values()].filter((f) => f.side === 'enemy' && f.root.visible && f.pos.distanceTo(C.pos) < 5).map((f) => f.scaleK)) : 1;
+  ccam.update(dt, realT, { bigK, free: !T, C: C ? C.pos.clone() : new THREE.Vector3(), T: T ? T.pos.clone() : null, enemiesCentroid: cen, aspect: cam.aspect, slowBlink: s.slow_blink,
     highRoad: C && T && Math.abs(C.pos.y - T.pos.y) > 0.6, mode: pile && pile.phase === 'main' ? 'pileon' : s.mode, pileCenter: pile ? pile.centerW : null,
     standoffFocus, standoffK, offFrame, globalStop, targetNY: T ? project(T.head).ny : null, clearance, occluded: C ? (pose) => occludedAt(pose, [C.head, T ? T.head : null]) : null });
   // impact frame state

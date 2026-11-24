@@ -17,9 +17,11 @@
    "tick": 660,
    "mode": "fight",
    "controlled": "mikan",
-   "calls": 95,
-   "triangles": 404798,
-   "errors": []
+   "calls": 96,
+   "triangles": 275234,
+   "errors": [
+    "THREE.WebGLProgram: Shader Error 0 - VALIDATE_STATUS false\n\nProgram Info Log: Fragment shader is not compiled.\n\nFRAGMENT\n\nERROR: 0:121: 'half' : Illegal use of reserved word\nERROR: 0:121: 'half' : syntax error\n\n  116:       if (d < 0.07) { col = d < 0.045 ? (an <= fill ? MAG : CREAM) : INK; gl_FragColor = vec4(col, 1.0); return; }\n  117:       discard;\n  118:     }\n  119:     if (kind == 6) { // shockwave (M1.2 §9): the hitting band (wid = the sim's width) as a Cream ring with magenta hatching and\n  120:       // heavy Ink edges, a dashed magenta boundary at the max radius (the whole danger zone), ink speed ticks behind the front\n> 121:       float half = wid * 0.5, d = abs(r - R);\n  122:       if (d < half + 0.06) {\n  123:         if (d > half) col = INK;\n  124:         else col = fract((p.x + p.y) * 3.2) < 0.32 ? MAG : CREAM;\n  125:         gl_FragColor = vec4(col, 1.0); return;\n  126:       }\n  127:       float dm = abs(r - len);"
+   ]
   },
   {
    "name": "daifuku-flees.png",
@@ -47,9 +49,11 @@
    "tick": 6678,
    "mode": "ended",
    "controlled": "mikan",
-   "calls": 77,
-   "triangles": 275846,
-   "errors": []
+   "calls": 79,
+   "triangles": 275850,
+   "errors": [
+    "THREE.WebGLProgram: Shader Error 0 - VALIDATE_STATUS false\n\nProgram Info Log: Fragment shader is not compiled.\n\nFRAGMENT\n\nERROR: 0:121: 'half' : Illegal use of reserved word\nERROR: 0:121: 'half' : syntax error\n\n  116:       if (d < 0.07) { col = d < 0.045 ? (an <= fill ? MAG : CREAM) : INK; gl_FragColor = vec4(col, 1.0); return; }\n  117:       discard;\n  118:     }\n  119:     if (kind == 6) { // shockwave (M1.2 §9): the hitting band (wid = the sim's width) as a Cream ring with magenta hatching and\n  120:       // heavy Ink edges, a dashed magenta boundary at the max radius (the whole danger zone), ink speed ticks behind the front\n> 121:       float half = wid * 0.5, d = abs(r - R);\n  122:       if (d < half + 0.06) {\n  123:         if (d > half) col = INK;\n  124:         else col = fract((p.x + p.y) * 3.2) < 0.32 ? MAG : CREAM;\n  125:         gl_FragColor = vec4(col, 1.0); return;\n  126:       }\n  127:       float dm = abs(r - len);"
+   ]
   },
   {
    "name": "daifuku-phasebreak-1.png",
@@ -77,9 +81,11 @@
    "tick": 784,
    "mode": "fight",
    "controlled": "mikan",
-   "calls": 98,
-   "triangles": 404806,
-   "errors": []
+   "calls": 102,
+   "triangles": 404880,
+   "errors": [
+    "THREE.WebGLProgram: Shader Error 0 - VALIDATE_STATUS false\n\nProgram Info Log: Fragment shader is not compiled.\n\nFRAGMENT\n\nERROR: 0:121: 'half' : Illegal use of reserved word\nERROR: 0:121: 'half' : syntax error\n\n  116:       if (d < 0.07) { col = d < 0.045 ? (an <= fill ? MAG : CREAM) : INK; gl_FragColor = vec4(col, 1.0); return; }\n  117:       discard;\n  118:     }\n  119:     if (kind == 6) { // shockwave (M1.2 §9): the hitting band (wid = the sim's width) as a Cream ring with magenta hatching and\n  120:       // heavy Ink edges, a dashed magenta boundary at the max radius (the whole danger zone), ink speed ticks behind the front\n> 121:       float half = wid * 0.5, d = abs(r - R);\n  122:       if (d < half + 0.06) {\n  123:         if (d > half) col = INK;\n  124:         else col = fract((p.x + p.y) * 3.2) < 0.32 ? MAG : CREAM;\n  125:         gl_FragColor = vec4(col, 1.0); return;\n  126:       }\n  127:       float dm = abs(r - len);"
+   ]
   },
   {
    "name": "daifuku-stagger.png",
@@ -129,7 +135,9 @@
    "controlled": "mikan",
    "calls": 99,
    "triangles": 395458,
-   "errors": []
+   "errors": [
+    "THREE.WebGLProgram: Shader Error 0 - VALIDATE_STATUS false\n\nProgram Info Log: Fragment shader is not compiled.\n\nFRAGMENT\n\nERROR: 0:121: 'half' : Illegal use of reserved word\nERROR: 0:121: 'half' : syntax error\n\n  116:       if (d < 0.07) { col = d < 0.045 ? (an <= fill ? MAG : CREAM) : INK; gl_FragColor = vec4(col, 1.0); return; }\n  117:       discard;\n  118:     }\n  119:     if (kind == 6) { // shockwave (M1.2 §9): the hitting band (wid = the sim's width) as a Cream ring with magenta hatching and\n  120:       // heavy Ink edges, a dashed magenta boundary at the max radius (the whole danger zone), ink speed ticks behind the front\n> 121:       float half = wid * 0.5, d = abs(r - R);\n  122:       if (d < half + 0.06) {\n  123:         if (d > half) col = INK;\n  124:         else col = fract((p.x + p.y) * 3.2) < 0.32 ? MAG : CREAM;\n  125:         gl_FragColor = vec4(col, 1.0); return;\n  126:       }\n  127:       float dm = abs(r - len);"
+   ]
   },
   {
    "name": "finalko-01.png",

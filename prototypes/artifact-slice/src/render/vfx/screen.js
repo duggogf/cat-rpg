@@ -264,14 +264,14 @@ export class ScreenFX {
     if (!W.place && ctx.pile) { W.place = { x: Math.max(est / 2 + 30, ctx.w * 0.06 + est / 2), y: ctx.h * 0.17 }; W.rot = -9; }
     if (!W.place) {
       const cb = ctx.controlledBox, hud = ctx.hudRects || [];
-      const cands = [[0.25, -1.1], [-0.25, -1.1], [0.6, -0.6], [-0.6, -0.6], [0, -1.5], [0.8, 0.1], [-0.8, 0.1]];
+      const cands = [[0.25, -1.1], [-0.25, -1.1], [0.6, -0.6], [-0.6, -0.6], [0, -1.5], [0.8, 0.1], [-0.8, 0.1], [0.9, -1.4], [-0.9, -1.4], [1.1, 0.6], [-1.1, 0.6], [0, 1.2], [0, -2.2]];
       let best = null, bestScore = -1e9;
       for (const [ox, oy] of cands) {
         let x = anchor.x + ox * est, y = anchor.y + oy * ht;
         x = Math.min(ctx.w - est / 2 - 24, Math.max(est / 2 + 24, x)); y = Math.min(ctx.h - ht / 2 - 24, Math.max(ht / 2 + 24, y));
         const box = { x: x - est / 2, y: y - ht / 2, w: est, h: ht };
         const ov = (r) => Math.max(0, Math.min(box.x + box.w, r.x + r.w) - Math.max(box.x, r.x)) * Math.max(0, Math.min(box.y + box.h, r.y + r.h) - Math.max(box.y, r.y));
-        let score = -ov(cb) * 4 - hud.reduce((a, r) => a + ov(r) * 3, 0) - Math.hypot(x - anchor.x, y - anchor.y) * 0.2;
+        let score = -ov(cb) * 4 - hud.reduce((a, r) => a + ov(r) * 40, 0) - Math.hypot(x - anchor.x, y - anchor.y) * 0.2;   // any HUD overlap outweighs distance
         if (score > bestScore) { bestScore = score; best = { x, y }; }
       }
       W.place = best; W.rot = W.tier >= 5 ? -10 : (W.dir && W.dir[0] < 0 ? 10 : -10);

@@ -36,7 +36,7 @@ export const CAST_MAP = {
   kinako: { cast: 'kinako', rank: 1, kit: { coat: { base: '#E3C39A', patch: '#5E4636' }, pattern: 'pointed', tail: 'whip', ears: 'tall', build: 'long', carry: 'comma', eye: 'blue', expr: 'shock' } },
   togemaru: { cast: 'togemaru', rank: 1, kit: { coat: { base: '#37323F', white: '#D9A060', patch: '#D9A060' }, pattern: 'tuxedo', tail: 'plume', ears: 'standard', build: 'long', carry: 'flag', eye: 'yellowgreen', expr: 'smug', scars: ['notch'] } },
   kagi: { cast: 'kagi', rank: 1.15, kit: { coat: { base: '#CDD1DC', patch: '#7D8397' }, pattern: 'tabby', tail: 'whip', ears: 'tall', build: 'long', carry: 'blade', eye: 'yellowgreen', expr: 'smug' } },
-  daifuku: { cast: 'daifuku', rank: 1.6, kit: { coat: { base: '#FFF8EC', patch: '#A9AEC0' }, pattern: 'saddle', tail: 'stub', ears: 'round', build: 'round', carry: 'anchor', eye: 'copper', expr: 'smug' } },
+  daifuku: { cast: 'daifuku', rank: 1.6, extra: 1.25, kit: { coat: { base: '#FFF8EC', patch: '#A9AEC0' }, pattern: 'saddle', tail: 'stub', ears: 'round', build: 'round', carry: 'anchor', eye: 'copper', expr: 'smug' } },
   goma: { cast: 'tough', opts: { coat: 'chocolate', pattern: 'tabby', tail: 'ringed', ears: 'round', build: 'round', personality: 'brooder', rank: 1.08, eye: 'copper', seed: 11 } },
   sasa: { cast: 'tough', opts: { coat: { base: 'cream', patch: '#C99A55' }, pattern: 'tabby', tail: 'plume', ears: 'tall', build: 'long', personality: 'schemer', eye: 'yellowgreen', seed: 12 } },
   stray: [
@@ -113,8 +113,9 @@ export class Fighter {
   constructor(ent, o = {}) {
     this.id = ent.id; this.side = ent.side; this.catId = ent.cat;
     const m = castFor(ent.cat, ent.id);
-    this.cat = createCat({ cast: m.cast, scale: 1.25, ...(m.opts || {}), lod: 'auto' });
-    this.scaleK = m.rank || 1; this.lodMode = 'auto';
+    // `extra`: the Boss reads as the heavyweight (art bible's biggest build) on top of his cast rank
+    this.cat = createCat({ cast: m.cast, scale: 1.25 * (m.extra || 1), ...(m.opts || {}), lod: 'auto' });
+    this.scaleK = (m.rank || 1) * (m.extra || 1); this.lodMode = 'auto';
     this.root = new THREE.Group(); this.pose = new THREE.Group();
     this.root.add(this.pose); this.pose.add(this.cat.object3D);
     this.root.name = 'fighter:' + ent.id;
@@ -251,7 +252,7 @@ export class Fighter {
     P.scale.set(xx, yy, xx * zz);
     // keyline: Frazzle Magenta while Frazzled; the Ruffled rim pulses in two steps (≤ 3 Hz)
     if (this.kl) {
-      const want = e.frazzled_s > 0 ? 'magenta' : (this.side === 'enemy' ? 'red' : 'gold');
+      const want = this.side === 'enemy' ? 'red' : 'gold';   // the agreed side colours always; stagger reads from spirals and the ring
       if (want !== this.clowder) this.setClowder(want);
       const ruff = e.ruffled_s > 0 || e.ruffled_s === -1;
       this.kl.rim.mesh.userData.w = ruff ? (Math.floor(tw * 5) % 2 ? 1.0 : 2.2) : 1.0;
