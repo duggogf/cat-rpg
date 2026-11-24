@@ -83,3 +83,15 @@ References: `design/reviews/refs/mikan-front-round-face-good.png` (KEEP: the ear
 protruding dog-like snout — reject), `cat-side-profile-ref.png` (target side profile: round skull, flat face, short
 muzzle, small nose barely ahead of the cheek, eye near the front of the face, long tail). **Canon change: Mikan gets a
 long tail** (replaces the bobtail pom) — recorded in the brief and art bible.
+
+## C9 — snout, nose bridge and tail (chat, after C8)
+
+> * At the reference image, it does have a small snout (as marked in the red) coming out and its nose-bridge is
+>   visible (as marked in the orange)
+> * Your model doesn't have a snout coming out not a visible nose-bridge (as marked in the red)
+> * The tail looks unnatural, thin, and too long. Look at the 2nd image as a reference.
+
+References: `design/reviews/refs/mikan-snout-bridge-feedback.webp` (left: reference cat profile with a small snout
+(red) and visible nose bridge (orange); right: our flat profile, marked), `mikan-tail-ref.png` (tail target: thick,
+moderately long, rising in a soft S-curve, orange with a white tip). Between C8 ("too long like a dog") and C9: a
+SMALL snout and a visible nose bridge — not flat, not a dog muzzle.

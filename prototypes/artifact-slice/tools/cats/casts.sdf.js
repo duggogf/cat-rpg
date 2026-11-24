@@ -46,7 +46,8 @@ export function buildCast(o) {
   const rump = [0, spineY + 0.014, -0.112 * ln * (0.85 + 0.15 * bx)];
   const tailLen = { pom: 0.06, stub: 0.1, whip: 0.34, ringed: 0.31, plume: 0.33, long: 0.37 }[o.tail || 'whip'];
   const seg = tailLen / 6;
-  for (let i = 0; i < 6; i++) pos['tail' + (i + 1)] = [0, rump[1], rump[2] + 0.02 - i * seg];
+  const tailRoot = [0, spineY + 0.05 * by, rump[2] + 0.016]; // top of the rump, continuing the back line (C8 AD)
+  for (let i = 0; i < 6; i++) pos['tail' + (i + 1)] = [0, tailRoot[1], tailRoot[2] + 0.004 - i * seg];
   pos.fUL = [xF, legTop + 0.012, zFL]; pos.fLL = [xF, knee, zFL];
   pos.fUR = [-xF, legTop + 0.012, zFL]; pos.fLR = [-xF, knee, zFL];
   pos.hUL = [xH, legTop + 0.01, zH + 0.008]; pos.hLL = [xH, 0.072 * lg, zH - 0.02]; // hLL = the hock (heel), above a near-vertical foot
@@ -110,7 +111,7 @@ export function buildCast(o) {
   const hc = headC;
   H({ t: 'ell', c: [hc[0], hc[1] + 0.003 * hs, hc[2]], r: [0.093 * hs, 0.086 * hs, 0.088 * hs], bone: 'head', k: 0 }); // round cranium: the round, fat-cheeked face (owner C8)
   const jw = o.jowls || 1, cheekK = (o.build === 'round' || o.build === 'huge') ? 1.08 : 1;
-  for (const s of [1, -1]) H({ t: 'ell', c: [hc[0] + s * 0.05 * hs * (1 + (jw - 1) * 0.5), hc[1] - (0.027 + (jw - 1) * 0.03) * hs, hc[2] + 0.02 * hs], r: [0.064 * hs * cheekK * jw, 0.054 * hs * (1 + (jw - 1) * 0.6), 0.064 * hs], bone: 'head', k: 0.034 }); // full, low cheeks: the round fat face
+  for (const s of [1, -1]) H({ t: 'ell', c: [hc[0] + s * 0.05 * hs * (1 + (jw - 1) * 0.5), hc[1] - (0.027 + (jw - 1) * 0.03) * hs, hc[2] + 0.03 * hs], r: [0.064 * hs * cheekK * jw, 0.054 * hs * (1 + (jw - 1) * 0.6), 0.056 * hs], bone: 'head', k: 0.042 }); // cheeks forward: the back of the head rounds into them // full, low cheeks: the round fat face
   // lifted muzzle: a small stop under the brow (low blend), the nose tip the most forward point, chin tucked back
   H({ t: 'ell', c: [hc[0], hc[1] - 0.038 * hs, hc[2] + 0.056 * hs], r: [0.038 * hs, 0.026 * hs, 0.03 * hs], bone: 'head', k: 0.03 }); // soft: no crease line
   H({ t: 'ell', c: [hc[0], hc[1] - 0.027 * hs, hc[2] + 0.08 * hs], r: [0.013 * hs, 0.009 * hs, 0.008 * hs], bone: 'head', k: 0.018 }); // small nose, barely ahead of the face
@@ -149,8 +150,8 @@ export function buildCast(o) {
     }
     T({ t: 'sph', c: v3.add(c, [0, 0, -0.022]), r: 0.03, bone: 'tail1', k: 0.014 });
   } else {
-    const rad = { whip: [0.017, 0.012], ringed: [0.024, 0.02], plume: [0.024, 0.022], stub: [0.026, 0.022], long: [0.022, 0.0105] }[o.tail];
-    const pts = [[0, rump[1], rump[2] + 0.03], ...[1, 2, 3, 4, 5].map((i) => tp(i)), v3.add(tp(5), [0, 0, -seg])];
+    const rad = { whip: [0.017, 0.012], ringed: [0.024, 0.02], plume: [0.024, 0.022], stub: [0.026, 0.022], long: [0.029, 0.023] }[o.tail];
+    const pts = [[0, tailRoot[1] - 0.004, tailRoot[2] + 0.028], ...[1, 2, 3, 4, 5].map((i) => tp(i)), v3.add(tp(5), [0, 0, -seg])]; // root buried in the rump: no cap shows
     for (let i = 0; i < 6; i++) {
       const t0 = i / 6, t1 = (i + 1) / 6;
       const rA = rad[0] + (rad[1] - rad[0]) * t0, rB = rad[0] + (rad[1] - rad[0]) * t1;

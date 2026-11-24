@@ -85,7 +85,7 @@ if (strip) {
   // owner turnaround layout: FRONT, SIDE (facing left), BACK at the sheet's eye-level camera
   (turn4 ? [0, -90, 180, -40] : [0, -90, 180]).forEach((deg, i, A) => {
     const c = createCatInternal({ cast: q.get('cast') || 'mikan', scale: 1.25, seed: 5 });
-    c.object3D.position.set((i - (A.length - 1) / 2) * 0.58 + (i === 1 ? 0.03 : 0), 0, 0); c.object3D.rotation.y = deg * Math.PI / 180;
+    c.object3D.position.set((i - (A.length - 1) / 2) * 0.8 + (i === 1 ? 0.06 : 0), 0, 0); // spaced so no tail crosses a neighbour c.object3D.rotation.y = deg * Math.PI / 180;
     c.setLighting(PH.light); scene.add(c.object3D); cats.push(c);
   });
 } else {
@@ -107,7 +107,7 @@ for (const c of cats) { c.setGait(gait, speed); c.setOutlineScale(num('ol', 1));
 const cam = new THREE.PerspectiveCamera(num('fov', 40), W / H, 0.05, 200);
 if (strip) { cam.fov = num('fov', 37); cam.updateProjectionMatrix(); cam.position.set(0, num('h', 1.0), num('dist', 4.6)); cam.lookAt(0, 0.3, 0); }
 else if (q.get('lineup') === '1') { cam.fov = num('fov', 34); cam.updateProjectionMatrix(); cam.position.set(0, num('h', 1.25), num('dist', 9.0)); cam.lookAt(0, 0.3, 0); }
-  else if (turn) { cam.fov = num('fov', turn4 ? 15 : 12.5); cam.updateProjectionMatrix(); cam.position.set(0, num('h', 0.34), num('dist', 4.6)); cam.lookAt(0, 0.2, 0); ground.visible = false; }
+  else if (turn) { cam.fov = num('fov', turn4 ? 19 : 15); cam.updateProjectionMatrix(); cam.position.set(0, num('h', 0.34), num('dist', 4.6)); cam.lookAt(0, 0.2, 0); ground.visible = false; }
   else if (q.get('cam') === 'close') { cam.position.set(0, num('h', 0.55), num('dist', 1.5)); cam.lookAt(0, 0.28, 0); }
 else { cam.position.set(0, num('h', 0.95), num('dist', 2.2)); cam.lookAt(0, 0.26, 0); }
 
