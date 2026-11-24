@@ -184,6 +184,52 @@ if (want('daifuku')) {
   await p.ctx.close();
 }
 
+/* ---------------------------------------------------------------- M1.2: camera pan at 120 Hz, damage numbers, final KO, shockwave */
+if (want('pan')) {
+  // the controlled cat walking while the camera turns 60°/s, stepped at 1/120 s (a 120 Hz display): its screen
+  // position should advance smoothly every frame (no repeated positions = no 60 Hz double image)
+  const p = await open('fight=toughs3&seed=3');
+  await ev(p, '__cat.frames(240)');
+  const series = await ev(p, `__cat.drive({ move: [0.6, -1], yaw: 60, n: 60 })`);
+  const imgs = [];
+  for (let k = 0; k < 6; k++) { await ev(p, `__cat.drive({ move: [0.6, -1], yaw: 60, n: 1, draw: true })`); imgs.push(await shot(p, `pan120-${k + 1}.png`, `camera pan at 120 Hz stepping, consecutive frame ${k + 1}: one crisp image of every cat (all interpolated), paint wobble eased under motion`)); }
+  sheet(imgs, 3, 4, 'pan120-sheet.png');
+  const dx = series.slice(1).map((q, i) => Math.hypot(q[0] - series[i][0], q[1] - series[i][1]));
+  R.pan = { frames: series.length, dt: 1 / 120, yawDegRequested: 30, yawDegApplied: +(series[series.length - 1][2] - series[0][2]).toFixed(2), stepPx: dx.map((d) => +d.toFixed(2)),
+    repeatedPositions: dx.filter((d) => d < 0.05).length, meanStepPx: +(dx.reduce((a, b) => a + b, 0) / dx.length).toFixed(2), maxAdjacentStepChangePx: +Math.max(...dx.slice(1).map((d, i) => Math.abs(d - dx[i]))).toFixed(2) };
+  console.log('pan', JSON.stringify({ ...R.pan, stepPx: undefined }));
+  await p.ctx.close();
+}
+if (want('dmg')) {
+  const p = await open('fight=toughs3&seed=3&script=demo');
+  await ev(p, `__cat.until('Hit', 3000, 14)`); await ev(p, '__cat.frames(5)');
+  await shot(p, 'damage-numbers.png', 'damage numbers (on by default, N toggles): merged per target, Cream-on-Ink for the Posse\'s hits, Ink-on-Cream for hits taken; the 133 ms character-local hit flash; allies yellow, enemies red + red wedge');
+  await p.ctx.close();
+}
+if (want('ko')) {
+  const p = await open('fight=toughs3&seed=3&script=demo');
+  const k = await ev(p, `__cat.untilWhere((s, log) => log.some((e) => e.type === 'FinalKO' || e.type === 'EncounterEnded'), 6000)`);
+  const imgs = [];
+  for (const [n, label] of [[2, 'freeze frame over the impact background (halftone wipe in), only the KO\'d cat and its attacker, K.O.!'], [12, 'freeze held'], [30, 'slow motion, the camera turning on the two-shot'], [60, 'slow motion'], [92, 'back to normal speed: the outcome card']]) {
+    await ev(p, `__cat.frames(${n - (imgs.lastN || 0)})`); imgs.lastN = n;
+    imgs.push(await shot(p, `finalko-${String(imgs.length + 1).padStart(2, '0')}.png`, `final KO +${n} frames: ${label}`));
+  }
+  sheet(imgs, 5, 4, 'finalko-sheet.png'); R.ko = k.ok;
+  await p.ctx.close();
+}
+if (want('shock')) {
+  const p = await open('fight=daifuku&seed=7&script=demo');
+  const t1 = await ev(p, `__cat.untilWhere((s) => s.telegraphs.some((t) => /belly|flop|slam|shock/.test(t.move || '')), 6000)`);
+  await ev(p, '__cat.frames(20)');
+  await shot(p, 'daifuku-bellyflop-telegraph.png', `Daifuku on the ground: the belly-flop telegraph (red, growing over the windup) ${t1.ok ? '' : '(NOT reached)'}`);
+  const t2 = await ev(p, `__cat.untilWhere((s, log) => log.some((e) => e.type === 'Shockwave' || (e.type === 'TelegraphEnd' && e.reason === 'resolved')) && !s.telegraphs.some((t) => /belly|flop|slam|shock/.test(t.move || '')), 900)`);
+  await ev(p, '__cat.frames(8)');
+  await shot(p, 'daifuku-shockwave.png', 'the slam: the expanding Cream-and-Ink shockwave ring, dust and ground crack');
+  await ev(p, `__cat.untilWhere((s) => s.mode === 'ended', 9000)`); await ev(p, '__cat.frames(100)');
+  await shot(p, 'daifuku-phase1-end.png', 'phase 1 ends cleanly: KO cinematic, then the bout end card');
+  await p.ctx.close();
+}
+
 /* ---------------------------------------------------------------- 4b. 10-cat brawl triangle budget (0.5 M) */
 if (want('brawl')) {
   const p = await open('fight=brawl10&seed=5&script=demo');
@@ -275,6 +321,8 @@ if (R.brawl) merged.brawl = R.brawl;
 if (R.chain) merged.chain = R.chain;
 if (R.latency) merged.latency = R.latency;
 if (R.intents) merged.intents = R.intents;
+if (R.pan) merged.pan = R.pan;
+if (R.ko != null) merged.finalKO = R.ko;
 fs.writeFileSync(path.join(OUT, 'results.json'), JSON.stringify(merged, null, 1));
 const errs = (merged.shots || []).flatMap((s) => s.errors || []);
 console.log('wrote', OUT, errs.length ? `ERRORS: ${errs.length}` : 'no page errors');

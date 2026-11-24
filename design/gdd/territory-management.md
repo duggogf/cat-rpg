@@ -145,7 +145,7 @@ One number drives the contest: the rival Clowder's Scent on that Patch, `S_r` (a
 
 1. **Before the window** the Boss stays at the Den and ignores Mikan ("Come back when the Lane smells of you, Collar."). The Den post cannot be marked. There is no Locked/Open Den state and no "3 of 4" rule.
 2. **Opening.** When Mikan's Lane influence reaches **100** (checked after any Scent change, and at step 2), the window opens: `BossWindowChanged(hidamari, open = true)`. A yowl rolls down from the great wall, Daifuku climbs down, and the Sniff and the Turf Board say so. **The trigger is the influence value alone**, never a fight outcome or a count of beaten cats (G5). In practice that means all four outer Patches Strong at once.
-3. **The patrol** (Nemesis places him; Combat owns the arena kit). One stop per daytime phase, staying at the last through Night. Each stop is one arena kit (a wall segment with a knock-off edge and a water prop). Slice: **Morning** Laundry Pole Yard's yard wall (wash tub) · **Day** Tofu Shop's back wall (rain barrel) · **Dusk and Night** the Den corner stone (the bucket). The current stop shows on the Turf Board map (crown paw-marks) and as a crown tick on the Whisker Sense compass.
+3. **The patrol** (Nemesis places him; Combat owns the arena kit). One stop per daytime phase, staying at the last through Night. Each stop is one ground arena kit (a flat ring, a noise prop, ledge junk; Combat §3.13, M1.2: no wall, no wash tub, no knock-off). Slice: **Morning** Laundry Pole Yard · **Day** Tofu Shop's back lane · **Dusk and Night** the Den corner. The current stop shows on the Turf Board map (crown paw-marks) and as a crown tick on the Whisker Sense compass.
 4. **Challenging.** Approach within 8 m of his current stop for a Standoff, then the Boss fight there (Combat's 3-phase design on the kit).
 5. **Closing (hysteresis).** The window stays open while influence is **≥ 75** at step 2. Below that, he returns to the Den and the window closes (`open = false`); it reopens at 100.
 6. **While the window is open, held outer Patches cannot be Lost** (a Lost result becomes Scuffed). This is what stops the run-up to the Boss becoming a treadmill.
@@ -711,7 +711,7 @@ Slice values: N3 = 3 (Persimmon Alley claimed on L2D1), so arrival_1 = **night 5
 | Thief's `loot_held` and the thief is recruited | The loot returns to the Stash at the Verdict |
 | A Sentry is Routed-for-a-night | The Patch is Unwatched next night; the cat resumes the night after |
 | The Warden's Loyalty falls below 60 | It stays; it simply cannot be re-posted to the Den until True again |
-| Only one Crew cat, and the player posts it | Allowed, with a Turf Board warning: "Mikan fights alone" (no Pile-On) |
+| Only one Crew cat, and the player posts it | Allowed, with a Turf Board warning: "Mikan fights alone" (no Special chain) |
 | A Brooder is moved off a post | Allowed; Territory raises `dismissed_from_post` (Crew applies the dislike) |
 | Tribute on the night of the claim | Computed in step 4; the slice ends at the Life-end check (step 5). The title card shows the pile |
 | Reload during the day | Raid and outcome rolls are counter-seeded (DR-13), so a reload reproduces them |
@@ -881,6 +881,8 @@ Slice values: N3 = 3 (Persimmon Alley claimed on L2D1), so arrival_1 = **night 5
 - **Counsel watch (not redesigned):** the nightly raid requester and the challenger's Rival tag are Nemesis's (OR-19 residual items). Territory's own rules change only Patches, posts, Morsels and the calendar-driven window.
 
 ## Revision Log
+
+**2026-11-24 — Owner combat direction M1.2 (2026-11-24)** (`design/reviews/owner-feedback/combat-m1.2-spec.md`; game designer, combat mentions only). §3 Boss patrol: each stop is a ground arena kit (no wall, wash tub or knock-off; Daifuku fights on the ground). Edge case "Mikan fights alone": no Special chain (was no Pile-On). No Territory rule or number changed.
 
 **2026-11-23: Round 2 (fresh slice rewrite; first draft archived).** Figures were computed by hand in §4.11–4.13; the Lives 1–2 sim needs updating to these formulas (flagged, §6 note 6).
 

@@ -78,6 +78,12 @@ const decalFrag = /* glsl */`
       if (d < 0.07) { col = d < 0.045 ? (an <= fill ? MAG : CREAM) : INK; gl_FragColor = vec4(col, 1.0); return; }
       discard;
     }
+    if (kind == 6) { // shockwave: a thick Cream ring with Ink edges, the slam front (fill = progress 0..1)
+      float d = abs(r - R); float band = 0.09 + 0.06 * (1.0 - fill);
+      if (d < band) { col = d < band - 0.04 ? CREAM : INK; gl_FragColor = vec4(col, 1.0); return; }
+      if (r < R && r > R - 0.35 && fract(atan(p.y, p.x) * 3.0) < 0.2) { gl_FragColor = vec4(INK, 1.0); return; }   // speed ticks behind the front
+      discard;
+    }
     if (kind == 5) { // Tag-In spark ring: a Bell-Gold ring with spikes popping outward
       float an = atan(p.y, p.x); float spike = 0.12 * step(0.5, fract(an * 12.0 / 6.2831853));
       float d = abs(r - R - spike * 0.5);
@@ -102,7 +108,7 @@ export class WorldFX {
     this.tex = tex; this.scene = scene; this.decals = decalScene;
     this.items = []; this.pool = []; this.tele = new Map(); this.orbits = new Map();
     this.ring = decal(3, { R: 0.48 }); this.ring.position.y = 0.012; decalScene.add(this.ring);
-    this.fzRings = new Map(); this.tagRings = [];
+    this.fzRings = new Map(); this.tagRings = []; this.waves = [];
   }
 
   /** World size (m) of a drawing that spans `frac` of the screen height at `at` (flash rule: a local disc <= 15% of the screen). */
@@ -162,6 +168,9 @@ export class WorldFX {
 
   /** Kill every billboard drawing within r metres of `at` (the stagger cinematic clears the stage). */
   clearNear(at, r) { for (const it of this.items) if (!it.ground && !it.keep && it.mesh.position.distanceTo(at) < r) it.dead = true; }
+
+  /** Belly-flop shockwave (M1.2 §9): a ring expanding from `at` to `radius` m over `dur` s, stepped on twos. */
+  shockwave(at, radius, dur, o = {}) { const d = decal(6, { R: o.r0 || 0.3 }); d.position.set(at.x, 0.02, at.z); d.scale.setScalar(radius + 0.5); d.renderOrder = 7; this.decals.add(d); this.waves.push({ d, t: 0, radius, dur, linear: !!o.linear, r0: o.r0 || 0.3 }); }
 
   tagRing(at, col) { const d = decal(5, { R: 0.4, colA: col || '#F2B01E' }); d.scale.setScalar(1.4); d.position.set(at.x, at.y + 0.02, at.z); this.decals.add(d); this.tagRings.push({ d, t: 0 }); }
 
@@ -244,6 +253,8 @@ export class WorldFX {
       else { this.scene.remove(it.mesh); this.pool.push(it.mesh); }
     }
     this.items = this.items.filter((i) => !i.dead);
+    for (const w of this.waves) { w.t += dt; const k = Math.min(1, Math.floor(w.t / TWO) * TWO / w.dur); const u = w.d.material.uniforms; u.R.value = w.r0 + (w.radius - w.r0) * (w.linear ? k : 1 - Math.pow(1 - k, 2));   // linear = the sim's constant front speed (it hits on this ring) u.fill.value = k; if (w.t > w.dur + TWO * 2) { w.dead = true; this.decals.remove(w.d); w.d.material.dispose(); } }
+    this.waves = this.waves.filter((w) => !w.dead);
     for (const r of this.tagRings) { r.t += dt; const k = Math.floor(r.t / TWO); r.d.material.uniforms.R.value = 0.4 + 0.15 * Math.min(k, 4); if (k >= 7) r.dead = true; }
     for (const r of this.tagRings) if (r.dead) { this.decals.remove(r.d); r.d.material.dispose(); }
     this.tagRings = this.tagRings.filter((r) => !r.dead);

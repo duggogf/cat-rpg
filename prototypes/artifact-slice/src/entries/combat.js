@@ -6,7 +6,7 @@
 //   ?fight=toughs3|captain|daifuku|sandbox|challenger|lose   (encounter; default toughs3)
 //   ?seed=N  ?phase=day|dusk  ?script=demo (an M1.1 player bot drives Mikan) | bot|median|daifuku|passive (sim smoke bots)
 //   ?test=1 (deterministic: no real-time pacing; window.__cat drives frames)  ?flash=reduce  ?motion=0..1
-//   ?res=0.85 (render scale)  ?post=0 (paint post off)  ?hud=0  ?brace=toggle  ?rim=0 (drop the cream rim shell: -1 pass per cat)
+//   ?res=0.85 (render scale)  ?post=0 (paint post off)  ?hud=0  ?rim=0 (drop the cream rim shell)  ?dmg=0 (damage numbers off; N toggles)
 import * as THREE from 'three';
 import { U, CEL, applyPhase, SunShadow } from '../render/env.js';
 import { PHASES, sunDir } from '../render/phases.js';
@@ -32,7 +32,7 @@ const FIGHTS = { brawl10: BRAWL10, toughs3: 'toughs_3', captain: 'captain', daif
 const opt = {
   fight: FIGHTS[Q.get('fight')] || 'toughs_3', seed: (+Q.get('seed') || 1) >>> 0, phase: PHASES[Q.get('phase')] ? Q.get('phase') : 'day',
   test: Q.get('test') === '1', script: Q.get('script') || '', post: Q.get('post') !== '0', res: +(Q.get('res') || 1), hud: Q.get('hud') !== '0',
-  reduceFlashes: Q.get('flash') === 'reduce', motion: Q.has('motion') ? +Q.get('motion') : 1,
+  reduceFlashes: Q.get('flash') === 'reduce', motion: Q.has('motion') ? +Q.get('motion') : 1, dmg: Q.get('dmg') !== '0',
 };
 const app = document.getElementById('app');
 app.style.position = 'fixed'; app.style.inset = '0';
@@ -71,7 +71,8 @@ let world, shadow, post, enc, snap, prevSnap, fighters = new Map(), fx, scr, cca
 let realT = 0, acc = 0, paused = false, script = null, cmdQueue = [], injectQ = [], pile = null, impact = null, dip = null, midTone = new THREE.Color('#8C88B8');
 const DT = 1 / 60, TWO = 1 / 30, evLog = [], counts = {};
 let lastTagWindow = null, routedTrail = new Map(), crackedUntil = new Map(), standoffFocus = null, fightStartT = null, endShown = false, lastStats = {};
-let quiet = null, hudBackAt = null, chainMean = 0.4, staggerSeen = false, latencyLog = [], cin = null, chainPending = false, chainFired = false; const banners = new Set();
+let camPrev = null, driveInp = null, driveYaw = 0, ko = null, lastEnemyOut = null, lastOutBy = null, sawShockwaveEvent = false; const teleById = new Map();
+let quiet = null, hudBackAt = null, chainMean = 0.4, staggerSeen = false, latencyLog = [], cin = null, chainPending = false, chainFired = false; const banners = new Set(), bonusShown = new Set();
 let pendingCard = null, seedCounter = 1, skipDraw = false; const pendingMenu = [];
 
 function setPhase(name) {
@@ -173,7 +174,9 @@ function onEvent(ev) {
       const ea = ent(ev.attacker), cp = contactPoint(fa, ft), ht = ev.hit_type || hitTypeOf(ea);
       if (fa && !ev.attack) fa.impulse('strike', tw, { mag: ev.kind === 'finisher' || (ev.feel && ev.feel.tier >= 3) ? 1.4 : 1 });
       ft.impulse('hurt', tw, { mag: ev.blocked ? 0.4 : Math.min(1.6, 0.6 + (ev.feel?.tier || 0) * 0.25) });
-      if (!ev.blocked && (ev.feel?.tier ?? 0) >= 1) ft.flash(tw, 2);
+      if (!ev.blocked) ft.flash(tw, 8);   // M1.2 §5: a longer, character-local hit flash (~133 ms) on every cat
+      if (ev.kind === 'special' && (ev.stagger_bonus || ev.bonus || (ent(ev.target) && ent(ev.target).staggered_s > 0)) && !bonusShown.has(ev.attacker + ev.tick)) { bonusShown.add(ev.attacker + ev.tick); scr.add({ kind: 'banner', at: ft.head.clone(), text: 'STAGGER BONUS!', col: '#F2B01E', who: '', dur: 0.9 }); }
+      if (opt.dmg && ev.dmg > 0) scr.damage(ft, Math.round(ev.dmg), ft.side === 'enemy' ? 'out' : 'in', realT, ev.kind === 'special' || (ev.feel && ev.feel.tier >= 3));
       const facingRot = Math.atan2(cp.dir[1], cp.dir[0]) * 0.5;
       if (quiet && realT < quiet.until) { ft.flash(tw, 2); break; }   // the stagger cinematic owns the screen
       fx.hit(cp.p, ht, ev.feel || { tier: 0, dust: '2 puffs' }, cp.dir, { blocked: ev.blocked, stringIdx: ea ? ea.string_idx : 0, finisher: ev.kind === 'finisher' || ev.kind === 'tag_in', player: ev.authored === 'player', seed: seedCounter++, facingRot });
@@ -183,7 +186,6 @@ function onEvent(ev) {
       break;
     }
     case 'Whiff': { const fa = F(ev.attacker); if (fa) { fa.impulse('strike', tw, { mag: 0.8 }); fx.spawn('wedge', fa.head.clone().add(new THREE.Vector3(0, -0.2, 0)), { size: 0.3, drawings: 3 }); } break; }
-    case 'Skitter': { const f = F(ev.cat); if (f) { fx.dust('2 puffs', f.pos); scr.add({ kind: 'streak', from: f.pos.clone().add(new THREE.Vector3(0, 0.3, 0)), to: f.pos.clone().add(new THREE.Vector3(f.vel.x, 0.3, f.vel.z).multiplyScalar(0.3)), dur: 0.2, seed: 1, len: 120 }); } break; }
     case 'Hop': case 'Mantle': case 'HopDown': { const f = F(ev.cat); if (f) fx.dust('2 puffs', f.pos); break; }
     case 'Pounce': { const f = F(ev.cat); if (f) scr.add({ kind: 'streak', from: f.pos.clone().add(new THREE.Vector3(0, 0.3, 0)), to: f.pos.clone().add(new THREE.Vector3(0, 0, 0)), dur: 0.2, seed: 2 }); break; }
     case 'Staggered': case 'Frazzled': {
@@ -233,7 +235,7 @@ function onEvent(ev) {
       if (mv.target === 'ally' || mv.target === 'self') for (const id of (ev.targets_hit && ev.targets_hit.length ? ev.targets_hit : [ev.user])) { const f = F(id); if (f) for (let i = 0; i < 3; i++) fx.spawn('heart', f.head.clone().add(new THREE.Vector3((i - 1) * 0.18, 0.1, 0)), { size: 0.18, drawings: 10, vel: new THREE.Vector3((i - 1) * 0.2, 0.7, 0), delay: i * TWO, breakAt: 0.7 }); }
       break;
     }
-    case 'Healed': { const f = F(ev.cat); if (f) for (let i = 0; i < 2; i++) fx.spawn('heart', f.head.clone(), { size: 0.16, drawings: 10, vel: new THREE.Vector3((i ? 1 : -1) * 0.25, 0.6, 0), delay: i * TWO * 2, breakAt: 0.7 }); break; }
+    case 'Healed': { const f = F(ev.cat); if (f && opt.dmg && ev.amount > 0) scr.damage(f, Math.round(ev.amount), 'heal', realT, false); if (f) for (let i = 0; i < 2; i++) fx.spawn('heart', f.head.clone(), { size: 0.16, drawings: 10, vel: new THREE.Vector3((i ? 1 : -1) * 0.25, 0.6, 0), delay: i * TWO * 2, breakAt: 0.7 }); break; }
     case 'TagIn': {
       { const e2 = ent(ev.to); if (e2) hud.bark(ev.to, e2.personality, realT, true); }
       ccam.blend(COMBAT_CAM.tagBlend); ccam.relayHold = realT + 3;
@@ -250,7 +252,7 @@ function onEvent(ev) {
       const f = F(ev.cat); if (!f) break;
       f.impulse('take', tw, { dur: 0.18 });
       fx.spawn('sparkle', f.head.clone(), { size: 0.3, drawings: 10, spin: 6, cycle: false });
-      routedTrail.set(ev.cat, realT);
+      routedTrail.set(ev.cat, realT); if (ev.side === 'enemy') { lastEnemyOut = ev.cat; lastOutBy = ev.by; }
       { const by = ent(ev.by); if (by && by.side !== 'enemy' && ev.how !== 'by_pile_on') hud.bark(ev.by, by.personality, realT); }
       const last = snap.entities.filter((e) => e.side === ev.side && !e.routed && e.present).length === 0;
       if (ev.feel && ev.how !== 'by_pile_on') applyFeel(ev.feel, f.head, { dir: [0, 1], finalRout: last, hitType: 'claw' });
@@ -279,6 +281,13 @@ function onEvent(ev) {
     } break;
     case 'SkillBarOpen': case 'SkillBarClose': ccam.blend(COMBAT_CAM.sbBlend); break;
     case 'SpecialChainStart': chainMean = measureMean(); hud.showChrome(false); break;
+    case 'SpecialStart': {   // M1.2: sequential; the cut-in plays for cutin_s, then the cat's action plays in the world
+      const e = ent(ev.cat), f = F(ev.cat); if (!e || !f) break;
+      cin.cutIn({ id: e.id, catId: e.cat, name: e.name, f, special: ((DATA.cats[e.cat] && DATA.cats[e.cat].special_name) || ev.special || '').toUpperCase(), idx: (ev.index || 1) - 1, of: ev.of || 1 }, ev.cutin_s || 0.8, chainMean, realT, ev.index === 1);
+      hud.moveUsed(ev.cat, null, realT);
+      break;
+    }
+    case 'SpecialEnd': break;
     case 'SpecialCutIn': {
       const e = ent(ev.cat), f = F(ev.cat); if (!e || !f) break;
       cin.cutIn({ id: e.id, catId: e.cat, name: e.name, f, special: ((DATA.cats[e.cat] && DATA.cats[e.cat].special_name) || ev.special || '').toUpperCase(), idx: (ev.index || 1) - 1, of: ev.of || 1 }, ev.duration_s || 1, chainMean, realT, ev.index === 1);
@@ -292,7 +301,19 @@ function onEvent(ev) {
       break;
     }
     case 'Dash': { const f = F(ev.cat); if (f) { fx.dust('3-puff ring', f.pos); scr.add({ kind: 'streak', from: f.pos.clone().add(new THREE.Vector3(0, 0.3, 0)), to: f.pos.clone().add(new THREE.Vector3(Math.sin(f.yaw), 0.3, Math.cos(f.yaw))), dur: 0.2, seed: 1, len: 140 }); } break; }
-    case 'AttackStart': { const f = F(ev.cat); if (f) { const heavy = /^(H|HC|FIN|LAUNCH)$/.test(ev.attack); f.impulse('coil', tw, { dur: heavy ? 0.14 : 0.05 }); } break; }
+    case 'AttackStart': { // anticipation sized to the attack's own startup (light: near-instant; heavy: a readable wind-up)
+      const f = F(ev.cat); if (f) { const heavy = /^(H|HC|FIN|LAUNCH)$/.test(ev.attack), row = DATA.strings && DATA.strings[ev.attack];
+        const st = row ? row.startup_s + (ev.charge ? (row.charge_max_s || 0) * ev.charge : 0) : heavy ? 0.25 : 0.03;
+        f.impulse('coil', tw, { dur: Math.max(0.03, st), mag: heavy ? 2 : 0.6 }); }
+      break; }
+    case 'Evade': case 'Skitter': {   // M1.2 §2 Evade: a short streak, two afterimage wedges, dust; a perfect evade rings the clock
+      const f = F(ev.cat); if (!f) break;
+      fx.dust('3-puff ring', f.pos);
+      const back = new THREE.Vector3(-Math.sin(f.yaw), 0, -Math.cos(f.yaw));
+      scr.add({ kind: 'streak', from: f.pos.clone().add(new THREE.Vector3(0, 0.3, 0)).addScaledVector(back, 0.8), to: f.pos.clone().add(new THREE.Vector3(0, 0.3, 0)), dur: 0.18, seed: 1, len: 120 });
+      if (ev.perfect) { scr.add({ kind: 'perfect', at: f.head.clone(), dur: 0.45 }); hud.bark(ev.cat, 'bang', realT, true); }
+      break; }
+    case 'PerfectEvade': { const f = F(ev.cat); if (f) scr.add({ kind: 'perfect', at: f.head.clone(), dur: 0.45 }); break; }
     case 'InputBuffered': case 'InputDropped': latencyLog.push({ type: ev.type, tick: ev.tick, attack: ev.attack }); break;
     case 'AttackActive': { const f = F(ev.cat); if (f) { const heavy = /^(H|HC|FIN|LAUNCH)$/.test(ev.attack); f.impulse('strike', tw, { mag: heavy ? 1.5 : 1.05, dur: heavy ? 0.42 : 0.3 }); } }
       latencyLog.push({ type: ev.type, tick: ev.tick, attack: ev.attack, latency_ticks: ev.latency_ticks }); break;
@@ -315,10 +336,35 @@ function onEvent(ev) {
     case 'EncounterEnded': {
       endShown = true;
       const t = { win: ['ROUTED THEM!', ' The lot is ours'], loss: ['WIPED OUT', ' Back home by nightfall'], rival_fled: ['DAIFUKU BOLTS!', ' Phase 1 cleared'], player_fled: ['SCRAM!', ''] }[ev.outcome] || ['FIGHT OVER', ''];
-      setTimeout(() => {}, 0);
-      pendingCard = { at: realT + 1.1, text: t[0], sub: t[1], clowder: ev.outcome === 'loss' ? 'ink' : 'gold' };
+      // the final KO cinematic, unless the sim already sent FinalKO this tick
+      if (!ko && (ev.outcome === 'win' || ev.outcome === 'rival_fled')) { const last = ev.outcome === 'rival_fled' ? (ev.rival || (ev.boss_ids || [])[0]) : lastEnemyOut; if (last) startKO(last, lastOutBy); }
+      pendingCard = { at: realT + (ko ? 1.6 : 1.1), text: t[0], sub: t[1], clowder: ev.outcome === 'loss' ? 'ink' : 'gold' };
       break;
     }
+    case 'FinalKO': if (!ko) startKO(ev.cat || ev.target, ev.by, ev.freeze_ms, ev.slow); break;
+    case 'TelegraphStart': teleById.set(ev.id, ev); break;
+    case 'TelegraphEnd': {   // a belly-flop / slam resolving sends its shockwave ring (unless the sim sends its own)
+      const tl = teleById.get(ev.id); teleById.delete(ev.id);
+      if (tl && ev.reason === 'resolved' && !sawShockwaveEvent && /belly|flop|slam|shock/.test(tl.move || '') && tl.shape && tl.shape.type === 'circle') {
+        const c = v3([tl.shape.center[0], 0, tl.shape.center[1]]); fx.shockwave(c, tl.shape.radius * 1.15, 0.45); fx.dust('ring plus crack decal', c); }
+      break; }
+    case 'ShockwaveStart': {
+      sawShockwaveEvent = true;
+      const c = v3([ev.center[0], 0, ev.center[1]]), maxR = ev.max_radius_m || 6, sp = ev.speed_mps || 6;
+      fx.shockwave(c, maxR, ev.duration_s || maxR / sp, { linear: true, r0: ev.radius || 0.3, width: ev.width_m || 0.7 });
+      fx.dust('ring plus crack decal', c); fx.spawn('burstThump', c.clone().add(new THREE.Vector3(0, 0.4, 0)), { size: 1.6, drawings: 4, cycle: false });
+      scr.letter({ cls: 'thud', ms: 500, tier: 4, hitType: 'thump', text: 'THOOM!', at: c.clone().add(new THREE.Vector3(0, 0.8, 0)), seed: 7 });
+      ccam.addShake({ peak_pct: 1.1, steps: 5, step_ms: 33, decay: 0.6 }, realT, [0, 1]);
+      break; }
+    case 'KnockedDown': { const f = F(ev.cat); if (f) { f.impulse('hurt', tw, { mag: 1.6 }); fx.dust('5-puff ring', f.pos); } break; }
+    case 'BossRage': { const f = F(ev.cat); if (f) { scr.add({ kind: 'banner', at: f.head.clone(), text: 'RAGE!', col: '#E2453F', who: f.id === 'daifuku' ? 'Daifuku' : '', dur: 1.3 }); for (let i = 0; i < 4; i++) fx.spawn('puffSmall', f.head.clone().add(new THREE.Vector3((i - 1.5) * 0.25, 0.1, 0)), { size: 0.22, drawings: 9, vel: new THREE.Vector3((i - 1.5) * 0.3, 0.7, 0) }); } break; }
+    case 'Cornered': { const f = F(ev.cat); if (f) { f.impulse('hiss', tw, { dur: 0.4 }); fx.spawn('hiss', f.head.clone(), { size: 0.5, drawings: 5, breakAt: 0.7 }); } break; }
+    case 'Shockwave': {
+      sawShockwaveEvent = true;
+      const c = v3([ev.center ? ev.center[0] : ev.pos[0], 0, ev.center ? ev.center[1] : ev.pos[2]]);
+      fx.shockwave(c, ev.radius || ev.radius_m || 3, ev.duration_s || 0.45); fx.dust('ring plus crack decal', c);
+      if (ev.feel) applyFeel(ev.feel, c.clone().add(new THREE.Vector3(0, 0.3, 0)), {}); else ccam.addShake({ peak_pct: 1.1, steps: 5, step_ms: 33, decay: 0.6 }, realT, [0, 1]);
+      break; }
     default: break;
   }
 }
@@ -338,15 +384,28 @@ function lockCycle() {
   camLock = n && n !== camLock ? n : null;
   if (camLock) hud.lockFlash = realT;
 }
+let flickLock = null, flickSide = null, flickAcc = 0, flickT = -9;
+/** Next enemy on screen side `dir` (+1 right, -1 left) of the current lock: the nearest in screen x. */
+function pickSide(dir) {
+  if (simM11()) { flickSide = dir > 0 ? 'right' : 'left'; hud.lockFlash = realT; return; }   // the sim picks the cat
+  const cur = F(snap.lock); if (!cur) return;
+  const cx = project(cur.head).x; let best = null, bd = 1e9;
+  for (const e of snap.entities) { if (e.side !== 'enemy' || !e.present || e.routed || e.id === snap.lock) continue; const f = F(e.id); if (!f) continue;
+    const p = project(f.head); if (!p.on) continue; const dx = (p.x - cx) * dir; if (dx > 8 && dx < bd) { bd = dx; best = e.id; } }
+  if (best) { flickLock = best; hud.lockFlash = realT; }
+}
 /** Does the sim speak the M1.1 InputFrame (light/heavy/dodge/dash/special/skillBar)? Detected from API.md's
  * contract as published in the snapshot (`input_api >= 2`) or the encounter (`enc.inputApi`). */
 const simM11 = () => !!snap && 'special_prompt' in snap;
 function toSim(f) {
   const out = { move: f.move };
   if (simM11()) {   // M1.1 sim: it owns the Tab cycle (lockOn) and reads heavy as a HELD flag (press/release edges)
-    for (const k of ['light', 'dodge', 'dash', 'special', 'skillBar']) if (f[k]) out[k] = true;
+    for (const k of ['light', 'special', 'skillBar']) if (f[k]) out[k] = true;
+    if (f.evade) { out.evade = true; out.dodge = true; }   // M1.2 'evade' (M1.1 sims read 'dodge')
     if (f.heavy || f.heavyHeld) out.heavy = true;
-    if (f.lock) out.lockOn = true;
+    // Tab (M1.2 §6): lock the nearest enemy, Tab again unlocks; a horizontal mouse flick while locked switches side
+    if (f.lock) out.lockOn = true;   // the M1.2 sim toggles: lock the nearest / unlock
+    if (flickSide && snap.locked) { const y = ccam.pose.yaw * Math.PI / 180; out.lockSwitch = { side: flickSide, right: [Math.cos(y), -Math.sin(y)] }; } flickSide = null;
     return out;
   }
   if (f.lock) lockCycle();
@@ -354,12 +413,23 @@ function toSim(f) {
   // legacy (M1) sim: light/heavy -> the string, dodge/dash -> skitter, Special -> the Pile-On while one is offered,
   // skill bar -> Slow Blink
   if (f.light || f.heavy) out.attack = true;
-  if (f.dodge || f.dash) out.skitter = true;
+  if (f.evade || f.dodge || f.dash) out.skitter = true;
   if (f.special && snap.pile_on_offer) out.hiss = true;
   if (f.skillBar) out.slowBlink = true;
   return out;
 }
 
+/** Final KO (M1.2 §8): a freeze frame over an impact background (≈ 0.4 s), then slow motion (≈ 1.1 s) on a
+ * slowly turning two-shot of the KO'd cat and its attacker, with the giant K.O.! — ≈ 1.5 s, flash-safe. */
+function startKO(id, byId, freezeMs = 400, slow = { scale: 0.25, ms: 1100 }) {
+  const f = F(id); if (!f) return;
+  const a = F(byId) || F(snap.controlled);
+  ko = { f, a, t0: realT, mean: measureMean(), freeze: (freezeMs || 400) / 1000, slowS: Math.min(1.5, (slow && slow.ms || 1100) / 1000), slowK: (slow && slow.scale) || 0.25 };
+  const koLen = ko.freeze + ko.slowS;
+  ccam.stagger = { T: f, C: a || f, from: realT, until: realT + koLen, full: true, spin: 0.3, close: 0.75 };
+  scr.word = null; scr.fx = scr.fx.filter((x) => x.kind === 'dmg'); scr.add({ kind: 'ko', dur: koLen, delay: 0.1 });
+  quiet = { id, until: realT + koLen }; hud.showChrome(false); fx.clearNear(f.pos, 4); impact = null; dip = null; ccam.shakes = []; ccam.punch = null; pendingCard = null;
+}
 /** The enemy the F prompt points at: a staggered enemy while Mikan's Special is ready (M1 sim: the offered Pile-On). */
 function specialTarget(s) {
   if (s.special_prompt) return s.special_prompt.ready ? s.special_prompt.target : null;
@@ -382,6 +452,7 @@ function tick() {
   let inp;
   if (injectQ.length) inp = injectQ.shift();
   else if (script) inp = script(enc, enc.tick) || {};
+  else if (driveInp) inp = { ...driveInp };
   else inp = toSim(input.frame(ccam.pose.yaw, input._pad));
   if (cmdQueue.length && snap.slow_blink) { const c = cmdQueue.shift(); if (c.command) inp.command = c.command; if (c.slowBlink) inp.slowBlink = true; }
   else if (cmdQueue.length && cmdQueue[0].slowBlink) { cmdQueue.shift(); inp.slowBlink = true; }
@@ -415,12 +486,20 @@ function lerpEnt(e, a) {
 function frame(dt) {
   realT += dt; input.now = realT;
   if (!opt.test) input._pad = input.pollPad();
-  const look = input.takeLook(dt); ccam.userOrbit(look[0], look[1], realT);
+  const look = input.takeLook(dt); if (driveYaw) look[0] += driveYaw * dt;
+  if (snap.locked && !snap.slow_blink) {
+    // locked: no free yaw; a flick past ~12° of mouse travel within 0.3 s picks the next enemy on that side
+    flickAcc = realT - flickT > 0.3 ? look[0] : flickAcc + look[0]; if (look[0]) flickT = realT;
+    if (Math.abs(flickAcc) > 12) { pickSide(flickAcc < 0 ? 1 : -1); flickAcc = 0; }
+    ccam.userOrbit(0, look[1], realT);
+  } else ccam.userOrbit(look[0], look[1], realT);
   input.skillBarOpen = !!snap.slow_blink;
   const menu = input.takeMenu();
   if (menu.includes('pause')) { paused = !paused; hud.setHint(paused ? 'Paused · P / Esc to resume' : ''); }
   const cut = cin.update(realT);
   let rate = paused || (cin.holding && !simM11()) ? 0 : 1;
+  const koU = ko ? realT - ko.t0 : null;
+  if (ko && koU < ko.freeze) rate = 0; else if (ko && koU < ko.freeze + ko.slowS) rate = Math.min(rate, ko.slowK);
   if (dip && realT >= dip.from && realT < dip.to) { const k = (dip.to - realT) < 0.1 ? 1 - (dip.to - realT) / 0.1 : 0; rate = dip.scale + (1 - dip.scale) * k; }
   if (dip && realT >= dip.to) dip = null;
   if (enc.mode !== 'ended' || prevSnap !== snap) {
@@ -457,15 +536,17 @@ function present(dt, alpha, menu = [], cut = null) {
       const ux = (T.x - cp.x) / dT, uz = (T.z - cp.z) / dT, vx = f.pos.x - cp.x, vz = f.pos.z - cp.z, along = vx * ux + vz * uz;
       blocker = along > 0 && along < dT + 0.3 && Math.abs(vx * uz - vz * ux) < 0.9 * Math.max(1, f.scaleK);
     }
-    f.hidden = hidden || crowd || blocker;
+    f.hidden = hidden;
+    f.fadeTarget = crowd || blocker ? 0.3 : 1; f.stepFade(dt);   // dither-fade, never hidden (M1.2 §6)
     // nearest standing opponent (for intent reading and squaring off)
-    const le = lerpEnt(e, e.controlled ? 1 : alpha);   // the controlled cat renders the newest tick: no presentation lag
+    const le = lerpEnt(e, alpha);   // every cat, the controlled one included, interpolates between ticks (no 60 Hz stepping / ghosting on high-refresh displays)
     if (!e.controlled && !e.routed && e.present) {
       let bo = null, bd = 1e9;
       for (const o of s.entities) { if (!o.present || o.routed || (o.side === 'enemy') === (e.side === 'enemy')) continue; const d = Math.hypot(o.pos[0] - e.pos[0], o.pos[2] - e.pos[2]); if (d < bd) { bd = d; bo = o; } }
       if (bo && bd > 1e-3) { le._opp = { dir: [(bo.pos[0] - e.pos[0]) / bd, (bo.pos[2] - e.pos[2]) / bd], dist: bd }; le._side = (e.id.charCodeAt(0) + e.id.length) % 2 ? 1 : -1; }
     }
-    f.update(le, cut && cut.id === e.id ? dt : frozen ? 0 : dt * (s.slow_blink ? 0.05 : 1), realT, tw, dt);
+    const koFreeze = ko && realT - ko.t0 < ko.freeze;
+    f.update(le, cut && cut.id === e.id ? dt : (frozen || koFreeze) ? 0 : dt * (s.slow_blink ? 0.05 : 1) * (ko ? 0.25 : 1), realT, tw, dt);
     // posturing cats hiss and lash (a hiss glyph every ~1.6 s, staggered per cat); dash-ins leave a streak
     if (!skipDraw && f.root.visible && (f.intent === 'posture' || f.intent === 'strut') && e.side === 'enemy' && (!f.hissT || realT - f.hissT > 1.6 + (e.id.length % 3) * 0.4)) {
       f.hissT = realT; fx.spawn('hiss', f.head.clone().add(new THREE.Vector3(le._opp.dir[0] * 0.3, -0.04, le._opp.dir[1] * 0.3)), { size: 0.32, drawings: 4, breakAt: 0.7 });
@@ -473,7 +554,7 @@ function present(dt, alpha, menu = [], cut = null) {
     }
     if (!skipDraw && f.root.visible && f.intent === 'dash_in' && (!f.dashT || realT - f.dashT > 0.35)) { f.dashT = realT; scr.add({ kind: 'streak', from: f.pos.clone().add(new THREE.Vector3(0, 0.3, 0)).addScaledVector(f.vel, -0.25), to: f.pos.clone().add(new THREE.Vector3(0, 0.3, 0)), dur: 0.2, seed: 2, len: 110 }); }
     // routed bolt: a three-puff trail of shrinking clouds
-    if (e.anim === 'routed' && routedTrail.has(e.id) && realT - routedTrail.get(e.id) > 0.12) { routedTrail.set(e.id, realT); fx.spawn('puffSmall', f.pos.clone().add(new THREE.Vector3(0, 0.12, 0)), { size: 0.3, drawings: 6 }); }
+    if (e.anim === 'routed' && routedTrail.has(e.id) && realT - routedTrail.get(e.id) > 0.12 && !(ko && ko.f === f)) { routedTrail.set(e.id, realT); fx.spawn('puffSmall', f.pos.clone().add(new THREE.Vector3(0, 0.12, 0)), { size: 0.3, drawings: 6 }); }
     // Frazzled: spiral eyes (two spiral glyphs over the face when it turns toward the camera)
     if (e.frazzled_s > 0 && f.root.visible && !skipDraw) {
       const toCam = new THREE.Vector3(cam.position.x - f.pos.x, 0, cam.position.z - f.pos.z).normalize();
@@ -494,7 +575,11 @@ function present(dt, alpha, menu = [], cut = null) {
     if (e.controlled && f.root.visible) f.cat.lookAt(s.lock && F(s.lock) ? F(s.lock).head : null);
   }
   // camera-soft ring dressing: a prop crowding the lens is hidden outright (never half-transparent)
-  if (world.dress) for (const m of world.dress.children) m.visible = Math.hypot(m.position.x - cam.position.x, m.position.z - cam.position.z) > 1.7;
+  if (world.dress) for (const m of world.dress.children) {   // camera-soft ring dressing dither-fades (never hidden)
+    if (!m.userData.dith) { m.material = m.material.clone(); patchEnvDither(m.material); m.userData.dith = true; }
+    const d = Math.hypot(m.position.x - cam.position.x, m.position.z - cam.position.z), want = d < 1.7 ? 0.3 : d < 2.4 ? 0.3 + (d - 1.7) / 0.7 * 0.7 : 1;
+    m.material.uniforms.uFade.value = Math.round(want * 8) / 8;
+  }
   // tag window opening: a bell-gold spark ring on the controlled cat
   lastTagWindow = s.tag_window;
   // camera
@@ -528,6 +613,7 @@ function present(dt, alpha, menu = [], cut = null) {
     }
     if (pile.phase === 'out') { pile.outT += dt; if (pile.outT > 0.42) { pile = null; hudBackAt = realT + (scr.word ? Math.max(0, scr.word.ms / 1000 - scr.word.t) : 0); } }
   }
+  if (ko) { if (realT - ko.t0 < ko.freeze + ko.slowS + 0.05) hud.showChrome(false); else if (!ko.back) { ko.back = true; hud.showChrome(true); } }
   // the giant T5 word plays only while the HUD is hidden (HUD §4.1): the chrome returns after it
   if (hudBackAt != null && realT >= hudBackAt) { hudBackAt = null; hud.showChrome(true); }
   // screen layer
@@ -562,6 +648,13 @@ function present(dt, alpha, menu = [], cut = null) {
     hud.tickCard(realT);
   }
   renderer.domElement.style.filter = s.slow_blink ? 'saturate(0.7) brightness(0.9)' : '';
+  // paint post under camera motion (M1.2 §6): the edge wobble is screen-anchored, so while the view turns or
+  // travels the world would swim under it; it eases down with camera speed and back up at rest
+  { const cp = cam.position, q = camPrev || (camPrev = { p: cp.clone(), yaw: ccam.pose.yaw });
+    const speed = dt > 0 ? (cp.distanceTo(q.p) * 6 + Math.abs(ccam.pose.yaw - q.yaw) * 0.12) / dt : 0;
+    const want = 1.8 * Math.max(0.25, 1 - Math.min(1, speed / 6));
+    const u = post.mat.uniforms.wob; u.value += (want - u.value) * Math.min(1, dt * 10);
+    q.p.copy(cp); q.yaw = ccam.pose.yaw; }
   if (!skipDraw) draw(impactMode, s, cut);
 }
 
@@ -583,6 +676,14 @@ function occludedAt(pose, pts) {
     for (const b of world.colliders) { if (b.soft || b.max.y > 4) continue; if (ray.intersectBox(b, hitP) && hitP.distanceTo(camP) < L - 0.15) return true; }
   }
   return false;
+}
+
+function patchEnvDither(m) {
+  m.uniforms.uFade = { value: 1 };
+  const src = m.fragmentShader, k = src.lastIndexOf('void main'), open = src.indexOf('{', k) + 1;
+  m.fragmentShader = src.slice(0, k) + 'uniform float uFade; float ditherB4e(vec2 p){ ivec2 i = ivec2(mod(p, 4.0)); int b[16] = int[16](0,8,2,10,12,4,14,6,3,11,1,9,15,7,13,5); return (float(b[i.y * 4 + i.x]) + 0.5) / 16.0; }\n'
+    + src.slice(k, open) + ' if (uFade < 0.999 && ditherB4e(gl_FragCoord.xy) > uFade) discard; ' + src.slice(open);
+  m.needsUpdate = true;
 }
 
 /* ---------------------------------------------------------------- render */
@@ -623,6 +724,7 @@ function draw(impactMode, s, cut = null) {
     renderer.autoClear = true;
   }
   if (cut) cin.render(cut, realT);
+  else if (ko && realT - ko.t0 < ko.freeze) cin.renderKO(ko, realT, cam);
   lastStats = { calls: renderer.info.render.calls, triangles: renderer.info.render.triangles };
 }
 
@@ -661,7 +763,7 @@ async function boot() {
     if (stag) return { ...out, move: [stag.pos[0] - c.pos[0], stag.pos[2] - c.pos[2]], dash: n++ % 40 === 0 };
     const t = foes.find((e) => e.id === s.lock) || foes.sort((a, b) => Math.hypot(a.pos[0] - c.pos[0], a.pos[2] - c.pos[2]) - Math.hypot(b.pos[0] - c.pos[0], b.pos[2] - c.pos[2]))[0];
     const tl = s.telegraphs.find((x) => x.aimed_at === c.id && x.dur - x.t < 0.22);
-    if (tl) return { ...out, dodge: true, move: [c.pos[0] - t.pos[0], c.pos[2] - t.pos[2]] };
+    if (tl && !(c.evade_cd_s > 0)) return { ...out, dodge: true, evade: true, move: [c.pos[0] - t.pos[0], c.pos[2] - t.pos[2]] };
     const d = Math.hypot(t.pos[0] - c.pos[0], t.pos[2] - c.pos[2]);
     if (d > 1.3) return { ...out, move: [t.pos[0] - c.pos[0], t.pos[2] - c.pos[2]], dash: d > 3.5 && n % 90 === 0 };
     n++;
@@ -691,6 +793,14 @@ async function boot() {
     /** Advance (undrawn) until pred(snapshot, events) is true or max frames; then draw once. */
     untilWhere: (pred, max = 3000) => { skipDraw = true; let ok = false; for (let i = 0; i < max; i++) { if (pred(snap, evLog)) { ok = true; break; } frame(DT); } skipDraw = false; present(0, 1); return { ok, ...window.__cat.state() }; },
     inject: (inp) => { injectQ.push(inp); },
+    /** Camera-pan / ghosting capture: hold a sim input and turn the camera at yawDegPerS, stepping `n` frames of `dt`
+     * (1/120 = a 120 Hz display); returns the controlled cat's screen x/y per frame. */
+    drive: ({ move = [0, -1], yaw = 0, n = 60, dt = 1 / 120, draw = false } = {}) => {
+      driveInp = { move }; driveYaw = yaw; const out = [];
+      for (let i = 0; i < n; i++) { skipDraw = !draw; frame(dt); const f = F(snap.controlled); const p = project(f.pos.clone().add(new THREE.Vector3(0, 0.3, 0))); out.push([+p.x.toFixed(2), +p.y.toFixed(2), +ccam.pose.yaw.toFixed(3)]); }
+      skipDraw = false; driveInp = null; driveYaw = 0; return out;
+    },
+    postWob: () => post.mat.uniforms.wob.value,
     scriptOn: (on) => { if (!on) { window.__cat._script = script; script = null; } else if (window.__cat._script) script = window.__cat._script; },
     menu: (m) => { input.menu.push(m); },
     events: (type) => evLog.filter((e) => !type || e.type === type).map((e) => ({ type: e.type, user: e.user || e.cat, move: e.move, tick: e.tick, t: e.t, tier: e.feel ? e.feel.tier : null, impact: e.feel ? e.feel.impact : null })),
@@ -706,8 +816,9 @@ async function boot() {
     return;
   }
   input.bind();
+  addEventListener('keydown', (e) => { if (e.code === 'KeyN') { opt.dmg = !opt.dmg; hud.setHint(opt.dmg ? 'Damage numbers on (N)' : 'Damage numbers off (N)'); } });
   chapterPill();
-  hud.setHint(script ? 'Demo: a bot is playing · reload without ?script to fight yourself' : 'Click to capture the mouse · WASD move · LMB light · RMB heavy (hold) · Space dodge · Shift dash · Tab lock-on · F Special (staggered enemy) · R skills · P pause');
+  hud.setHint(script ? 'Demo: a bot is playing · reload without ?script to fight yourself' : 'Click to capture the mouse · WASD move · LMB light · RMB heavy (hold) · Space evade · Tab lock / unlock (flick the mouse to switch) · F Special · R skills · N damage numbers · P pause');
   let last = performance.now(), first = true;
   const loop = (now) => {
     const dt = Math.min(0.05, (now - last) / 1000); last = now;

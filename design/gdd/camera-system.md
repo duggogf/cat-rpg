@@ -3,6 +3,7 @@
 *Created: 2026-11-23 · Owner: technical-artist · Status: **Draft v1 (round 2, slice scope)** · Reviewers: art-director, combat designer, UX (DR-48)*
 *Canon: `design/creative-brief.md` v1.3 §4.1, §8 (safety row); `design/reviews/round-1/director-rulings.md` DR-07, DR-08, DR-22, DR-24, DR-29, DR-30, DR-48, DR-50; Part 2 §5 (one camera grammar; a gentle lower-and-tighten at the garden wall) and §6 (AB-6 overruled: one camera).*
 *Owner combat direction M1.1 (2026-11-24): `design/reviews/owner-feedback/combat-m1.1-spec.md` is binding (free camera by default, Tab lock-on cycle, stagger zoom, Special cut-in; the player controls Mikan only).*
+*Owner combat direction M1.2 (2026-11-24): `design/reviews/owner-feedback/combat-m1.2-spec.md` is binding where it differs from M1.1 (direct mouse yaw, smooth follow without ghosting, near-camera dither fade never hiding, Tab lock/unlock with flick switching, Final KO cinematic; Daifuku fights on the ground).*
 *Engine: Unreal Engine 5.8 (user decision 2026-11-24, brief §9 v1.4). This doc stays engine-agnostic: no engine API is named as a requirement. The shipping implementation (for example UE's camera components) is an implementation choice, to be verified against `docs/engine-reference/unreal/` in an ADR.*
 
 ---
@@ -40,7 +41,7 @@ One third-person camera rig, behind and above Mikan like FF7 Remake, runs everyw
 | **Explore · High Road** | Mikan | 3.4 m | — | +16° | 45° | Yes |
 | **Explore · Low Ceiling** | Mikan | 1.4 m | clearance − 0.10 m | 0° | 50° | Yaw only |
 | **Whisker** (Whisker Sense held) | Mikan | +0.5 m over current | — | +8° over current | unchanged | Yes |
-| **Combat** | behind Mikan (§4.2) | **3.8 m** (3.5–4.5 m; pulls out to ≤ 6 m only while a locked target is far) | ≈ 1.2–1.6 m | **+12°**; range +10° to +16° (+20° for High Road pairs) | 45° | **Yes, free orbit** (unlocked, the default); yaw follows the lock line when locked (Tab) |
+| **Combat** | behind Mikan (§4.2) | **3.8 m** (3.5–4.5 m; pulls out to ≤ 6 m only while a locked target is far) | ≈ 1.2–1.6 m | **+12°**; range +10° to +16° (+20° for High Road pairs) | 45° | **Yes, free orbit** (unlocked, the default); locked (Tab): no free yaw, a horizontal flick switches targets |
 | **Skill bar** (was Slow Blink) | Mikan, 30% toward the lock target (or the selected target) | **4.6 m** | ≈ 1.5 m | **+20°** (pushed in low behind the cat, preview 03) | 45° | No (stick drives the cursor) |
 | **Cinematic** | authored | authored | authored | +35° to +45° over the scene; lower and tilted only behind a full graphic panel | free | No |
 | **Home** | Mikan | **1.8 m** (≈ 3.2 BL); 0.6–2.2 m | **0.30–0.60 m** | **−5° to 0°** free; up-tilt only authored | 45°, max 50° | Yes |
@@ -51,9 +52,9 @@ The Explore height of ≈ 1.0 m follows from a 0.45 m pivot, 3.0 m distance and 
 
 ### 3.3 Explore (street, Lot, High Road)
 
-**Follow.** Yaw and position follow Mikan with critically damped springs (position half-life 0.12 s; yaw half-life 0.25 s). **Vertical tracking uses the last landing height**: during a Hop or a jump between High Road ledges the pivot stays on the take-off height until Mikan lands, falls more than 1.0 m below it, or rises more than 1.5 m above it. This stops bobbing on fence-to-roof hops.
+**Follow.** Yaw and position follow Mikan with critically damped springs (position half-life 0.12 s; yaw half-life 0.25 s). **The followed cat is interpolated between sim ticks** (M1.2), like every other cat, so the camera follows a smooth render position, never raw 60 Hz sim steps (which double-image on high-refresh monitors). The painted post-process must not smear in motion: while the camera moves faster than a threshold, its wobble and Kuwahara strength drop (Art's call on the amount; acceptance 16). This is not a vsync matter. **Vertical tracking uses the last landing height**: during a Hop or a jump between High Road ledges the pivot stays on the take-off height until Mikan lands, falls more than 1.0 m below it, or rises more than 1.5 m above it. This stops bobbing on fence-to-roof hops.
 
-**Player control.** Right stick or mouse orbits yaw (360°) and pitch (−10° to +55°). Camera speed default 180°/s yaw, 120°/s pitch at full deflection (option range ×0.33 to ×1.66). Invert X and Y are separate options.
+**Player control.** Right stick or mouse orbits yaw (360°) and pitch (−10° to +55°). **Input is applied directly (M1.2):** mouse and stick deltas go straight onto the camera's target yaw and pitch, never through the follow spring, so no smoothing ever eats input (the M1.1 bug added user yaw to the lagging pose and smoothed it again, passing ≈ 5% of horizontal input). Smoothing applies only to follow. Camera speed default 180°/s yaw, 120°/s pitch at full deflection (option range ×0.33 to ×1.66). Invert X and Y are separate options.
 
 **Auto-recentre.** After **1.5 s** without camera input while Mikan moves, yaw eases behind the movement direction at ≤ 90°/s (ease-in over 0.3 s). It does not recentre while Mikan moves toward the camera (angle between move direction and camera forward > 135°), so running back toward the lens never spins the view. Pitch returns to the state default over 1.0 s. R3 / MMB recentres immediately (0.25 s blend). Option: Auto-centre **On / Slow (45°/s, 3 s delay) / Off**.
 
@@ -70,6 +71,7 @@ The Explore height of ≈ 1.0 m follows from a 0.45 m pivot, 3.0 m distance and 
 **Two kinds of geometry, tagged by Level and Art:**
 - **Camera-solid** (walls, roofs, ground, large props): the camera never passes through them.
 - **Camera-soft** (fence slats, laundry, poles, wires, foliage, signs, bicycles, thin awning edges): no collision; when they lie between the camera and the pivot they **dither-fade** to 30% over 0.1 s and back over 0.3 s.
+- **Near-camera objects and cats (M1.2, every state incl. Combat):** anything within ≈ 1.0 m of the lens **dither-fades** (to ≥ 30%, as in the Lane), **never hidden outright**. Cats near the lens keep their outline at full strength so sides still read.
 
 **Collision rule.** Each frame, cast a sphere (radius **0.15 m**) from the pivot to the desired camera position. If blocked, the camera snaps in to the hit distance **immediately** (no lag inward, which is what stops wall clipping) and eases back out with a 0.4 s half-life after the obstruction clears. Below 1.2 m, pitch rises by up to +20° so the camera looks over Mikan rather than into their back. At the 0.8 m floor (0.6 m at home) Mikan dither-fades to 50% rather than the camera entering the cat.
 
@@ -93,11 +95,11 @@ The Explore height of ≈ 1.0 m follows from a 0.45 m pivot, 3.0 m distance and 
 
 **Free orbit (default, M1.1).** The fight starts **unlocked**. The player orbits freely with the mouse / right stick as in Explore, inside the Combat state's distance and pitch; there is no soft-lock re-aim toward any target. Auto-recentre behind Mikan's movement follows the Explore rule (§3.3) and its option.
 
-**Lock-on (Tab / R3; M1.1 cycle).** Press: lock the nearest enemy. Press again: if the nearest enemy is now a *different* enemy, lock that one; otherwise **unlock** (back to free orbit). While locked, yaw tracks the Mikan → target line (half-life 0.15 s); retargets blend in 0.3 s. The lock **releases** (free orbit, no automatic jump to another target) when the target is Routed, Backs Down, leaves the ring or is > 14 m away. Combat picks "nearest"; the camera only frames. UX draws the lock-on indicator.
+**Lock-on (Tab / R3; M1.2).** Press: lock the nearest enemy. Press again: **unlock** (back to free orbit). While locked, yaw tracks the Mikan → target line (half-life 0.15 s) and **there is no free yaw**: a horizontal mouse movement (or right-stick flick) past a threshold (`lock_flick_px` 60 px, stick 0.6) **switches to the next enemy on that side of the screen** (nearest in screen space on that side); the retarget blends in 0.3 s and the flick then needs the input to return under half the threshold before it can fire again. Vertical mouse still adjusts pitch while locked. The lock **releases** (free orbit, no automatic jump to another target) when the target is Routed, Backs Down, leaves the ring or is > 14 m away. Combat picks "nearest"; the camera only frames. UX draws the lock-on indicator.
 
 **Soft arena bounds.** Combat owns the fight ring (≈ 10 m across, DR-48). The framing point is clamped inside the ring + 1 m. The camera may go outside the ring but never more than distance_max beyond its edge, and never through camera-solid geometry; in walled alleys the collision rule wins and pitch rises (up to +40°) to recover frame height instead of pulling back through a wall.
 
-**High Road fights.** If Mikan is on a High Road surface and the target on the ground (or the reverse), the framing point takes the midpoint height and pitch may rise to +40° so the knock-off ledge is visible (DR-32 knock-offs, Daifuku's wall).
+**High Road fights.** If Mikan is on a High Road surface and the target on the ground (or the reverse), the framing point takes the midpoint height and pitch may rise to +40° so the ledge and the drop are visible. (Bosses fight on the ground, M1.2.)
 
 **No switching (M1.1).** The player controls Mikan only, so there are no Tag-In or switch retargets. **If Mikan is Routed** while Crew stand, after the Rout's hit-stop the rig blends in 0.3 s to the nearest standing Posse cat (keeping yaw, ≤ 60° turn) and holds it as the pivot until the fight ends; the player keeps the skill bar.
 
@@ -131,6 +133,9 @@ All are authored shot sets owned for timing by Combat (`combat-system.md` §3.6)
 - **Stagger zoom** (≤ 0.5 s total with the slow-down; full treatment only: Captains, Bosses, the first stagger per fight): a dolly toward the staggered cat to ≈ 60% of the current distance over ≈ 0.15 s, held through the shattered-glass blink, then back to the combat pose over ≈ 0.2 s. No shake of its own; yaw changes ≤ 20°. Light treatment (Toughs): no zoom. Reduce Motion: no zoom.
 - **Special cut-in** (≈ 1 s each; ≈ 0.5 s after the first chain in a fight): the camera **punches in on the firing cat** (≤ 15% of distance, Combat's T5 cap) over ≈ 0.1 s; **time stops**; the frame becomes a 2D panel with only that cat rendered over an impact-frame background, and only behind the panel may the camera tilt or drop below +35°. The panel's entry counts as that second's one full-screen frame; the background is a held drawing with no flicker. The hit then plays on an authored track.
 - **Chain**: each Crew cut-in follows the last with a straight cut (no whip pans), ≥ 1 s apart for full cut-ins; the full chain, Team Pile-On included, is ≤ ≈ 6 s (Combat owns durations).
+- **Chain is sequential (M1.2):** each Crew cut-in starts only after the previous cat's Special animation finishes; repeat chains in a fight use the faster version.
+- **Perfect Evade** (M1.2): no cut; the world slows (×0.3 for ≈ 0.4 s) and the camera holds its follow, with no punch-in.
+- **Final KO** (M1.2; ≈ 1.8 s): on the last opponent's Rout (or a Boss bout's phase cap), a punch-in on the final hit (≤ 15%), a **frame freeze over an impact background** (≈ 0.3 s; that second's one full-screen frame), then **slow motion** (×0.25 for ≈ 1.5 s) with a slow orbit of ≤ 30°; Street Fighter's KO as the reference, our own staging. Reduce Motion: no punch-in or orbit, a held wide frame. Then the Exit rule.
 - **Team Pile-On** (≈ 1.5 s): a wide shot of the KA-BLAM dust cloud at +35° to +45°; shake only on the beats, each beat one shake event under §3.6's budget; the last beat may be the T5.
 - **Return pose rule.** Every combat cinematic ends on the rig's combat pose for Mikan and the lock target (unlocked: the pre-cinematic yaw), or blends to it in ≤ 0.3 s. Player input is ignored during a cinematic (attack presses buffer under Combat's one-slot rule) and the first input after is read in the returned camera's frame. No combat cinematic returns with yaw changed by more than 90°.
 
@@ -172,7 +177,8 @@ Holding Whisker Sense blends to the Whisker state over **0.3 s** (+0.5 m, +8° p
 | Screen shake | 0–100% in 25% steps | 100% |
 | Punch-ins | on/off | on |
 | **Reduce Motion** (DR-50) | on: shake 0, punch-ins off, stagger zoom off, Special cut-ins enter on a cut instead of a punch-in, Combat entry/exit blends doubled in length, High Road vertical lag halved | off |
-| Lock-on (Tab / R3) | toggle cycle (M1.1) / hold | toggle cycle |
+| Lock-on (Tab / R3) | toggle (M1.2: lock / unlock, flick to switch) / hold | toggle |
+| Lock flick threshold | 30–120 px (stick 0.4–0.8) | 60 px / 0.6 |
 
 Combat distance is solved from frame width (§4.2), so changing FOV does not shrink fighters below their size floor.
 
@@ -219,7 +225,7 @@ Combat distance is solved from frame width (§4.2), so changing FOV does not shr
 1. **Combat in a 1 m alley** (the Lane has them): collision beats framing. Pitch rises to +40°, distance compresses to the hit distance; if the lock target still falls outside the safe frame, it gets an edge arrow. Level should keep slice encounter spaces ≥ 6 m across; narrower ones are flagged in the alley test (§8 T2).
 2. **Lock target and Mikan too far apart for W_max (10.6 m)**: W hits W_max; Mikan stays framed and the target gets an edge arrow. The lock releases at 14 m.
 3. **Mikan Routed mid-fight**: after the Rout's hit-stop the pivot blends to the nearest standing Posse cat (§3.5); the lock releases.
-4. **Tab pressed with the nearest enemy behind the camera**: the lock turns yaw at the lock rate (no snap); the target gets an edge arrow until it enters the frame. Pressed again before it arrives: the cycle rule applies to the new nearest enemy.
+4. **Tab pressed with the nearest enemy behind the camera**: the lock turns yaw at the lock rate (no snap); the target gets an edge arrow until it enters the frame. Pressed again: unlock. **Flick with no enemy on that side:** nothing; the lock stays.
 5. **Two T5s within 1 s** (a Team Pile-On final beat right after a Special): the second keeps hit-stop and VFX but its max shake is dropped (§3.6 budget); the impact-frame cap is Combat/VFX's.
 6. **Shake during the skill bar**: none. Events landing at 5% time play their shake at real-time length when the bar closes only if still within 0.2 s; otherwise dropped. **Stagger during a Special chain**: a second enemy Frazzled by a rider gets the light treatment after the chain, never a zoom inside it.
 7. **Mikan under the veranda during a home vignette trigger**: vignette zones are never placed in Low Ceiling volumes; if a Keystone fires there, the vignette waits until Mikan exits (Narrative rule; camera reports the conflict).
@@ -261,6 +267,9 @@ Combat distance is solved from frame width (§4.2), so changing FOV does not shr
 | combat pitch (near / far / High Road) | +12° / +16° / +20° | +10–+16° / to +20° / to +28° | depth read, third-person feel |
 | shoulder offset / pivot lead toward target | 0.45 m / 0.2 | 0.3–0.7 / 0.1–0.35 | cat left of centre, target ahead |
 | lock follow half-life / retarget blend | 0.15 s / 0.3 s | 0.1–0.3 / 0.2–0.5 | Tab lock-on (free orbit when unlocked) |
+| lock flick threshold | 60 px / stick 0.6 | 30–120 px / 0.4–0.8 | M1.2 target switch while locked |
+| near-camera dither radius / floor | 1.0 m / 30% | 0.6–1.5 m / 20–50% | M1.2: fade, never hide |
+| Final KO (freeze / slow / orbit) | 0.3 s / ×0.25 for 1.5 s / ≤ 30° | Combat-owned timing | KO read |
 | safe frame | 80% × 75% | 70–90% | HUD clearance |
 | stagger zoom (distance share / in / out) | 0.6 / 0.15 s / 0.2 s | 0.5–0.8 / 0.1–0.2 / 0.15–0.3 | stagger read (Combat owns total ≤ 0.5 s) |
 | Special punch-in | ≤ 15% (Combat T5 cap) | per Combat | cut-in entry |
@@ -284,7 +293,7 @@ Combat distance is solved from frame width (§4.2), so changing FOV does not shr
 1. Explore: Mikan's on-screen height is 10–20% at default and ≥ 10% at every FOV option (automated capture, T2).
 2. Combat: Mikan inside the safe frame ≥ 98% of combat frames outside cinematics; a lock target ≥ 90% of locked frames; Mikan ≥ 20% and lock target ≥ 12% of screen height when on screen (T1); ≥ 8 of 10 random pauses show the cat from behind at ≥ 18%.
 3. Combat distance stays in 3.5–4.5 m at default FOV in ≥ 80% of combat frames not under collision constraint or a far-target pull-out (T1).
-4. Lock-on: fights start unlocked; Tab follows the M1.1 cycle rule in 100% of scripted cases (lock nearest / switch to a new nearest / unlock); unlocked, the camera never re-aims on its own toward a target (T1 log).
+4. Lock-on: fights start unlocked; Tab locks the nearest enemy and Tab again unlocks in 100% of scripted cases; while locked, a flick past the threshold switches to the next enemy on that side of the screen and free yaw is off; unlocked, the camera never re-aims on its own toward a target (T1 log).
 5. No camera clipping into camera-solid geometry in T2's scripted path; ≤ 1 visible collision pop (distance jump > 0.5 m in one frame on ease-out) per minute of free roam.
 6. Hint volume count ≤ 15 for Hidamari Lane, ≤ 5 for the House (asset audit).
 7. Home: no standing adult's face appears in free-roam frames within 2.5 m (T3); faces appear in ≥ 1 authored shot per Keystone when the human kneels or sits.
@@ -293,6 +302,8 @@ Combat distance is solved from frame width (§4.2), so changing FOV does not shr
 10. Shake: no roll; every offset held ≥ 2 rendered frames at 30 and 60 fps; ≤ 1 max shake per second (log check).
 11. T5 passes with the default configuration.
 15. Stagger zoom plus slow-down ≤ 0.5 s; each Special cut-in ≈ 1 s (≈ 0.5 s repeats); a full chain ≤ 6 s; every combat cinematic returns within 90° of its entry yaw (T1 log).
+16. **M1.2 input and follow:** a 100 px horizontal mouse move turns yaw by the same angle as a 100 px vertical move turns pitch (± 5%), with no lag on input; at 144 Hz the followed cat shows no double image in a moving capture (interpolated render position); the paint post shows no visible smear at full mouse-turn speed (look-dev capture); no object or cat within 1.0 m of the lens is ever culled, only dither-faded (capture audit).
+17. Final KO: plays once per win, ≤ 1.8 s, returns per §3.7 (T1 log); passes T5.
 12. T4: at Reduce Motion, no tester reports moderate or worse nausea; at defaults ≤ 1 of 8.
 13. Camera update ≤ 0.3 ms CPU per frame on the PC slice target (profiler capture).
 14. Wall crossing into Home produces no cut or fade and completes in 1.0 s ± 0.1 s.
@@ -320,6 +331,9 @@ Combat distance is solved from frame width (§4.2), so changing FOV does not shr
 
 ## Revision Log
 
+- **2026-11-24 · Owner combat direction M1.2 (design/reviews/owner-feedback/combat-m1.2-spec.md §6, §8).** Mouse / right-stick look in the free combat camera applies **directly and 1:1** to the pose (the M1.1 rig added it to the lagging pose and smoothed it again, passing ≈ 2–5% of horizontal input). The follow is a **critically damped spring** on the pivot (ω 9/s); orientation input is never smoothed. Every cat, the controlled one included, renders **interpolated between sim ticks**, so a 120 Hz display never shows a 60 Hz double image. The paint post's screen-anchored edge wobble eases to 25% while the view moves, so the world does not swim under it. **Near-camera cats and ring dressing dither-fade** (ordered 4×4 Bayer, 8 steps, to 30%) instead of being hidden. **Tab locks the nearest enemy; Tab again unlocks** (no cycle). While locked there is no free yaw: a horizontal mouse flick of ≥ 12° within 0.3 s selects the next enemy on that side of the screen. **Final KO** (last opponent): a 0.4 s freeze over an impact background with only the KO'd cat and its attacker, then 1.1 s of slow motion (×0.25) on a slowly turning close two-shot, then the outcome card. Built in `prototypes/artifact-slice/src/camera/combat.js`, `src/entries/combat.js`.
+
+- **2026-11-24 · Owner combat direction M1.2 (2026-11-24).** Source `design/reviews/owner-feedback/combat-m1.2-spec.md` (owner's C11). §3.3: mouse/stick input applied directly (fixes the ≈ 5% horizontal yaw bug), follow-only smoothing, interpolated render position for the followed cat (no ghosting at high refresh), paint-post smear check. §3.4: near-camera objects and cats dither-fade, never hidden. §3.5: Tab lock/unlock; while locked no free yaw and a horizontal flick switches to the next enemy on that side; High Road framing no longer cites Daifuku's wall. §3.7: sequential chain, perfect-Evade slow-motion (no cut), **Final KO cinematic**. §3.11 options, edge case 4, knobs, pass conditions 4, 16, 17.
 - **2026-11-24 · M1.1 owner direction (design/reviews/owner-feedback/combat-m1.1-spec.md §1, §5, §6).** The combat camera is **free by default**: a third-person orbit around Mikan on the mouse / right stick (3.8 m, +12°, pitch −4° to +40°), no auto-recentre. **Tab (R3) is a lock-on cycle**: a press locks the nearest enemy; a press when the nearest enemy is a different one locks that one; otherwise it unlocks. While locked, the behind-the-cat framing of the previous entry applies (soft-lock recentre on the Mikan→target line). New overlays: the **stagger focus** (≤ 0.5 s: the pivot leans 60% toward the staggered cat, distance −45% full / −20% light, the view swings ≈ 30° off the line so Mikan does not hide it) and the **Special cut-in camera** (a separate close camera on the acting cat, waist-up, slow push-in, slight tilt allowed behind the impact-frame panel; the gameplay camera holds and returns with a 0.2 s blend). The skill bar (R) uses the Slow Blink pose. Built in `prototypes/artifact-slice/src/camera/combat.js` and `src/render/vfx/cinematics.js`.
 
 - **2026-11-24 · Owner combat direction M1.1 (2026-11-24).** Source `design/reviews/owner-feedback/combat-m1.1-spec.md` (final bindings F = Special, R = skill bar, Tab = lock-on). §1–§2: states renamed (Skill bar), commander's seat. §3.1–§3.2: Combat row free orbit by default; Slow Blink row becomes the skill bar. §3.5: soft lock and hard lock replaced by **free orbit** plus the **Tab lock-on cycle** (lock nearest / switch to a new nearest / unlock; releases without auto-retarget); Tag-In and switching removed (player controls Mikan only); Mikan-Routed pivot rule. §3.7: Pile-On and Zoomies cinematics replaced by the **stagger zoom**, **Special cut-in** (punch-in, time stop, single-cat impact-frame panel), the auto **chain** and the **Team Pile-On**, all inside Combat §3.17's flash/shake limits. §3.11 options (Reduce Motion, lock-on), §4.1–§4.2 framing (C = Mikan), edge cases 2–6, 8, 13, 15, dependencies, knobs (lock, stagger zoom, Special punch-in, skill bar), T1/T5 and pass conditions 2, 4, 15.

@@ -43,7 +43,9 @@ export class CombatCamera {
   addShake(sh, t, dir) { if (!sh) return; this.shakes.push({ ...sh, start: t }); if (dir) this.shakeDir = dir; }
   addPunch(pt, pct, t, holdS) { if (this.punch && t < this.punch.end) return; if (!pct) return; this.punch = { pt: pt.clone(), k: Math.min(0.15, pct / 100), t0: t, tin: Math.max(0.05, holdS), end: t + Math.max(0.05, holdS) + COMBAT_CAM.punchOut }; }
   hold(untilT) { this.holdUntil = Math.max(this.holdUntil, untilT); }
-  userOrbit(dYaw, dPitch, t) { if (!dYaw && !dPitch) return; this.userYaw += dYaw; this.freePitch = Math.max(-4, Math.min(40, (this.freePitch ?? COMBAT_CAM.pitch) + dPitch)); this.lastUserT = t; }
+  /** Mouse / right-stick look (M1.2 §6): applied DIRECTLY to the pose in free mode (never through the follow
+   * smoothing, which passed only ~5% of horizontal input); while locked, yaw input is the flick selector's. */
+  userOrbit(dYaw, dPitch, t) { if (!dYaw && !dPitch) return; this.pendingYaw = (this.pendingYaw || 0) + dYaw; this.freePitch = Math.max(-4, Math.min(40, (this.freePitch ?? COMBAT_CAM.pitch) + dPitch)); this.lastUserT = t; }
 
   /** Solve the state's target pose. ctx: {C, T (Vector3|null), mode, slowBlink, highRoad, enemiesCentroid, aspect, pileCenter, standoffFocus, occluded, clearance} */
   solve(ctx, dt, t) {
@@ -63,7 +65,7 @@ export class CombatCamera {
     // M1.1: UNLOCKED (default) = a free third-person orbit around Mikan, driven only by the mouse / right stick
     if (ctx.free && !ctx.slowBlink) {
       s.px = C.x; s.pz = C.z; s.py = C.y + c.pivotH; s.dist = c.dist; s.shoulder = c.shoulder * 0.6;
-      s.pitch = this.freePitch ?? c.pitch; s.yaw = this.pose.yaw + this.userYaw; this.userYaw = 0;
+      s.pitch = this.freePitch ?? c.pitch; s.yaw = this.pose.yaw; this.userYaw = 0;
       return s;
     }
     const sep = T ? Math.hypot(C.x - T.x, C.z - T.z) : 0;
@@ -108,11 +110,18 @@ export class CombatCamera {
         p.yaw = f.yaw + wrap(s.yaw - f.yaw) * k; p.pitch = f.pitch + (s.pitch - f.pitch) * k; p.dist = f.dist + (s.dist - f.dist) * k; p.shoulder = f.shoulder + (s.shoulder - f.shoulder) * k;
         if (this.blendT >= this.blendDur) this.from = null;
       } else {
-        const a = hl(dtReal, 0.12), b = hl(dtReal, 0.25);
-        p.px += (s.px - p.px) * a; p.py += (s.py - p.py) * a; p.pz += (s.pz - p.pz) * a;
-        p.yaw += wrap(s.yaw - p.yaw) * b; p.pitch += (s.pitch - p.pitch) * b; p.dist += (s.dist - p.dist) * b; p.shoulder += (s.shoulder - p.shoulder) * b;
+        // follow: a critically damped spring on the pivot (no velocity snaps, no overshoot); orientation eases
+        const w = 9, h = Math.min(dtReal, 1 / 30), v = this.pv || (this.pv = [0, 0, 0]);
+        const P = ['px', 'py', 'pz'];
+        for (let i = 0; i < 3; i++) { const x = p[P[i]], tgt = s[P[i]]; v[i] += (w * w * (tgt - x) - 2 * w * v[i]) * h; p[P[i]] = x + v[i] * h; }
+        const b = hl(dtReal, 0.25);
+        if (!(ctx.free && !ctx.slowBlink)) { p.yaw += wrap(s.yaw - p.yaw) * b; p.pitch += (s.pitch - p.pitch) * b; }
+        p.dist += (s.dist - p.dist) * b; p.shoulder += (s.shoulder - p.shoulder) * b;
       }
     }
+    // look input: free mode turns the camera 1:1 with the mouse; locked mode keeps yaw on the target line
+    if (ctx.free && !ctx.slowBlink) { p.yaw += this.pendingYaw || 0; p.pitch = this.freePitch ?? COMBAT_CAM.pitch; this.solved.yaw = p.yaw; this.solved.pitch = p.pitch; }
+    this.pendingYaw = 0;
     // place
     const cam = this.cam, y = p.yaw * D2R, pi = p.pitch * D2R;
     const dir = new THREE.Vector3(Math.sin(y) * Math.cos(pi), Math.sin(pi), Math.cos(y) * Math.cos(pi));
@@ -164,9 +173,11 @@ export class CombatCamera {
         // the side (±65° off the target->Mikan line) whose view direction is closer to the current camera
         const cur = new THREE.Vector3(cam.position.x - T.x, 0, cam.position.z - T.z).normalize();
         const a = [1, -1].map((sg) => u0.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), sg * 1.13)).sort((p, q) => q.dot(cur) - p.dot(cur))[0];
-        const hgt = G.T.head.y - T.y, d = (G.full ? 2.1 : 2.6) * Math.max(1, G.T.scaleK * 0.9);
+        const hgt = G.T.head.y - T.y, d = (G.full ? 2.1 : 2.6) * Math.max(1, G.T.scaleK * 0.9) * (G.close || 1);
         G.pose = { pos: new THREE.Vector3(T.x, T.y + hgt * 0.95, T.z).addScaledVector(a, d), look: new THREE.Vector3(T.x, T.y + hgt * 0.55, T.z) };
       }
+      if (G.spin) { const T = G.T.pos, ang = G.spin * u, rel = G.pose.pos0 || (G.pose.pos0 = G.pose.pos.clone().sub(new THREE.Vector3(T.x, 0, T.z)));
+        G.pose.pos.copy(rel).applyAxisAngle(new THREE.Vector3(0, 1, 0), ang).add(new THREE.Vector3(T.x, 0, T.z)); }
       const look = new THREE.Vector3(); cam.getWorldDirection(look); look.multiplyScalar(4).add(cam.position);
       cam.position.lerp(G.pose.pos, kk); look.lerp(G.pose.look, kk); cam.lookAt(look);
     } else this.stagger = null;

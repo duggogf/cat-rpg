@@ -65,7 +65,7 @@ export function castFor(catId, entId) {
 export function portraitFor(catId, entId) { return castFor(catId, entId).kit; }
 
 const hexV = (h) => { const n = parseInt(h.slice(1), 16); return new THREE.Vector3(((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255); };
-export const COL = { ink: '#33273B', cream: '#FFF6E3', gold: '#F2B01E', sage: '#A8C878', magenta: '#FF3D8B' };
+export const COL = { ink: '#33273B', cream: '#FFF6E3', gold: '#F2B01E', sage: '#A8C878', magenta: '#FF3D8B', red: '#E2453F' };
 
 /** Extra hull shells for the keyline + cream rim. */
 function addKeyline(cat, rim = true) {
@@ -92,6 +92,20 @@ function addKeyline(cat, rim = true) {
   return { key: shells[0], rim: shells[1] || noRim, fill: sk.material[0], hull: base, inkHull: base.uniforms.uInk.value.clone() };
 }
 
+/** Dither-fade (M1.2 §6): patch a cat material with an ordered-Bayer discard driven by its own uFade (1 = solid).
+ * Screen-space and static, so a fading cat never shimmers; never a half-transparent blend. */
+function ditherPatch(m) {
+  if (!m || !m.isShaderMaterial || m.userData.dither) return m;
+  m.uniforms.uFade = { value: 1 };
+  const fn = 'uniform float uFade; float ditherB4(vec2 p){ ivec2 i = ivec2(mod(p, 4.0)); int b[16] = int[16](0,8,2,10,12,4,14,6,3,11,1,9,15,7,13,5); return (float(b[i.y * 4 + i.x]) + 0.5) / 16.0; }\n';
+  const src = m.fragmentShader, k = src.lastIndexOf('void main');
+  if (k < 0) return m;
+  const open = src.indexOf('{', k) + 1;
+  m.fragmentShader = src.slice(0, k) + fn + src.slice(k, open) + ' if (uFade < 0.999 && ditherB4(gl_FragCoord.xy) > uFade) discard; ' + src.slice(open);
+  m.userData.dither = true; m.needsUpdate = true;
+  return m;
+}
+
 const ss = (x) => { x = Math.min(1, Math.max(0, x)); return x * x * (3 - 2 * x); };
 const lerpAngle = (a, b, k) => a + Math.atan2(Math.sin(b - a), Math.cos(b - a)) * k;
 
@@ -105,11 +119,19 @@ export class Fighter {
     this.root.add(this.pose); this.pose.add(this.cat.object3D);
     this.root.name = 'fighter:' + ent.id;
     this.kl = addKeyline(this.cat, o.rim !== false);
-    this.setClowder(ent.side === 'enemy' ? 'sage' : 'gold');
+    this.setClowder(ent.side === 'enemy' ? 'red' : 'gold');   // M1.2 §5: allies yellow, enemies red
     this.yaw = Math.atan2(ent.facing[0], ent.facing[1]);
     this.prevPos = new THREE.Vector3(...ent.pos); this.pos = this.prevPos.clone(); this.vel = new THREE.Vector3();
     this.impulses = []; this.look = 'normal'; this.flashUntil = 0; this.hidden = false; this.routedAt = null; this.boltDir = [0, 1];
     this.head = new THREE.Vector3();
+    this.fade = 1; this.fadeTarget = 1; this.ditherMats = [];
+    this.root.traverse((o) => { if (o.material) for (const m of Array.isArray(o.material) ? o.material : [o.material]) if (m.isShaderMaterial) this.ditherMats.push(ditherPatch(m)); });
+  }
+  /** Ease the dither fade toward `k` (0..1); steps on twos (quantised to 8 levels). */
+  stepFade(dt) {
+    this.fade += Math.sign(this.fadeTarget - this.fade) * Math.min(Math.abs(this.fadeTarget - this.fade), dt * 4);
+    const q = Math.round(this.fade * 8) / 8;
+    for (const m of this.ditherMats) if (m.uniforms.uFade) m.uniforms.uFade.value = q;
   }
   setClowder(c) {
     if (!this.kl) return;
@@ -142,7 +164,7 @@ export class Fighter {
     this.prevPos.copy(this.pos);
     this.root.position.copy(this.pos);
     // AI intent (M1.1 §4): the sim's `intent` when it publishes one, else read from motion vs the nearest opponent
-    const SIM_INTENT = { circle: 'circle', posture: 'posture', flank: 'flank', dash_in: 'dash_in', retreat: 'retreat', feint: 'feint', strut: 'strut', hold: 'hold', sidestep: 'circle', stalk: 'stalk', pace: 'stalk', attack: 'neutral', ground: 'neutral' };
+    const SIM_INTENT = { cornered: 'posture', circle: 'circle', posture: 'posture', flank: 'flank', dash_in: 'dash_in', retreat: 'retreat', feint: 'feint', strut: 'strut', hold: 'hold', sidestep: 'circle', stalk: 'stalk', pace: 'stalk', attack: 'neutral', ground: 'neutral' };
     // the sim's intent when it is specific; its default 'stalk' (or none) is refined from motion
     const intent = this.intent = (e.intent && SIM_INTENT[e.intent]) || deriveIntent(e, this.vel, e._opp);
     // cats square off: while circling, stalking, posturing or backing off, the body faces the opponent
@@ -171,7 +193,8 @@ export class Fighter {
         lean = THREE.MathUtils.clamp(-vy * 0.12, -0.6, 0.6); sy = 1 + Math.min(0.12, Math.abs(vy) * 0.03); sxz = 1 / Math.sqrt(sy); break;
       case 'knockback': lean = -0.4; fwd = -0.05; sy = 0.92; break;
       case 'flinch': lean = -0.22; break;
-      case 'splat': case 'piled': sy = 0.42; sxz = 1.3; lean = 0; break;
+      case 'splat': case 'piled': case 'knocked_down': case 'knockdown': sy = 0.42; sxz = 1.3; lean = 0; break;
+      case 'evade': lean = -0.18; sy = 0.86; sxz = 1.1; break;
       case 'frazzled': { const j = Math.floor(tw * 30) % 2; sy = 1.15; sxz = 1.15; roll = j ? 0.06 : -0.06; break; }
       case 'hiss': sy = 1.1; lean = -0.16; break;
       case 'windup_white': sy = 0.94; lean = -0.12; break;
@@ -208,7 +231,10 @@ export class Fighter {
       if (im.kind === 'hurt') { const s = 1 - ss(k); fwd -= 0.2 * im.mag * s; lean -= 0.36 * im.mag * s; sy *= 1 - 0.16 * im.mag * s; sxz *= 1 + 0.1 * im.mag * s; roll += (Math.floor(tw * 30) % 2 ? 0.08 : -0.08) * s * im.mag; }
       if (im.kind === 'take') { const s = k < 0.5 ? 1 : 1 - ss((k - 0.5) * 2); sy *= 1 + 0.14 * s; sxz *= 1 - 0.05 * s; }
       if (im.kind === 'hiss') { const s = Math.sin(Math.PI * k); sy *= 1 + 0.12 * s; lean -= 0.2 * s; }
-      if (im.kind === 'coil') { const s = Math.sin(Math.PI * Math.min(1, k)); fwd -= 0.07 * s; lean -= 0.16 * s; sy *= 1 - 0.1 * s; sxz *= 1 + 0.05 * s; }
+      if (im.kind === 'coil') { // anticipation: light = a 1-2 frame twitch; heavy (mag 2) = a readable crouch-and-rear, held, then released
+        const s = im.mag > 1.5 ? (k < 0.75 ? ss(k / 0.75) : 1 - ss((k - 0.75) / 0.25)) : Math.sin(Math.PI * Math.min(1, k));
+        fwd -= 0.07 * s * im.mag; lean -= 0.16 * s * im.mag; sy *= 1 - 0.1 * s * Math.min(1.6, im.mag); sxz *= 1 + 0.05 * s * im.mag;
+        if (im.mag > 1.5) roll += (Math.floor(tw * 30) % 2 ? 0.015 : -0.015) * s; }
       if (im.kind === 'land') { const s = 1 - ss(k); sy *= 1 - 0.2 * s; sxz *= 1 + 0.12 * s; }
     }
     if (e.ruffled_s > 0 || e.ruffled_s === -1) { sy *= 1.04; }
@@ -225,7 +251,7 @@ export class Fighter {
     P.scale.set(xx, yy, xx * zz);
     // keyline: Frazzle Magenta while Frazzled; the Ruffled rim pulses in two steps (≤ 3 Hz)
     if (this.kl) {
-      const want = e.frazzled_s > 0 ? 'magenta' : (this.side === 'enemy' ? 'sage' : 'gold');
+      const want = e.frazzled_s > 0 ? 'magenta' : (this.side === 'enemy' ? 'red' : 'gold');
       if (want !== this.clowder) this.setClowder(want);
       const ruff = e.ruffled_s > 0 || e.ruffled_s === -1;
       this.kl.rim.mesh.userData.w = ruff ? (Math.floor(tw * 5) % 2 ? 1.0 : 2.2) : 1.0;

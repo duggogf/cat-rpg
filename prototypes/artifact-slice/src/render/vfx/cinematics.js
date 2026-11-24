@@ -82,6 +82,23 @@ export class Cinematics {
   }
   end() { this.chain = null; }
   get holding() { return !!this.chain; }
+  /** Final-KO freeze frame: the impact background (Cream-leaning panel matched to the mean, Ink lines; halftone
+   * wipe in over 3 drawings, out over 2) with only the KO'd cat and its attacker drawn over it, main camera. */
+  renderKO(K, t, cam) {
+    const R = this.renderer, u = t - K.t0, drawn = Math.floor(u / TWO), size = R.getDrawingBufferSize(new THREE.Vector2());
+    const toL = (v) => (v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)), toS = (v) => (v <= 0.0031308 ? v * 12.92 : 1.055 * Math.pow(v, 1 / 2.4) - 0.055);
+    const base = [1, 0.96, 0.89].map(toL), L = 0.2126 * base[0] + 0.7152 * base[1] + 0.0722 * base[2], k = (K.mean || 0.4) / L;
+    const B = this.bgMat.uniforms; B.res.value.copy(size); B.panel.value.setRGB(...base.map((v) => toS(Math.min(1, v * k)))); B.seed.value = 11;
+    const p = K.f.head.clone().project(cam); B.centre.value.set((p.x * 0.5 + 0.5) * size.x, (p.y * 0.5 + 0.5) * size.y);
+    const outN = Math.floor((0.4 - u) / TWO); B.wipe.value = Math.min(3, drawn, outN < 2 ? outN : 3); B.inner.value = 0.22;
+    R.autoClear = false; R.setRenderTarget(null); R.render(this.bgScene, this.orth); R.clearDepth();
+    const vis = this.late.children.map((o) => o.visible); this.late.children.forEach((o) => { o.visible = o === this.fGroup; });
+    const keep = [K.f.root, K.a && K.a.root].filter(Boolean);
+    const fv = this.fGroup.children.map((o) => o.visible); this.fGroup.children.forEach((o) => { o.visible = keep.includes(o); });
+    R.render(this.late, cam);
+    this.late.children.forEach((o, i) => { o.visible = vis[i]; }); this.fGroup.children.forEach((o, i) => { o.visible = fv[i]; });
+    R.autoClear = true; B.inner.value = 0.3;
+  }
   /** Per frame (real time). Returns the active cut-in or null. */
   update(t) {
     const C = this.chain; if (!C) return null;

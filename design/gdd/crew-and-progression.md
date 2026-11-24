@@ -20,7 +20,7 @@ The Crew are the cats Mikan has won over: a few known faces, not a collection. A
 
 Teaching is the second pleasure. A Move is something one cat shows another: the old Captain you recruited knows a screech nobody else does, and by tomorrow morning your Bruiser has learned to bellow it too. Every Move a cat did not grow into, it took from another cat.
 
-Pillar fit: **Conduct the Brawl** (four cats who each behave differently under AI, so composition is a combat decision), **Rivals Remember** (a recruited Rival brings its personality, history, Old Scores and signature perk), **Cat's-Eye Truth** (personality is shown by pose, walk and bark, not a stat screen; numbers count only what a cat owns or pays, such as levels, XP pips and prices, and Loyalty is never a number: presentation ruling R3).
+Pillar fit: **Command the Brawl** (three Crew who each behave differently under AI while you fight as Mikan and command them, so composition is a combat decision), **Rivals Remember** (a recruited Rival brings its personality, history, Old Scores and signature perk), **Cat's-Eye Truth** (personality is shown by pose, walk and bark, not a stat screen; numbers count only what a cat owns or pays, such as levels, XP pips and prices, and Loyalty is never a number: presentation ruling R3).
 
 ---
 
@@ -42,7 +42,7 @@ Requested schema extensions (Crew-only, flagged for the schema owner):
 | `returned` | bool | Has been Crew before (F6) |
 | `wavering_nights` | int | Consecutive Night Shuffles the cat has ended betrayal-eligible (F11); 0 when not eligible |
 
-Mikan has **no personality and no Loyalty**. Mikan's AI profile (when the player controls another cat) is the **Mikan row of Combat §3.11** (stays 2–4 m from the controlled cat's lock target, base Pay-off rule, no perk).
+Mikan has **no personality and no Loyalty**. Mikan is never AI: the player controls Mikan only (Combat M1.1, §3.11's Mikan row).
 
 ### 3.2 Personality — the one model (canon shape: brief §3.5, DR-37)
 
@@ -81,8 +81,8 @@ Six personalities. Nemesis assigns one at generation; it never changes; Style al
 - **Why you want it:** the best Pay-off cat in a Frazzle window; the posting that tells you *why* a raid is coming. **Cost:** clashes with your two most reliable personalities; dislikes mercy; flinches at its old boss; the likeliest turncoat if left Shifty on a post.
 
 **FRAIDY** — *"Not me, not me."* Jumpy, quick, a superb lookout.
-- **Fights like (AI; Combat §3.11):** keeps 4–6 m away; Skitters white telegraphs eagerly; prefers support and holds Paws for `support` Moves; never climbs to the High Road.
-- **Combat perk (Combat §3.11):** a **perfect Skitter gives +25 Pounce points** (a quarter Paw), also when the player drives it.
+- **Fights like (AI; Combat §3.11):** keeps 4–6 m away; evades white telegraphs eagerly; prefers support and holds Paws for `support` Moves; never climbs to the High Road.
+- **Combat perk (Combat §3.11):** a **perfect Evade gives +25 Pounce points** (a quarter Paw).
 - **On guard:** weak raid defence, but **raises the Caterwaul early** (longer live-defence window).
 - **Loyalty:** **+1** on any day it fought at least one encounter and was never Routed. **−2** extra each time it is Routed (any fight, won or lost).
 - **Social:** bonds with **Stalwart**, **Schemer** and **Goofball**; clashes with **Braggart**.
@@ -139,7 +139,7 @@ Among the slice's one-of-each six: **7 bonded, 4 clashing, 4 neutral** pairs.
 | To survive a Boss phase | Stalwart near the controlled cat | Damage shield around the cat you are driving |
 | To exploit a Fear prop | Goofball | Props ×1.3 (Water bucket, scooter horn, ledge junk) |
 | Revenge on a Rival who beat your cat | Brooder | Old Score ×1.5 |
-| A cat that will not get flattened | Fraidy (driven by you) | Distance AI, Pounce from perfect Skitters |
+| A cat that will not get flattened | Fraidy | Distance AI, Pounce from perfect Evades |
 | To hold a Patch under a forecast raid | Stalwart, then Braggart | Best defence; defence + Tribute |
 | To know why a raid is coming | Schemer on post | Motive in the Sniff |
 | To hear trouble early | Fraidy on post | Early Caterwaul |
@@ -467,7 +467,7 @@ Fixed values (not F6): story recruits Hige 60, Pon 55; Friend Stray 50.
 
 **Output range.** Clamped 5–80. Unclamped extremes: maximum 50 + 30 + 10 + 10 = **100** (G 0, Regard 100, Goofball, feast) → 80; minimum under the availability gate (G ≥ 90 needs Regard ≥ 50): 50 − 40 + 15 − 5 + 5 − 20 = **5**; without the gate the expression could reach −10, which the clamp absorbs.
 
-**Worked examples.** Togemaru, the First Thorn, Recruited on L1D2 after the quiet clean Pile-On of Nemesis §3.16 (G_pre 43, Regard 23 after the Recruit term, Braggart, Life 1): 50 − 17.2 + 6.9 + 0 + 5 = 44.7 → **44** (floored, as F7 displays Loyalty; Aloof: cannot teach yet). *(Corrected in the consistency pass: the old inputs, G_pre 55 and Regard 10, were the round-3 Grudge path.)* Kagi (G_pre 40, Regard 20, Schemer, fair): 50 − 16 + 6 − 5 + 5 = **40**; feast **45** (Steady: can teach Banshee Screech at once; that is what a feast buys). Daifuku (G_pre 30, Regard 60, Brooder, fair): 50 − 12 + 18 − 5 + 5 = **56**; feast **61** (True: Warden-eligible).
+**Worked examples.** Togemaru, the First Thorn, Recruited on L1D2 after the quiet clean Special finish of Nemesis §3.16 (G_pre 43, Regard 23 after the Recruit term, Braggart, Life 1): 50 − 17.2 + 6.9 + 0 + 5 = 44.7 → **44** (floored, as F7 displays Loyalty; Aloof: cannot teach yet). *(Corrected in the consistency pass: the old inputs, G_pre 55 and Regard 10, were the round-3 Grudge path.)* Kagi (G_pre 40, Regard 20, Schemer, fair): 50 − 16 + 6 − 5 + 5 = **40**; feast **45** (Steady: can teach Banshee Screech at once; that is what a feast buys). Daifuku (G_pre 30, Regard 60, Brooder, fair): 50 − 12 + 18 − 5 + 5 = **56**; feast **61** (True: Warden-eligible).
 
 ### F7. Daily Loyalty change
 
@@ -615,7 +615,7 @@ BetrayalTriggered    ⇔ wavering_nights = WAVER_NIGHTS                     (Nem
 | Same personality twice (Rivals, post-slice duplicates) | Matrix diagonal applies (Braggart–Braggart clash; Goofball–Goofball bond; others neutral) |
 | Share a Morsel when the Stash is short | Unavailable that day (price is Territory's) |
 | Several personality events in one day exceed the cap | Clamp to ±8 before the Brooder's halving |
-| Crew of fewer than 3 (Life 1) | Posse plays with fewer cats; Pile-On needs ≥ 2 standing (Combat) |
+| Crew of fewer than 3 (Life 1) | Posse plays with fewer cats; the Special chain is shorter and the Team Pile-On needs all four (Combat §3.6) |
 | Posse loses; a Routed Posse cat | −3 for Routed in a lost fight (its own experience, OR-02); XP none; the day ends and the Posse heals at step 0 (OR-01). No Crew cat's Loyalty reads who beat Mikan |
 | Daifuku recruited at a patrol stop (end of Life 2) | Joins before the Closing; Mikan Claim Sprays the Den post (`DistrictClaimed`); the slice ends on the title card. His ex-Boss neglect multiplier (2) applies from Life 3. No gang cat changes role (G6) |
 | The player never recruits a Rival | The slice still shows all six personalities (three as Rivals); a 4-cat Posse is guaranteed by Kinako, whose favour is Life 2 day 1's required first objective (the Lot opens after it) |
@@ -733,6 +733,8 @@ Owned elsewhere (do not tune here): combat-perk magnitudes, Cowed durations (20 
 ---
 
 ## Revision Log
+
+**2026-11-24 — Owner combat direction M1.2 (2026-11-24)** (`design/reviews/owner-feedback/combat-m1.2-spec.md`; follow-up F14; combat mentions only). §2 pillar fit reads **Command the Brawl**; §3.1 Mikan is never AI (the old "Mikan's AI profile when the player controls another cat" removed); Togemaru worked example reads "clean Special finish"; edge case for a Posse under 4 cites the chain and Team Pile-On; Fraidy's dodge and perk read Evade (M1.2 replaced Skitter with Evade). No Crew rule or number changed.
 
 **2026-11-24 — Owner combat direction M1.1 (2026-11-24)** (`design/reviews/owner-feedback/combat-m1.1-spec.md`; edited only where Tag-In, Relay, Zoomies or the Cowed clear were mentioned). Tag-In steadying a Cowed recruit → a skill-bar command (§2, personality sheets, §3.2.3 table, §3.4.4, edge cases, AC-20); bonded Tag-In → bonded back-to-back chain Specials (§3.2.2, worked Loyalty note, edge cases, §6 Combat row); the Relay lesson → the Team Pile-On lesson (§3.4.3, §3.5 growth, AC-8); Zoomies → Specials with no unlock level (ownership note, §3.5 Tail-Up note, §3.8.4; knob "Crew Zoomies unlock level" removed); the guest cannot be commanded (§3.5.7, AC-21); Mikan's ceiling note (player controls Mikan only).
 

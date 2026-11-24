@@ -1,7 +1,7 @@
 <!-- PROTOTYPE - NOT FOR PRODUCTION (Cat RPG artifact showcase slice; throwaway, see ../../../README.md) -->
-# Combat simulation API (M1.1)
+# Combat simulation API (M1.2)
 
-Pure, deterministic, headless combat for `design/gdd/combat-system.md`, as amended by the owner's **M1.1 direction** (`design/reviews/owner-feedback/combat-m1.1-spec.md`, binding where it differs). There is no rendering, no DOM, no `Math.random` and no wall clock. The presentation **reads** a snapshot and an event stream, and **writes** one input frame per tick.
+Pure, deterministic, headless combat for `design/gdd/combat-system.md`, as amended by the owner's **M1.1** and **M1.2** directions (`design/reviews/owner-feedback/combat-m1.1-spec.md`, `combat-m1.2-spec.md`; M1.2 wins where they differ). There is no rendering, no DOM, no `Math.random` and no wall clock. The presentation **reads** a snapshot and an event stream, and **writes** one input frame per tick.
 
 ```js
 import { createEncounter, sampleShake } from '../sim/combat/index.js';
@@ -12,7 +12,31 @@ const s = enc.snapshot();              // read-only plain object for rendering
 enc.hash();                            // 16 hex chars over the canonical sim state
 ```
 
-## What changed in M1.1 (for the presentation agent)
+## What changed in M1.2 (for the presentation agent)
+
+| Area | M1.1 | **M1.2** |
+|---|---|---|
+| Evade | `dodge` (Space) + `dash` (Shift) | **One `evade` (Space)**; `dodge`, `skitter` and `dash` alias to it. 2.0 m in 0.3 s, i-frames 0.22 s, **cooldown 0.8 s** (`entity.evade_cd_s`, `evade_ready`). It **cancels any attack at any frame** (heavy anticipation included) and **keeps the combo**: a light during or ≤ 0.3 s after it continues the string with a lunge (`Evade.combo_kept`); with no combo, Evade → Light is the **DL** lunge. Events `Evade {cancelled, combo_kept, perfect}`, `EvadeRejected {cooldown_left_s}` |
+| Perfect evade | — | An evade that starts with an enemy hit due within 0.2 s (a telegraph on Mikan, or a shockwave front about to reach her) → `PerfectEvade {attacker, slow {scale 0.3, ms 500}, counter_window_s 1.0}`, a sim slow-mo (`snapshot.slow_mo`), and the next light or heavy is the **CTR** counter (`entity.counter_window_s`) |
+| Light / heavy | Light active ≤ 3 ticks | **Light active on the next tick** (startup 0.02 s, `AttackActive.latency_ticks` = 1). **Heavies wind up 0.24–0.35 s** (readable anticipation; draw the pose from `attack.id` + `attack.t` < `startup_s`) |
+| Movement in attacks | 0 until 60% of recovery | **`can_move` = 0.3 (slow steering) from frame 1, 1.0 from 60% of the TOTAL animation**. Combat move speed **1.6 m/s** (the Lane's Shift-walk) |
+| Lock-on | Tab cycles | **Tab locks the nearest; Tab again unlocks.** While locked, send `lockSwitch: {side: 'left'|'right', right: [x,z] (camera right on the ground)}` when the mouse flick passes your threshold → the next enemy on that side |
+| Special | Only on a staggered enemy | **F at any time** (meter full). `special_prompt {target, ready, staggered}`. Staggered targets take ×1.3 Special damage (on top of F1's ×1.5) |
+| Chain | Parallel-timed cut-ins | **Sequential**: `SpecialStart {cat, cutin_s, action_s, duration_s, index, of}` then `SpecialEnd {cat}` after `duration_s`; the next cat starts only after the previous `SpecialEnd`. `TeamFinisher` (the full burst) comes after the last `SpecialEnd`: extra damage (F5 + 3 MV per cat), or the Rout of a staggered Tough. Repeat chains ×0.6. `SpecialCutIn` is gone |
+| AI | Tokens | Plus **cornered cats**: an enemy outnumbered nearby (≥ 2 opponents within 3.5 m, more than its friends + 1) emits `Cornered`, hisses 0.4 s (`intent: 'cornered'`), then lashes out every 0.5–1.0 s at the weakest (< 50% Nerve) or nearest attacker, ignoring token limits and shrugging off light-hit flinches |
+| Final KO | — | **`FinalKO {cat, by, how, freeze_ms 400, slow {scale 0.25, ms 1500}, pos}`** when the last opponent falls (and on the showcase's phase-1 break), before `EncounterEnded`. The sim does not slow itself; the presentation stages it |
+| Daifuku | Wall, wash tub, knock-offs | **On the ground**, a data-driven Boss pattern (`bosses.json`: phases, weighted attacks with ranges and cooldowns, swing period, rage thresholds; `pattern: 'ground_brawler'`). Signature **Belly-Flop Shockwave**: red telegraph 1.6 s (circle on the target) → slam (MV 2.5 + knockdown) → `ShockwaveStart {id, center, radius, speed_mps 6, max_radius_m 6, width_m 0.7, duration_s}` → a ring hitting every grounded cat it crosses (MV 1.5 + `KnockedDown {duration_s 1.0}`) unless in i-frames → `ShockwaveEnd`. Live rings in `snapshot.hazards[] {center, radius, width, speed, max_radius}`. `BossRage {level}` at 85% Nerve. Arena `yard_ground` (no walls, no props). **Removed:** `KnockOff`, `BossLanded`, `ClimbBack`, the Belly Drop, Climb Back and `wash_tub_kit`. Phase 1 ends `PhaseBreak` → `BossFlee` → `FinalKO {how: 'phase_break'}` → `EncounterEnded(rival_fled)` within 4 s (tested: no stuck state) |
+| Damage numbers | — | Every `Hit` has its per-hit `dmg` (integer), `target`, `attacker`, `kind`; `Healed.amount` for heals |
+
+**NieR: Automata check** (web search; the fextralife wiki was unreachable from this session, so frame data is unverified):
+- **What the sources say**: a perfect evade is a dodge timed just before an enemy hit; it gives brief invincibility and lets a light or heavy right after it counter. Players report that the counter window is narrower than the evade window.
+- **Where we differ**:
+  1. Our evade has a 0.8 s cooldown (the owner asked for one; NieR has none).
+  2. Our counter is one CTR attack within 1.0 s, whatever the weapon (NieR's counter varies with the equipped weapons).
+  3. We add a slow-mo on the perfect evade (the owner's request).
+  4. The combo survives an evade by our own rule; NieR's behaviour here is unverified.
+
+## What changed in M1.1
 
 | Area | M1 | **M1.1** |
 |---|---|---|
@@ -50,12 +74,11 @@ enc.hash();                            // 16 hex chars over the canonical sim st
 | `move: [x, z]` | WASD | World-space ground vector, length ≤ 1. Steers the start of light attacks and the tail of recovery (see `can_move`) |
 | `light` (alias `attack`) | LMB | L1, or the next hit in the string. A press during an attack is **buffered only within `input_buffer_s` (0.15 s) before the chain point**; earlier presses are dropped (`InputDropped`) |
 | `heavy` (**held**) | RMB | Contextual heavy on press: after L3 → **FIN** (L-L-L-H finisher), after L1 → **LAUNCH**, after L2 → H. From neutral: hold ≥ 0.25 s → **HC** charged heavy on release (full at 1.0 s), shorter → **H** |
-| `dash` | Shift | 2.6 m dash; `light` during it or ≤ 0.25 s after → **DL** lunge. Into a High Road edge: mantle; on a High Road: hop down |
-| `dodge` (alias `skitter`) | Space | 2.5 m dodge, i-frames 0.2 s; **cancels recovery any time after the hit** (the heavy finisher commits for 0.3 s first) |
-| `lockOn` | Tab | Lock-on cycle (see above). `lockId: id|null` sets it directly (bots, tests) |
+| `evade` (aliases `dodge`, `skitter`, `dash`) | Space | **M1.2**: see the table above. Into a High Road edge it mantles; on one it hops down |
+| `lockOn` | Tab | Lock / unlock (M1.2). `lockSwitch {side, right}` switches while locked; `lockId: id|null` sets it directly (bots, tests) |
 | `skillBar` (alias `slowBlink`) | **R** | Toggle the skill bar |
 | `command` | skill bar | `{cat, move|slot, target}` queues a Move for Mikan or any crew cat (forced, whatever its `ai_use`; Paws reserved). A Pay-off commanded after another cat's Set-up on the same target in one opening waits for it (`CommandQueued.after`). `{action:'hiss'}` makes Mikan Hiss when the bar closes; `{action:'scram'}` flees |
-| `special` | **F** | Mikan's Special on the staggered enemy in `special_prompt` (needs `ready`) |
+| `special` | **F** | Mikan's Special on `special_prompt.target` (needs `ready`; any time in M1.2) |
 | `aim`, `hiss`, `brace`, `hop` | unbound | Optional verbs kept from M1 |
 
 ## `snapshot()`
@@ -81,12 +104,15 @@ New or changed in M1.1:
 | `Dash` | `cat` |
 | `LockTarget` | `target (id|null), locked, reason?` |
 | `SkillBarOpen` / `SkillBarClose` | `reason?` |
+| `Evade` / `EvadeRejected` / `PerfectEvade` | M1.2, see above |
+| `KnockedDown` / `ShockwaveStart` / `ShockwaveEnd` / `BossRage` | M1.2, see above |
+| `Cornered` / `FinalKO` | M1.2, see above |
 | `Staggered` / `StaggerEnded` | `cat, by, window_s, treatment ('full' for Captains, Bosses and the fight's first stagger; else 'light'), slow {scale, ms}` / `cat, reason ('window'|'team_finisher')` |
 | `SpecialReady` / `SpecialRejected` | `cat` / `reason ('no_staggered_target'|'meter'), target?` |
-| `SpecialChainStart` | `target, cats[] (Mikan first, then each ready crew cat within 8 m, by slot), team_finisher, shortened, cutin_s, team_s, total_s (≤ 6), stagger_left_s` |
-| `SpecialCutIn` * | `cat, special ('Midnight Laps'|'Landslide'|'Midnight Aria'), style, index, of, duration_s, target`: T5; the sim is frozen for `duration_s` |
+| `SpecialChainStart` | `target, cats[] (Mikan first, then each ready crew cat within 8 m, by slot), team_finisher, shortened, staggered, special_s, cutin_s, action_s, team_s, total_s (≤ 6), stagger_left_s` |
+| `SpecialStart` * / `SpecialEnd` | `cat, special ('Midnight Laps'|'Landslide'|'Midnight Aria'), style, index, of, cutin_s, action_s, duration_s, target`: T5; the sim is frozen; the next cat starts only after the previous `SpecialEnd` (M1.2) / `cat, index` |
 | `SpecialUsed` | `cat, special, targets_hit[]` (its `Hit` events have `kind: 'special'`) |
-| `TeamFinisher` * | `target, cats[], duration_s, t_rem, value_mv` (Combat F5 at the stagger time left; below Captain it Routs the target and staggered trash within 3 m): the old Pile-On's KA-BLAM |
+| `TeamFinisher` * | `target, cats[], duration_s, t_rem`: the full burst after the last `SpecialEnd`; its damage (F5 + 3 MV per cat, `Hit.kind = 'pile_on_beat'`) or the Rout of a staggered Tough lands at its end: the old Pile-On's KA-BLAM |
 | `SpecialChainEnd` | `target, team_finisher, routed[]` |
 | `StatusEnded` | adds `reason: 'command'` when a skill-bar command steadies a Cowed recruit (and `Bark {kind:'steeled'}`) |
 | `Hit` * | adds `attack` (Mikan's string id) and kinds `heavy`, `special` |
@@ -111,10 +137,8 @@ Removed: the Tag-In and Relay constants and the Quick/Full Pile-On durations.
 
 1. **Ring ≈ 10 m read as a diameter** (radius 5 m), with walls at the ring's edge and each wall a half-plane clamp. The M0 lane's walls are not sim colliders.
 2. **Enemy white attack** = one telegraphed swing of MV 1.5 (F10).
-3. **Daifuku phase 1**:
-   - He swings every 4 s: a yellow Paw Swat at a cat on his wall, otherwise a red Belly Drop onto a ground cat; on the ground he swings white, then Climbs Back after 6 s.
-   - **Knock-off sources**: `shove`, `shoulder_check`, `body_slam`, `banshee_screech`, `landslide` and, new in M1.1, **`heavy_finisher`** (Mikan's L-L-L-H, 1.5 m knockback), so a player who controls only Mikan can knock him off. He falls to the yard side, into the wash tub if close (one use per phase).
-4. **Fear proposals adopted**: Daifuku Fear Water and immune to Cowed.
+3. **Daifuku (M1.2)** fights on the ground with a basic white swing (MV 1.5 ×1.6), a yellow Paw Swat (MV 2) and his signature shockwave (7 s cooldown, ×0.7 when raging). He swings every 3.2 s ×0.85–1.15, ×0.75 when raging at ≤ 85% Nerve. No knock-offs; a Boss is never knocked back (heavies flinch him per poise). Values are prototype; phases 2–3 have empty attack lists (later milestones).
+4. **Fear proposals**: Daifuku keeps "immune to Cowed"; his Water Fear is dropped from the row, since there is no water prop in his bout.
 5. **Timers**: local hit-stop freezes only the action. Status, stagger and anger timers stop in global hit-stop, slow in the skill bar and stagger slow-motion, and stop through a Special chain.
 6. **Posse hit reactions**: a hit flinches a Posse cat for 0.3 s and interrupts its attack (Mikan's string included). An enemy Splat knocks a Posse cat flat for 1.0 s.
 7. **Styles not in the GDDs**: Goma Bruiser, Sasa Yowler, Strays Scrapper Lv 7, the challenger a Scrapper with Face Swat + Bunny-Kick, Togemaru Lv 7, Kinako Lv 7.
@@ -122,31 +146,43 @@ Removed: the Tag-In and Relay constants and the Quick/Full Pile-On durations.
 9. **AI Moves by personality** (round 2; still a deviation from §3.10 and §3.11, designer sign-off pending): Stalwart self-casts Shoulder Check, Goofball Withering Hiss (with a Purr Pay-off), Braggart and Schemer Face Swat. An AI cat may spend its last Paw when the Posse banks one (B-17).
 10. **The challenger is a Captain with the Water Fear in the showcase only.** Creative-director sign-off is pending.
 11. **M1.1: crew keep their Style basic as their AI "dash-in combo"** (Fraidy one hit). The spec's "crew have no strings" is read as "crew do not get Mikan's five player strings", because §4 has crew "dash in for a combo".
-12. **M1.1: Hiss, Brace and Hop have no key** in the new map (RMB, Space and F are taken). The verbs stay in the sim; the skill bar offers Hiss; dashing into a ledge mantles.
+12. **Hiss, Brace and Hop have no key** (M1.1/M1.2 maps). The verbs stay in the sim; the skill bar offers Hiss; an evade into a ledge mantles.
 13. **M1.1: Mikan Routed** leaves the crew fighting under AI (control never passes); the fight is lost only when all four are Routed.
-14. **M1.1: Special meter** uses Combat F8 (+1 per 1% Nerve lost, ≤ 40; +10 per enemy stagger) plus per-hit gains (Mikan light 1.5, heavy 3, Move 4; crew hit 1). Meters start at 0 in canon (carried in via `opts.special`); the showcase starts them at Mikan 20 and crew 80. Zoomies unlock gates (Mikan L2D3, crew Lv 6) are not applied.
-15. **M1.1: the Special chain**:
-    - It takes Mikan first, then each crew cat within 8 m of the target with a full meter, in slot order. **All four** (the Posse must have four) → the Team finisher.
-    - Cut-ins last 1.0 s, and 0.5 s after the first chain of the fight; the Team finisher 1.6 / 1.0 s; the total stays ≤ 6 s.
-    - Specials use the §3.7 Zoomies effects: Scrapper Midnight Laps 4 × MV 1.2 on every enemy; Bruiser Landslide MV 12 / FZ 80 on the target; Yowler Midnight Aria MV 3 to all, Cowed, heal 15%.
+14. **M1.1: Special meter** uses Combat F8 (+1 per 1% Nerve lost, ≤ 40; +10 per enemy stagger) plus per-hit gains (Mikan light 1.5, heavy 3, Move 4; crew hit 1). Meters start at 0 in canon (carried in via `opts.special`); the showcase starts them at Mikan 20 and crew 70. Zoomies unlock gates (Mikan L2D3, crew Lv 6) are not applied.
+15. **The Special chain (M1.2)**:
+    - **Target**: the lock target, else the nearest staggered enemy within 8 m, else the nearest enemy.
+    - **Order**: Mikan, then every crew cat within 8 m of the target with a full meter, in slot order. Each Special lasts 0.7 s cut-in + 0.5 s action, and the next starts only at the previous one's `SpecialEnd`.
+    - **Full burst**: all four (the Posse must have four) → the Team finisher, 1.2 s. It deals F5 (2 + k·T_rem) + 3 MV per cat, or Routs a staggered target below Captain together with staggered trash within 3 m.
+    - **Totals**: ≤ 6 s; repeat chains run ×0.6.
+    - **Effects**: the §3.7 Zoomies effects, ×1.3 on a staggered target.
 16. **M1.1: engagement**:
     - At most 2 enemies engage the controlled cat at once (`dash_in`, `attack` or `feint`), 1 on each AI cat, and 2 crew on one enemy.
     - The others circle, stalk, posture, flank or strut at their personality's band, and decide every 0.4 s whether to engage.
     - Enemies side-step Mikan's swing at 15% when not engaged.
 17. **M1.1: stagger slow-motion**: ×0.25 for 0.45 s on the full treatment, ×0.5 for 0.2 s on the light one, inside the ≤ 0.5 s budget. The zoom and shattered-glass blink are presentation.
 18. Rival flight, the `ambush_by_rival` and `raid_defence` openers, Daifuku phases 2–3 content, and guest wave cues are unbuilt, as in M1.
+19. **Evade and combo (M1.2)**: the combo kept by an evade is the last attack that landed (an attack cancelled before its hit hands on its predecessor). It lives through the evade and for `combo_grace_s` (0.3 s) after. A perfect evade is judged when the evade starts: an enemy telegraph on Mikan (aimed at her, or with her inside its shape) resolving within 0.2 s, or a shockwave front within its travel distance for 0.2 s.
+20. **Cornered cat (M1.2)**: "outnumbered" = at least 2 opponents within 3.5 m and more opponents than its friends within 4 m + 1. While cornered, light string hits do not flinch it, because otherwise four attackers flinch-lock it (the owner's "rarely attack" complaint). Heavies, finishers, Hiss interrupts and Fears still do.
+21. **Final KO** is an event only: the sim ends the encounter on the same tick (win) or after the phase break, and the presentation stages the freeze and slow-mo from its durations. No `FinalKO` on a loss or a Scram.
 
-## Fight lengths (tools/sim-run.mjs, 30 seeds, Alley, showcase on; round 2 → M1.1)
+## Fight lengths (tools/sim-run.mjs, 30 seeds, Alley, showcase on; M1.1 → M1.2)
 
 | Fight | Median bot | Skilled bot | Note |
 |---|---|---|---|
-| Tough alone | 7.4 → 11.6 s | 7.4 → 10.7 s | F9 5.6–5.7 s |
-| 2 Toughs | 13.0 → 13.6 s | 11.8 → 13.1 s | F9 18–21 s |
-| 3 Toughs | 20.5 → 17.5 s | 18.7 → 17.6 s | Specials and Team finishers in 43–60% of runs |
-| Sandbox (4) | 27.1 → 19.0 s | 23.1 → 19.7 s | Team finisher 28–29/30 (showcase meters); canon meters 22.6 s |
-| Captain | 36.3 → 33.1 s | 27.8 → 32.4 s | F9 37 s; canon 38.2 s |
-| Challenger (Captain-rank) | — | 24.3 → 32.1 s | target 23–34 s; Team finisher 28/30 |
-| **Daifuku phase 1** (scripted bot) | — | 28.1 → **41.4 s** (max 58.7) | ≤ 90 s timebox ✓; Team finisher 29/30 |
-| Lose to Daifuku (passive) | wipe 91.3 → 105.9 s, 30/30 | — | |
+| Tough alone | 11.6 → 9.0 s | 10.7 → 8.3 s | |
+| 2 Toughs | 13.6 → 11.2 s | 13.1 → 10.1 s | |
+| 3 Toughs | 17.5 → 11.9 s | 17.6 → 11.3 s | a Special chain in 29–30/30 |
+| Sandbox (4) | 19.0 → 14.6 s | 19.7 → 12.5 s | Team finisher 8–9/30 |
+| Captain | 33.1 → 30.3 s | 32.4 → 28.2 s | F9 37 s (band 30–45) |
+| Challenger (Captain-rank) | — | 32.1 → 31.0 s | target 23–34 s |
+| **Daifuku phase 1** (ground; skilled bot on him) | — | 41.4 → **47.0 s** (25–90.5 s) | ≤ 90 s timebox; shockwaves and knockdowns every bout |
+| Lose to Daifuku (passive) | wipe 105.9 → 55.5 s, 30/30 | — | |
 
-Never more than 2 enemies engaged Mikan in any run (`maxEng`). Trash fights are no longer much shorter than round 2, though slower pacing and tokens were expected to lengthen them: the showcase's carried meters let the first stagger open a Special chain that clears clustered trash. With canon meters (start 0) the sandbox runs 22.6 s.
+M1.2 trash fights are shorter, for three reasons:
+- Lights start instantly and chain at 0.44–0.5 s.
+- The Special can open with full showcase crew meters (start 70) without waiting for a stagger.
+- A cornered last enemy lashes out, but it also dies faster.
+
+Move speed is the owner's 1.6 m/s, which lengthens the approaches.
+
+Showcase Special meters now start at Mikan 20 and crew 70 (M1.1: 20/80).

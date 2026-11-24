@@ -88,7 +88,7 @@ Anti-pillars:
 | **The Rivals board** (v1.5; replaces the Fence Line) | The roster of every cat in town on one painted wall, by district from left to right uphill, then **Outsiders**, then the **Bell fence** (Mikan and Crew). Each district's Boss sits on its gatepost, and its gang is in one row in order of discovery. **No rank ladder.** Cats are flat silhouettes until **discovered** (an encounter, or a 1 s Whisker Sense sniff within 10 m). Hovering a cat shows relationship tags on the other discovered cats. Gone cats stay as legend cards. Read-only on the street, at the Doorstep and at the Lot; never in the house (OR-03). |
 | **Turf Board** | The Lot's territory screen, **unified (v1.5, OR-17)** into four zones: a header (district + influence bar + tabs), the map (where), the Tonight panel (the one decision: who guards the threatened Patch) and the Crew strip (who). The only map-like view and the only place territory numbers appear (R3, §5.7). |
 | **Influence** (v1.5) | Per district, per Clowder, 0–100, **derived from Patch Scent**: each outer Patch held at Strong is a full share (the Lane: 4 × 25). It moves only through territory acts (Spray, marking), NPC raids and time, never by fight outcomes. Shown as a tug-of-war bar; the % only on the Turf Board (OR-08). |
-| **Boss window** (v1.5; replaces the Den gate) | At influence 100 the district's Boss leaves the Den and roams a **three-stop patrol** (one stop per daytime phase; each stop uses the same arena kit: a knock-off edge and a water prop), and can be challenged. It stays open while influence is ≥ 75. While it is open, held outer Patches cannot be Lost (OR-09). **Slice reference day: L2D3**, at the Tofu Shop Step Claim Spray; the first fight is L2D4 (v1.6). |
+| **Boss window** (v1.5; replaces the Den gate) | At influence 100 the district's Boss leaves the Den and roams a **three-stop patrol** (one stop per daytime phase; each stop is a ground arena kit: a flat ring, a noise prop, ledge junk; M1.2: no wall, no water tub, no knock-off), and can be challenged. It stays open while influence is ≥ 75. While it is open, held outer Patches cannot be Lost (OR-09). **Slice reference day: L2D3**, at the Tofu Shop Step Claim Spray; the first fight is L2D4 (v1.6). |
 | **Phase dial** | The always-visible day indicator while roaming (sun over a roofline; no digits). |
 
 ### 3.3 Verbs and systems
@@ -100,24 +100,26 @@ Anti-pillars:
 | **Whisker Sense** | Hold mode. The world desaturates; scent trails glow; a **scent compass ring** around Mikan points to rival marks, Rivals and hidden finds (v1.5: also the roaming Boss's stop and an active challenger). Holding it on a cat within 10 m for 1 s **discovers** it. Not usable in combat. |
 | **Head Home** | A bell-gold High Road scent thread to Haru's wall. It appears at the Dusk Call or on request, and is ≤ 60 s long in the slice. |
 | **Standoff** | The pre-fight beat (2–4 s name-card and one taunt). A memory-citing line cannot be skipped for 1 s. |
-| **Ambush** | Opening a fight unseen or from the High Road; the target starts Ruffled. A Rival Ambush gives a 2.0 s directional yowl-sting; a Dodge in its last 0.75 s gives a neutral start. |
-| **Control (M1.1)** | **The player controls Mikan only**; the three Crew are always AI and are commanded from the skill bar. The one control table is Combat §3.1 (KB+M: LMB Light, RMB Heavy (hold to charge), Space Dodge, Shift Dash, **Tab** Lock-on, **F** Special, **R** skill bar, Esc/P Pause). |
-| **Light / Heavy strings** (M1.1) | Mikan's five strings: L-L-L; **L-L-L-H finisher**; L-H launcher; hold H charged heavy; Dash-L lunge. Heavies build Frazzle faster. A Light's first active frame is ≤ 3 frames; one-slot input buffer (last ≈ 150 ms); move-out gradient from ≈ 60% of recovery. A Light airborne or from the High Road is a **Pounce**. Crew and enemies have no player strings (AI dash-in combos). |
-| **Dodge (Skitter) · Dash** | Dodge cancels recovery after the hit; Dash → Light is the lunge, and a Dash at a reachable ledge mantles onto the High Road. **Brace** is an AI guard posture only; there is no jump button in combat. |
-| **Lock-on** (M1.1) | Not locked by default. Tab locks the nearest enemy; again: a different nearest enemy, or unlock (free camera). |
+| **Ambush** | Opening a fight unseen or from the High Road; the target starts Ruffled. A Rival Ambush gives a 2.0 s directional yowl-sting; an Evade in its last 0.75 s gives a neutral start. |
+| **Control (M1.1, M1.2)** | **The player controls Mikan only**; the three Crew are always AI and are commanded from the skill bar. The one control table is Combat §3.1 (KB+M: LMB Light, RMB Heavy (hold to charge), **Space Evade**, **Tab** Lock-on, **F** Special, **R** skill bar, Esc/P Pause; Shift unused in combat). Combat movement = the Lane's fast walk. |
+| **Light / Heavy strings** (M1.1, M1.2) | Mikan's five strings: L-L-L; **L-L-L-H finisher**; L-H launcher; hold H charged heavy; Evade-L lunge. Heavies build Frazzle faster. The Light lands on the next sim tick; the Heavy has a readable wind-up; one-slot input buffer (last ≈ 150 ms); slow steering through every attack and full movement from **60% of the animation** (NieR: Automata as the responsiveness reference). A Light airborne or from the High Road is a **Pounce**. Crew and enemies have no player strings (AI dash-in combos). |
+| **Evade** (M1.2; was Dodge/Skitter and Dash) | One button (Space): ≈ 2 m, i-frames, ≈ 0.8 s cooldown shown on the HUD. **Cancels any attack at any frame**; the string survives it; Evade → Light is the lunge; an Evade at a reachable ledge mantles onto the High Road. A **perfect Evade** gives a short slow-motion and a counter window. **Brace** is an AI guard posture only; there is no jump button in combat. |
+| **Lock-on** (M1.2) | Not locked by default. Tab locks the nearest enemy; Tab again unlocks (free camera). While locked, a horizontal mouse flick switches to the next enemy on that side of the screen. |
 | **Hiss** | A skill-bar entry for every cat (M1.1). 8 s cooldown. Interrupts a yellow telegraph and Ruffles the attacker; a Tough at ≤ 15% Nerve **Backs Down** (Routed by intimidation). |
 | **Pounce Gauge / Paws** | The command resource. 2 Paws per cat (Mikan 3 from Life 4). Fills over time and from hits. |
 | **Skill bar** (Slow Blink; M1.1) | Opened with **R**: time at 5%; one row per Posse cat; fire Mikan's Moves and **force** any Crew cat's Move or Hiss; commands chain. A command to a Cowed recruit steadies it. |
 | **Move** | An active skill costing 1–2 Paws, either a **Set-up** or a **Pay-off**. 4 slots per cat. |
 | **Knack** | Passive skill. **Backlog** (not in the slice). |
 | ~~Tag-In / Relay~~ | **Removed (M1.1):** no control switching. Commanding from the skill bar and the Special chain are the heart of commanding. |
-| **Special** (Zoomies folded in, M1.1) | **F** on a Frazzled (staggered) enemy while Mikan's Special meter is full: the camera punches in, time stops, Mikan alone over an impact-frame background (≈ 1 s cut-in), then the hit. One Special per Style (the old Zoomies: Midnight Laps, Landslide, Midnight Aria). Each cat's meter fills from hits, damage taken and Frazzles; persists within a day. |
-| **Special chain** (M1.1) | After Mikan's Special, every Crew cat in range with a full meter fires its own Special and cut-in **automatically**, in turn. ≤ ≈ 6 s; shortened after the first in a fight. |
-| **Attack tokens** (M1.1) | Only 1–2 enemies engage Mikan at once; the rest circle, stalk, posture, flank and feint, then dash in for a combo and back out. Crew follow the same rules. Cats think before they charge. |
+| **Special** (Zoomies folded in, M1.1; any time, M1.2) | **F** whenever Mikan's Special meter is full (a Frazzled target takes bonus Special damage): the camera punches in, time stops, Mikan alone over an impact-frame background (≈ 1 s cut-in), then the hit. One Special per Style (the old Zoomies: Midnight Laps, Landslide, Midnight Aria). Each cat's meter fills from hits, damage taken and Frazzles; persists within a day. |
+| **Special chain** (M1.1, M1.2) | After Mikan's Special, every Crew cat in range with a full meter fires its own Special and cut-in **automatically, in sequence**: each starts only after the previous cat's animation ends. ≤ ≈ 6 s; faster after the first in a fight. |
+| **Attack tokens** (M1.1) | Only 1–2 enemies engage Mikan at once; the rest circle, stalk, posture, flank and feint, then dash in for a combo and back out. Crew follow the same rules. Cats think before they charge. **A cornered cat** (outnumbered or surrounded; M1.2) stops hovering and lashes out at the nearest or weakest attacker. |
+| **Final KO** (M1.2) | The last opponent's fall: zoom-in, a frame freeze over an impact background, then ≈ 1.5 s of slow motion (fighting-game style), inside the safety limits. |
+| **Boss pattern** (M1.2) | One universal data pattern for every Boss: phases, signature attacks, telegraphs, rage thresholds, phase break, bout cap. Daifuku is the first: a **ground** fight with a **belly-flop shockwave** (no wall, no tub, no knock-off). |
 | **Ruffled** | For 4 s, Frazzle builds ×2. A leader cannot be re-Ruffled for 6 s after it ends. |
 | **Frazzle / Frazzled** | The stagger gauge; Frazzled = staggered. When full: 6 s helpless, damage taken ×1.5. The stagger plays a brief zoom, slow-down and shattered-glass blink (≤ 0.5 s; full for Captains, Bosses and the first stagger per fight), inside the flash limits. |
 | **Statuses** | Only three: **Soggy** (slower), **Cowed** (deals less), **Fired Up** (deals more). |
-| **Team Pile-On** (M1.1; was the Pile-On) | The **team finisher**: when all four Posse cats land their Specials in one chain, they vanish into the KA-BLAM cartoon dust cloud. Routs every Frazzled enemy below Captain within 3 m. In the spirit of Granblue Fantasy Relink's Full Burst, with our own art and staging (counsel watch item). The signature street image. The old Quick and Full Pile-On inputs are gone. |
+| **Team Pile-On** (M1.1; was the Pile-On) | The **team finisher**: when all four Posse cats land their Specials in one chain, they vanish into the KA-BLAM cartoon dust cloud: **extra damage on top** of the four Specials (the "full burst"). Routs every Frazzled enemy below Captain within 3 m. In the spirit of Granblue Fantasy Relink's Full Burst, with our own art and staging (counsel watch item). The signature street image. The old Quick and Full Pile-On inputs are gone. |
 | **Old Score** | A Crew cat fighting a Rival it has Routed, or been Routed by, deals extra Frazzle, and both bark. |
 | **Nerve / Routed** | HP. At 0 the cat bolts in a dust puff. Nobody is killed, ever. |
 | **Verdict** | After Routing a Rival (one full Verdict per fight; other tracked cats slip away): **three options (v1.5): Recruit, Chase Off, Nose-Touch** (§7). Humble is removed. Every Verdict clears the post; Mikan then **Claim Sprays** it ("fight to clear, spray to claim"). No other cat moves up or in. |
@@ -168,7 +170,7 @@ Assigned at generation by Nemesis; never changes. Each owning doc sets the numbe
 | **Braggart** | Charges the biggest enemy | First hit on a leader adds Frazzle | Raid defence +; Patch +10% Tribute | Posse time / being benched | Goofball / Braggart | Loud; bolts and comes straight back after a flee |
 | **Brooder** | Hangs back, avenges allies | Old Score doubled | Never leaves; slower decay | Long service (half-speed both ways) / being dismissed | Stalwart / Schemer | Grudge decays at half rate |
 | **Schemer** | Flanks; hunts Ruffled/Frazzled | Bonus on Frazzled | The district forecast names the motive | Lessons / soft choices | Fraidy / Brooder | Ambushes; as Crew, Wavers below 35 |
-| **Fraidy** | Keeps distance, supports | Perfect Skitter gives Pounce | Weak defence; raises the Caterwaul early | Never being Routed / being Routed | Stalwart / Braggart | Flees early; returns slowly |
+| **Fraidy** | Keeps distance, supports | Perfect Evade gives Pounce | Weak defence; raises the Caterwaul early | Never being Routed / being Routed | Stalwart / Braggart | Flees early; returns slowly |
 | **Stalwart** | Guards Mikan, Braces (AI), holds ground | Allies within 3 m take less damage | Best raid defence | Fair play / a Scuffed or Lost night on its own post (v1.5) | Brooder / Schemer | Honourable; Nose-Touch gate +15 |
 | **Goofball** | Plays; goes for props | Props it triggers hit harder | Laughs off a challenge: a challenger staking its Patch over-marks 0 (v1.5) | Share a Morsel counts double / being left at the Lot | everyone but Brooder / Brooder | Clowns about; easy to Nose-Touch (gate +10) |
 
@@ -199,9 +201,9 @@ Botan offers **only Nose-Touch**: at her Verdict the inn's hand-bell rings and s
 
 **A third-person camera behind and above the cat, like FF7 Remake.**
 - **Explore:** ≈ 3 m back and ≈ 1 m up, gently pitched down; right-stick orbit; auto-follow; wall collision. Low height makes the town huge.
-- **Combat:** pulls back (≈ 6–8 m) and up to frame the controlled cat and its lock target; soft lock-on; edge arrows for off-screen Posse cats and attackers; fight ring ≈ 10 m; no scene transition.
-- **Slow Blink:** a lifted tactical three-quarter view.
-- **Cinematics:** Standoff, Pile-On and Zoomies use authored cuts and cut-ins.
+- **Combat (M1.1, M1.2):** ≈ 3.8 m behind Mikan, free orbit with direct mouse yaw; Tab locks and unlocks, a mouse flick switches targets while locked; edge arrows for off-screen Posse cats and attackers; near-camera objects dither-fade, never hidden; fight ring ≈ 10 m; no scene transition.
+- **Skill bar** (was Slow Blink): pushed in low behind the cat.
+- **Cinematics:** Standoff, the stagger zoom, Special cut-ins and the Team Pile-On, and the Final KO use authored cuts and cut-ins.
 - **Home:** the same camera, at cat height (0.3–0.6 m); vignettes use authored shots; humans are knees and hands unless they bend down (faces: R5, §5.7).
 - **Cat scale (v1.3):** one global cat scale, **1.25× a real cat (≈ 0.56 m nose to rump)**, the same on the street and at home, no per-context swap; humans, furniture and props are true scale (Art §3.4).
 - **Options:** FOV, camera speed, auto-centre, motion comfort.
@@ -209,8 +211,9 @@ Botan offers **only Nose-Touch**: at her Verdict the inn's hand-bell rings and s
 **Look (v1.4, settled by the user):** match the reference's *visuals* 1:1 — **3D cel-shaded characters that read like 2D cartoon cels, in environments that read like 2D painted anime backgrounds** — but built in full 3D for a free-rotating third-person camera (the reference's 3C is not copied). **Environments:** 3D geometry with hand-painted, flat-lit textures and trim sheets, no outlines; **painted skydome and backdrop cards (sky, hills, sea are in frame)**. The method is proven by a one-alley look-dev test (Art bible §8). All visible human writing is Scribble.
 
 **Readability:**
-- Posse cats carry a bell-gold keyline plus an overhead **chevron** tick (the controlled cat carries the **bell**); enemies an outline in their Clowder colour. Both have a 1 px Paper Cream rim.
-- Telegraphs: white = dodge; yellow = Hiss it (Paper Cream dashed with a triangle glyph); red = get out (Frazzle Magenta with a zigzag edge).
+- **Outlines (M1.2):** Posse cats carry a **yellow** (Bell-Gold) outline plus a round overhead **paw** tick (Mikan carries the **bell**); **enemies a red outline plus a red overhead chevron**, so colour is never the only signal (a Frazzled enemy turns Frazzle Magenta). Both have a 1 px Paper Cream rim. Clowder colour stays on emblems, name-cards and the Rivals board.
+- Every hit cat flashes for ≈ 120–150 ms, character-local.
+- Telegraphs: white = evade; yellow = Hiss it (Paper Cream dashed with a triangle glyph); red = get out (Frazzle Magenta with a zigzag edge).
 - One screen-wide effect at a time.
 
 ---
@@ -219,7 +222,7 @@ Botan offers **only Nose-Touch**: at her Verdict the inn's hand-bell rings and s
 
 ### 5.1 Core loops
 
-- **30 seconds:** prowl, flick on Whisker Sense, spot a rival mark, take the High Road, Ambush. String, dodge, a Paw fills, Slow Blink, a Move; Tag-In to the next cat; Frazzle; Pile-On; dust cloud; Spray.
+- **30 seconds:** prowl, flick on Whisker Sense, spot a rival mark, take the High Road, Ambush. String, evade, a Paw fills, the skill bar, a command; Frazzle; F Special, the Crew chain in; Team Pile-On; dust cloud; Spray.
 - **5 minutes:** take or defend a Patch: clear it, Standoff, Verdict, Spray, decide who guards it (and which personality suits the post).
 - **One day (≈ 20–25 min in the slice):** wake → morning slot → Doorstep (Tribute, Sniff with tonight's raid forecast) → the Lot (Posse, Turf Board, Lessons, Share a Morsel) → Morning, Day, Dusk, Night → home → evening → sleep → Night Shuffle.
 - **Long term:** claim three districts and the Summit across nine Lives; grow a Crew of personalities; turn Rivals into Nemeses, Crew or friends; watch Haru's life; in the end, bring your food home.
@@ -320,7 +323,7 @@ The **Morning Sniff** shows the Tribute line, tonight's raid forecast (always, w
 
 - **R1 · Late Home.** A **Routine variant, not a vignette** (the count of 11 stands), fixed on **Life 2 day 3 Dusk**, stacked with K2.2 "Lamp at Night" (the late return is its cause: she stayed late to cram). No Call at the slot, the bell alone; **Gran lights the Veranda Lamp** (a dark Lamp is reserved for Life 8); Haru's key turns at Dusk + 2:30 on the street clock, or ≈ 40 s of real time after the Feeding if Mikan is inside the wall; then the Melody returns and the Call sounds at the door. It teaches "no Call, bell alone = she's late; she will come" before Life 8 A2.
 - **R2 · The Piece never contains the Call cell.** Haru's Melody (the one piece she practises) opens on the rising four-note answer phrase. The Call's three-note cell sounds only in a voice (Haru sings it; Sora later whistles it), in the Brass Call and in Late Home's door Call. No Call before K1.3.
-- **R3 · Numbers.** *Numbers count what the cat owns or pays; they never measure a feeling, a relationship or a human.* Allowed: Morsels, Shinies, Tribute, the Stash, prices (Lessons, the Bribe row, Share a Morsel), Crew levels and XP pips, on the Lot tabs, Turf Board, Verdict Bribe row and Pause, plus the Doorstep Tribute card and the street pickup tick and encounter tally. Territory numbers (Scent 0–100, upkeep, per-Patch Tribute) only on the Turf Board. Never numbers: Grudge, Regard, Loyalty (moods and tier words), Rival levels (paw size shows threat), anything inside the house except the Doorstep card, anything in the world (Scribble). **Combat damage numerals are Off by default** (Options: Off / Big hits / All); weakness and resistance show in the spark shape.
+- **R3 · Numbers.** *Numbers count what the cat owns or pays; they never measure a feeling, a relationship or a human.* Allowed: Morsels, Shinies, Tribute, the Stash, prices (Lessons, the Bribe row, Share a Morsel), Crew levels and XP pips, on the Lot tabs, Turf Board, Verdict Bribe row and Pause, plus the Doorstep Tribute card and the street pickup tick and encounter tally. Territory numbers (Scent 0–100, upkeep, per-Patch Tribute) only on the Turf Board. Never numbers: Grudge, Regard, Loyalty (moods and tier words), Rival levels (paw size shows threat), anything inside the house except the Doorstep card, anything in the world (Scribble). **Combat damage numerals are On by default** (owner M1.2; Options: All / Big hits / Off; counts of damage are allowed in combat as feedback); weakness and resistance also show in the spark shape.
 - **R4 · No combat inside the wall.** The crow tutorial moves to the lane-side wall top: move and hop in the garden, fight outside.
 - **R5 · Faces.** A **face event** is an authored shot where the human face is the subject at ≥ 20% of screen height; the slice has three (K1.1, K1.3 shot 6, K2.5). **Incidental faces** (the Goodbye crouch, the face from below during Lap, a human kneeling at the low table) are allowed and uncounted: ≤ 15% of screen height, never centre frame for > 2 s.
 - **Also ruled:** K2.3 The Flap stays a Dusk beat; Combat owns every feel number (shake, punch-in, impact frame) and Camera only plays them; the Life 2 teaching sheet is UX's (`key-screens.md` §7.4).
@@ -329,18 +332,18 @@ The **Morning Sniff** shows the Tribute line, tonight's raid forecast (always, w
 
 ## 6. System boundaries and ownership
 
-**One Cat Schema:** `id, name, title, coat_seed, style, personality, level, xp, stats{nerve,bite,hide,voice,zip}, moves[4], knacks[2] (Backlog), zoomies, signature_strength, traits{strengths[],fears[],scars[]}, loyalty, grudge, regard, memory[], rank, former_rank, clowder, assignment, relations[] (v1.5), discovered (v1.5), old_gang_nerves (v1.5), anger (Bosses, v1.5), truce_until_day (v1.5)`. `personality`, `former_rank`, `relations`, `discovered`, `old_gang_nerves`, `anger` and `truce_until_day` are Nemesis-owned. `OLD_GANG(boss_id)` lives only in the recruit's `memory[]`.
+**One Cat Schema:** `id, name, title, coat_seed, style, personality, level, xp, stats{nerve,bite,hide,voice,zip}, moves[4], knacks[2] (Backlog), special, signature_strength, traits{strengths[],fears[],scars[]}, loyalty, grudge, regard, memory[], rank, former_rank, clowder, assignment, relations[] (v1.5), discovered (v1.5), old_gang_nerves (v1.5), anger (Bosses, v1.5), truce_until_day (v1.5)`. `personality`, `former_rank`, `relations`, `discovered`, `old_gang_nerves`, `anger` and `truce_until_day` are Nemesis-owned. `OLD_GANG(boss_id)` lives only in the recruit's `memory[]`.
 
 | Doc (owner) | Owns | Does NOT own |
 |---|---|---|
-| **Combat** (combat designer) | Real-time rules; controls' actions; strings, Hop, Skitter, Brace, Hiss; Pounce Gauge, Slow Blink, Ruffled/Frazzle, Tag-In/Relay, Zoomies, Pile-On; **all Move and Zoomies definitions and numbers**; the Style matchup chart; damage and heal formulas; the 3 statuses; Posse AI per personality (combat column); enemy AI; encounters; Critters; **the game-feel/VFX tier table**; difficulty modes; which events show lettered onomatopoeia | Learnsets; stat curves; Rival trait selection; Morsel rewards |
+| **Combat** (combat designer) | Real-time rules; controls' actions; strings, Evade, Hiss; Pounce Gauge, the skill bar, Ruffled/Frazzle, the Special chain and Team Pile-On, the Boss pattern; **all Move and Special definitions and numbers**; the Style matchup chart; damage and heal formulas; the 3 statuses; Posse AI per personality (combat column); enemy AI; encounters; Critters; **the game-feel/VFX tier table**; difficulty modes; which events show lettered onomatopoeia | Learnsets; stat curves; Rival trait selection; Morsel rewards |
 | **Nemesis** (nemesis/AI) | Rival generation, including **personality** and `former_rank`; roles and Rivals-board data; **relationships and tags, discovery**; Memory, Grudge, Regard, Titles, Scars, Strengths, Fears; **recruit availability**; Verdict rules (three); **Old Gang Nerves, Boss anger, truces and the join-in roll**; **the challenger calendar, newcomers and town events**; Night Shuffle step 3, Ambush injection, betrayal events; bark trigger taxonomy and grammar (G8: own history only); Boss trait kits and patrol placement | Combat values of traits and statuses; raid maths; influence; the Loyalty formula; the writing voice |
 | **Territory & Economy** | Patches, Scent, Spraying, claiming ("fight to clear, spray to claim"), **influence and the Boss window** (a place-and-schedule gate), Sentry/Warden rules and the guard column of personality, raid and challenge resolution (step 2), the challenger over-mark, Caterwauls and the presence rule; Tribute and every Morsel/Shiny source, sink and **price** (one price sheet); the Clout table, Crew cap and Sentry slots; the Stash; the Turf Board rules; Life 8 territory numbers | Which Rival raids or challenges; stat curves; Move data |
 | **Crew & Progression** | Stat and XP curves; Power Rating; the **Bribe** and **starting Loyalty**; the **Loyalty formula** and the personality loyalty/social columns; learnsets, Lessons, slot rules, Mikan's cross-Style rule; Tail-Up; full-Crew "make room"; Mikan's ageing; the heir | Move numbers; betrayal logic; prices |
 | **Narrative** (narrative director) | The nine Lives' beats and gates; vignettes; montages; household characters; Bond's fiction and home verbs; the daily home find; Boss personalities; the cat writing voice and bark lines; Sense Icons; **Life 8 end to end (§9 of the DSP doc)**; epilogue | Bond's numeric effects; bark triggers |
 | **Art** | Art bible; toon shader and outlines; character design and coat generator; **six personality animation sets**; district palettes; environment method (after look-dev); VFX drawings for the tier table; **lettering sets and the localisation brief**; Scribble; Scar/Title kits; Whisker Sense look; deaf/HoH visual carriers | Gameplay timings |
 | **Audio** | Music and the Call system; instruments and Murmur; cat vocals and the **8 bark intents** per voice body; combat mix per the tier table; adaptive music; scent sonification | Story beats |
-| **UX** | HUD, Slow Blink menu, **Rivals board**, Morning Sniff, Lot and **unified** Turf Board screens, Verdict prompt (three cards), the **control map**, onboarding beat sheet, accessibility | System rules |
+| **UX** | HUD, skill bar, **Rivals board**, Morning Sniff, Lot and **unified** Turf Board screens, Verdict prompt (three cards), the **control map**, onboarding beat sheet, accessibility | System rules |
 | **Day loop** (game-designer, `design/gdd/day-loop.md`) | Clock implementation, day budget and playtest test, Head Home and fast travel, Caterwaul reach, daily-reset audit, encounter density, save/suspend, **the loss time-skip to Night and the closed street** | Phase lengths and Life rules (this brief) |
 | **Camera** (technical-artist, `design/gdd/camera-system.md`) | Camera states, collision, lock-on framing, options | Combat timing |
 | **Accessibility** (UX, `design/accessibility-requirements.md`) | Flash and motion safety mirror, remapping, assists, Hearing support | — |
@@ -352,7 +355,7 @@ The **Morning Sniff** shows the Tribute line, tonight's raid forecast (always, w
 | `EncounterStarted` | Combat | participants, patch_id, opener (standoff / ambush_by_player / ambush_by_rival / raid_defence), phase | Nemesis, Audio, UX |
 | `CatRouted` | Combat | victim_id, finisher_id, finisher_move, damage_type, was_frazzled, by_pile_on, by_back_down | Nemesis, Crew |
 | `MoveUsed` | Combat | user_id, move_id, targets_hit[] | Crew, Audio |
-| `TagIn` | Combat | from_id, to_id, relay_count | Audio, VFX, Crew (bonded pairs) |
+| `SpecialChain` (replaces `TagIn`, M1.1) | Combat | target, cats[], team | Audio, VFX, Crew (bonded pairs), Camera |
 | `FearTriggered` | Combat | cat_id, fear_id, source | Nemesis, Audio, VFX |
 | `EncounterEnded` | Combat | outcome (win / loss / player_fled / rival_fled), duration, routed_ids[], survivors[] | Nemesis, Territory, Crew, Economy |
 | `VerdictApplied` | Nemesis | rival_id, verdict ∈ {chase, recruit, nose} (v1.5), slipped_away_ids[] | Territory, Crew, Economy, UX |
@@ -389,11 +392,11 @@ The **Morning Sniff** shows the Tribute line, tonight's raid forecast (always, w
 ## 7. Nemesis and combat: creative direction
 
 **Combat (Pillar 3).** FF7 Remake's **structure**, Pokémon's roster, a cat's verbs, kept deliberately light:
-- **The rules:** one 3-hit string per Style, twelve inputs, three statuses, stagger and Slow Blink commands. You control one cat and switch instantly between all four. A timed switch is a **Tag-In**, and Relays are the skill expression.
-- **The Posse:** AI cats fight by their personality and fill Paws at half rate, so the player conducts.
+- **The rules (M1.1, M1.2):** you control **Mikan only**: five Light/Heavy strings, one Evade that cancels anything, NieR-style responsiveness, three statuses, stagger, and skill-bar commands to the Crew. **F** fires a Special any time; the Crew's Specials chain in sequence, and four make the Team Pile-On. The skill bar and the chain are the skill expression.
+- **The Posse:** AI cats fight by their personality and fill Paws at half rate, so the player commands.
 - **Fight lengths:** Tough 6–10 s · encounter 30–60 s · Captain 30–45 s · Boss 2–3 min · Botan 4–5 min. Fed Up at 75 s.
-- **Bosses stagger:** phase breaks keep the Frazzle gauge and wait for the Pile-On.
-- **The environment is the weapon:** knock things (and Daifuku) off ledges; buckets, horns and cucumbers hit Fears. Knock-offs always Splat.
+- **Bosses stagger:** every Boss runs one universal Boss pattern; phase breaks keep the Frazzle gauge and wait for a Special chain to finish. Daifuku fights on the ground (belly-flop shockwave).
+- **The environment is the weapon:** knock Toughs off ledges; buckets, horns and cucumbers hit Fears. Knock-offs always Splat (never a Boss).
 - **Feel budget:** hit-stop, stepped screen shake, manga action lines, impact frames, smear frames, glyph bursts, and **readable hand-lettered onomatopoeia on big hits**, all inside the safety limits (§8).
 - **Spec level:** the GDD gives intent and ranges in milliseconds; frame data lives in tuning data and the prototype.
 
@@ -426,11 +429,11 @@ The **Morning Sniff** shows the Tribute line, tonight's raid forecast (always, w
 | Fight lengths | §7. Fed Up 75 s |
 | Posse | Mikan + 3. Enemy groups 1–6. Hard cap 10 combatants |
 | Pounce Gauge | 2 Paws (Mikan 3 from Life 4). AI fill **50%** in Lives 1–7, 60% from the Life 8 Season Turn, 70% in Life 9, 100% while carrying |
-| Slow Blink | Time ×5% |
+| Skill bar | Time ×5% |
 | Ruffled / Frazzled | Ruffled: 4 s, Frazzle ×2, leader re-Ruffle cooldown 6 s. Frazzled: 6 s, damage taken ×1.5 |
 | Healing / guard | ≤ 60% of max Nerve healed per cat per fight; ≥ 30% of damage always gets through |
-| Slots | 4 Moves · 1 Zoomies · (2 Knacks, Backlog) |
-| Content | **Slice:** 3 Styles, 12 Moves, 3 Zoomies. **Full:** ≈ 50 Moves (45 Style + 4 Home), 5 Zoomies, Knacks TBD |
+| Slots | 4 Moves · 1 Special (Zoomies folded in) · (2 Knacks, Backlog) |
+| Content | **Slice:** 3 Styles, 12 Moves, 3 Specials. **Full:** ≈ 50 Moves (45 Style + 4 Home), 5 Specials, Knacks TBD |
 | Crew cap / Sentry slots by Clout rank | 6/7/8/9/10/11/12 · 1/2/3/4/5/6/8 |
 | Patches | 20 (Lane 5, Arcade 7, Shiosai 7, Summit 1) |
 | Rivals | 8 seats per district + Botan's court of 3 = 27; ≤ 12 off-wall. Slice ≤ 12 tracked. One Nemesis slot per district + the arc lead. Memory 10 entries, ≤ 6 pinned |
@@ -439,13 +442,13 @@ The **Morning Sniff** shows the Tribute line, tonight's raid forecast (always, w
 | Influence (v1.5) | Per district, 0–100, derived from Scent: each outer Patch at Strong is worth `100 / n_outer` (the Lane: 25). Full = 100 opens the Boss window; it closes below 75 at step 2 |
 | Boss anger (v1.5) | 0–100, Bosses only; Over-mark +5, Counter-Spray +15, never fights; −15 a night. Riled 30 / Seething 60 / Furious 90 → Fired Up for 20 s / 40 s / the whole fight; reset by a win, loss or `rival_fled` (not Scram) |
 | Nose-Touch (v1.5) | Gate: pending Grudge < 50 + shift (Stalwart +15, Goofball +10, Fraidy +5, Schemer 0, Brooder −5, Braggart −5) **and, from Life 2, not a loud take** (≥ 2 Counter-Sprays on its own post; a Boss at Seething+) (v1.6). Truce **10 days**. Join-in p = 0.35 (+0.15 near its old Patch, +0.15 at Regard ≥ 75), cap 0.65; ≤ 1 per encounter, ≤ 1 per cat per day |
-| Old Gang Nerves (v1.5) | Cowed 20 s (Fraidy 30 s) at the sight of the Old Boss; cleared by a Tag-In. Resist: Braggart, Stalwart, Brooder, Sworn |
+| Old Gang Nerves (v1.5) | Cowed 20 s (Fraidy 30 s) at the sight of the Old Boss; cleared by a skill-bar command. Resist: Braggart, Stalwart, Brooder, Sworn |
 | Challengers (v1.5) | First on the 2nd night after Mikan first holds ≥ 3 Patches in a district (slice: night 5, announced in the L2D4 Sniff), then every 4th night (skipped if one is active); ≤ 1 active per district; over-mark −10 a night (Goofball post 0); takes the raid slot (`challenge`); Repelled twice → it leaves |
 | Starting Loyalty | `clamp(5, 80, 50 − 0.4·Grudge_before_halving + 0.3·Regard + personality_mod + 5·bribe_step − 20·returned)` |
 | Day | 4 phases × 4 min = **16 min** roaming. Session ≈ 20–25 min (slice), ≤ 35 (late game) |
 | Playtime | Main story **12–15 h** (≈ 26–32 in-game days); thorough ≈ 20 h. **Slice ≈ 2–2.5 h** |
 | Economy | Tribute/day ≈ 60 at end of Life 2 (later anchors Backlog). Lessons: Rank I 40 · II 120 · III 300 · IV 600, ×1.5 cross-Style. Bribe fair = 8 × level × (Stray 0.75 / Tough 1 / Captain 2 / Boss 4); feast 2×; from the Stash. Share a Morsel = Σ Crew levels. Shinies ≈ 50 |
-| Bond / Well-Fed | 0–10 hearts. **Well-Fed:** next day, Zoomies starts at 5% per heart (max 50%) and every Posse cat starts each fight with ¼ Paw |
+| Bond / Well-Fed | 0–10 hearts. **Well-Fed:** next day, Mikan's Special meter starts at 5% per heart (max 50%) and every Posse cat starts each fight with ¼ Paw |
 | Loss | **The day ends (v1.5):** the clock jumps to Night, the street closes, and Mikan walks home to the Routed Evening; no Well-Fed; 20% of the day's field haul is lost (none in Life 1); the Stash and Tribute are safe; the victor gets Memory, a Title and its Gloat only |
 | Difficulty | Kitten / Alley (default) / Feral. Scales enemy Nerve, damage and aggression only |
 | **Flash and motion safety** (overrides all feel values) | ≤ 3 flashes per second (WCAG 2.3.1, area > 20% of the screen); ≤ 1 full-screen impact frame per second; local impact ≤ 15% of the screen; no saturated red changing over > 5% of the screen; full-field lines Ink/Cream; every look event ≥ 2 rendered frames; stepped shake; global hit-stop ≤ 20% of any second. The default configuration must pass a Harding-style test before public footage |
@@ -491,31 +494,31 @@ The **Morning Sniff** shows the Tribute line, tonight's raid forecast (always, w
 - **World:** Hidamari Lane (5 Patches); Haru's House (garden, entryway, Main Room with piano, Haru's room); the Lot; 4 Sunspots.
 - **Rivals:** the Wall Sitters (8 seats incl. Daifuku and the First Thorn) + 2 Roamers, ≤ 12 tracked.
 - **Crew:** Mikan + 6 recruitable (the old wall cat by ≈ minute 10, a second story recruit before Life 1 ends, 1 Friend Stray, 3 Rivals), **one per personality**. Crew cap 6.
-- **Combat:** 3 Styles, 12 Moves, 3 Zoomies, 3 Fears; Tag-In, Pile-On, Daifuku in 3 phases. The 12 (Combat §3.10 names; v1.3 corrects the archived ids): Scrapper **Face Swat, Scruff Toss, Bunny-Kick, Shred** · Bruiser **Shoulder Check, Belly Flop, Puff Up, Sit On It** · Yowler **Withering Hiss, Howl, Purr, Banshee Screech**. Claw Flurry, Wall-Kick, Loaf and Big Talk are retired.
+- **Combat:** 3 Styles, 12 Moves, 3 Specials, 3 Fears; the skill bar, the Special chain and Team Pile-On, Daifuku in 3 phases on the Boss pattern (ground). The 12 (Combat §3.10 names; v1.3 corrects the archived ids): Scrapper **Face Swat, Scruff Toss, Bunny-Kick, Shred** · Bruiser **Shoulder Check, Belly Flop, Puff Up, Sit On It** · Yowler **Withering Hiss, Howl, Purr, Banshee Screech**. Claw Flurry, Wall-Kick, Loaf and Big Talk are retired.
 - **Nemesis:** the three Verdicts, the Gloat, Lick In, town events, the **Rivals board** (with relationship tags and discovery), Old Gang Nerves, Daifuku's anger, Nose-Touch join-ins.
 - **Territory:** 2 Sentry slots; **influence and the Boss window** (Daifuku's three-stop patrol; the window opens on Life 2 day 3 on the reference path); **one forecast raid every night** from the first (requested night 3, forecast in the Life 2 day 2 Sniff, fires that Night as the Caterwaul; afterwards ≤ 1 per district per night whenever an admissible target exists, Strong Patches included, worst case Scuffed); **≈ 1 challenger** (announced on Life 2 day 4); the unified Turf Board; Tribute, Lessons I–II, Bribes, Share a Morsel.
 - **Home:** 11 vignettes (7 Keystones, 3 Textures, 1 montage), the Routine layer, the daily find, the piano.
 - **Audio and lines:** ≤ 25 min music; ≤ 240 bark lines.
 - Final art and audio for this content.
 
-**Slice questions:** Is conducting four cats fun? Do players care about a Rival and about Haru within two hours? Is territory management fun at this scale? Does a day fit ≈ 25 minutes?
+**Slice questions:** Is commanding a four-cat Posse fun? Do players care about a Rival and about Haru within two hours? Is territory management fun at this scale? Does a day fit ≈ 25 minutes?
 
 **Slice tests:**
-- Two cats and a Pile-On by minute 15.
+- Two cats and a Special chain by minute 15.
 - A memory-citing Rival line before minute 60.
 - ≥ 80% can name a Rival and something specific Haru does.
 - Tier A facts reach 90% of testers with audio muted.
 - Flash test passes.
 
-**Before the slice:** the combat prototype (grey box; Mikan + 3; 3 Styles; 8 Moves; Tag-In; Pile-On; a Captain and a 3-phase Boss; personality AI for 3 personalities) and three small sims (combat, Night Shuffle, Lives 1–2 economy).
+**Before the slice:** the combat prototype (grey box; Mikan + 3; 3 Styles; 8 Moves; the skill bar; the Special chain and Team Pile-On; a Captain and a Boss on the Boss pattern; personality AI for 3 personalities) and three small sims (combat, Night Shuffle, Lives 1–2 economy).
 
 **The full game (framing only):** nine Lives, 3 districts + the Summit, 20 Patches, ≈ 50 Moves, ≈ 58 story vignettes (33 Keystones, 18 Textures, 7 montages), ≤ 700 bark lines, ≤ 75 min music, 12–15 h, sized for a small team.
 
-**Never cut:** the dual story, the nemesis memory loop, Tag-In, the Pile-On, personality.
+**Never cut:** the dual story, the nemesis memory loop, the skill bar and the Special chain with the Team Pile-On, personality.
 
 **Cut from v1.0:**
 - Districts 6 → 3 (Kurogane Yard and Kiha & Moha gone).
-- Elders, Keepsakes, Zoomies tiers, Swagger, Bap, Whack.
+- Elders, Keepsakes, Special (Zoomies) tiers, Swagger, Bap, Whack.
 - Spats, Clean Duels, Old-Timers, Lure, Sightings.
 - `rounds`, Rations, Specialisations, Skim, Clout points.
 - Waiting-up and Echo vignettes (now prop states).
@@ -562,6 +565,11 @@ The **Morning Sniff** shows the Tribute line, tonight's raid forecast (always, w
 
 ## Changelog
 
+- **Owner combat direction M1.2 (2026-11-24)** — from the owner's C11 and `design/reviews/owner-feedback/combat-m1.2-spec.md`, plus the F14 sweep (`design/reviews/owner-feedback/follow-ups.md`):
+  - **Glossary (§3):** Control (Evade on Space, Shift unused, Lane fast-walk pace), strings (Light next tick, Heavy wind-up, move-out at 60% of the animation), **Evade** replaces Dodge/Skitter and Dash, Lock-on (Tab lock/unlock, flick switch), Special any time with a stagger bonus, sequential chain, Team Pile-On damage on top, cornered cat, **Final KO**, **Boss pattern** and ground Daifuku; Boss window arena kit without wall or tub; Fraidy perk.
+  - **Numbers rule (§5.7 R3):** combat damage numerals are **On** by default (owner), reversing R3's Off.
+  - **Readability (§4.1):** yellow ally / red enemy outlines with a red enemy chevron; longer character-local hit flash; camera and cinematics lines updated.
+  - **F14 leftovers cleared:** §4.1 camera, §5.1 loop, §6 ownership and the `TagIn` event (now `SpecialChain`), §7 combat direction, §8 numeric frame, §10 scope (Tag-In / Relay / Pile-On inputs, Zoomies, Slow Blink, Daifuku off ledges).
 - **Owner combat direction M1.1 (2026-11-24)** — glossary and pillar amendment to v1.6, from the owner's C10 and `design/reviews/owner-feedback/combat-m1.1-spec.md` (final bindings: F = Special on a staggered enemy, R = skill bar, Tab = lock-on cycle):
   - **Pillar 3** renamed **Command the Brawl** (skill bar + Special chain) (§2).
   - **Glossary (§3.3, §3.5):** player controls Mikan only (new Control row); Light/Heavy strings with the L-L-L-H finisher and the responsiveness rules; Dodge · Dash (Hop and Brace leave the player's verbs); Lock-on; Hiss on the skill bar; Slow Blink becomes the **skill bar**; **Tag-In / Relay removed**; **Zoomies folded into the Special**; new Special chain, Attack tokens and **Team Pile-On** (replaces the Pile-On; Full Burst resemblance on the counsel checklist); stagger presentation on Frazzle; Old Gang Nerves cleared by a skill-bar command; Stalwart, social pairs and personality flourish rows.

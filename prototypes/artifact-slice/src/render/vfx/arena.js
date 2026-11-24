@@ -66,7 +66,12 @@ function dressFor(L, arena) {
   const b = { x: [bc[0] - br, bc[0] + br], z: [bc[1] - br, bc[1] + br] };
   const X0 = b.x[0] - 0.9, X1 = b.x[1] + 0.9, Z0 = b.z[0] - 0.9, Z1 = b.z[1] + 0.9;
   L.lane = { x0: X0 - 1.5, x1: X1 + 1.5, z0: -14, z1: 26 };
-  if (arena.id === 'wash_tub_kit') {
+  const bossWall = (arena.high_roads || []).find((h) => h.boss_wall);
+  if (!bossWall && !(arena.high_roads || []).length) {
+    // M1.2 §9: an open ground arena (Daifuku's yard, any boss): no wall, no tub; the yard is fenced like any lot
+    L.fences.push({ box: [X0, 0, Z0 - 0.08, X1, fenceH, Z0] }, { box: [X0 - 0.08, 0, Z0, X0, fenceH, Z1] }, { box: [X1, 0, Z0, X1 + 0.08, fenceH, Z1] }, { box: [X0, 0, Z1, X1, fenceH, Z1 + 0.08] });
+    L.laundry = { posts: [[-3.2, Z0 - 2.0], [2.8, Z0 - 2.0]], h: 2.35, sheets: [[0.06, 0.26, 0.7, '#FFFDF4'], [0.32, 0.52, 0.5, '#F7D9A8'], [0.58, 0.78, 0.74, '#FFFDF4'], [0.82, 0.97, 0.6, '#CFE4F2']] };
+  } else if (arena.id === 'wash_tub_kit') {
     // Daifuku's yard wall: plaster with coping, across the ring (his High Road), longer than the edge for the set.
     L.walls.push({ box: [X0, 0, -2.65, X1, wallH, -2.35], coping: 0.08, tex: 'wall' });
     L.walls.push({ box: [X0 - 0.2, 0, -9.5, X0, wallH, -2.35], coping: 0.08, tex: 'wall' });
@@ -75,7 +80,7 @@ function dressFor(L, arena) {
     L.laundry = { posts: [[-3.2, -6.2], [2.8, -6.2]], h: 2.35, sheets: [[0.06, 0.26, 0.7, '#FFFDF4'], [0.32, 0.52, 0.5, '#F7D9A8'], [0.58, 0.78, 0.74, '#FFFDF4'], [0.82, 0.97, 0.6, '#CFE4F2']] };
     L.trees[0].trunk = [-5.0, -9.5];
     L.hedges = L.hedges.filter(h => h[2] > -2 || Math.abs(h[0]) > 6);
-  } else {
+  } else if (arena.high_roads && arena.high_roads[0]) {
     const hr = arena.high_roads[0];
     const wx = hr.a[0], w = hr.width / 2;
     if (arena.id === 'gatepost') L.fences.push({ box: [wx - w, 0, hr.a[1] - 1, wx + w, hr.y, hr.b[1] + 1] });

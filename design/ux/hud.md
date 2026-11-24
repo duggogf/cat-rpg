@@ -3,6 +3,7 @@
 *Owner: ux-designer · Date: 2026-11-23, revised 2026-11-24 (owner feedback pass; consistency pass by the creative director) · Status: round-2 slice rewrite (the first draft is archived at `design/backlog/first-drafts/hud.md`)*
 *Canon: owner comments C1–C5 → `design/reviews/owner-feedback-rulings.md` (OR-xx, binding), as settled by `design/reviews/owner-feedback/consistency-pass.md` → `design/creative-brief.md` v1.6 → `design/reviews/round-1/director-rulings.md` (DR-xx). Patent guardrails: `design/legal/nemesis-patent-analysis.md` v2 §5. Where this doc and a ruling disagree, the ruling wins and this doc is wrong.*
 *Owner combat direction M1.1 (2026-11-24): `design/reviews/owner-feedback/combat-m1.1-spec.md` is binding for the combat HUD and the combat control map (player controls Mikan only; **F** = Special prompt on a staggered enemy, **R** = skill bar, **Tab** = lock-on cycle).*
+*Owner combat direction M1.2 (2026-11-24): `design/reviews/owner-feedback/combat-m1.2-spec.md` wins over M1.1 (Evade on Space with a visible cooldown, F = Special any time, Tab lock/unlock with flick switching, damage numerals On, yellow ally / red enemy outlines with an enemy chevron, longer hit flash, Final KO; Daifuku on the ground).*
 *Companions: `design/ux/key-screens.md` (Rivals board, Rival card, Verdict and loss, Turf Board, Crew, onboarding) and `design/accessibility-requirements.md` (the project-wide floor every element here must meet).*
 
 **Scope.** The slice HUD for the three contexts of Lives 1–2: **street** (exploration), **combat** and **home**, under the **third-person camera behind the cat** (brief §4.1, DR-48). It also holds the **control map** (DR-08; UX owns the map, Combat owns the actions). It does not define any system rule: every value shown here is read from the owning system.
@@ -74,7 +75,7 @@ Consequences for the HUD:
 | **Rivals chip** | TR, under the phase dial | The Rivals board icon + the cat's chip (silhouette until met) + View glyph. Pressing View opens the board on that cat's scene, focused on it (`key-screens.md` §2.9) | 4 s after a key event (discovery, Verdict, first join-in); never in combat, at home or on the walk home | UX |
 | **Roaming-Boss call** | Edge ring toward the Boss's stop | A crown pom with a yowl contour (the Boss's sting, drawn) pointing to his current patrol stop | 3 s when the Boss window opens and at each phase change while it is open (he moves stop), current district only; the persistent cue is the compass tick (§3.2) | Territory (window), Nemesis (stop) |
 | **Caterwaul flare** | TL + edge arrow | Distress-yowl pom, Patch stamp, **shrinking ring = time left** | While the raid is defendable; current district only (DR-17) | Territory |
-| **Ambush sting flare** | Edge ring, direction of the attacker | Jagged pom + a 2.0 s draining arc; the last 0.75 s turns Ink (the Dodge window) | During a Rival Ambush (DR-36) | Combat |
+| **Ambush sting flare** | Edge ring, direction of the attacker | Jagged pom + a 2.0 s draining arc; the last 0.75 s turns Ink (the Evade window) | During a Rival Ambush (DR-36) | Combat |
 | **Call glyph** | Edge ring toward the singer | Three smooth Haru-Yellow arcs drawn as the Call's contour, Ink-outlined | When the Call sounds (always on; DR-54) | Audio / Narrative |
 | **Head Home prompt** | BC (just above the cat) | Bell-gold paw on a thread + D-pad Down hold glyph | First 4 s after the Dusk Call, and while drowsy | Day loop |
 | **Interact prompt** | World-anchored at the object | North / E glyph + a verb pictogram (Spray puff, Sniff nose, Nap zZ) | In range; Spray only when the post is below Strong (DR-18) | Territory / Day loop |
@@ -188,18 +189,21 @@ Goal: under T4/T5 VFX, shake and dust, the player must always find (1) Mikan, (2
 | **Posse plates** (×4) | BL, stacked | One bean plate per cat: portrait in the cat's **colour** (Combat §3.3), Nerve bar, **2 Paw pips** (partial fill visible), a **Special meter ring** round the portrait, 1 status pom (Soggy / Cowed / Fired Up, max 1, DR-28; see §4.1.1), queued-command pom. **No control keys** (M1.1: the player controls Mikan only) | **Fixed order by slot: Mikan, Crew 1, Crew 2, Crew 3** (the skill bar's row order). Rows never reorder. Mikan's plate is always the large one (×1.3) and carries the hiss pom. Routed cat: plate halftoned, portrait flattened, ring emptied |
 | **Move highlight** | On the acting cat's plate | The plate's keyline lights in the cat's colour with the Move's icon for the Move's duration | Every Move, commanded or AI (Combat §3.3, M1.1 §7) |
 | **Hiss pom** | On Mikan's plate | Hiss-mouth icon that refills over the 8 s cooldown | Glows when a yellow telegraph is live and Hiss is ready; Hiss is fired from the skill bar (R) |
+| **Evade pom** (M1.2) | On Mikan's plate, beside the hiss pom | A paw-swish icon with a **cooldown ring** that refills over ≈ 0.8 s; a small flash on ready | Always shown in combat; a press on cooldown makes the ring wobble once (why nothing happened) |
 | **"Can act" bell** (command cue) | On each Crew plate | A small pad-bell lights when that cat can afford a Move (≥ 1 Paw) | Read as "open the skill bar (R) and command this cat"; no control key on the plate |
-| **Special meter** | Ring round each plate portrait; **Mikan's also as the BR pom** | Fills clockwise (Combat F8). At full: the ring gets a crown notch; Mikan's BR pom bursts a crown and shows the **F** glyph (from the binding) | Persists within a day; Well-Fed start shows as pre-filled segments with a small sun stamp, no status icon (DR-20). Crew meters say who will **chain** |
-| **Lock-on indicator** | World, on the locked enemy + a small lock pip on its overhead bar | A bell-gold bracket mark; absent when unlocked (the default) | Tab cycle (Combat §3.1): lock nearest / switch to a new nearest / unlock. Releases without jumping when the target is Routed or leaves the ring |
-| **Mikan's marker** | World, on Mikan | Bell over the head (replaces the chevron) + Combat's ground ring | One overhead mark per Posse cat: Crew keep the bell-gold chevron tick |
+| **Special meter** | Ring round each plate portrait; **Mikan's also as the BR pom** | Fills clockwise (Combat F8). At full: the ring gets a crown notch; Mikan's BR pom bursts a crown and shows the **F** glyph (from the binding): **F works any time it shows** (M1.2) | Persists within a day; Well-Fed start shows as pre-filled segments with a small sun stamp, no status icon (DR-20). Crew meters say who will **chain** |
+| **Lock-on indicator** | World, on the locked enemy + a small lock pip on its overhead bar | A bell-gold bracket mark; absent when unlocked (the default) | Tab locks / Tab unlocks (M1.2); while locked, a mouse flick moves the bracket to the next enemy on that side, with a small side arrow on the bracket while a flick is half-way. Releases without jumping when the target is Routed or leaves the ring |
+| **Mikan's marker** | World, on Mikan | Bell over the head (replaces the paw tick) + Combat's ground ring | One overhead mark per cat: Crew keep a **round bell-gold paw tick**; enemies carry a **red chevron** (M1.2 shape cue; see Outlines) |
+| **Outlines** (M1.2) | World, every combatant | Posse and allied guest: **yellow** (Bell-Gold) outline; enemies: **red** outline (Art §4.2) plus the red overhead **chevron**; Frazzled enemies turn Frazzle Magenta as before | Colour is never the only signal: paw tick vs chevron. Both keep the 1 px Cream rim |
+| **Hit flash** (M1.2) | World, on the hit cat | A 2-step Cream body flash, **≈ 120–150 ms**, on every cat (Mikan, Crew, enemies) | Character-local; never a screen flash; never inverts a telegraph |
 | **Move name banner** | World, over the acting cat | The Move's name on a small slanted strip in the cat's colour, ≈ 1.2 s | Every Move (Combat §3.3, M1.1 §7); max 2 on screen (newest wins; commanded Moves first); never over Mikan's ring or a telegraph |
 | **Enemy overhead bar** | World, over the enemy | Thin Nerve bar + **zigzag Frazzle bar** beneath it | Shown on the lock target, on any enemy hit in the last 3 s, and on any Frazzled enemy; otherwise hidden. Handheld: non-target bars drop first |
 | **Frazzled ring** | World, around the Frazzled (staggered) enemy | Countdown ring over the 6 s window; on Captains and the Boss, **5 pips** that drain as the window passes (earlier Special = worth more, Combat F5) | No numeral, ever. Trash shows the ring without pips (a Special always Routs below Captain) |
-| **Special prompt** | World, over the Frazzled enemy | **F** / R1 glyph (from the binding) inside a starburst pom; the Crew portraits whose meters are full sit as small faces round it (who will chain; four faces = Team Pile-On) | Appears only on a Frazzled enemy while Mikan stands with a full meter (Combat §3.6). The word "Special" shows on its first 3 showings, then the glyph only |
+| **Special prompt** | World, over the lock target (unlocked: the nearest enemy in front) | **F** / R1 glyph (from the binding) inside a starburst pom; the Crew portraits whose meters are full sit as small faces round it (who will chain; four faces = Team Pile-On); on a **Frazzled** target the pom gains a **bonus star** (stagger bonus, Combat F5) | Shows whenever Mikan stands with a full meter (M1.2: F any time). The word "Special" shows on its first 3 showings, then the glyph only |
 | **Identity ribbon** | TC | Slanted Clowder banner, name, Title, role mark (Tough 1 claw, Captain 2, Boss crown), ≤ 3 known Fear/Strength stamps, storm mark on the arc lead (*Sworn Enemy / Sworn Rival*), Old Score stamp if active, **1 status pom** (Fired Up from anger, §4.1.1). Boss: **segmented Nerve bar (3 phases)** and his **anger puffs** (0–3) beside the name | **Named Rivals, Captains and Daifuku only.** Strays and Crows get no ribbon. It is the Standoff name-card shrinking into place (one component) |
 | **Red callout** | Docked under the identity ribbon | Telegraph pictogram (zigzag) for a Captain's or Boss's red move | Never over the cat; no text |
 | **Telegraphs** | World decals + overhead glyph | White = dodge (solid ring), yellow = Hiss it (Paper Cream dashed + triangle), red = get out (Frazzle Magenta zigzag edge) | Owned by Combat/Art; render above the Team Pile-On dust |
-| **Damage numerals** | World | Size by hit tier, not magnitude. Weakness and resistance read from the **spark shape** (Art §10.3: extra crack wedge / blunted spark), not the numeral frame | Default **Off** in the slice (R3; the manga feel lives in glyphs and the single lettered word); options Off / Big hits (player-authored T3+) / All. AI basic hits never show. Multi-hits merge. Max 6 on screen |
+| **Damage numerals** | World | Size by hit tier, not magnitude. Weakness and resistance read from the **spark shape** (Art §10.3: extra crack wedge / blunted spark), not the numeral frame | **Default On** (owner M1.2: "so I know when someone's taking damage"; reverses R3's Off); options All / Big hits (player-authored T3+) / Off. Shown on every cat that takes damage, Posse included (Posse numbers in Cream with an Ink rim, enemy numbers in Cream with a red rim). Multi-hits merge. Max 8 on screen; never over Mikan's ring or a telegraph |
 | **Lettered onomatopoeia** | World-anchored | One hand-lettered word at T4 (≈ 12% height) / T5 (≈ 30%) | Max one on screen; never over Mikan or the HUD (DR-49); T5 giant word only while the HUD is hidden for the cinematic |
 | **Bark balloon** | World | Fight barks are **icon-only** (DR-44); the Old Score bark and Standoff lines are text | One at a time |
 | **Chain strip** | Above the plate stack | Up to 4 cat-face poms lighting in fire order during a Special chain; all four lit = the Team Pile-On stamp | Only during a chain (HUD otherwise hidden for the cut-ins, §4.5) |
@@ -221,13 +225,13 @@ Both reuse Combat's existing statuses and the one status pom (no new HUD element
 
 - **Arrival:** a 3 s yowl from off-screen; an **edge arrow** with the sprig icon points where it comes from; then the plate pops in above the stack and the cat leaps into the ring.
 - **The plate:** a smaller bean (×0.8) with a **dashed Bell-Gold keyline** (allied, not yours), the cat's chestnut portrait with its **truce sprig**, its name ribbon, a Nerve bar. **No Paw pips, no Special ring, no "can act" bell, no command pom:** it cannot be commanded or join the Special chain, and the plate says so by what it lacks.
-- **In the world:** a sprig tick over its head instead of the Posse chevron, and the same dashed gold keyline, so it never reads as a sage-outlined enemy (colour twin: the dashed line and the sprig shape).
+- **In the world:** a sprig tick over its head instead of the Posse paw tick, and a dashed yellow outline, so it never reads as a red-outlined, chevroned enemy (colour twin: the dashed line and the sprig shape).
 - **Skill bar:** it has no row; it shows in the world with its sprig tick only.
 - **Routed:** its plate halftones and slides off after 1.5 s.
 - **The opposing Rival:** nothing on its ribbon, outline or overhead changes (G7). No tag or line ties the two on screen in combat.
 - **Max one guest** per encounter (OR-13).
 
-**Rule of no world text (UX-2.5, as ruled; R3):** in real-time combat the only world-space text is **one bark balloon, one lettered word, Move name banners and the Special prompt's word on its first 3 showings** (Combat §3.17; M1.1 §7 restores Move names because abilities were barely visible in M1). Damage numerals are added only if the player turns them on.
+**Rule of no world text (UX-2.5, as ruled; R3):** in real-time combat the only world-space text is **one bark balloon, one lettered word, Move name banners and the Special prompt's word on its first 3 showings** (Combat §3.17; M1.1 §7 restores Move names because abilities were barely visible in M1). Damage numerals are On by default (M1.2) and may be turned off.
 
 ### 4.2 Wireframe — combat, real time (1080p)
 
@@ -239,15 +243,15 @@ Both reuse Combat's existing statuses and the one status pom (no new HUD element
 |   <(C2)  edge arrow: Crew 2 off-screen left                              |
 |                         [====----] Nerve                                 |
 |                         [/\/\/\/\/] Frazzle (zigzag)                     |
-|                           /\_/\  <- lock target, sage outline            |
+|                     \/    /\_/\  <- lock target, red outline + chevron   |
 |                          ( >.< )      + cream rim                        |
 |                                                                          |
-|          ^ chevron              (bell)                  ^ chevron        |
+|          o paw tick             (bell)                  o paw tick       |
 |         Crew 1                  /\_/\  <- Mikan         Crew 3           |
 |                                ( o.o )    ground ring                    |
 |+-----------------------+                                      .--.      |
 ||  (M)[Mikan ] ===== oo )|                                     ( F  )     |
-||   hiss(*)             |      <- BC keep-out: clear ->        '--'      |
+||   hiss(*) evade(o)    |      <- BC keep-out: clear ->        '--'      |
 ||  (1)[Crew 1] ===-- o. b|                                   Mikan's     |
 ||  (2)[Crew 2] ====- o.  |                                   Special     |
 ||  (3)[Crew 3] ===== oo b|                                                |
@@ -266,9 +270,9 @@ Both reuse Combat's existing statuses and the one status pom (no new HUD element
 |                                                                          |
 |   <(sprig) edge arrow: guest arriving from the left (3 s yowl)           |
 |                                                                          |
-|                        DAIFUKU on the wall-top kit                       |
+|                DAIFUKU on the ground (belly-flop ring decal)             |
 |                                                                          |
-|   (sprig) dashed gold keyline           (bell)          ^ chevron        |
+|   (sprig) dashed yellow outline         (bell)          o paw tick       |
 |    Togemaru, guest                      /\_/\           Hige             |
 |                                        ( o.o )                          |
 |+---------------------------+                                    .--.     |
@@ -285,10 +289,12 @@ Both reuse Combat's existing statuses and the one status pom (no new HUD element
 ### 4.3 Lock-on, the Special prompt and the chain (replaces Tag-In and switching, M1.1)
 
 There is no switching: the player controls Mikan only. The real-time cues the player needs are:
-1. **Lock-on (Tab / R3).** Fights start unlocked (free camera). The bell-gold bracket appears on the locked enemy and a lock pip on its overhead bar; pressing again moves it to a new nearest enemy or removes it (Combat §3.1). The bracket never sits over a telegraph decal.
+1. **Lock-on (Tab / R3; M1.2).** Fights start unlocked (free camera). The bell-gold bracket appears on the locked enemy and a lock pip on its overhead bar; Tab again removes it; a horizontal mouse flick while locked moves it to the next enemy on that side (Combat §3.1). The bracket never sits over a telegraph decal.
 2. **Stagger.** When an enemy is Frazzled, the stagger presentation plays (Combat §3.6: zoom, slow, shattered-glass blink; Captains, Bosses and the first stagger get the full one). The screen-anchored HUD does not hide for it; the Frazzled ring starts after it.
-3. **Special prompt (F).** If Mikan's meter is full, the **F** starburst appears over the Frazzled enemy with the faces of every Crew cat whose meter is also full. Four faces means a Team Pile-On if all land. Not full: no prompt; the BR pom shows how far.
-4. **The chain.** On F, all screen-anchored HUD hides for the cut-ins (§4.5); the chain strip lights each cat's face as its Special lands; four lit = the Team Pile-On stamp. A bonded pair fired back to back shows a heart-link between their faces (Combat §3.3).
+3. **Special prompt (F; M1.2: any time).** If Mikan's meter is full, the **F** starburst appears over the target with the faces of every Crew cat whose meter is also full; on a Frazzled target it carries the bonus star. Four faces means a Team Pile-On if all land. Not full: no prompt; the BR pom shows how far.
+4. **The chain.** On F, all screen-anchored HUD hides for the cut-ins (§4.5); the chain strip lights each cat's face as its Special lands, one after another (each after the previous animation ends); four lit = the Team Pile-On stamp. A bonded pair fired back to back shows a heart-link between their faces (Combat §3.3).
+5. **Evade.** The evade pom's ring on Mikan's plate shows the ≈ 0.8 s cooldown; a perfect Evade shows a Cream afterimage on Mikan (world) and nothing on the HUD.
+6. **Final KO.** All screen-anchored HUD hides for the cinematic (≈ 1.8 s) and returns with the tally.
 
 Teaching note: the Life 1 hint card teaches "staggered + F" on the first two prompts only; after that the prompt alone carries it (Combat §3.16).
 
@@ -332,10 +338,11 @@ Unaffordable slots stay in place, focusable, halftoned, with the reason as an ic
 | **Ambush by player** | The target's identity ribbon slams in with a Ruffled stamp (no separate corner tag). |
 | **Ambush by Rival** | Sting flare from the attacker's direction (§3.1). |
 | **Real time** | §4.1–4.3 |
-| **Stagger** | Presentation plays (≤ 0.5 s); HUD stays; the Frazzled ring and, if ready, the F prompt follow. |
+| **Stagger** | Presentation plays (≤ 0.5 s); HUD stays; the Frazzled ring follows and a ready F prompt gains its bonus star. |
+| **Final KO** (M1.2) | Authored: all screen-anchored HUD hides for the freeze and slow motion (≈ 1.8 s), then the Win row. |
 | **Skill bar** | §4.4 |
 | **Special chain / Team Pile-On / Boss phase break** | Authored cuts: **all screen-anchored HUD hides** for the cinematic (the chain strip alone shows during a chain), returns over 200 ms. |
-| **Mikan Routed** | Mikan's plate halftones with a 1.5 s flash; the skill bar still opens (the player commands the Crew); no F prompt. |
+| **Mikan Routed** | Mikan's plate halftones with a 1.5 s flash; the skill bar still opens (the player commands the Crew); no F prompt and no Evade. |
 | **Fed Up (75 s)** | Combat owns the behaviour; HUD shows nothing new. |
 | **Win** | HUD fades; Verdict prompt for the one highest-rank tracked Rival (`key-screens.md` §4); other tracked cats slip away. Then the encounter tally (BR, 2.5 s, any input dismisses): XP pips, Morsels, level-up pip. |
 | **Wipe** (a loss, OR-01) | HUD hides; the victor's **Gloat ≤ 3 s** reuses the name-card (its own line only); then the nightfall transition and the closed-street walk home (§3.6; `key-screens.md` §4.6). |
@@ -345,7 +352,7 @@ Unaffordable slots stay in place, focusable, halftoned, with the reason as an ic
 1. **The HUD does not shake.** Camera shake hits the world camera only; screen-anchored HUD is exempt. With Reduce Motion off, Mikan's plate may bump ≤ 3 px for 80 ms on a T4+ hit taken.
 2. **Hit-stop freezes the world, not the HUD.** Bars keep animating so a frozen frame still reads as responsive.
 3. **Impact frames** (and the stagger blink) never invert screen-anchored panels, the Frazzled ring, the F prompt or Mikan's marker.
-4. **Identity channels have non-colour twins:** Posse = bell-gold keyline + chevron + portrait plate; enemies = Clowder outline + emblem pip on the overhead bar; Mikan = bell + ground ring; each cat's Move colour has its Move icon as the twin.
+4. **Identity channels have non-colour twins:** Posse = **yellow** outline + round paw tick + portrait plate; enemies = **red** outline + **red chevron** + emblem pip on the overhead bar (M1.2); Mikan = bell + ground ring; each cat's Move colour has its Move icon as the twin.
 5. **Dust may hide the cats in a Team Pile-On (that is the joke), never a telegraph.**
 6. **Glyph-burst cap:** ≤ 3 bursts on screen, at most one T3+ size; one screen-wide effect at a time (brief §4.1).
 7. **Acceptance:** random-pause test, 19 of 20 testers find Mikan in < 1 s, with 6 enemies plus the Posse (the slice maximum) and T4 effects, at 1080p and at 720p (PC window; handheld check is Backlog).
@@ -358,7 +365,7 @@ Unaffordable slots stay in place, focusable, halftoned, with the reason as an ic
 | HUD screen area, real time / skill bar | ≤ 15% / ≤ 28% |
 | Move name banners in the world | 2 |
 | Centre 40%, screen-anchored | 0% |
-| Damage numerals on screen | 6 |
+| Damage numerals on screen | 8 |
 | Lettered words | 1 |
 | Panel opacity | 100% (opaque paper) |
 | Text contrast on panels | 7:1 target, 4.5:1 minimum |
@@ -467,7 +474,7 @@ Priority 1 is read first and must survive every VFX state; lower priorities hide
 | 7 | Anger rose (after a marking act) | Sneak or go loud | Puff off the Patch tag + grumble | Street |
 | 7 | A new face discovered / a key Rivals event | Look at the board later | Sniff fill ring + scent outline + tape star; Rivals chip | Street |
 | 7 | Morsels picked up | Low stakes | Pickup tick | Street |
-| 8 | Damage numerals (Off by default) | Feedback only | Size by tier; weakness/resist in the spark shape | Combat |
+| 8 | Damage numerals (On by default, M1.2) | Who is taking damage | Size by tier; weakness/resist in the spark shape | Combat |
 | — | Haru's life | Never HUD | Staging, light, music, Sense Icons | Home |
 
 ---
@@ -505,17 +512,16 @@ Everything is remappable, and every chord or hold has a one-button or toggle alt
 
 | Action | KB+M | Gamepad | Rule |
 |---|---|---|---|
-| Move | WASD | Left stick | Free third-person camera on the mouse / right stick |
-| **Light attack** | LMB | West | Strings (§3.2). Airborne or from the High Road it becomes a **Pounce** |
-| **Heavy attack** | RMB | North | Hold to charge |
-| **Dodge** (Skitter) | Space | South | Cancels recovery after the hit |
-| **Dash** | Shift | East | Dash → Light is a string starter (lunge). Dashing at a reachable High Road ledge mantles onto it |
-| **Lock-on** | Tab | R3 | **Not locked by default.** Press: lock the nearest enemy. Press again: if the nearest enemy is now a *different* enemy, lock that one; otherwise **unlock** (free camera) |
-| **Special** | **F** (prompt) | R1 (prompt) | Only on a **Frazzled (staggered)** enemy while Mikan's Special meter is full; shown as a context prompt (§3.6) |
+| Move | WASD | Left stick | Combat move speed = the Lane's fast walk; free third-person camera on the mouse / right stick |
+| **Light attack** | LMB | West | Near-instant (first active frame on the next sim tick). Strings (§3.2). Airborne or from the High Road it becomes a **Pounce** |
+| **Heavy attack** | RMB | North | Readable wind-up before the hit; hold to charge |
+| **Evade** | Space | South | ≈ 2 m with i-frames, cooldown ≈ 0.8 s (shown on the HUD). Cancels any attack at any frame; the string survives it. Evade → Light = lunge |
+| **Lock-on** | Tab | R3 | Press: lock the nearest enemy. Press again: unlock (free camera). While locked, a horizontal mouse / right-stick flick past a threshold switches to the next enemy on that side of the screen (no free yaw while locked) |
+| **Special** | **F** | R1 | Any time Mikan's Special meter is full; a **Frazzled (staggered)** target takes bonus Special damage (§3.6) |
 | **Skill bar** | **R** | R2 | Opens the skill bar (time slows). Commands Mikan's Moves **and forces Crew Moves** (§3.3) |
 | Pause | Esc / P | Menu | — |
 
-*(Section numbers in the Rule column are Combat's.)* The player controls **Mikan only**; there is no switching. Removed in M1.1: Z X C V / D-pad switching, Tag-In, Relay, the Pile-On input, Zoomies, Slow Blink on Tab / R2, shortcut Moves 1–4, Hop, Brace and Hiss buttons (Hiss and Scram are skill-bar entries; mantling is a Dash at a ledge; Combat §3.1). The gamepad column mirrors the owner's KB+M bindings and is UX's to refine after the prototype.
+*(Section numbers in the Rule column are Combat's.)* The player controls **Mikan only**; there is no switching. Removed in M1.1: Z X C V / D-pad switching, Tag-In, Relay, the Pile-On input, Zoomies, Slow Blink on Tab / R2, shortcut Moves 1–4, Hop, Brace and Hiss buttons (Hiss and Scram are skill-bar entries). Removed in M1.2: Dodge and Dash (one **Evade** on Space; **Shift and East are unused in combat**; mantling is an Evade at a ledge) and the Tab lock-on cycle (Tab locks and unlocks; a flick switches). The gamepad column mirrors the owner's KB+M bindings and is UX's to refine after the prototype.
 
 Inside the skill bar: mouse / stick picks a slot, then a target; LMB / South confirm; RMB / East back; R / R2 close. Commands **chain** while any cat can afford one. Scram (flee) is an entry on Mikan's row.
 
@@ -565,7 +571,8 @@ Cut (DR-08): Whack, Bap, Righting input, Tactics (slice), L3+R3 chord, Whisker S
 | HUD fade at the garden wall | 800 ms | 400–1200 | Pillar 2 beat; playtest the feel |
 | Phase dial size / emphasis | 48 px / 4 s | 40–64 px / 2–6 s | Setting: Always / Contextual / Off |
 | Enemy bar linger after hit | 3 s | 1–5 s | Clutter vs info |
-| Damage numerals default | **Off** | Off / Big hits / All | R3 |
+| Damage numerals default | **All** (M1.2) | All / Big hits / Off | Owner M1.2 reverses R3 |
+| Hit flash | 135 ms | 120–150 ms | M1.2; character-local |
 | Move name banner duration / max on screen | 1.2 s / 2 | 0.8–1.6 s / 1–3 | M1.1 §7 visibility vs clutter |
 | Special prompt word showings | 3 | 0–5 | Then glyph only |
 | Mikan's plate scale | ×1.3 | ×1.15–1.5 | |
@@ -594,7 +601,8 @@ Cut (DR-08): Whack, Bap, Righting input, Tactics (slice), L3+R3 chord, Whisker S
 13. With the Boss window open, ≥ 80% of testers find Daifuku's current stop within 60 s of roaming using the compass tick.
 14. On the walk home after a loss, ≥ 90% of testers reach the garden wall or start the autopilot without trying another verb more than once.
 15. String and frame audit: no HUD element states or implies that a cat changed because of what Mikan did to a different cat; the Old Boss shows no defector-targeted mark.
-16. **M1.1:** no Posse plate shows a control key; the lock-on indicator is absent at fight start and follows the Tab cycle; the F prompt appears only on a Frazzled enemy with Mikan's meter full; every `MoveUsed` produces a banner and a plate highlight (capture audit across the 12 slice Moves).
+16. **M1.1/M1.2:** no Posse plate shows a control key; the lock-on indicator is absent at fight start, Tab adds and removes it, and a flick moves it; the F prompt appears whenever Mikan's meter is full and gains the bonus star on a Frazzled target; every `MoveUsed` produces a banner and a plate highlight (capture audit across the 12 slice Moves).
+17. **M1.2 readability:** damage numerals show by default on every damaged cat; the evade cooldown ring is visible and correct; in deuteranopia and protanopia simulation ≥ 90% of testers tell allies from enemies (paw tick vs chevron); hit flash measured 120–150 ms on every cat.
 
 ---
 
@@ -616,6 +624,8 @@ Cut (DR-08): Whack, Bap, Righting input, Tactics (slice), L3+R3 chord, Whisker S
 - Random-pause test at 10 combatants (full-game stress test; the slice test runs at 6 enemies + Posse).
 
 ## Revision Log
+
+**2026-11-24, Owner combat direction M1.2 (2026-11-24)** (`design/reviews/owner-feedback/combat-m1.2-spec.md`, owner C11). §8.1 control table replaced (Evade on Space, Shift/East unused, Tab lock/unlock + flick, F any time). §4.1: Evade pom with cooldown ring; F prompt any time with a stagger bonus star; **damage numerals On** (reverses R3), on every damaged cat; **outlines yellow (allies) / red (enemies) + red enemy chevron**, Posse overhead tick becomes a round paw tick; hit flash 120–150 ms; lock-on flick. §4.2 wireframes (red outline + chevron, paw ticks, evade pom, Daifuku on the ground). §4.3 lock, prompt, sequential chain, Evade, Final KO; §4.5 Final KO row; §4.6, §4.7, §6, §9, §10 ACs 16–17.
 
 **2026-11-24, Owner combat direction M1.1 (2026-11-24)** (`design/reviews/owner-feedback/combat-m1.1-spec.md`; final bindings F = Special, R = skill bar, Tab = lock-on).
 

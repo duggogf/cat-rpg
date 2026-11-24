@@ -1,6 +1,6 @@
 // PROTOTYPE - NOT FOR PRODUCTION (Cat RPG artifact showcase slice; throwaway, see README.md)
-// Input bots for the combat smoke runs (tools/sim-run.mjs), M1.1 controls: the player drives Mikan only
-// (light, heavy, dodge, dash, Tab lock-on, R skill bar, F Special). A bot is (enc) -> InputFrame and reads only the
+// Input bots for the combat smoke runs (tools/sim-run.mjs), M1.2 controls: the player drives Mikan only
+// (light, heavy, Evade on Space with a cooldown, Tab lock-on, R skill bar, F Special at any time). A bot is (enc) -> InputFrame and reads only the
 // public snapshot plus the string table, as a player reads the screen.
 
 const d2 = (a, b) => Math.hypot(a.pos[0] - b.pos[0], a.pos[2] - b.pos[2]);
@@ -11,15 +11,20 @@ const away = (a, b) => [a.pos[0] - b.pos[0], a.pos[2] - b.pos[2]];
 export const passiveBot = () => () => ({});
 
 function dodgeIfNeeded(s, c, inp, every = 1, memo = new Map(), counter = { n: 0 }) {
+  if (!c.evade_ready) return null;
   for (const tl of s.telegraphs) {
     const aimed = tl.aimed_at === c.id;
     const inRed = tl.cls === 'red' && tl.shape.type === 'circle' && Math.hypot(c.pos[0] - tl.shape.center[0], c.pos[2] - tl.shape.center[1]) < tl.shape.radius + 0.5;
-    if (!(aimed || inRed) || tl.dur - tl.t > 0.25) continue;
+    if (!(aimed || inRed) || tl.dur - tl.t > 0.2) continue;
     if (!memo.has(tl.id)) memo.set(tl.id, (counter.n++ % every) === 0);
     if (!memo.get(tl.id)) continue;
     const att = s.entities.find(e => e.id === tl.attacker);
     const from = tl.shape.type === 'circle' ? { pos: [tl.shape.center[0], 0, tl.shape.center[1]] } : att;
-    if (from) return { ...inp, dodge: true, move: away(c, from) };
+    if (from) return { ...inp, evade: true, move: away(c, from) };
+  }
+  for (const h of s.hazards || []) { // a shockwave ring about to reach Mikan: evade through it (i-frames)
+    const d = Math.hypot(c.pos[0] - h.center[0], c.pos[2] - h.center[1]);
+    if (d > h.radius && d - h.radius <= h.speed * 0.12 + h.width / 2 + 0.35) return { ...inp, evade: true, move: [h.center[0] - c.pos[0], h.center[1] - c.pos[2]] };
   }
   return null;
 }
@@ -74,8 +79,8 @@ function planCommands(enc, s, lock) {
  * dodges telegraphs, chains Set-ups into Pay-offs from the skill bar, and fires the Special (F) on every stagger.
  * Options make it the median policy: `uptime` (share of time attacking), `dodgeEvery` (answer 1 in N telegraphs).
  */
-export function skilledBot({ commands = true, uptime = 1, dodgeEvery = 1, specials = true } = {}) {
-  let sbPhase = 0, lastCmdT = -99;
+export function skilledBot({ commands = true, uptime = 1, dodgeEvery = 1, specials = true, focus = null } = {}) {
+  let sbPhase = 0, lastCmdT = -99, readySince = null;
   const memo = new Map(), counter = { n: 0 };
   return enc => {
     const s = enc.snapshot();
@@ -84,19 +89,23 @@ export function skilledBot({ commands = true, uptime = 1, dodgeEvery = 1, specia
     const foes = s.entities.filter(e => e.side === 'enemy' && e.present && !e.routed);
     if (!c || c.routed || !foes.length) return {};
     if (sbPhase === 1) { sbPhase = 2; return { skillBar: true }; }
-    if (specials && s.special_prompt?.ready) return { special: true };
-    const lock = foes.slice().sort((a, b) => (b.staggered_s > 0) - (a.staggered_s > 0) || b.stagger - a.stagger || d2(c, a) - d2(c, b))[0];
+    // The Special at any time (M1.2): on a staggered target, when the whole crew is ready, or after holding it 4 s.
+    if (c.special_ready) readySince = readySince ?? s.fight_t; else readySince = null;
+    const crewReady = s.entities.filter(e => e.side === 'posse' && !e.routed && e.special_ready).length;
+    if (specials && s.special_prompt?.ready && (s.special_prompt.staggered || crewReady >= 4 || s.fight_t - readySince > 4)) return { special: true };
+    const lock = (focus && foes.find(e => e.id === focus)) || foes.slice().sort((a, b) => (b.staggered_s > 0) - (a.staggered_s > 0) || b.stagger - a.stagger || d2(c, a) - d2(c, b))[0];
     const inp = s.lock === lock.id ? {} : { lockId: lock.id };
     const def = dodgeIfNeeded(s, c, inp, dodgeEvery, memo, counter);
     if (def) return def;
+    if (c.counter_window_s > 0) return { ...inp, light: true }; // the perfect-evade counter
     if (commands && s.fight_t - lastCmdT > 1.5 && !c.attack) {
       const cmds = planCommands(enc, s, lock);
       if (cmds.length) { lastCmdT = s.fight_t; sbPhase = 1; return { ...inp, skillBar: true, commands: cmds }; }
     }
     const dd = d2(c, lock), sameLevel = Math.abs(c.pos[1] - lock.pos[1]) < 0.5;
     if (!sameLevel) return { ...inp, move: toward(c, lock) };
-    if (dd > 3.2 && !c.attack && c.anim !== 'dash') return { ...inp, move: toward(c, lock), dash: true };
-    if (c.anim === 'dash' && dd < 2.4) return { ...inp, light: true }; // Dash -> L lunge
+    if (dd > 3.0 && dd < 4.2 && !c.attack && c.evade_ready && c.anim !== 'evade') return { ...inp, move: toward(c, lock), evade: true };
+    if (c.anim === 'evade' && dd < 3.0) return { ...inp, light: true }; // Evade -> L lunge
     if (dd > 1.6 && !c.attack) return { ...inp, move: toward(c, lock) };
     const cyc = enc.k.string_cycle_s / uptime;
     if (uptime < 1 && (s.fight_t % cyc) > enc.k.string_cycle_s && !c.attack) return { ...inp, aim: toward(c, lock) };
@@ -107,49 +116,8 @@ export function skilledBot({ commands = true, uptime = 1, dodgeEvery = 1, specia
 /** Combat F9's median policy: 65% attack uptime, half the telegraphs answered. */
 export const medianBot = () => skilledBot({ uptime: 0.65, dodgeEvery: 2 });
 
-/**
- * Scripted Daifuku bot (Mikan only): dash into the wall below him to mantle, L-L-L-H him off (the heavy finisher
- * knocks back), force Hige's Shoulder Check from the skill bar when Hige is up there, fight him on the ground, and
- * fire the Special on every stagger.
- */
-export function daifukuBot() {
-  let sbPhase = 0, lastCmdT = -99;
-  const memo = new Map(), counter = { n: 0 };
-  return enc => {
-    const s = enc.snapshot();
-    if (s.mode !== 'fight') return {};
-    const c = s.entities.find(e => e.controlled);
-    const b = s.entities.find(e => e.id === 'daifuku');
-    if (!c || c.routed || !b || !b.present) return {};
-    if (sbPhase === 1) { sbPhase = 2; return { skillBar: true }; }
-    if (s.special_prompt?.ready) return { special: true };
-    const inp = s.lock === b.id ? {} : { lockId: b.id };
-    const def = dodgeIfNeeded(s, c, inp, 1, memo, counter);
-    if (def) return def;
-    const onWall = b.boss.state === 'wall' && b.on_high_road;
-    const hige = s.entities.find(e => e.id === 'hige' && !e.routed), mikanE = c;
-    if (s.fight_t - lastCmdT > 1.5 && !c.attack) {
-      const cmds = [];
-      if (onWall && hige && hige.on_high_road && hige.paws - hige.paws_reserved >= 1 && Math.hypot(hige.pos[0] - b.pos[0], hige.pos[2] - b.pos[2]) < 4) cmds.push({ cat: 'hige', move: 'shoulder_check', target: b.id });
-      if (!onWall && b.pos[1] < 0.5 && mikanE.paws - mikanE.paws_reserved >= 1) {
-        if (b.status?.kind === 'soggy') cmds.push({ cat: 'mikan', move: 'bunny_kick', target: b.id });
-        else if (b.ruffled_s <= 0 && b.staggered_s <= 0) cmds.push({ cat: 'mikan', move: 'face_swat', target: b.id });
-      }
-      if (cmds.length) { lastCmdT = s.fight_t; sbPhase = 1; return { ...inp, skillBar: true, commands: cmds }; }
-    }
-    if (onWall && !c.on_high_road) {
-      if (c.anim === 'mantle') return inp;
-      const hr = s.arena.high_roads.find(h => h.boss_wall);
-      const foot = [b.pos[0], hr.a[1] + hr.drop_side[1] * 0.6];
-      const fromWall = Math.abs(c.pos[2] - hr.a[1]);
-      if (fromWall <= 0.85 && Math.abs(c.pos[0] - b.pos[0]) <= 1.5) return { ...inp, dash: true, move: [-hr.drop_side[0], -hr.drop_side[1]] };
-      return { ...inp, move: [foot[0] - c.pos[0], foot[1] - c.pos[2]] };
-    }
-    if (!onWall && c.on_high_road && !c.attack) return { ...inp, dash: true, move: [0, 1] };
-    if (d2(c, b) > 1.7 && !c.attack) return { ...inp, move: toward(c, b) };
-    return stringPress(enc, c, inp, b);
-  };
-}
+/** Scripted Daifuku bot (M1.2: he fights on the ground): the skilled policy focused on him, evading the slam and its ring. */
+export const daifukuBot = () => skilledBot({ focus: 'daifuku' });
 
 /** Wrap a bot so that a list of skill-bar commands in its frame is sent one per tick. */
 export function withCommandQueue(bot) {

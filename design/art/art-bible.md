@@ -124,7 +124,7 @@ The cat is large on screen (≈ 10–20% of screen height in exploration, DR-48)
 - **Style** owns the *body mesh weighting, combat stance and attack animation* (Bruiser plants wide and low; Scrapper bounces on its toes; Yowler stands chest-out, head high).
 - **Personality** owns *tail carriage, ear set, idle, walk, bark poses and the Pile-On flourish*.
 - **History** owns *Scars and regalia*.
-- **Clowder** owns the *outline colour* in combat.
+- **Side** owns the *outline colour* in combat (owner M1.2): allies **yellow** (Bell-Gold), enemies **red** (Rival Vermilion) with a red overhead chevron. **Clowder** colour moves to emblems, name-cards and the Rivals board.
 
 So a Braggart Yowler and a Fraidy Yowler fight from the same stance but walk, idle and hold their tails completely differently.
 
@@ -226,9 +226,10 @@ Shape always backs colour. Fixes from AB-7 and DR-51 are marked ✱.
 
 | Meaning | Colour | Hex | Shape backup |
 |---|---|---|---|
-| Posse / Bell Clowder | Bell-Gold keyline + 1 px Paper Cream rim ✱ | `#F2B01E` | Overhead **chevron** tick on allies; the **controlled cat** carries the **bell** tick (HUD §4.1 priority 1) |
-| Wall Sitters (enemy) | Sage outline + 1 px Paper Cream rim ✱ | `#A8C878` | Brick-block emblem on name-card and Fence Line |
-| Stray (untracked) | Ink outline + Cream rim | `#33273B` | No emblem |
+| Allies in combat: Posse / Bell Clowder, allied guests (M1.2) | **Yellow**: Bell-Gold outline + 1 px Paper Cream rim ✱ (a guest's is dashed) | `#F2B01E` | Round overhead **paw** tick on Crew; **Mikan** carries the **bell** tick (HUD §4.1 priority 1); a guest carries the truce sprig |
+| **Enemies in combat** (every Clowder, Strays, crows; M1.2) | **Red**: **Rival Vermilion** outline + 1 px Paper Cream rim | `#E04A2C` (proposed; must pass the separation check below against Mikan Ginger, Collar Crimson, Frazzle Magenta and Koharu's coral) | Red overhead **chevron** (point down), so colour is never the only signal. A Frazzled enemy's outline turns Frazzle Magenta |
+| Wall Sitters (Clowder identity) | Sage | `#A8C878` | Brick-block emblem on name-card, ribbon and Rivals board; Sage scent wisps. No longer the combat outline (M1.2) |
+| Stray (untracked) | Ink emblem-free | `#33273B` | No emblem (combat outline is the enemy red) |
 | Nerve | Nerve Green ✱ | `#5CC46B` | Bar length. Below 25% the fill becomes Ink-hatched Paper Cream and wobbles (the coral low state is removed: coral is Koharu's) |
 | Paws | Pad Pink | `#F6809A` | Paw-pad segments; a full pad pops and gains a highlight dot |
 | Frazzle gauge | Static Yellow | `#FFE14A` | Zigzag-edged bar |
@@ -253,7 +254,7 @@ Shape always backs colour. Fixes from AB-7 and DR-51 are marked ✱.
 
 Frazzle Magenta's linear red ratio is 0.77, under the 0.8 saturated-red threshold, so a telegraph appearing is not a red flash. Collar Crimson (0.88) never changes over more than 5% of the screen; in practice it is only ever the collar and small UI accents.
 
-**Outline order on every combatant**, inside to outside: Aubergine Ink silhouette line (L-3) → keyline or Clowder outline (2 px at 1080p) → **1 px Paper Cream rim**. Contrast against the ground comes from cream against ground, not hue against ground, so the Posse keyline survives warm lamp pools (it was 1.08:1 against lamp glow before the rim).
+**Outline order on every combatant**, inside to outside: Aubergine Ink silhouette line (L-3) → side outline, yellow or red (2 px at 1080p; M1.2) → **1 px Paper Cream rim**. Contrast against the ground comes from cream against ground, not hue against ground, so the Posse keyline survives warm lamp pools (it was 1.08:1 against lamp glow before the rim).
 
 ### 4.4 Hidamari Lane palette and phase keys
 
@@ -270,7 +271,7 @@ Frazzle Magenta's linear red ratio is 0.77, under the 0.8 saturated-red threshol
 | Glow | Laundry white | `#FFFDF4` |
 | Night glow | Lamp | `#FFD98A` |
 
-**Clowder separation rule (automated):** no Clowder outline colour may lie within ΔE2000 15 of any swatch in its own district palette, under normal vision and under protan, deutan and tritan simulation. Sage against Garden Green and against the lane ground are the pairs to watch. If either fails in the look-dev capture, the **swatch** moves; the Clowder colour is canon (DR-51).
+**Separation rule (automated):** neither side outline colour (Bell-Gold, Rival Vermilion) nor any Clowder colour may lie within ΔE2000 15 of any swatch in its district palette or of each other (and Rival Vermilion not within 15 of Mikan Ginger, Collar Crimson, Frazzle Magenta or Koharu Coral), under normal vision and under protan, deutan and tritan simulation. Sage against Garden Green and against the lane ground are the pairs to watch. If either fails in the look-dev capture, the **swatch** moves; the Clowder colour is canon (DR-51).
 
 **Phase keys** (town-wide, biased by the Lane palette):
 
@@ -322,7 +323,7 @@ The UI never uses the household hues at full saturation, and never painted textu
 
 | Risk pair | Backup |
 |---|---|
-| Posse keyline vs. Sage outline | Gold has the overhead chevron tick (bell on the controlled cat); enemies carry the Frazzle gauge; outline widths differ in greyscale (gold keyline 2 px, Sage outline 2.5 px) |
+| Ally yellow vs. enemy red (M1.2) | Allies carry the round paw tick (bell on Mikan), enemies the down-pointing red chevron and the Frazzle gauge; outline widths differ in greyscale (yellow 2 px, red 2.5 px); acceptance: ≥ 90% of testers tell sides apart under deutan and protan simulation |
 | Bell-Gold vs. Static Yellow vs. Haru Yellow | Context: gold is street and keyline, Static Yellow is gauge only, Haru Yellow is home only. Shapes differ (tick, zigzag bar, cloth) |
 | Claw vs. Summer Sky | Claw arcs always carry an Ink keystroke on their outer edge |
 | Yowl Lilac vs. Shadow Wisteria | Lilac is lighter by ≈ 25 L* and is always a wavy arc |
@@ -356,14 +357,14 @@ A ginger-and-white Japanese bobtail: white body `#FFF8EC`, ginger cap over both 
 
 ### 5.3 Telling cats apart at a glance
 
-| Who | Exploration (cat 10–20% of screen height) | Combat (camera at 6–8 m) |
+| Who | Exploration (cat 10–20% of screen height) | Combat (camera ≈ 3.8 m behind Mikan; M1.2 outlines) |
 |---|---|---|
-| Controlled cat | Centre of frame | Bell-Gold keyline + tick; never covered by effects |
-| Other Posse cats | Gold cord at the tail base | Bell-Gold keyline + tick; edge arrows when off screen (UX) |
-| Wall Sitters | Sage-tinted scent wisps at their posts; posture | Sage outline + Cream rim; Frazzle gauge; Captains ×1.15 with regalia |
+| Mikan | Centre of frame | Yellow outline + bell tick; never covered by effects |
+| Other Posse cats | Gold cord at the tail base | Yellow outline + paw tick; edge arrows when off screen (UX) |
+| Wall Sitters | Sage-tinted scent wisps at their posts; posture | Red outline + Cream rim + red chevron; Sage emblem on the ribbon; Frazzle gauge; Captains ×1.15 with regalia |
 | Nemesis / arc lead | Storm-mark glyph above the head in Standoff and on the Fence Line | Same outline; a storm-mark stamp on its Frazzle gauge (UX) |
-| Strays | Ink outline only, no emblem | Ink outline + Cream rim |
-| Crows (Critters) | Inked cel birds, glossy blue-black `#2B2F4A` with Reverse Ink line | Ink outline; no Clowder colour |
+| Strays | Ink outline only, no emblem | Red outline + Cream rim + chevron |
+| Crows (Critters) | Inked cel birds, glossy blue-black `#2B2F4A` with Reverse Ink line | Red outline + chevron; no Clowder colour |
 
 **Combat size floor (art requirement to the camera doc):** in the default combat framing, a Tough is ≥ 6% of screen height (≈ 65 px at 1080p). The silhouette tests run at that size, moving, at 60 fps, with T2 effects on screen. Crowd-fight readability below that size is Backlog (DR-48).
 
@@ -519,7 +520,7 @@ The user's direction is **rounded, cream-and-brown, bubbly**. We take the refere
 
 - **UI and cat speech:** one rounded sans family with full CJK coverage (candidate: M PLUS Rounded 1c, OFL), two weights. Ink on Cream for body text.
 - **Hierarchy at 1080p:** headers 44 px bold; body 32 px; **floor 28 px** (UX-X14; 18 px at 720p for the later handheld check). Barks ≤ 60 characters in 32 px.
-- **Numbers** (round-2 R3; brief v1.3): *numbers count what the cat owns or pays; they never measure a feeling, a relationship or a human.* Allowed: Morsels, Shinies, Tribute, the Stash, prices, Crew levels and XP pips (Lot tabs, Turf Board, Verdict Bribe row, Pause, the Doorstep Tribute card, the street pickup tick and encounter tally). Territory numbers only on the Turf Board. Never: Grudge, Regard, Loyalty, Rival levels, anything inside the house except the Doorstep card, anything in the world (Scribble). Combat damage numerals are **Off by default** (UX option); weakness and resistance read from the spark shape (§10.3).
+- **Numbers** (round-2 R3; brief v1.3): *numbers count what the cat owns or pays; they never measure a feeling, a relationship or a human.* Allowed: Morsels, Shinies, Tribute, the Stash, prices, Crew levels and XP pips (Lot tabs, Turf Board, Verdict Bribe row, Pause, the Doorstep Tribute card, the street pickup tick and encounter tally). Territory numbers only on the Turf Board. Never: Grudge, Regard, Loyalty, Rival levels, anything inside the house except the Doorstep card, anything in the world (Scribble). Combat damage numerals are **On by default** (owner M1.2; UX option All / Big hits / Off); weakness and resistance read from the spark shape (§10.3).
 - **Combat onomatopoeia is not a font** (§10.7).
 
 ### 7.5 Iconography and UI motion
@@ -651,7 +652,7 @@ Combat owns the tier table and every number in it: hit-stop, shake, impact frame
 | **Yowl** (Yowler) | Two wavy arcs | **Sound arcs:** concentric wavy crescents travelling out in a cone, small spiral glyphs riding them | Yowl Lilac `#B9A0FF`, Cream core, Ink edge | Rhythmic: 2–3 pulses |
 | Heal / purr | A small heart | Soft rings rising with hearts | Purr Rose `#FFB3C1` | Slow; the only gentle effect |
 
-**Weakness and resistance twins (R3; numerals default Off):** a **weakness** hit adds one extra Ink **crack wedge** breaking out of the type spark; a **resisted** hit draws a **blunted spark** at 70% size with rounded tips. Shape-only, so it reads in greyscale and with damage numerals Off (HUD §4.1, Accessibility §2).
+**Weakness and resistance twins (R3; numerals default On since M1.2):** a **weakness** hit adds one extra Ink **crack wedge** breaking out of the type spark; a **resisted** hit draws a **blunted spark** at 70% size with rounded tips. Shape-only, so it reads in greyscale and when a player turns damage numerals Off (HUD §4.1, Accessibility §2).
 
 **Slash-arc rules:** the arc follows the actual paw path (authored per string hit, not a generic sprite), so a 3-hit Scrapper string reads as three different arcs (low right, high left, and a full-circle flurry finisher). The arc sits in world space, camera-facing, thickness ≥ 4 px at the combat framing. On the finisher the arc thickens and a second, offset arc in Ink trails one drawing behind.
 
@@ -777,6 +778,10 @@ Per §4.3: white (solid, chevrons), yellow (Cream dashed, triangle), red (Magent
 ---
 
 ## Revision Log
+
+### 2026-11-24: Owner combat direction M1.2 (2026-11-24)
+
+Source: owner C11 via `design/reviews/owner-feedback/combat-m1.2-spec.md` §5 (game designer, outline-colour and damage-number rules only). **Outlines:** side, not Clowder, owns the combat outline: allies yellow (Bell-Gold), enemies red (**Rival Vermilion** `#E04A2C`, proposed; the art director confirms it with the automated separation check) plus a red overhead chevron as the shape cue; the Posse tick becomes a round paw tick so the two shapes differ (§3.2, §4.3, §4.8, §5.3, outline order and separation rule). **Damage numerals:** On by default (§7.4 numbers rule, §10.3 twins note). Not touched: the Den/Daifuku wall and bucket mentions in §6.2 and §8.5 (Daifuku now fights on the ground; art follow-up).
 
 ### 2026-11-24: Iteration 3b — user decisions
 

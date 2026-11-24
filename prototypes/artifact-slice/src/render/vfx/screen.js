@@ -79,6 +79,15 @@ export class ScreenFX {
   }
   add(o) { this.fx.push({ t: -(o.delay || 0), ...o }); }
 
+  /** Damage number (M1.2 §5, on by default): a merged count per target, popping at 120% for one drawing and rising.
+   * Out-going (to enemies) = Cream on an Ink outline; in-coming (to the Posse) = Ink on a Cream outline. Max 6. */
+  damage(f, n, dir, t, big) {
+    const prev = this.fx.find((x) => x.kind === 'dmg' && x.f === f && x.t < 0.35);   // hits on one cat within 0.35 s merge into one count
+    if (prev) { prev.n += n; prev.t = 0; prev.big = prev.big || big; return; }
+    const live = this.fx.filter((x) => x.kind === 'dmg'); if (live.length >= 6) live[0].t = live[0].dur;
+    this.fx.push({ kind: 'dmg', f, n, dir, big, t: 0, dur: 0.8, jx: ((n * 37) % 5 - 2) * 3 });
+  }
+
   /** The one lettered word (DR-49). o: {cls, ms, tier, hitType, at (world V3), seed} */
   letter(o) { const L = WORDS[o.cls] || WORDS.scratch; this.word = { t: 0, ...o, text: o.text || L[(o.seed || 0) % L.length] }; }
 
@@ -139,6 +148,25 @@ export class ScreenFX {
         // wedge-ended band (Standoff name-card / outcome) slamming in: one drawing at 115%, then settled
         const sc = k < 0.06 ? 1.15 : 1, y = f.y * h;
         s += `<g transform="translate(${r1(w / 2)} ${r1(y)}) scale(${sc})">${f.lines ? radialLines(0, 0, 0, 0, 0, 1, C.ink, 0) : ''}<path d="M${-f.bw / 2} -46H${f.bw / 2}L${f.bw / 2 - 40} 46H${-f.bw / 2}Z" fill="${f.fill || C.ink}"/><text x="0" y="16" text-anchor="middle" font-family="'M PLUS Rounded 1c',sans-serif" font-weight="800" font-size="46" fill="${f.ink || C.cream}">${f.text}</text></g>`;
+      } else if (f.kind === 'perfect') {
+        // perfect evade: a thin Cream clock ring with ticks around Mikan, two drawings out (no fill, no flash)
+        const p = ctx.project(f.at); const R = Math.min(w, h) * (0.12 + 0.08 * Math.min(1, f.t / 0.2));
+        let d = ''; for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2; d += `M${r1(p.x + Math.cos(a) * R * 0.86)} ${r1(p.y + Math.sin(a) * R * 0.86)}L${r1(p.x + Math.cos(a) * R)} ${r1(p.y + Math.sin(a) * R)}`; }
+        s += `<circle cx="${r1(p.x)}" cy="${r1(p.y)}" r="${r1(R)}" fill="none" stroke="${C.ink}" stroke-width="7"/><circle cx="${r1(p.x)}" cy="${r1(p.y)}" r="${r1(R)}" fill="none" stroke="${C.cream}" stroke-width="3.5"/><path d="${d}" stroke="${C.ink}" stroke-width="4" stroke-linecap="round"/>`;
+      } else if (f.kind === 'ko') {
+        // final KO: the giant K.O.! (T5 size) with its offset print, popping at 120% for one drawing
+        if (!f.svg) f.svg = lettering({ text: 'K.O.!', size: h * 0.26, rot: 0, color: '#E2453F', seed: 9, grow: 1.25 });
+        const sc = Math.floor(f.t / TWO) === 0 ? 1.2 : 1;
+        s += `<g transform="translate(${r1(w * 0.5)} ${r1(h * 0.42)}) scale(${sc}) rotate(-8)">${f.svg.svg}</g>`;
+      } else if (f.kind === 'dmg') {
+        const p = ctx.project(f.f.head); if (!p.on) continue;
+        const k2 = Math.floor(f.t / TWO), sc = k2 === 0 ? 1.2 : 1, fs = h * (f.big ? 0.05 : 0.036);
+        // older numbers on the same cat sit higher, so a burst reads as a short column, never an overprint
+        const older = this.fx.filter((x) => x.kind === 'dmg' && x.f === f && x.t > f.t).length;
+        const y = p.y - h * 0.135 - Math.min(1, f.t / 0.5) * h * 0.035 - older * fs * 1.05;
+        const fill = f.dir === 'heal' ? C.purr : f.dir === 'out' ? C.cream : C.ink, line = f.dir === 'out' || f.dir === 'heal' ? C.ink : C.cream;
+        const op = f.t > f.dur - 0.12 ? 0.55 : 1;   // the last drawing thins (halftone-ish), never an alpha fade-out ramp
+        s += `<text x="${r1(p.x + f.jx)}" y="${r1(y)}" text-anchor="middle" transform="scale(1)" font-family="'Dela Gothic One','M PLUS Rounded 1c',sans-serif" font-size="${r1(fs * sc)}" fill="${fill}" stroke="${line}" stroke-width="${r1(fs * 0.16)}" paint-order="stroke" stroke-linejoin="round" opacity="${op}">${f.dir === 'heal' ? '+' : ''}${f.n}</text>`;
       } else if (f.kind === 'banner') {
         // ability name banner (M1.1 §7): a ribbon in the caster's colour over its head, pops in at 115% for one drawing
         const p = ctx.project(f.at); if (!p.on) continue;

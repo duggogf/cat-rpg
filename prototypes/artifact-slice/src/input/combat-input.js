@@ -1,10 +1,11 @@
 // PROTOTYPE - NOT FOR PRODUCTION (Cat RPG artifact showcase slice; throwaway, see README.md)
 // Combat action map, M1.1 (owner direction 2026-11-24, design/reviews/owner-feedback/combat-m1.1-spec.md §1).
 // The player controls MIKAN ONLY (no switching, no Tag-In). Desktop: keyboard + mouse, gamepad mirrors it.
-//   KB+M: WASD move · mouse = free third-person camera (click captures the pointer; drag also works) ·
-//         LMB light · RMB heavy (hold to charge) · Space dodge · Shift dash · Tab lock-on cycle ·
+//   KB+M (M1.2): WASD move · mouse = free third-person camera (click captures the pointer; drag also works) ·
+//         LMB light · RMB heavy (hold to charge) · Space evade (cancels anything; cooldown) · Tab lock / unlock
+//         (a horizontal mouse flick while locked picks the next enemy on that side) ·
 //         F Special (prompt, only on a staggered enemy) · R skill bar (time slows) · Esc / P pause
-//   Pad:  LS move · RS camera · West light · North heavy (hold) · East dodge · R1 dash · R3 lock-on cycle ·
+//   Pad:  LS move · RS camera (flick while locked) · West light · North heavy (hold) · East evade · R3 lock / unlock ·
 //         South Special · R2 skill bar · Menu pause
 // Inside the skill bar: W/S (stick) rows · Q/E (L1/R1) cat · Space/Enter/LMB (South) confirm ·
 //   Esc/Backspace (East) back · R (R2) close.
@@ -51,7 +52,7 @@ export class CombatInput {
         if (m) { this.menu.push(m); return; }
       }
       if (e.code === 'KeyP' || e.code === 'Escape') { this.menu.push('pause'); return; }
-      const a = { Space: 'dodge', ShiftLeft: 'dash', ShiftRight: 'dash', Tab: 'lock', KeyF: 'special', KeyR: 'skillBar', KeyJ: 'light', KeyK: 'heavy' }[e.code];
+      const a = { Space: 'evade', Tab: 'lock', KeyF: 'special', KeyR: 'skillBar', KeyJ: 'light', KeyK: 'heavy' }[e.code];   // M1.2: Space = Evade; Shift unused in combat
       if (a) this.press(a);
     });
     addEventListener('keyup', (e) => this.keys.delete(e.code));
@@ -77,7 +78,7 @@ export class CombatInput {
       if (edge(4)) this.menu.push('prevCat'); if (edge(5)) this.menu.push('nextCat');
       if (edge(0)) this.menu.push('confirm'); if (edge(1)) this.menu.push('back'); if (edge(7)) this.menu.push('close');
     } else {
-      if (edge(2)) this.press('light'); if (edge(3)) this.press('heavy'); if (edge(1)) this.press('dodge'); if (edge(5)) this.press('dash');
+      if (edge(2)) this.press('light'); if (edge(3)) this.press('heavy'); if (edge(1)) this.press('evade');
       if (edge(0)) this.press('special'); if (edge(7)) this.press('skillBar'); if (edge(11)) this.press('lock'); if (edge(9)) this.menu.push('pause');
     }
     this.padLook = [dz(ax[2] || 0), dz(ax[3] || 0)];

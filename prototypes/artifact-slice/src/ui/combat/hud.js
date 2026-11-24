@@ -18,7 +18,7 @@ import { styleOf } from '../../render/vfx/cinematics.js';
 const C = Kit.C;
 const DPAD = ['n', 'w', 's', 'e'], KEYS = ['Z', 'X', 'C', 'V'];
 const kc = (k, big) => `<span class="ch-kc${big ? ' big' : ''}">${k}</span>`;
-const TITLES = { daifuku: ['DAIFUKU', 'Boss of the Wall'], captain: ['CAPTAIN', 'of the Wall Sitters'], challenger: ['THE CHALLENGER', 'at the Gatepost'] };
+const TITLES = { daifuku: ['DAIFUKU', 'Boss of Hidamari Lane'], captain: ['CAPTAIN', 'of the Wall Sitters'], challenger: ['THE CHALLENGER', 'at the Gatepost'] };
 
 const CSS = `
 .ch { position:absolute; inset:0; pointer-events:none; font-family:var(--font); color:var(--ink); z-index:3; }
@@ -111,6 +111,10 @@ const CSS = `
 .ch-kc { display:inline-flex; align-items:center; justify-content:center; min-width:40px; height:40px; padding:0 8px; border-radius:10px 12px 11px 13px; background:var(--cream); border:3px solid var(--cocoa); box-shadow:0 3px 0 var(--cocoa); font:800 24px/1 var(--font); color:var(--cocoa); box-sizing:border-box; }
 .ch-kc.big { min-width:52px; height:52px; font-size:30px; border-radius:14px 16px 15px 17px; }
 .ch-plate .glyph .ch-kc { width:52px; height:52px; font-size:30px; }
+.ch-evade { position:absolute; right:-30px; top:-24px; width:56px; height:56px; border-radius:50%; background:var(--recessed); border:4px solid var(--cocoa); display:flex; align-items:center; justify-content:center; box-shadow:var(--drop); }
+.ch-evade.ready { background:var(--cream); border-color:var(--ink); }
+.ch-evade .ring { position:absolute; inset:-5px; border-radius:50%; background:conic-gradient(var(--gold) var(--a,360deg), transparent 0); -webkit-mask: radial-gradient(circle, transparent 27px, #000 28px); mask: radial-gradient(circle, transparent 27px, #000 28px); }
+.ch-evade .kc { position:absolute; right:-26px; bottom:-16px; }
 .ch-hiss .kc { position:absolute; right:-14px; bottom:-14px; }
 .ch-bark { padding:8px 14px 6px; border-radius:26px 30px 28px 32px; }
 .ch-bark::before, .ch-bark::after { left:30px; }
@@ -272,8 +276,16 @@ export class CombatHUD {
       if (e.orders && e.orders.length) poms += `<div class="ch-pom gold">${svgIcon.queued}</div>`;
       if (!ctl && !e.routed && e.paws - (e.paws_reserved || 0) >= 1) poms += `<div class="ch-pom gold" style="width:34px;height:34px">${svgIcon.bell.replace('width="34" height="36"', 'width="24" height="26"')}</div>`;
       const pe = p.querySelector('.poms'); if (pe._h !== poms) { pe.innerHTML = poms; pe._h = poms; }
-      let hs = p.querySelector('.ch-hiss');
+      // evade cooldown (M1.2 §2): a pom on the controlled plate draining over the cooldown, with the Space key
+      let ev = p.querySelector('.ch-evade');
       if (ctl && !e.routed) {
+        if (!ev) { ev = document.createElement('div'); ev.className = 'ch-evade'; ev.innerHTML = `<div class="ring"></div><svg viewBox="-20 -20 40 40" width="30" height="30"><path d="M-14 6Q-2 -14 14 -6" fill="none" stroke="${C.ink}" stroke-width="4" stroke-linecap="round"/><path d="M8 -12L15 -5L6 0" fill="none" stroke="${C.ink}" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/></svg><span class="kc"></span>`; p.appendChild(ev); }
+        const cd = e.evade_cd_s ?? e.evade_cd ?? 0, mx = (this.D.k.evade && this.D.k.evade.cooldown_s) || this.D.k.evade_cooldown_s || 0.8;
+        ev.querySelector('.ring').style.setProperty('--a', Math.round(360 * (1 - Math.min(1, cd / mx))) + 'deg'); ev.classList.toggle('ready', cd <= 0);
+        const kk = ev.querySelector('.kc'), want = this.device === 'pad' ? Kit.ui.faceButtons({ size: 30, lit: 'e' }) : kc('Space'); if (kk._h !== want) { kk.innerHTML = want; kk._h = want; }
+      } else if (ev) ev.remove();
+      let hs = p.querySelector('.ch-hiss');
+      if (false) {
         if (!hs) { hs = document.createElement('div'); hs.className = 'ch-hiss'; hs.innerHTML = `<div class="ring"></div>${svgIcon.hiss}<span class="kc"></span>`; p.appendChild(hs); }
         const a = e.hiss_cd_s > 0 ? Math.round(360 * (1 - e.hiss_cd_s / 8)) : 360;
         hs.querySelector('.ring').style.setProperty('--a', a + 'deg');
@@ -337,6 +349,12 @@ export class CombatHUD {
         }
       }
       // overhead ticks: the controlled cat's bell, Posse chevrons, the guest's sprig
+      // enemies: a small red downward wedge over the head (a shape cue, so red is not the only signal)
+      if (!e.routed && e.side === 'enemy' && e.id !== ctx.quietId) {
+        const el = this.wEl('etick:' + e.id, 'ch-tick', `<svg viewBox="-20 -14 40 28" width="34" height="24"><path d="M-12 -9H12L0 9Z" fill="#E2453F" stroke="${C.ink}" stroke-width="4" stroke-linejoin="round"/></svg>`);
+        el.style.transform = `translate(-50%,-100%) scale(${sc})`;
+        this.place(el, head, (e.id === s.lock || (t - (this.lastHit.get(e.id) || -9) < 3) || e.frazzled_s > 0 ? -62 : -8) * sc);
+      }
       if (!e.routed && e.side !== 'enemy') {
         const icon = e.controlled ? svgIcon.bell : e.side === 'guest' ? svgIcon.sprig : svgIcon.chevron;
         const el = this.wEl('tick:' + e.id, 'ch-tick', icon);
@@ -354,7 +372,8 @@ export class CombatHUD {
       const f = fighters.get(ctx.specialTarget);
       if (f) {
         const k2 = Math.floor(t * 15) % 2 ? 1.06 : 1;
-        const el = this.wEl('special', 'ch-spec', `${this.device === 'pad' ? Kit.ui.faceButtons({ size: 46, lit: 's' }) : kc('F', true)}${STAR.replace('width="34" height="34"', 'width="40" height="40"')}SPECIAL`);
+        const bonus = s.special_prompt && s.special_prompt.staggered;
+        const el = this.wEl('special', 'ch-spec', `${this.device === 'pad' ? Kit.ui.faceButtons({ size: 46, lit: 's' }) : kc('F', true)}${STAR.replace('width="34" height="34"', 'width="40" height="40"')}SPECIAL${bonus ? '<span style="font-size:22px;color:var(--gold);margin-left:6px">×1.3 STAGGER</span>' : ''}`);
         el.style.transform = `translate(-50%,-100%) scale(${(sc * k2).toFixed(3)})`;
         const p = ctx.project(f.head); this.place(el, p, -112 * sc);
       }
@@ -457,7 +476,7 @@ export class CombatHUD {
 
   /** A cat (AI or commanded) just used a Move: its plate shows the Move's pom for 1.4 s, so the player sees who did what. */
   moveUsed(id, move, t) {
-    const mv = this.D.moves[move] || {}; this.moveTag = this.moveTag || new Map();
+    const mv = (move && this.D.moves[move]) || {}; this.moveTag = this.moveTag || new Map();
     const icon = svgIcon[mv.creates ? STATE_ICON[mv.creates] : mv.type === 'thump' ? 'splat' : mv.type === 'yowl' ? 'cowed' : 'ruffled'] || svgIcon.ruffled;
     this.moveTag.set(id, { icon: mv.target === 'ally' ? BARK_ICON.heart : icon, until: t + 1.4, col: styleOf(this.catOf ? this.catOf(id) : id).col }); this.flash.set(id, t + 0.12);
   }

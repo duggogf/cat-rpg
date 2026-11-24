@@ -344,6 +344,28 @@ function planAttack(enc, e, t) {
   return usable.length && rng.chance(0.5) ? rng.pick(usable).Name : 'enemy_swipe';
 }
 
+/**
+ * Cornered cat (M1.2 §8): outnumbered or surrounded, an enemy stops hovering, hisses, and lashes out at the weakest
+ * (below half Nerve) or else the nearest attacker. Attack-token limits do not apply to it. Returns true if it acted.
+ */
+function corneredThink(enc, e) {
+  const k = enc.k, C = k.cornered, A = e.ai, rng = e.aiStream;
+  const near = enc.opponentsOf(e).filter(x => x.present && enc._sameLevel(e, x) && dist(e, x) <= C.opponents_m);
+  const friends = enc.enemies().filter(x => x !== e && enc.standing(x) && dist(e, x) <= C.ally_m).length;
+  if (!(near.length >= C.min_opponents && near.length > friends + 1)) { if (A.intent === 'cornered') A.intent = 'circle'; return false; }
+  if (A.intent !== 'cornered') { A.intent = 'cornered'; A.cornerT = C.hiss_s; A.engageOn = null; enc._emit({ type: 'Cornered', cat: e.id, opponents: near.length }); }
+  const weak = near.filter(x => x.nerve / x.nerveMax < 0.5).sort((p, q) => p.nerve / p.nerveMax - q.nerve / q.nerveMax)[0];
+  const tgt = weak || near.sort((p, q) => dist(e, p) - dist(e, q) || (p.id < q.id ? -1 : 1))[0];
+  A.faceId = tgt.id; A.engageOn = tgt.id;
+  A.cornerT -= e.edt;
+  if (A.cornerT > 0) { e.goal = null; return true; } // the hiss: arched back, then it lashes out
+  const plan = planAttack(enc, e, tgt), mv = enc.D.moves[plan];
+  if (dist(e, tgt) - tgt.radius > mv.range - 0.1) { e.goal = { x: tgt.x, z: tgt.z, stopAt: Math.max(0.3, mv.range - 0.4), speed: k.engage.dash_speed_mult }; return true; }
+  enc._face(e, tgt); enc._enemyWindup(e, plan, tgt);
+  A.cornerT = rng.range(C.attack_gap_s[0], C.attack_gap_s[1]);
+  return true;
+}
+
 export function enemyThink(enc, e) {
   const k = enc.k, D = enc.D, rng = e.aiStream, A = e.ai;
   if (enc.mode !== 'fight' || e.act || e.splatT > 0 || e.frazzledT > 0 || e.flinchT > 0) return;
@@ -354,6 +376,7 @@ export function enemyThink(enc, e) {
   if (heal && !ENGAGED.has(A.intent)) { enc._enemyWindup(e, heal.Name, e); return; }
   const t = focusTarget(enc, e);
   if (!t) return;
+  if (corneredThink(enc, e)) return;
   // Side-step the controlled cat's swing when not engaged (cats watch each other).
   const c = enc.controlled;
   if (c && c.act?.kind === 'atk' && c.act.targetId === e.id && !c.act.hit && A.sideFor !== c.act && !ENGAGED.has(A.intent)) {
@@ -374,42 +397,43 @@ export function enemyThink(enc, e) {
   });
 }
 
-/* ------------------------------------------------------------------ Daifuku (phase 1 kit) */
+/* ------------------------------------------------------------------ Boss pattern (M1.2 §9, data-driven) */
 
+/**
+ * A universal ground Boss (bosses.json): per phase, weighted signature and basic attacks with ranges and
+ * cooldowns, a swing period, and rage thresholds that speed it up. Daifuku is the first instance. The Boss reads
+ * only positions, its own Nerve and its data (G4: never who is in the Posse).
+ */
 export function bossThink(enc, b) {
-  const k = enc.k, B = b.boss, kit = enc.D.bosses[b.row.boss_kit], rng = b.aiStream;
-  if (enc.mode !== 'fight' || b.act || b.frazzledT > 0 || b.flinchT > 0) return;
-  b.goal = null; b.ai.faceId = null;
-  B.swingCd -= b.edt;
-  const opp = enc.opponentsOf(b).filter(x => x.present);
+  const k = enc.k, B = b.boss, kit = enc.D.bosses[b.row.boss_kit], rng = b.aiStream, A = b.ai;
+  if (enc.mode !== 'fight' || b.act || b.frazzledT > 0 || b.flinchT > 0 || b.splatT > 0) return;
+  const ph = kit.phases[B.phase - 1];
+  if (!ph || !ph.attacks.length) return;
+  b.goal = null;
+  // Rage thresholds: crossing one speeds the pattern up (and the signature comes round sooner).
+  const pct = b.nerve / b.nerveMax;
+  const rages = (ph.rage || []).filter(r => pct <= r.at);
+  if (rages.length > B.rage) { B.rage = rages.length; enc._emit({ type: 'BossRage', cat: b.id, level: B.rage, phase: B.phase }); }
+  const rage = rages[rages.length - 1];
+  B.swingCd -= b.edt; B.sigCd -= b.edt; A.retarget -= b.edt;
+  const opp = enc.opponentsOf(b).filter(x => x.present && x.y < 0.5);
   if (!opp.length) return;
-  b.ai.intent = B.state === 'wall' ? 'pace' : 'ground';
-  if (B.state === 'wall' && b.onHR) {
-    const perched = opp.filter(x => x.onHR === b.onHR).sort((p, q) => dist(b, p) - dist(b, q));
-    const ground = opp.filter(x => !x.onHR && x.y < 0.5).sort((p, q) => dist(b, p) - dist(b, q));
-    const stop = enc.arena.boss_stop;
-    if (perched.length) { b.goal = { x: perched[0].x, z: perched[0].z, stopAt: 1.2 }; b.ai.faceId = perched[0].id; }
-    else if (ground.length) {
-      const cx = ground.reduce((s, x) => s + x.x, 0) / ground.length;
-      b.goal = { x: Math.max(stop.pace_x[0], Math.min(stop.pace_x[1], cx)), z: stop.pos[1], stopAt: 0.2 };
-    }
-    if (B.swingCd <= 0) {
-      if (perched.length && dist(b, perched[0]) <= kit.paw_swat_reach_m && !(b.moveCd.paw_swat > 0)) { enc._face(b, perched[0]); enc._enemyWindup(b, 'paw_swat', perched[0]); B.swingCd = k.boss_swing_period_s * rng.range(0.85, 1.15); return; }
-      const g = ground.find(x => dist(b, x) <= kit.belly_drop_max_m);
-      if (g) { enc._enemyWindup(b, 'belly_drop', g); B.swingCd = k.boss_swing_period_s * rng.range(0.85, 1.15); return; }
-    }
+  let t = enc.byId.get(A.tokenOn);
+  if (!t || !enc.standing(t) || A.retarget <= 0) { t = opp.slice().sort((p, q) => dist(b, p) - dist(b, q) || (p.id < q.id ? -1 : 1))[0]; A.tokenOn = t.id; A.retarget = 2.5; }
+  A.faceId = t.id;
+  const d = dist(b, t);
+  if (B.swingCd > 0) { // between swings he stalks in and postures
+    A.intent = d > kit.approach_m + 1 ? 'stalk' : 'posture';
+    if (d > kit.approach_m) b.goal = { x: t.x, z: t.z, stopAt: kit.approach_m, speed: 0.8 };
     return;
   }
-  if (B.state === 'ground' || B.state === 'drop') {
-    B.state = 'ground';
-    B.groundT -= b.edt;
-    if (B.groundT <= 0) { enc._enemyWindup(b, 'climb_back', null); return; }
-    const near = opp.filter(x => enc._sameLevel(b, x)).sort((p, q) => dist(b, p) - dist(b, q))[0];
-    if (!near) return;
-    b.ai.faceId = near.id;
-    if (B.swingCd <= 0) {
-      if (dist(b, near) - near.radius <= enc.D.moves.enemy_swipe.range) { enc._face(b, near); enc._enemyWindup(b, 'enemy_swipe', near); B.swingCd = k.boss_swing_period_s * rng.range(0.85, 1.15); return; }
-      b.goal = { x: near.x, z: near.z, stopAt: 1.2 };
-    }
-  }
+  const ok = ph.attacks.filter(a => d >= (a.min_m ?? 0) && d <= a.max_m + t.radius && (a.move !== kit.signature || B.sigCd <= 0));
+  if (!ok.length) { A.intent = 'stalk'; b.goal = { x: t.x, z: t.z, stopAt: kit.approach_m, speed: 1.0 }; return; }
+  let r = rng.float() * ok.reduce((s, a) => s + a.weight, 0), pick = ok[0];
+  for (const a of ok) { r -= a.weight; if (r <= 0) { pick = a; break; } }
+  A.intent = 'attack';
+  enc._face(b, t);
+  enc._enemyWindup(b, pick.move, t);
+  B.swingCd = ph.swing_period_s * (rage?.period_mult ?? 1) * rng.range(0.85, 1.15);
+  if (pick.move === kit.signature) B.sigCd = (pick.cooldown_s ?? 6) * (rage?.signature_cd_mult ?? 1);
 }

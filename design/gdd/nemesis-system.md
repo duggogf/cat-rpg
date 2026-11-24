@@ -25,7 +25,7 @@ The Rival is a **petty, funny, persistent neighbour**, not an orc warlord. Nobod
 5. **The town moved while I slept** (Life 2): a newcomer on the wall, a stranger staking my post, two old rivals with fresh plasters. The Rivals board shows it, and the Sniff mentions it when it touches me.
 6. **It chose me** (Life 2, by the L2D3 night at the latest): the Sniff's Declaration card names Togemaru as *my* Sworn Enemy or Sworn Rival, with the Scars I gave him. If I Recruited or Chased him off instead, his closing card says so, and the storm mark became a bell or a legend card.
 
-Two Boss and Crew beats sit alongside: **the Boss is angry because of what I did to his walls** (steam puffs on the board, a hotter fight), and **my recruit flinches at the sight of its old boss** until I Tag-In to it.
+Two Boss and Crew beats sit alongside: **the Boss is angry because of what I did to his walls** (steam puffs on the board, a hotter fight), and **my recruit flinches at the sight of its old boss** until I command it from the skill bar.
 
 **Cat identity, not Mordor with fur.** Mordor supplies only the skeleton: a roster screen, persistence and adaptation. The organs are cat: Verdicts instead of kills, a respect axis (Regard) as well as hate, the Verdict tell read from ears and tail, the Gloat, "Collar" as the insult that tracks Clout, scent marks as intel, and Mikan's plaster from home being read by the cat that gave it. The design test for every rule below is **"can the player see it?"**, and since v1.5 a second one: **"does it change only the cat Mikan dealt with?"**
 
@@ -112,7 +112,7 @@ Grudge and Regard move only through the event table below, combined per encounte
 | Event (from `CatRouted`, `EncounterEnded`, `FearTriggered`) | Grudge base `g` | Regard base `r` |
 |---|---|---|
 | Routed by the Posse | +6 | 0 |
-| …by Pile-On (extra) | +3 | 0 |
+| …by a Special or the Team Pile-On (extra; `by_pile_on`) | +3 | 0 |
 | …after its Fear was triggered this fight (extra) | +3 | −2 |
 | Player opened with an Ambush on it | +3 | −3 |
 | Clean win (player opened with a Standoff or was Ambushed, and triggered no Fear prop) | 0 | +8 |
@@ -152,7 +152,7 @@ A challenger shows a **staking stamp**; a Boss shows **anger puffs** (§3.19); a
 
 ### 3.7 Memory and the arc lead
 
-- **Memory:** 10 entries, **≤ 6 pinned** (NS-4). An entry is `{day, kind, patch, opener, finisher_move, damage_type, fear, verdict, by_pile_on, count, other_id?}`. Kinds in the slice: `FIRST_MEETING, ROUTED, FLED, PATCH_LOST, VERDICT, AMBUSHED_BY_PLAYER, AMBUSHED_PLAYER, LICK_IN, WON, PLAYER_FLED, SCAR, TITLE, SLIPPED_AWAY, RAID, JOINED_IN, OLD_GANG`. `other_id` is set only on `OLD_GANG` (the recruit's own old boss). A repeat of the same kind and patch on consecutive encounters collapses into one entry with `count` +1. Every entry records an event the cat itself took part in.
+- **Memory:** 10 entries, **≤ 6 pinned** (NS-4). An entry is `{day, kind, patch, opener, finisher_move, damage_type, fear, verdict, by_pile_on, count, other_id?}` (`by_pile_on` = Routed by a Special or the Team Pile-On, Combat §3.6; the name is kept). Kinds in the slice: `FIRST_MEETING, ROUTED, FLED, PATCH_LOST, VERDICT, AMBUSHED_BY_PLAYER, AMBUSHED_PLAYER, LICK_IN, WON, PLAYER_FLED, SCAR, TITLE, SLIPPED_AWAY, RAID, JOINED_IN, OLD_GANG`. `other_id` is set only on `OLD_GANG` (the recruit's own old boss). A repeat of the same kind and patch on consecutive encounters collapses into one entry with `count` +1. Every entry records an event the cat itself took part in.
 - **Pinned:** `FIRST_MEETING`, `OLD_GANG`, the latest encounter, and the source entry of each displayed Scar and the displayed Title. ≤ 2 Scars come from Mikan in the slice and there is 1 Title, so pins ≤ 6 (the invariant). Eviction removes the oldest unpinned entry.
 - **The arc lead is Togemaru, the First Thorn, for all of Lives 1–2** (OR-15). His Grudge **does not decay while his arc is open** (DR-39).
 - **Arc achieved** (`NemesisArcAchieved`; DR-39 as amended by OR-15.4 and the consistency pass, F11) = Togemaru has **cited his memory** (≥ 2 encounters; his uninterruptible day-1 flee guarantees the day-2 line), carries **≥ 1 mark** (his first Rout by the Posse always leaves a Scar, §3.8; a wipe gives him his Title instead), and has reached **an ending: any Verdict on him, or the Declaration**. Each Verdict is a whole ending, not a cut-short arc:
@@ -192,7 +192,7 @@ Slice Strengths (Nemesis chooses them, Combat values them): **Thick Fur** (resis
   1. The last opener was the player's Ambush → Roof-Wise.
   2. A Fear prop was used on it → Got Over It (that Fear).
   3. It was Routed twice by the same finisher type → resist that type.
-  4. Pile-On'd twice → Wriggler.
+  4. Routed by a Special or Team Pile-On (`by_pile_on`) twice → Wriggler.
   5. Otherwise, the personality pool: Braggart/Brooder Grudge Fuel; Schemer Roof-Wise; Stalwart/Goofball Second Wind; Fraidy Wriggler.
 - **Always a Way In (invariant):** every Rival keeps ≥ 1 Fear that has not been overcome, **or** ≥ 2 of the 3 slice damage types unresisted. An adaptation that would break this is skipped and the next is tried.
 - **Announced:** the cat's next encounter line must come from `RETURNED` with tag `adapted:<strength>`, and the Rivals board shows the new Strength icon at once. "Go on, tip the bucket. I like the rain now."
@@ -293,7 +293,7 @@ Cats speak readable text in balloons of **≤ 60 characters after slot substitut
 |---|---|
 | Standoff (6) | `STANDOFF_FIRST`, `REMATCH_I_LOST`, `REMATCH_I_WON` (it beat Mikan: wipe or `lick_in`), `REMATCH_I_FLED`, `RETURNED` (back after fleeing or slipping away; carries `adapted:*`), `TRUCE_GREET` (a truce cat or Friend, non-hostile) |
 | After (8) | `GLOAT_SWAT`, `GLOAT_LOAF`, `GLOAT_CIRCLE`, `GLOAT_TURN_AWAY`, `GLOAT_BOLT`, `VERDICT_CHASE`, `VERDICT_RECRUIT`, `VERDICT_NOSE` |
-| Special (10) | `AMBUSHED_REMATCH`, `CALL_HEARD`, `CREW_MEMORY`, `ALLY_JOIN` (the joiner's arrival yowl), `OLD_GANG_FLINCH` and `OLD_GANG_DEFIANT` (the recruit's own reaction, §3.18), `STEELED` (the recruit after the Tag-In), `KIN_SPARE` (a Crew cat's AI refusing its Kin, Combat), `CHALLENGE_STAKE` (a challenger at its post), `BOSS_POSTS` (Daifuku about his own posts, by anger stage) |
+| Special (10) | `AMBUSHED_REMATCH`, `CALL_HEARD`, `CREW_MEMORY`, `ALLY_JOIN` (the joiner's arrival yowl), `OLD_GANG_FLINCH` and `OLD_GANG_DEFIANT` (the recruit's own reaction, §3.18), `STEELED` (the recruit after the player's skill-bar command), `KIN_SPARE` (a Crew cat's AI refusing its Kin, Combat), `CHALLENGE_STAKE` (a challenger at its post), `BOSS_POSTS` (Daifuku about his own posts, by anger stage) |
 
 **Grammar (EBNF; a lint tool enforces it):**
 
@@ -384,7 +384,7 @@ Mikan's own relationship with a cat (Grudge, Regard, truce, Nemesis) is **not** 
 
 **Join-in rules (OR-13.4; formula F11):**
 - At `EncounterStarted`, **from Life 2**, for each cat in `Truce` or `Friend` **in the same district** that holds a **Rival** tag on an opponent in the encounter, roll F11 (seeded per encounter). Candidates are rolled in order of `cat_id`; the first success joins. **≤ 1 joiner per encounter; ≤ 1 join per cat per day.** No join if the encounter is already at the 10-combatant cap.
-- The joiner arrives after a **3 s yowl** (`ALLY_JOIN`, `AllyJoined(cat_id, encounter_id)`) as an **allied AI guest**: not controllable, no Pile-On, counts toward the cap (Combat's raid-defence guest rules). It is discovered if it was not.
+- The joiner arrives after a **3 s yowl** (`ALLY_JOIN`, `AllyJoined(cat_id, encounter_id)`) as an **allied AI guest**: not controllable, never in the Special chain or Team Pile-On, counts toward the cap (Combat's raid-defence guest rules). It is discovered if it was not.
 - **The joiner alone changes:** the encounter counts toward its `encounters` (and toward Togemaru's arc); on a Posse win it gains **+5 Regard**; it gains a `JOINED_IN` Memory entry. On a wipe it gains nothing, and only the victor changes (§3.10).
 - **The opposing Rival is untouched:** the same AI, targeting, buffs and lines as if the joiner were any Posse cat. It has no "traitor" bark.
 - No Crew cat's Loyalty, assignment or AI reads a join-in (Crew §3.5.7, G10).
@@ -393,7 +393,7 @@ Mikan's own relationship with a cat (Grudge, Regard, truce, Nemesis) is **not** 
 
 1. **At the join** (any Crew join from a gang with a Boss, including authored Hige), the recruit's **own** Memory gains `OLD_GANG(boss_id)` (pinned), and Nemesis sets `old_gang_nerves` = **true** unless its personality resists. **Resist:** Braggart (too proud), Stalwart (steady), Brooder (hates the old boss more than it fears it). **Susceptible:** Schemer, Fraidy, Goofball.
 2. **In an encounter** where the recruit is in the Posse and it **sees its Old Boss among the opponents** (at the start, or when a wave brings him in), the recruit's own reaction plays at the Standoff: ears flat, a flinch, and its own line (`OLD_GANG_FLINCH`, "…That's Daifuku's wall."), or a defiant line if it resists (`OLD_GANG_DEFIANT`, "Not your cat anymore."; no status).
-3. **If `old_gang_nerves` is true and the recruit is below Sworn Loyalty (< 80)**, it is **Cowed** (Combat's status) for **20 s** (Fraidy **30 s**). While Cowed its AI will not target the Old Boss. **A Tag-In to that cat clears it at once** (`STEELED`): the player's answer, a conducting moment.
+3. **If `old_gang_nerves` is true and the recruit is below Sworn Loyalty (< 80)**, it is **Cowed** (Combat's status) for **20 s** (Fraidy **30 s**). While Cowed its AI will not target the Old Boss. **A skill-bar command to that cat clears it at once** (`STEELED`): the player's answer, a commanding moment (Combat M1.1; Tag-In no longer exists).
 4. **The Old Boss runs its ordinary Standoff taunt and intimidation for whatever Posse it faces.** It has no defector-targeted taunt, stare, aggro or line, and its parameters never read who is in the Posse. The only cat whose parameters change is the recruit, by its own memory, after it has stopped opposing the avatar.
 5. In the slice, **Hige** (Stalwart) and **Togemaru** (Braggart) resist; **Kagi** (Schemer) is susceptible, so the Daifuku fight can show both halves. If the Old Boss is Gone, in truce or in the Crew, nerves never fire (he is not among the opponents).
 6. **What the owner gave up (accepted, rulings §5):** the boss's own trash-talk aimed at the defector. **Held for counsel:** if counsel clears a defector-targeted boss line, it can return as a line-only addition.
@@ -419,7 +419,7 @@ Mikan's own relationship with a cat (Grudge, Regard, truce, Nemesis) is **not** 
 
 **The Boss's patrol (placement owned here; the window is Territory's).**
 1. **Before the window opens,** Daifuku stays at the Den corner stone and ignores Mikan ("Come back when the Lane smells of you, Collar."). The Den post cannot be marked.
-2. **When `BossWindowChanged(lane, open = true)`** (influence 100, Territory), a yowl rolls down from his wall and he climbs down. He walks a fixed **three-stop patrol**, one stop per daytime phase, staying at the last through Night; each stop is one **arena kit** (a wall segment with a knock-off edge and a water prop): **Morning** Laundry Pole Yard's yard wall (wash tub) · **Day** Tofu Shop's back wall (rain barrel) · **Dusk and Night** the Den corner stone (the bucket). The current stop shows on the Turf Board map and as a crown tick on the Whisker Sense compass.
+2. **When `BossWindowChanged(lane, open = true)`** (influence 100, Territory), a yowl rolls down from his wall and he climbs down. He walks a fixed **three-stop patrol**, one stop per daytime phase, staying at the last through Night; each stop is one **ground arena kit** (a flat ring, a noise prop, ledge junk; Combat §3.13, M1.2: no wall, no wash tub, no knock-off): **Morning** Laundry Pole Yard · **Day** Tofu Shop's back lane · **Dusk and Night** the Den corner. The current stop shows on the Turf Board map and as a crown tick on the Whisker Sense compass.
 3. **Challenging:** approach within 8 m of his stop for a Standoff, then the Boss fight there (Combat's 3-phase design on the kit). While the window is open (it closes below influence 75 at step 2), he patrols; when it closes he returns to the Den.
 4. **G5:** the window opens a place and a schedule only. His level, stats, traits and role never read influence; his only buff is anger, a separate store fed by objects.
 5. After his Verdict he leaves the patrol (Gone, Crew, or `Truce` roaming the walls). Nobody replaces him in the slice (§3.11).
@@ -462,8 +462,8 @@ Rounding is to the nearest integer, .5 up, at the end of each formula. Every `rn
 | `ΔG` | int | 0–35 | Grudge change (before any override) |
 | `ΔR` | int | −15 to +50 | Regard change |
 
-**Output range:** ΔG is 0–25 in practice, under the 35 / 20 cap. The largest raw input is a Braggart Keeper that is Ambushed, Fear-hit and Pile-On'd: Σg = 6 + 3 + 3 + 3 + 6 = 21, × 1.2 = 25.2 → 25, which the 20 cap holds to 20 from its third encounter. ΔR runs from −15 (a Fraidy that wins a wipe after an Ambush and a Fear hit: (−10 −3 −2) × 1.0) to +50 (a Stalwart with a clean win and a Nose-Touch: (8 + 25) × 1.5 = 49.5 → 50).
-**Worked example:** Togemaru, L1 D2 (Keeper of Laundry Pole Yard, clean Pile-On): Σg = 6 + 3 + 6 = 15, × 1.2 = 18 → G_pending 25 + 18 = **43**.
+**Output range:** ΔG is 0–25 in practice, under the 35 / 20 cap. The largest raw input is a Braggart Keeper that is Ambushed, Fear-hit and Routed by a Special: Σg = 6 + 3 + 3 + 3 + 6 = 21, × 1.2 = 25.2 → 25, which the 20 cap holds to 20 from its third encounter. ΔR runs from −15 (a Fraidy that wins a wipe after an Ambush and a Fear hit: (−10 −3 −2) × 1.0) to +50 (a Stalwart with a clean win and a Nose-Touch: (8 + 25) × 1.5 = 49.5 → 50).
+**Worked example:** Togemaru, L1 D2 (Keeper of Laundry Pole Yard, a clean Special finish): Σg = 6 + 3 + 6 = 15, × 1.2 = 18 → G_pending 25 + 18 = **43**.
 
 ### F2. Nightly drift
 
@@ -507,7 +507,7 @@ Every input is the scored cat's own record. It is only compared, never displayed
 
 **Range:** Grudge gate 45–65. No roll, no snubs; reloading changes nothing. Every input is the cat's own record, its own post's marking acts or its own anger (G2, G8: no other cat is read). *Deleted: F4 as a probability, snubs, `nose_accept` / `nose_snub` (OR-21.2).*
 **Why the quiet-take clause (consistency pass, F12):** the Grudge gate alone was open on 91–100% of slice Verdicts, so Nose-Touch was free. The clause makes it something the player earns or forfeits during the take: the quiet take (two unseen Over-marks, one Counter-Spray) costs more sneaking and keeps the card; the loud take (two Counter-Sprays) is faster and closes it. For a Boss the same choice is already visible as his steam puffs. It starts in Life 2, so the first Verdict (Togemaru, L1D2) keeps all three cards.
-**Worked checks:** Togemaru on L1D2 after a clean Pile-On: 43 < 45, Life 1 → **open**. With an Ambush opener as well: 25 + round(1.2 × 18) = 47 ≥ 45 → closed (Grudge). Kagi on L2D3 after the quiet take (G 15 + round(1.0 × 15) = 30 < 50, one Counter-Spray) → open; after two Counter-Sprays → **closed** (loud). Daifuku met Riled → open on his Grudge (gate 45); met Seething → **closed**; after a lost first attempt his anger is spent, so the rematch meets him Calm → open on his Grudge. A Stalwart Tough at its first Rout (G 15 + round(0.8 × 15) = 27 < 65), quiet take → open.
+**Worked checks:** Togemaru on L1D2 after a clean Special finish: 43 < 45, Life 1 → **open**. With an Ambush opener as well: 25 + round(1.2 × 18) = 47 ≥ 45 → closed (Grudge). Kagi on L2D3 after the quiet take (G 15 + round(1.0 × 15) = 30 < 50, one Counter-Spray) → open; after two Counter-Sprays → **closed** (loud). Daifuku met Riled → open on his Grudge (gate 45); met Seething → **closed**; after a lost first attempt his anger is spent, so the rematch meets him Calm → open on his Grudge. A Stalwart Tough at its first Rout (G 15 + round(0.8 × 15) = 27 < 65), quiet take → open.
 **Sim (§4):** open on 100% of Life 1 Verdicts, **82% of Life 2 Verdicts** and 81% of Daifuku Verdicts (before: 100 / 100 / 100%; lose40 71% of Life 2).
 
 ### F5. (Deleted: comeback delay)
@@ -532,11 +532,11 @@ The next event comes on night `n + 2 + b`, `b ∈ {0, 1}` seeded 50/50, from the
 
 | Symbol | Type | Range | Description |
 |---|---|---|---|
-| `by_pile_on` | bool | 0/1 | From `CatRouted` |
+| `by_pile_on` | bool | 0/1 | From `CatRouted`: Routed by a Special or the Team Pile-On (Combat §3.6) |
 | `routs_by_player` | int | 1+ | Including this Rout |
 | `p_scar` | float | 0.35–1.0 | |
 
-**Example:** a Tough's first Rout, by Pile-On: 0.50; its second: 1.0. Togemaru's first: 1.0 (authored).
+**Example:** a Tough's first Rout, by a Special: 0.50; its second: 1.0. Togemaru's first: 1.0 (authored).
 
 ### F8. Bark score
 
@@ -708,7 +708,7 @@ On a marking act: `A ← min(100, A + 5·n_over + 15·n_counter)`. Each night: `
 
 ### 6.2 Owned by others (this doc does not set)
 
-- **Combat:** Fear and Strength values; flee windup; Ambush counter timing; Old Score; Pile-On; Rival AI by personality; **the values of Cowed and Fired Up; the ally guest; the Kin targeting rule; the patrol arena kit**; Togemaru's uninterruptible day-1 flee animation.
+- **Combat:** Fear and Strength values; flee windup; Ambush counter timing; Old Score; the Special chain and Team Pile-On; Rival AI by personality; **the values of Cowed and Fired Up; the ally guest; the Kin targeting rule; the patrol arena kit**; Togemaru's uninterruptible day-1 flee animation.
 - **Territory:** Scent, raid and challenge resolution, the challenger over-mark, Claim Spray, **influence and the Boss window**, the presence rule, the Keeper's arrival at Scent ≤ 30, Clout, Sentry and Watched rules, the Goofball's "Laughs off a challenge".
 - **Crew:** the Bribe, starting Loyalty (input `G_pre`), the story recruits, signature-perk values, **Loyalty, Wavering and the betrayal thresholds**, Kin as a bonded pair, the G10 audit.
 - **Day Loop:** phase timing; the loss time-skip to Night and the closed street; encounter density including the roaming Boss and challengers.
@@ -772,7 +772,7 @@ On a marking act: `A ← min(100, A + 5·n_over + 15·n_counter)`. Each night: `
 
 | Knob | Default | Safe range | Effect |
 |---|---|---|---|
-| Event bases (§3.5) | Rout 6, Pile-On 3, Fear 3, Ambush 3, Keeper's post marked 6, fled 8 | ±50% | Speed to Bitter and to a closed Nose-Touch gate |
+| Event bases (§3.5) | Rout 6, Special / Team Pile-On 3, Fear 3, Ambush 3, Keeper's post marked 6, fled 8 | ±50% | Speed to Bitter and to a closed Nose-Touch gate |
 | `cap_enc` | 35 then 20 | ruled (DR-39) | — |
 | `m_g` / `m_r` | §3.4 | 0.5–1.5 | Personality contrast |
 | Decay `d` | 2 (Brooder 1) | ruled | — |
@@ -798,7 +798,7 @@ On a marking act: `A ← min(100, A + 5·n_over + 15·n_counter)`. Each night: `
 | Town-event weights (newcomer / scuffle) | 3 / 2 | 1–4 each | Mix of new faces and plasters |
 | Kin seeding | p 0.15 per pair, ≤ 1 per cat | 0.1–0.25 | — |
 | Sniff-to-discover | 1.0 s within 10 m | 0.5–1.5 s / 6–12 m | Discovery pace (sim: 81–91% of Lane cats by slice end) |
-| F7 base / Pile-On / 2nd Rout | 0.35 / 0.15 / 0.50 | 0.2–0.5 / 0–0.25 / fixed | Scar frequency |
+| F7 base / Special or Team Pile-On / 2nd Rout | 0.35 / 0.15 / 0.50 | 0.2–0.5 / 0–0.25 / fixed | Scar frequency |
 | `p_ambush_day` | 0.5 | 0.3–0.7 | Rival Ambush frequency (≤ 1/day fixed) |
 | Lead presence | ≥ 1/day from L2 D1 until his arc closes | fixed | — |
 | Sniff nemesis items | 1 (L1) / 3 (L2) | ruled | — |
@@ -884,6 +884,8 @@ On a marking act: `A ← min(100, A + 5·n_over + 15·n_counter)`. Each night: `
 - **(Iteration 3)** Rival Ambush budget: this doc's ≤ 1 per day sits inside Day Loop §3.7's ceiling (≤ 2 per day). Keep them aligned when Life 3+ budgets are set.
 
 ## Revision Log
+
+**2026-11-24 — Owner combat direction M1.2 (2026-11-24)** (`design/reviews/owner-feedback/combat-m1.2-spec.md`; follow-up F14; game designer, combat mentions only). §3.19 Boss patrol: each stop is a ground arena kit (no wall, wash tub or knock-off; Daifuku fights on the ground on Combat's universal Boss pattern). Combat-input leftovers: the Tag-In that steadied a Cowed recruit is now a skill-bar command (§2, §3.13 bark table, §3.18); "clean Pile-On" reads "clean Special finish" (F3 worked example, F4 checks); the Pile-On Grudge input, the Wriggler adaptation, F7 and the knobs now read "by a Special or the Team Pile-On"; **`by_pile_on` keeps its name** and is defined as a Rout by a Special or the Team Pile-On; the guest is never in the Special chain. No Nemesis rule or number changed.
 
 **2026-11-23 — Round 2 (fresh slice rewrite).** Critiques: `nemesis-system--experience.md` (NX), `nemesis-system--simulation.md` (NS), `paper-playtest.md` (PP).
 

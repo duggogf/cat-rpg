@@ -35,7 +35,7 @@ Read this once to know the game, the slice and how the systems fit; each section
 
 **References** (structure and feel, never components): *Final Fantasy VII Remake* (combat structure, slow-mo commands, stagger) · *Pokémon* (recruit, teach, swap) · *Shadow of Mordor* (remembering enemies, a roster screen) · *Shin chan: Shiro and the Coal Town* (the look, matched closely; never its characters, names, places, assets or 3C) · *Stray* (cat scale) · *Yakuza* (turf melodrama played straight and funny).
 
-**Why it stands out.** Combat and Rivals carry the word of mouth ("the cat I let off with a nose-touch came yowling over the laundry poles to help me, then we knocked the Boss off his wall into a bucket"); the wordless home story is why people remember it; territory carries half the play time.
+**Why it stands out.** Combat and Rivals carry the word of mouth ("the cat I let off with a nose-touch came yowling over the laundry poles to help me, then we jumped the Boss's belly-flop shockwave and the last hit froze like a fighting game"); the wordless home story is why people remember it; territory carries half the play time.
 
 ---
 
@@ -77,7 +77,7 @@ A Life is a story chapter, not a retry counter. **Home beats are gated by day co
 | 8 | **The Door** | — | Haru does not come home. Mikan waits | Three Food Carries | Old |
 | 9 | **Nine** | Koharu 8 | Koharu fills the bowl and sings the Call | Name an heir; one last walk | Elder |
 
-**Life 8:** the Call stops coming; Mikan waits, then carries food home three times (no food enters the house before). **Full game:** 12–15 h, ≈ 50 Moves, 5 Styles, ≈ 58 vignettes. **Never cut:** the dual story, the nemesis memory loop, Tag-In, the Pile-On, personality.
+**Life 8:** the Call stops coming; Mikan waits, then carries food home three times (no food enters the house before). **Full game:** 12–15 h, ≈ 50 Moves, 5 Styles, ≈ 58 vignettes. **Never cut:** the dual story, the nemesis memory loop, the skill bar and the Special chain with the Team Pile-On, personality.
 
 ---
 
@@ -92,14 +92,14 @@ Lives 1–2 in Hidamari Lane: Mikan arrives as a kitten in the rain and becomes 
 | **Patches** | 5: Low Wall Corner (Home Ground), Laundry Pole Yard, Persimmon Alley, Tofu Shop Step, the Den. 2 Sentry slots |
 | **Rivals** | ≤ 12 tracked: the Wall Sitters (Daifuku, 2 Captains, 5 Toughs incl. the First Thorn; roles fixed at generation, no seats) + 2 Roamers, plus newcomers and **≈ 1 challenger** from the calendar. Crows are the only Critter |
 | **Crew** | Mikan + 6 recruitable, one per personality. Cap 6 |
-| **Moves** | 3 Styles, **12 Moves**, 3 Zoomies, 3 Fears; Daifuku in 3 phases on any of his three patrol stops |
+| **Moves** | 3 Styles, **12 Moves**, 3 Specials (the old Zoomies), 3 Fears; Daifuku in 3 phases on any of his three patrol stops |
 | **Rivals system** | The **Rivals board** (staged gang scenes, discovery, relationship tags), three Verdicts, Gloat, Lick In, town events, **Old Gang Nerves**, **Boss anger**, Nose-Touch **join-ins**, exactly one declared Nemesis |
 | **Territory** | Scent, marking, **district influence and the Boss window**, Tribute, one forecast raid a night from L2D2, the Caterwaul (presence rule), the first challenger (night 5), rare recruit betrayal, the unified **Turf Board**, Lessons I–II, Bribes, Share a Morsel |
 | **Vignettes** | **11** (7 Keystones, 3 Textures, 1 montage) + the Routine layer, the Routed Evening, daily find, piano |
 | **Audio** | ≤ 25 min music; ≤ 240 bark lines |
 | **Minutes** | ≈ 2–2.5 h (reference path **143.5 min**; fast path ≈ 128) |
 
-**Questions:** Is conducting fun? Do players care about a Rival and about Haru within two hours? Is territory fun? Does a day fit ≈ 25 min? Is the Verdict a real choice? **Pass/fail tests:** two cats and a Pile-On by minute 15; a memory-citing Rival line before minute 60 (≈ 0:28); ≥ 80% name a Rival and something specific Haru does; no Verdict > 60% of Verdicts and ≥ 70% of testers use ≥ 2; ≥ 80% open the Rivals board on L2D1 and ≥ 60% name one tie; Keystone facts reach 90% of testers with audio muted; the flash test passes.
+**Questions:** Is commanding fun? Do players care about a Rival and about Haru within two hours? Is territory fun? Does a day fit ≈ 25 min? Is the Verdict a real choice? **Pass/fail tests:** two cats and a Special chain by minute 15; a memory-citing Rival line before minute 60 (≈ 0:28); ≥ 80% name a Rival and something specific Haru does; no Verdict > 60% of Verdicts and ≥ 70% of testers use ≥ 2; ≥ 80% open the Rivals board on L2D1 and ≥ 60% name one tie; Keystone facts reach 90% of testers with audio muted; the flash test passes.
 
 ---
 
@@ -119,7 +119,7 @@ Lives 1–2 in Hidamari Lane: Mikan arrives as a kitten in the rain and becomes 
 
 **Numbers.** Budget (75th percentile): wake → door ≤ 0.25 min · Doorstep ≤ 0.5 · Lot ≤ 1 (1.5–2 on first-use days) · roaming 12/16 · encounters 5–7 · way home ≤ 1 · evening ≤ 2 · **total ≈ 20–25, hard cap 30**.
 
-**Worked example: L2D3 (24 min, the longest).** Sniff forecasts a raid; at the Lot, post a Sentry, buy a Lesson, Share. Spray a faint post, Ambush two Toughs, take Tofu Shop Step from Kagi with the first Zoomies. **The Claim Spray fills the influence bar: Daifuku's yowl rolls down and he climbs to his Day stop, in view, on the running clock** (fighting him today is optional). Dusk chimes with **no Call**: Haru is late; Night falls; a `late` arrival, then *The Lamp at Night*. **The loss branch, L2D4 (15.5 min; budgeted, never scripted):** the first Daifuku attempt, Fired Up; a wipe → nightfall, the walk home, the plaster. The window survives; the L2D5 rematch meets him Calm and plastered.
+**Worked example: L2D3 (24 min, the longest).** Sniff forecasts a raid; at the Lot, post a Sentry, buy a Lesson, Share. Spray a faint post, Ambush two Toughs, take Tofu Shop Step from Kagi with the first four-cat Special chain. **The Claim Spray fills the influence bar: Daifuku's yowl rolls down and he climbs to his Day stop, in view, on the running clock** (fighting him today is optional). Dusk chimes with **no Call**: Haru is late; Night falls; a `late` arrival, then *The Lamp at Night*. **The loss branch, L2D4 (15.5 min; budgeted, never scripted):** the first Daifuku attempt, Fired Up; a wipe → nightfall, the walk home, the plaster. The window survives; the L2D5 rematch meets him Calm and plastered.
 
 **Connects to.** Pauses on encounter events; banks the haul at `HomeArrived(on_time / late / routed)`; runs the overnight steps (§16); sequences influence, anger and the window across the day.
 
@@ -131,32 +131,31 @@ Lives 1–2 in Hidamari Lane: Mikan arrives as a kitten in the rain and becomes 
 
 **Character.** Mikan is a fixed design: white body, ginger cap over both ears, ginger patch over the left eye, pom-pom bobtail, amber eyes, **red collar with one brass bell**. Renameable, "they". Scrapper Style; no personality, no Loyalty. One global cat scale, **1.25× a real cat (≈ 0.56 m)**; humans and furniture true scale. Traversal: ground plus the **High Road** (walls, fences, roofs) as third-person platforming.
 
-**Camera.** One rig behind and above the cat, everywhere, with no scene transitions. *Small cat, big town* when exploring; the *conductor's seat* in a fight; *you are the pet* at home.
+**Camera.** One rig behind and above the cat, everywhere, with no scene transitions. *Small cat, big town* when exploring; the *commander's seat* in a fight; *you are the pet* at home.
 
 | State | Distance / height / pitch | Notes |
 |---|---|---|
 | Explore | 3.0 m / ≈ 1.0 m / +10° | Orbit; auto-recentre after 1.5 s |
-| Combat | 6.0–7.2 m / ≈ 3 m / +25° | Frames the controlled cat (lower third) and its lock target; soft lock; edge arrows |
-| Slow Blink | 8.5 m / 6.5 m / +50° | Tactical three-quarter |
+| Combat | 3.8 m (≤ 6 m for a far lock target) / ≈ 1.2–1.6 m / +12° | Behind Mikan; free orbit with direct mouse yaw; **Tab** locks / unlocks, a flick switches targets while locked; edge arrows; near-camera objects dither-fade, never hidden |
+| Skill bar (was Slow Blink) | 4.6 m / ≈ 1.5 m / +20° | Low behind Mikan, menu clear |
 | Home | 1.8 m / 0.3–0.6 m / ≤ 0° | Standing adults' faces clamped out within 2.5 m |
 
-The garden wall blends Explore → Home in 1.0 s (no cut). Tag-Ins retarget in 0.3 s, so a Relay reads as one move. Camera only plays Combat's shake. Options: FOV, speed, auto-centre, invert, motion comfort.
+The garden wall blends Explore → Home in 1.0 s (no cut). Stagger zoom, Special cut-ins and the Final KO are authored cinematics inside the flash limits. Camera only plays Combat's shake. Options: FOV, speed, auto-centre, invert, motion comfort.
 
-**Control map, combat** (owner direction M1.1, final bindings; the one table, verbatim from [`gdd/combat-system.md`](gdd/combat-system.md) §3.1 and [`ux/hud.md`](ux/hud.md) §8.1; all remappable; every hold has a toggle):
+**Control map, combat** (owner directions M1.1 and M1.2, final bindings; the one table, verbatim from [`gdd/combat-system.md`](gdd/combat-system.md) §3.1 and [`ux/hud.md`](ux/hud.md) §8.1; all remappable; every hold has a toggle; **Shift and East are unused in combat**):
 
 | Action | KB+M | Gamepad | Rule |
 |---|---|---|---|
-| Move | WASD | Left stick | Free third-person camera on the mouse / right stick |
-| **Light attack** | LMB | West | Strings (§3.2). Airborne or from the High Road it becomes a **Pounce** |
-| **Heavy attack** | RMB | North | Hold to charge |
-| **Dodge** (Skitter) | Space | South | Cancels recovery after the hit |
-| **Dash** | Shift | East | Dash → Light is a string starter (lunge). Dashing at a reachable High Road ledge mantles onto it |
-| **Lock-on** | Tab | R3 | **Not locked by default.** Press: lock the nearest enemy. Press again: if the nearest enemy is now a *different* enemy, lock that one; otherwise **unlock** (free camera) |
-| **Special** | **F** (prompt) | R1 (prompt) | Only on a **Frazzled (staggered)** enemy while Mikan's Special meter is full; shown as a context prompt (§3.6) |
+| Move | WASD | Left stick | Combat move speed = the Lane's fast walk; free third-person camera on the mouse / right stick |
+| **Light attack** | LMB | West | Near-instant (first active frame on the next sim tick). Strings (§3.2). Airborne or from the High Road it becomes a **Pounce** |
+| **Heavy attack** | RMB | North | Readable wind-up before the hit; hold to charge |
+| **Evade** | Space | South | ≈ 2 m with i-frames, cooldown ≈ 0.8 s (shown on the HUD). Cancels any attack at any frame; the string survives it. Evade → Light = lunge |
+| **Lock-on** | Tab | R3 | Press: lock the nearest enemy. Press again: unlock (free camera). While locked, a horizontal mouse / right-stick flick past a threshold switches to the next enemy on that side of the screen (no free yaw while locked) |
+| **Special** | **F** | R1 | Any time Mikan's Special meter is full; a **Frazzled (staggered)** target takes bonus Special damage (§3.6) |
 | **Skill bar** | **R** | R2 | Opens the skill bar (time slows). Commands Mikan's Moves **and forces Crew Moves** (§3.3) |
 | Pause | Esc / P | Menu | — |
 
-*(Section numbers in the Rule column are `combat-system.md`'s.)* The player controls **Mikan only**; switching (Z X C V / D-pad), Tag-In, Relay, Pile-On, Zoomies and shortcut-Move inputs are removed; Hiss and Scram are skill-bar entries.
+*(Section numbers in the Rule column are `combat-system.md`'s.)* The player controls **Mikan only**; switching (Z X C V / D-pad), Tag-In, Relay, Pile-On, Zoomies, shortcut-Move, Dodge and Dash inputs are removed; Hiss and Scram are skill-bar entries; an Evade at a reachable ledge mantles.
 **Control map, exploration** (DR-08; [`ux/hud.md`](ux/hud.md) §8.2). **Pad:** West Swat · South Jump / Hop · East Dash · North Interact (Spray, Sniff, Nap) · R2 **Whisker Sense** (1 s on a cat within 10 m discovers it) · L2 Stalk · D-pad Tail-Up, Meow, Sit (hold = **Head Home**) · View **Rivals** board · Menu Pause. **KB/M:** WASD + mouse, LMB Swat, Space Jump, Shift Dash, E Interact, Tab Whisker Sense, Ctrl Stalk, V/T/C/H, **J Rivals**, Esc (Pause ▸ Rivals on the street and at the Lot, never at home).
 
 ---
@@ -169,23 +168,24 @@ The garden wall blends Explore → Home in 1.0 s (no cut). Tag-Ins retarget in 0
 
 **Rules.**
 - **No random encounters, no scene change, no combat inside Haru's wall.** A ≈ 10 m ring forms around visible opponents.
-- **You control Mikan only**; the three Crew are always AI. Mikan has **five strings**: L-L-L · **L-L-L-H finisher** · L-H launcher · hold H charged heavy · Dash-L lunge (Heavies build Frazzle faster). **Dodge** (Skitter, ≈ 200 ms invulnerable, cancels recovery after the hit) and **Dash** (mantles onto a reachable ledge). Slower than M1 (≈ 25–30% slower movement, longer follow-through) but responsive: a Light's first active frame ≤ 3 frames, a **one-slot buffer** in the last ≈ 150 ms of an attack, a **move-out gradient** from ≈ 60% of recovery. **Telegraphs:** white = dodge; yellow = Hiss (from the skill bar); red = get out. **Lock-on** is off by default; Tab cycles.
+- **You control Mikan only**; the three Crew are always AI. Mikan has **five strings**: L-L-L · **L-L-L-H finisher** · L-H launcher · hold H charged heavy · Evade-L lunge (Heavies build Frazzle faster). **NieR-style responsiveness (M1.2):** the Light lands on the next sim tick; the Heavy has a readable wind-up; slow steering (25–35% of walk speed) through every attack and **full movement from 60% of the animation**; one **Evade** (Space, ≈ 2 m, i-frames, ≈ 0.8 s cooldown on the HUD) **cancels any attack at any frame** and the string survives it; a perfect Evade gives a short slow-motion and a ×1.5 counter. Combat movement = the Lane's fast walk. One-slot buffer in the last ≈ 150 ms. **Telegraphs:** white = evade; yellow = Hiss (from the skill bar); red = get out. **Lock-on** is off by default: Tab locks, Tab unlocks, a mouse flick switches targets.
 - Hits fill the **Pounce Gauge** (2 Paws per cat). **Moves** cost 1–2 Paws and are fired from the **skill bar** (R; time ×5%): Mikan's Moves, and **forced** Crew Moves and Hisses. Every Move is a **Set-up** (Ruffled, Splat, Clumped, Cowed) or a **Pay-off**, and every Move is **visible** (name banner, the cat's colour, a wind-up pose, its own VFX, a highlight on its plate). AI Crew fight by **personality**, fire Set-ups only when commanded and **never target their own Kin**.
-- **AI thinks like cats** (enemies and Crew): **attack tokens** let only 1–2 enemies engage Mikan at once; the rest circle, stalk, posture (arched back, tail lash, hiss), flank and feint, then dash in for a combo and back out. Personality flavours it: the Braggart struts in front, the Schemer flanks, the Fraidy hangs back and darts, the Stalwart holds ground.
+- **AI thinks like cats** (enemies and Crew): **attack tokens** let only 1–2 enemies engage Mikan at once; the rest circle, stalk, posture (arched back, tail lash, hiss), flank and feint, then dash in for a combo and back out. A **cornered** cat (outnumbered or surrounded) stops hovering, hisses and lashes out at the nearest or weakest attacker. Personality flavours it: the Braggart struts in front, the Schemer flanks, the Fraidy hangs back and darts, the Stalwart holds ground.
 - **Frazzle** = stagger; **Ruffled** (4 s) doubles it; **Frazzled** = 6 s helpless, damage ×1.5, opened by a ≤ 0.5 s **stagger presentation** (zoom, slow-down, shattered-glass blink; full for Captains, Bosses and the first stagger per fight; within the flash limits).
-- **Special and the team finisher (Zoomies folded in).** On a Frazzled enemy with Mikan's meter full, **F** fires Mikan's **Special**: punch-in, time stop, Mikan alone over an impact-frame background (≈ 1 s), then the hit. Crew in range with full meters **chain automatically**, each with its own cut-in. If **all four** land, the **Team Pile-On** plays: the KA-BLAM dust cloud (in the spirit of Granblue Fantasy Relink's Full Burst; our art and staging). Chain ≤ ≈ 6 s, shorter after the first. A Special Routs a Frazzled Tough; on leaders, earlier is worth more.
+- **Special and the team finisher (Zoomies folded in; M1.2).** **F** fires Mikan's **Special** whenever its meter is full: punch-in, time stop, Mikan alone over an impact-frame background (≈ 1 s), then the hit; a **staggered** target takes bonus Special damage. Crew in range with full meters **chain automatically, in sequence**: each starts only after the previous cat's animation ends. If **all four** land, the **Team Pile-On** (the KA-BLAM dust cloud, in the spirit of Granblue Fantasy Relink's Full Burst; our art and staging) adds **extra damage on top**. Chain ≤ ≈ 6 s; repeats are faster. A Special Routs a Frazzled Tough.
+- **Final KO:** the last opponent's fall plays a zoom-in, a frame freeze over an impact background and ≈ 1.5 s of slow motion (fighting-game style), inside the flash limits.
 - **Nobody dies:** at 0 **Nerve** a cat is **Routed** and bolts. **A wipe is a loss:** the victor Gloats (≤ 3 s), any guest slips away, Day Loop ends the day (§5).
 - **Fight-start statuses:** a Boss starts **Fired Up** (×1.25 damage) by his anger: Riled 20 s, Seething 40 s, Furious all fight (paused while Soggy). A recruit with **Old Gang Nerves** that sees its Old Boss starts **Cowed** (×0.75; won't target him) for 20 s (Fraidy 30 s) unless it resists or is Sworn; **a skill-bar command to it clears it**.
 - **The Nose-Touch guest:** from Life 2 a truce cat or Friend whose own **Rival** is an opponent may join after a 3 s yowl as an **allied AI guest** (cannot be commanded, never in the Special chain, counts toward the 10-cat cap). The opposing Rival is unchanged (G7).
-- **Props and Fears:** bucket (Water), scooter horn (Loud Noise), cucumber (Cucumbers). Knock-offs from the High Road always Splat. Damage numbers Off by default.
+- **Props and Fears:** bucket (Water), scooter horn (Loud Noise), cucumber (Cucumbers). Knock-offs from the High Road always Splat a non-Boss. **Damage numbers On by default** (M1.2); hit flash 120–150 ms on every cat; allies outlined yellow, enemies red with a chevron.
 
 **The 12 Moves** (★ = the 8 prototype Moves): Scrapper (Mikan) ★ Face Swat, ★ Scruff Toss, ★ Bunny-Kick, Shred · Bruiser ★ Shoulder Check, ★ Belly Flop, Puff Up, Sit On It · Yowler ★ Withering Hiss, Howl, ★ Purr, ★ Banshee Screech. **Specials** (the old Zoomies): Midnight Laps · Landslide · Midnight Aria. Each Style resists its own damage type (×0.8) and is weak to one (×1.2).
 
 **Numbers.** Tough 6–10 s · normal encounter 30–60 s · Captain 30–45 s · **Daifuku 2–3 min** (sim 166–176 s before M1.1; costed ≈ 3–3.5 paused min) · Fed Up at 75 s. Rank Nerve ×1 / ×8 / ×20, damage 1 / 1.3 / 1.6. A basic hit ≈ 4.5% of a same-level cat's Nerve. **The M1.1 re-baseline of fight lengths and chain values is owned by the sim's data and tests** (bands unchanged). **Feel:** one tier table T0–T5 (hit-stop 40 → 230 ms, stepped shake, impact frames, one lettered word on player-authored T4/T5). Safety overrides it (§15).
 
-**Daifuku: "knock him off into the bucket"** at whichever **patrol stop** he is on (§10); each stop is an arena kit with a knock-off edge and a water prop. Knock-offs are deterministic (the L-L-L-H finisher can do it); three phases add Toughs (a seeded pick), a horn and a crumbling wall top. Furious raises the Posse's median Nerve lost from 52% to 61%. Each wipe plasters him −10% for the rematch and spends his anger. Hige and a recruited Togemaru stare him down; a recruited Kagi flinches until you command him from the skill bar.
+**Bosses: one universal Boss pattern** (data: phases, signature attacks, telegraphs, rage thresholds, phase break, bout cap). **Daifuku** is the first instance, fought **on the ground** at whichever **patrol stop** he is on (§10); no wall, no wash tub, no knock-off (M1.2). His signature is the **Belly-Flop Shockwave**: a telegraphed jump, a ground slam and an expanding ring (1 → 6 m); Evade through it or be knocked down; after it he sits Ruffled for 2 s, the punish window. Phases add Toughs, a Big Yowl and a Double Flop; rage shortens his cooldowns. In M1 the bout ends cleanly after phase 1 with the Final KO. Furious raises the Posse's median Nerve lost from 52% to 61% (pre-M1.2 sim). Each wipe plasters him −10% for the rematch and spends his anger. Hige and a recruited Togemaru stare him down; a recruited Kagi flinches until you command him from the skill bar.
 
-**Worked example: a Captain's Frazzle** (combat F5, defaults pending the sim). All four meters full, **F** at once: 4 × (4 + 6) × 1.5 + Team Pile-On 8 × 1.5 = **72 MV**; beating first, then F at the end: 58; two banked Moves in the ×1.5 window, then F: **79**. Paw management and meter management make the Special a decision.
+**Worked example: a Captain's Frazzle** (combat F5; the sim's data). The four Specials on the staggered Captain at the window's start ≈ 46 MV (stagger bonus included), and the full burst adds 4 × (2 + 6) × 1.5 = **48 MV**: ≈ 94 MV. The same chain on an un-staggered Captain ≈ 37 MV. Waiting for the stagger and the Crew meters is the decision.
 
 **Connects to.** Reads `RivalCombatProfile` (+ `anger_stage`, `old_gang_nerves`, `old_boss_id`, `kin_ids`); spawns the guest on `AllyJoined`; emits the encounter events (§16); owns the tier table.
 
@@ -204,7 +204,7 @@ The garden wall blends Explore → Home in 1.0 s (no cut). Tag-Ins retarget in 0
 - **Joining:** a recruit keeps Memory, Scars, Title, Fear and personality; its Strength becomes a perk. A recruit from a gang writes **`OLD_GANG(boss)` into its own Memory** and gains **Old Gang Nerves** unless it resists. The Old Boss's record never changes.
 - **Loyalty** shows only as a tier word and pose: **Shifty 0–29 · Aloof 30–44 · Steady 45–59 · True 60–79 · Sworn 80–100**. Steady+ teach **Lessons** (from L2D3). Release below 60 makes the cat **Gone**.
 - **Rare betrayal, live from Life 2:** only an **ex-Rival recruit posted as a Sentry** at Shifty (< 30; Schemer < 35). Two **Wavering** mornings, then on the third night it keeps the Patch it guarded as a **turncoat** (never Low Wall Corner or the Den). Un-posting it or Loyalty 30+ cancels it. Slice bound: 0% (earliest: a neglected Togemaru on Life 2 night 13).
-- **Bonded** pairs (Kin included) get a stronger Tag-In and +1 Loyalty a night when both are posted; **clashing** pairs lose 1 each a day together. No new Loyalty input reads a Verdict on another cat (two old ones are held '303 watch items, Crew §3.7.6).
+- **Bonded** pairs (Kin included) get stronger back-to-back Specials in a chain and +1 Loyalty a night when both are posted; **clashing** pairs lose 1 each a day together. No new Loyalty input reads a Verdict on another cat (two old ones are held '303 watch items, Crew §3.7.6).
 
 | Personality | Fights like | On guard (counters) | Likes / dislikes | As a Rival (Nose-Touch shift; nerves) |
 |---|---|---|---|---|
@@ -224,7 +224,7 @@ The garden wall blends Explore → Home in 1.0 s (no cut). Tag-Ins retarget in 0
 | **Kagi**, Captain of Tofu Shop Step | Schemer · Yowler | Recruit from L2D3; fair 96 / feast 192 | 40 / 45 |
 | **Daifuku**, Boss | Brooder · Bruiser | Recruit after his Boss fight, Regard ≥ 50 | 56 / 61 |
 
-**Worked example: who sits out?** Six cats, three Posse places, two posts: one lounges daily. Never Pon. Not Togemaru for long (a Shifty posted ex-Rival can Waver). Hige + Pon + Kinako is all-bonded but has no Frazzle opener; Togemaru + Kagi + Pon cracks Captains, but Kagi flinches at Daifuku until you Tag-In to him.
+**Worked example: who sits out?** Six cats, three Posse places, two posts: one lounges daily. Never Pon. Not Togemaru for long (a Shifty posted ex-Rival can Waver). Hige + Pon + Kinako is all-bonded but has no Frazzle opener; Togemaru + Kagi + Pon cracks Captains, but Kagi flinches at Daifuku until you command him from the skill bar.
 
 **Connects to.** Supplies `PowerRating` and `Loyalty`; Wavering flags at step 1; `CatRecruited` triggers the `OLD_GANG` entry.
 
@@ -255,7 +255,7 @@ The garden wall blends Explore → Home in 1.0 s (no cut). Tag-Ins retarget in 0
 - **Boss anger (C1):** raised only by **marking his gang's objects** (Over-mark +5, Counter-Spray +15), never by fights; −15 a night; **0–3 steam puffs** (Calm / Riled / Seething / Furious). It buys **Fired Up** in his next real fight and is **spent** by a win, loss or his flight (not Scram). It touches no other cat.
 - **New cats, never moved cats:** **town events** (every 2–3 nights) bring a **newcomer** into an empty place or keeperless Patch, or a **feud scuffle** between a Rival pair. **Challengers** come on a calendar (§10). **The Usurper** (full game): a fresh Boss staking the Den of a Boss-less district where Mikan's influence is below 25.
 
-**Numbers.** Grudge per encounter: Routed +6, Pile-On +3, after its Fear +3, Ambushed +3, Keeper whose post was marked +6, fled +8, won a wipe +5; capped 35 (20 after two encounters); −2 a quiet night. Regard: clean win +8, Nose-Touch +25, Recruit +10, won join-in +5. Gate shifts: §8. **Join-in** `p = 0.35 + 0.15·[near its old Patch] + 0.15·[Regard ≥ 75]`, cap 0.65. **Sim:** one Nemesis for 100% of seeds; arc achieved 100%; mixed Verdicts 55 / 8 / 37% (chase / recruit / nose); Nose-Touch open on 82% of Life 2 Verdicts; **0 non-participant cats changed in ≈ 51,300 invariant checks.**
+**Numbers.** Grudge per encounter: Routed +6, by a Special / Team Pile-On +3, after its Fear +3, Ambushed +3, Keeper whose post was marked +6, fled +8, won a wipe +5; capped 35 (20 after two encounters); −2 a quiet night. Regard: clean win +8, Nose-Touch +25, Recruit +10, won join-in +5. Gate shifts: §8. **Join-in** `p = 0.35 + 0.15·[near its old Patch] + 0.15·[Regard ≥ 75]`, cap 0.65. **Sim:** one Nemesis for 100% of seeds; arc achieved 100%; mixed Verdicts 55 / 8 / 37% (chase / recruit / nose); Nose-Touch open on 82% of Life 2 Verdicts; **0 non-participant cats changed in ≈ 51,300 invariant checks.**
 
 **Worked example: Togemaru** (gate 45). L1D1 ≈ 0:20: "Nice bell, Collar. Does it ring when you run?"; he bolts (uninterruptible on day 1). L1D2 ≈ 0:28, on his gatepost: "I ran yesterday. Not off my own post, Collar." A quiet take, a Pile-On, an **ear notch**; pending Grudge 43 < 45, all three cards open. Mikan sniffs **Daifuku** from the yard. **A, Nose-Touch:** a truce; on L2D1 he greets Mikan and may join against Goma (p 0.50); a **Sworn Rival** in the L2D2 Sniff. **B, Recruit:** on L2D4 he faces Daifuku: "Not your cat anymore." **C, Chase Off:** a legend card; Daifuku and the challenger carry Life 2.
 
@@ -274,7 +274,7 @@ The garden wall blends Explore → Home in 1.0 s (no cut). Tag-Ins retarget in 0
 - **Fight to clear, spray to claim.** Erode rival Scent by marking: **Over-mark** a Rub Mark (−10, quiet if unseen) or **Counter-Spray** the post (−30, loud). The first loud act sends waves; at Scent ≤ 30 the **Keeper** comes; Rout it, give a Verdict, **Claim Spray** (yours at 70). Quiet take: two Over-marks, one Counter-Spray. Loud take: two Counter-Sprays (more fighting; from Life 2 the Keeper won't Nose-Touch; the Boss gets angrier). **Rescue Spray** your own post below Strong (→ 90). Every act emits `MarkApplied`.
 - **Only territory acts, raids and time move Scent (G5)**; a fight, a Verdict or a loss never does.
 - **District influence (C3)** is read off Scent: each Lane outer Patch at Strong is worth 25, below Strong `scent/60` of 25. One **tug-of-war bar** (bell gold vs the gang, the Boss's crown at the full end); the % shows only in the Turf Board header. **It decays for everyone:** your posts −10 a night (×0.5 on Home Ground), a Sentry +10; a gang's posts recover +8.
-- **The Boss window:** at **influence 100** (all four outer Patches Strong) Daifuku's yowl rolls down and he **roams three stops**, one per phase: Morning Laundry Pole Yard's yard wall (wash tub) · Day Tofu Shop's back wall (rain barrel) · Dusk–Night the Den corner stone (bucket). It stays open while influence is **≥ 75** at step 2; while open, held outer Patches **can't be Lost**. **Claim:** Rout him, any Verdict, **Claim Spray the Den post** → `DistrictClaimed`. Before the window he ignores you ("Come back when the Lane smells of you, Collar."). His departure re-tasks nobody.
+- **The Boss window:** at **influence 100** (all four outer Patches Strong) Daifuku's yowl rolls down and he **roams three stops**, one per phase: Morning Laundry Pole Yard · Day Tofu Shop's back lane · Dusk–Night the Den corner, each a ground arena (M1.2: no wall, no tub). It stays open while influence is **≥ 75** at step 2; while open, held outer Patches **can't be Lost**. **Claim:** Rout him, any Verdict, **Claim Spray the Den post** → `DistrictClaimed`. Before the window he ignores you ("Come back when the Lane smells of you, Collar."). His departure re-tasks nobody.
 - **Raids:** from L2D2, one a night, requested by Nemesis and **forecast** in the Sniff. Overnight it resolves against Scent and the **Sentry**: Repelled −5, Scuffed −20 (Tribute stolen twice over), Lost (flips at 40). Motive counters: `grudge` Goofball, `gloat` Braggart, `gang_orders` Stalwart, `challenge` Schemer or Brooder. Out at Night it fires as a **Caterwaul**: arriving in time multiplies the Sentry term ×1.5 **whatever happens in the brawl** (the presence rule).
 - **Ground is taken back (C3, C5)** by raids; by **challengers**, fresh cats who stake your lowest-Scent held Patch (never Low Wall Corner or the Den) on a calendar: the first on the second night after Mikan first holds ≥ 3 Patches (slice: **night 5, the L2D4 Sniff**), then every 4th night, ≤ 1 active. By day it waits at the post (beat it for a Verdict; no Scent); by night it over-marks −10 (a posted Goofball: 0) and takes the raid slot (`challenge`). Lost: it becomes the Keeper; Repelled twice: it leaves. Also by **newcomers** into keeperless Patches and rare **turncoats** (§8).
 - **Guard = Style × personality**; bonded neighbours +25%, clashing −25%. **Tribute** lands as a pile on the Doorstep into the **Stash** (cap 400, always safe).
@@ -316,7 +316,7 @@ The garden wall blends Explore → Home in 1.0 s (no cut). Tag-Ins retarget in 0
 
 Plus **Late Home** (L2D3 Dusk): no Call, the bell alone, Haru comes home late; it teaches "no Call = she's late, she will come" before Life 8 reuses that Dusk.
 
-**Numbers: Bond.** 0–10 hearts, never decreases. Daily points: home by Dusk 1.0, late or routed 0.5, Lap, find, Gift, Comfort 0.5 each; cap 2.5. **Well-Fed** next day (not after a loss): Zoomies starts at 5% per heart; every Posse cat starts fights with ¼ Paw. ≈ 2 points a day for 7 days = **4 hearts**.
+**Numbers: Bond.** 0–10 hearts, never decreases. Daily points: home by Dusk 1.0, late or routed 0.5, Lap, find, Gift, Comfort 0.5 each; cap 2.5. **Well-Fed** next day (not after a loss): Mikan's Special meter starts at 5% per heart; every Posse cat starts fights with ¼ Paw. ≈ 2 points a day for 7 days = **4 hearts**.
 
 **Connects to.** Consumes `HomeArrived`, `DayEnded`; emits `KeystonePlayed`, `BondChanged`, `LifeAdvanced`; step 5; Routine tags for Rivals' taunts. Narrative writes every line, each from the speaker's own history (G8).
 
@@ -348,7 +348,7 @@ Plus **Late Home** (L2D3 Dusk): no Call, the bell alone, Haru comes home late; i
 
 *Owner: ux-designer · [`ux/hud.md`](ux/hud.md), [`ux/key-screens.md`](ux/key-screens.md) · desktop only: gamepad first, full keyboard and mouse*
 
-**Three HUDs.** *Street:* the world is the interface: a phase dial, an on-demand Patch tag (a steam puff when a marking act angers the Boss), flares, the Call glyph, Head Home, barks; compass ticks for the roaming Boss and a challenger. **The closed street** after a loss shows only the thread, the dial and the Rivals binding. *Combat:* Posse plates bottom-left (a guest plate with its sprig), Zoomies bottom-right, ribbons for named Rivals; the Frazzle bar and Pile-On ring sit **on the enemy**. *Home:* pictograms only, except the **Doorstep Morning Sniff**.
+**Three HUDs.** *Street:* the world is the interface: a phase dial, an on-demand Patch tag (a steam puff when a marking act angers the Boss), flares, the Call glyph, Head Home, barks; compass ticks for the roaming Boss and a challenger. **The closed street** after a loss shows only the thread, the dial and the Rivals binding. *Combat:* Posse plates bottom-left (no control keys; a guest plate with its sprig), Mikan's Special pom bottom-right, ribbons for named Rivals; the Frazzle bar, the F Special prompt and damage numerals (On by default) sit **on the enemy**; allies outlined yellow, enemies red with a chevron. *Home:* pictograms only, except the **Doorstep Morning Sniff**.
 
 | Screen | What it is |
 |---|---|
@@ -369,13 +369,13 @@ Plus **Late Home** (L2D3 Dusk): no Call, the bell alone, Haru comes home late; i
 
 **Flash and motion safety overrides every feel value:** ≤ 3 flashes/s over > 20% of the screen; ≤ 1 full-screen impact frame/s (a runtime arbiter); no saturated red change over > 5%; stepped shake; global hit-stop ≤ 20% of any second. **The default build must pass a Harding-style analysis before any public footage** (the nightfall iris and the board's "Last night" replay included).
 
-**Slice options:** Reduce Flashes, Reduce Motion, shake and hit-stop sliders, onomatopoeia On/Smaller/Off; text to 150%; full remapping; a toggle for every hold; Slow Blink full pause; Kitten difficulty; keyboard-only and gamepad-only completion. **No state by colour alone.** **Nothing depends on hover:** every tie is also on the card's Ties line and on pad focus. **Deaf/HoH parity without captions:** the Call glyph, bell glint, lamp wave, Sense Icons, sting glyphs, haptics. **REQUESTs pending with Combat:** Auto Slow Blink, a wider Tag-In window, combat speed 70/85%, hold-to-string, hit-stop 0%.
+**Slice options:** Reduce Flashes, Reduce Motion, shake and hit-stop sliders, onomatopoeia On/Smaller/Off; text to 150%; full remapping; a toggle for every hold; skill-bar full pause; Kitten difficulty; keyboard-only and gamepad-only completion. **No state by colour alone.** **Nothing depends on hover:** every tie is also on the card's Ties line and on pad focus. **Deaf/HoH parity without captions:** the Call glyph, bell glint, lamp wave, Sense Icons, sting glyphs, haptics. **REQUESTs pending with Combat:** auto-open skill bar, combat speed 70/85%, hold-to-string, hit-stop 0%.
 
 ---
 
 ## 16. Cross-system map
 
-**One Cat Schema:** `id, name, title, coat_seed, style, personality, level, xp, stats{5}, moves[4], zoomies, signature_strength, traits{strengths,fears,scars}, loyalty, grudge, regard, memory[], rank (fixed), former_rank, clowder, assignment, relations[], discovered, old_gang_nerves, anger, truce_until_day, wavering_nights, keeper_of`.
+**One Cat Schema:** `id, name, title, coat_seed, style, personality, level, xp, stats{5}, moves[4], special, signature_strength, traits{strengths,fears,scars}, loyalty, grudge, regard, memory[], rank (fixed), former_rank, clowder, assignment, relations[], discovered, old_gang_nerves, anger, truce_until_day, wavering_nights, keeper_of`.
 
 | Event | From | → To |
 |---|---|---|
@@ -404,23 +404,23 @@ Queries: Combat → Nemesis `RivalCombatProfile`; Territory, Nemesis → Crew `P
 
 | Time | Beat | Taught |
 |---|---|---|
-| 0:00–0:08 | **K1.1**; garden; a crow on the lane-side wall top | Camera, Move, Hop, Attack, Skitter |
-| 0:08–0:15 | **Hige** joins; two Strays; **two-cat Pile-On ≈ 0:14** | Whisker Sense, switch, Slow Blink, command, Frazzle, Pile-On |
+| 0:00–0:08 | **K1.1**; garden; a crow on the lane-side wall top | Camera, Move, Jump, Light, Evade, Lock-on |
+| 0:08–0:15 | **Hige** joins; two Strays; **first two-cat Special chain ≈ 0:14** | Whisker Sense, Heavy and the L-L-L-H finisher, skill bar, command, Frazzle, F Special |
 | 0:15–0:20 | Low Wall Corner; an untracked Stray Keeper; **Claim Spray: Patch 1** | Rub, Spray, Hiss, Back Down |
-| 0:20–0:25 | **Togemaru** flees (day 1); nap; Head Home; **K1.3, the first Call** | Standoff, Brace, home |
-| 0:25–0:32 | Day 2 Doorstep and Lot; **memory line ≈ 0:28**; **first Verdict**; **Patch 2**; sniff Daifuku | Tag-In, Verdict, discovery |
-| 0:32–0:45 | **Pon**; **K1.4** at 0:40–0:45; Life-end sleep | Relay |
+| 0:20–0:25 | **Togemaru** flees (day 1); nap; Head Home; **K1.3, the first Call** | Standoff, launcher and charged Heavy, home |
+| 0:25–0:32 | Day 2 Doorstep and Lot; **memory line ≈ 0:28**; **first Verdict**; **Patch 2**; sniff Daifuku | Evade-lunge and perfect Evade, Verdict, discovery |
+| 0:32–0:45 | **Pon**; **K1.4** at 0:40–0:45; Life-end sleep | Three-cat chain (if meters line up) |
 | 0:45–1:00 | Montage; L2D1: K2.1, **the Rivals board**, **Kinako**, Ambush, **Patch 3**; influence ≈ 75 | Rivals board, tags, influence |
 
-**Life 2, one headline a day:** **D1** Ambush, the Rivals board, the influence bar · **D2** the first forecast (often beside the Declaration), Sentries and the Turf Board's one decision, props and Fears, the cat flap, Night, the Caterwaul · **D3** Lessons, Zoomies on Kagi, **the Tofu Shop Step Claim Spray opens the Boss window** (in view), Late Home, K2.2 · **D4** K2.5, **the first challenger**, **the Daifuku fight** (a lost attempt is the budget's long case) · **D5** the rematch, **Claim Spray the Den**, the Life-end sleep. Taught when they first happen: a join-in, the first loss, a Nose-Touch card closed by a loud take ("Spray quietly to make peace."), the first Gone cat, the first Wavering.
+**Life 2, one headline a day:** **D1** Ambush, the Rivals board, the influence bar · **D2** the first forecast (often beside the Declaration), Sentries and the Turf Board's one decision, props and Fears, the cat flap, Night, the Caterwaul · **D3** Lessons, a four-cat Special chain on Kagi, **the Tofu Shop Step Claim Spray opens the Boss window** (in view), Late Home, K2.2 · **D4** K2.5, **the first challenger**, **the Daifuku fight** (a lost attempt is the budget's long case) · **D5** the rematch, **Claim Spray the Den**, the Life-end sleep. Taught when they first happen: a join-in, the first loss, a Nose-Touch card closed by a loud take ("Spray quietly to make peace."), the first Gone cat, the first Wavering.
 
 | Day | Min | C | T | H | S | Beats |
 |---|---|---|---|---|---|---|
-| L1D1 | 25 | 9 | 8 | 2 | 6 | K1.1, Pile-On, Patch 1, K1.3 |
+| L1D1 | 25 | 9 | 8 | 2 | 6 | K1.1, first Special chain, Patch 1, K1.3 |
 | L1D2 | 20 | 7 | 10 | 1.5 | 1.5 | Memory line, Verdict, Patch 2, Pon, K1.4 |
 | L2D1 | 20 | 7 | 9.5 | 1 | 2.5 | Rivals board, Kinako, Ambush, Patch 3 |
 | L2D2 | 23 | 7.75 | 13 | 1 | 1.25 | Declaration, forecast, Turf Board, K2.3, Caterwaul |
-| L2D3 | 24 | 6.75 | 15.5 | 0.75 | 1 | Lessons, Kagi, Zoomies, **window opens**, Late Home, K2.2 |
+| L2D3 | 24 | 6.75 | 15.5 | 0.75 | 1 | Lessons, Kagi, four-cat chain, **window opens**, Late Home, K2.2 |
 | L2D4 | 15.5 | 3.5 | 7.25 | 1.75 | 3 | K2.5, challenger, Daifuku attempt lost → Night, Routed Evening |
 | L2D5 | 16 | 7 | 7.5 | 0.75 | 0.75 | Rematch, Den Claim Spray, suitcase, title card |
 | **Total** | **143.5** | **33%** | **49%** | **6%** | **11%** | |
@@ -432,14 +432,14 @@ Queries: Combat → Nemesis `RivalCombatProfile`; Territory, Nemesis → Crew `P
 ## 18. Prototype plan
 
 **Build first** (brief §10):
-1. **Combat grey box** (highest risk): Mikan + 3, 3 Styles, the 8 ★ Moves, Tag-In, Relay, Pile-On, a Captain, a 3-phase Daifuku on one patrol-stop kit with Fired Up by anger, Cowed and the Tag-In that clears it, the join-in guest; AI for Stalwart Hige, Goofball Pon, Braggart Togemaru; camera states; the tier table with the safety arbiter.
+1. **Combat grey box** (highest risk): Mikan + 3 (Mikan only controlled), 3 Styles, the 8 ★ Moves, the skill bar, Evade, the F Special with the sequential chain and Team Pile-On, a Captain, a ground Daifuku on the universal Boss pattern (phase 1 in M1) with Fired Up by anger, Cowed and the skill-bar command that clears it, the join-in guest; AI for Stalwart Hige, Goofball Pon, Braggart Togemaru; camera states; the tier table with the safety arbiter.
 2. **Sims** as regression checks: [`reviews/round-3/sim/`](reviews/round-3/sim/) and [`reviews/owner-feedback/sim/`](reviews/owner-feedback/sim/) (combat with anger and nerves, Nemesis with the patent-invariant self-test, territory economy, day budget). **Owed:** Crew's Lives 1–2 sim for betrayal rate (AC-23) and pacing (AC-6).
 3. **One-alley look-dev test (UE 5.8)** and a **home mock** (Mikan at 1.25× in a lap).
 4. **Browser showcase first** ([`IMPLEMENTATION-PLAN.md`](../production/artifact-slice/IMPLEMENTATION-PLAN.md)): a ≈ 14-min desktop-only stakeholder build of the owner's direction, starting with the M0 look-dev go/no-go; its data tables and findings carry over.
 
 **Questions it must answer.**
-- Is conducting fun (≥ 75% do ≥ 1 Tag-In and ≥ 3 commanded Moves per normal encounter)? Random pause: ≥ 90% find their cat within 1 s? Do AI Paw habits ever fire?
-- Is Daifuku 2–3 min at every anger stage, and do ≥ 60% bucket him unaided? Can a Life 1 kitten beat Togemaru?
+- Is commanding fun (≥ 75% make ≥ 3 skill-bar commands per normal encounter and fire ≥ 1 Special per Captain)? Random pause: ≥ 90% find their cat within 1 s? Do AI Paw habits ever fire?
+- Is Daifuku 2–3 min at every anger stage, and do ≥ 60% Evade his belly-flop shockwave and punish the landing unaided? Can a Life 1 kitten beat Togemaru?
 - In the slice build: does a day fit 25 min? Is posting a real choice? **Is Nose-Touch ≤ 60% of Verdicts, and can testers say why a card closed?** Does the influence bar read without a street strip (key-screens A-7)? Does the walk home read as a sting, not dead air? Does a flinching recruit or a join-in come up unprompted?
 
 ---
@@ -472,7 +472,7 @@ Queries: Combat → Nemesis `RivalCombatProfile`; Territory, Nemesis → Crew `P
 | 2 | Cultural consultant for the home rituals | Before slice home content is final |
 | 3 | Team size, budget, timeline | — |
 | 4–9 | Haru canon or selectable · Mikan customisation · does Life 9 imply Mikan's passing · handheld floor · Night locked until the flap · Spraying as a sparkle cloud | Canon · fixed design · no (the bell is last) · Switch 1-class · yes · yes |
-| 10 | Remaining doc alignments | Pile-On prompt word vs hint card; Togemaru's Strength (+15% Nerve) vs Nemesis's slice list |
+| 10 | Remaining doc alignments | Special prompt word vs hint card; Togemaru's Strength (+15% Nerve) vs Nemesis's slice list |
 
 *Settled by the owner 2026-11-24 (rulings §5; every answer matched the default):* the recruit's **own flinch** replaces the old boss's targeted trash-talk (pending counsel on a line-only taunt); Nose-Touch truce = **10 in-game days**; **Chase Off is final for everyone**, Togemaru included (his arc closes with an ending of its own); **recruit betrayal is on in the slice** (rare); **full influence = all four outer Patches Strong at once**. Also the owner's comments C1–C6 themselves (Rivals board and staged gang scenes, losing ends the day, district influence, the three-option Verdict, the unified Turf Board and challengers), and **no phone support** for the browser showcase (desktop only).
 
@@ -496,7 +496,7 @@ New or easily confused terms; the full canon glossary is [`creative-brief.md`](c
 | **Keystone / Texture / Closing** | Required home beat / optional one / a Life's last Keystone |
 | **Morsels / Stash** | Food currency / Mikan's always-safe bank |
 | **Nerve / Routed** | HP / bolting in a dust puff at 0. Nobody dies |
-| **Old Gang Nerves** | A recruit's own fear of its old boss: Cowed until you Tag-In to it |
+| **Old Gang Nerves** | A recruit's own fear of its old boss: Cowed until you command it from the skill bar |
 | **Routed Evening** | The night-lit evening after a loss, opening with Haru's sticking plaster |
 | **Town event** | An overnight newcomer or feud scuffle, never caused by what Mikan did to a cat |
 | **Truce / Friend** | 10 days of peace after a Nose-Touch / a truce cat at Regard ≥ 75, never hostile again |
@@ -506,6 +506,7 @@ New or easily confused terms; the full canon glossary is [`creative-brief.md`](c
 
 ## Changelog
 
+- **Owner combat direction M1.2 (2026-11-24)** — From the owner's C11 via [`reviews/owner-feedback/combat-m1.2-spec.md`](reviews/owner-feedback/combat-m1.2-spec.md). §6: one final combat control table (**Evade on Space** replaces Dodge and Dash, Shift unused in combat; **Tab lock/unlock** with flick switching; **F = Special any time**); camera table (3.8 m behind Mikan, direct mouse yaw, dither fade; skill-bar row). §7: NieR-style responsiveness (Light next tick, Heavy wind-up, slow steering, move-out at 60% of the animation, Evade cancels anything), cornered-cat AI, Special any time with stagger bonus, sequential chain with the full burst on top, Final KO, damage numbers On, yellow/red outlines, the universal Boss pattern and **ground Daifuku** (belly-flop shockwave; no wall, tub or knock-off). **F14 sweep:** §1, §4, §5, §6, §8, §9, §10, §11, §14–§21 Tag-In / Relay / Pile-On input / Zoomies / Slow Blink / wash-tub mentions updated.
 - **Owner combat direction M1.1 (2026-11-24)** — From the owner's C10 via [`reviews/owner-feedback/combat-m1.1-spec.md`](reviews/owner-feedback/combat-m1.1-spec.md) (final bindings: **F** = Special on a staggered enemy, **R** = skill bar, **Tab** = lock-on cycle). Pillar 3 is **Command the Brawl** (§1 key feature, §2). §6 control map: the one final combat table plus exploration-only bindings. §7 combat: Mikan only (Tag-In, Relay and switching removed), five strings with the L-L-L-H finisher, the responsiveness rules, attack-token cat AI, the stagger presentation, the skill bar, the F Special with the automatic Crew chain and the Team Pile-On (Zoomies folded in; Full Burst resemblance on the counsel checklist), visible Moves, Cowed cleared by a command; worked example on the chain (numbers pending the sim). Not yet amended (outside this pass): §6 camera table, §8, §9, §16, §17, §18, §20, §21 glossary.
 - **1.2 (2026-11-24)** — Owner feedback C1–C6 compiled from OR-01…OR-21, F1–F12 and brief v1.6: losing ends the day (Night, closed street, the Routed Evening); the Rivals board replaces the Fence Line (discovery, tags; staged gang scenes per C6); three Verdicts (Humble removed; Chase Off final; gated Nose-Touch with truce and join-ins); Togemaru's three endings; Boss anger, Old Gang Nerves, Fired Up/Cowed; district influence, the Boss window and patrol (Den gate removed); challengers, newcomers, town events (no seats, promotions, wall events or Stewing); rare betrayal; the unified Turf Board; Bribe tiers; `MarkApplied` and the new events; pacing re-measured (143.5 min); patent risk re-based on the full claims (v2); owner answers recorded as settled.
 - **1.1 (2026-11-24)** — The user's engine, title and art-style decisions (brief v1.4).

@@ -49,9 +49,10 @@ node tools/sim-run.mjs --seeds 30
 ```
 
 The first runs the unit tests (F1–F5, F7 and F11 worked examples, determinism by hash, the join-in guest leaving the
-opposing Rival's AI bit-identical, Old Gang Nerves, the arbiter's flash and hit-stop caps, and the M1.1 input model:
-the one-slot buffer, first-active-frame latency, the move-out gradient, L-L-L-H, lock-on, attack tokens, the Special
-chain and Team finisher) and the smoke bots on
+opposing Rival's AI bit-identical, Old Gang Nerves, the arbiter's flash and hit-stop caps, and the M1.1/M1.2 input model:
+the one-slot buffer, next-tick lights, move-out at 60%, Evade cancels with combo continuation and cooldown, perfect
+evade, L-L-L-H, lock-on, attack tokens, cornered cats, the sequential Special chain, Daifuku's shockwave and clean
+phase-1 end, Final KO) and the smoke bots on
 3 seeds. The second prints fight lengths per scenario (skilled, median-policy, scripted-Daifuku and passive bots)
 against the GDD's F9 figures and exits non-zero if a bot misses its expectation (`--only <id>`, `--json out.json`).
 

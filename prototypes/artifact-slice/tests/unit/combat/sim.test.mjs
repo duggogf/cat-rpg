@@ -66,7 +66,7 @@ test('enemy and Boss AI never read guest, Kin, Old Gang, anger or Posse-membersh
 });
 
 const angerRun = (stage, soggyAt, D) => {
-  const enc = createEncounter({ Name: 't_anger', arena: 'wash_tub_kit', opener: 'standoff', posse: ['kinako'], enemies: ['daifuku'], guest: null, tutorial: false },
+  const enc = createEncounter({ Name: 't_anger', arena: 'yard_ground', opener: 'standoff', posse: ['kinako'], enemies: ['daifuku'], guest: null, tutorial: false },
     { seed: 3, anger: { daifuku: stage }, data: D });
   const b = enc.byId.get('daifuku');
   for (const p of enc.posse()) { p.nerve = p.nerveMax = 1e6; } // fixture: the fight must outlast the buff
@@ -101,7 +101,7 @@ test('F11 with anger_fu_pause_under_status off, the first Soggy ends a Riled buf
 });
 
 test('Old Gang Nerves: Kagi is Cowed 20 s and never targets Daifuku; a skill-bar command to Kagi clears it; Hige resists', () => {
-  const def = { Name: 't_nerves', arena: 'wash_tub_kit', opener: 'standoff', posse: ['mikan', 'kagi', 'hige'], enemies: ['daifuku'], guest: null, tutorial: false };
+  const def = { Name: 't_nerves', arena: 'yard_ground', opener: 'standoff', posse: ['mikan', 'kagi', 'hige'], enemies: ['daifuku'], guest: null, tutorial: false };
   // Arrange + Act: through the Standoff.
   const enc = createEncounter(def, { seed: 4 });
   stepN(enc, T * 3 + 2);
@@ -150,20 +150,82 @@ test('in skilled sandbox fights, AI Kin, Hiss and Move rules hold and a Team fin
   }
 });
 
-test('a scripted Daifuku bout knocks him off deterministically, clamps at 70%, defers the break past Frazzle, and ends rival_fled', () => {
+test('Daifuku fights on the ground: his belly-flop shockwave knocks cats down, phase 1 clamps at 70% and ends cleanly with a Final KO', () => {
+  // Arrange + Act
   const enc = createEncounter('daifuku_bout', { seed: 2, showcase: true });
   const b = enc.byId.get('daifuku');
+  assert.equal(enc.hrs.length, 0, 'no wall'); assert.equal(enc.props.length, 0, 'no wash tub');
   const { events } = run(enc, withCommandQueue(daifukuBot()), T * 200);
+  // Assert
+  assert.ok(events.some(e => e.type === 'ShockwaveStart'));
+  assert.ok(events.some(e => e.type === 'KnockedDown'));
+  assert.ok(!events.some(e => e.type === 'KnockOff' || e.type === 'ClimbBack'));
   const pb = events.findIndex(e => e.type === 'PhaseBreak');
   assert.ok(pb >= 0);
-  assert.ok(events.filter(e => e.type === 'KnockOff').length >= 1);
-  assert.ok(!events.some(e => e.type === 'Splat' && e.cat === 'daifuku'), 'a Boss is never Splatted');
   for (const e of events.slice(0, pb)) if (e.type === 'Hit' && e.target === 'daifuku') assert.ok(e.nerve >= Math.ceil(b.nerveMax * 0.7));
   const lastFr = events.slice(0, pb).filter(e => e.type === 'Staggered' || e.type === 'StaggerEnded').pop();
   assert.ok(!lastFr || lastFr.type === 'StaggerEnded', 'no break while staggered');
-  assert.equal(enc.outcome, 'rival_fled');
-  const end = events.find(e => e.type === 'EncounterEnded');
-  assert.equal(end.reason, 'phase_break'); assert.equal(end.rival, 'daifuku');
+  const ko = events.find(e => e.type === 'FinalKO'), end = events.find(e => e.type === 'EncounterEnded');
+  assert.equal(ko.cat, 'daifuku'); assert.equal(ko.how, 'phase_break');
+  assert.equal(enc.outcome, 'rival_fled'); assert.equal(end.reason, 'phase_break'); assert.equal(enc.mode, 'ended');
+  assert.ok(end.t - events[pb].t <= DATA.bosses.daifuku.break_s + 0.5, 'the bout ends right after the break (no stuck state)');
+  assert.ok(events.every(e => e.type !== 'Hit' || e.attacker !== 'daifuku' || e.cls), 'every Boss attack is telegraphed');
+});
+
+test('the shockwave ring knocks down a cat it crosses, and an evade through the front gets i-frames and no knockdown', () => {
+  const ring = evade => {
+    const enc = createEncounter('daifuku_bout', { seed: 5 });
+    for (let i = 0; i < T * 3 + 1; i++) enc.step({});
+    const b = enc.byId.get('daifuku'), m = enc.byId.get('mikan');
+    b.x = 0; b.z = 0; m.x = 3; m.z = 0;
+    for (const p of enc.posse()) if (p !== m) { p.x = -4; p.z = 3; }
+    b.act = null; b.boss.swingCd = 99;
+    enc._slam(b, DATA.moves.belly_flop_shockwave, { type: 'circle', center: [0, 0], radius: 1.8 });
+    const ev = [];
+    for (let i = 0; i < T * 2; i++) {
+      const h = enc.hazards[0];
+      const near = h && evade && 3 - h.r <= h.speed * 0.1 + h.width / 2 + m.radius && 3 > h.r;
+      ev.push(...enc.step(near && m.evadeCd <= 0 ? { evade: true, move: [-1, 0] } : {}));
+    }
+    return ev;
+  };
+  const hit = ring(false);
+  assert.ok(hit.some(e => e.type === 'KnockedDown' && e.cat === 'mikan'));
+  const dodged = ring(true);
+  assert.ok(!dodged.some(e => e.type === 'KnockedDown' && e.cat === 'mikan'));
+  assert.ok(dodged.some(e => e.type === 'PerfectEvade'), 'evading as the ring arrives is a perfect evade');
+});
+
+test('a cornered enemy (1 vs 4) lashes out instead of hovering', () => {
+  const def = { Name: 't_corner', arena: 'sandbox_lane', opener: 'standoff', posse: ['mikan', 'hige', 'pon', 'kinako'], enemies: ['goma'], guest: null, tutorial: false };
+  const enc = createEncounter(def, { seed: 6 });
+  const evs = [];
+  for (let i = 0; i < T * 3 + 1; i++) enc.step({});
+  const g = enc.byId.get('goma');
+  for (const p of enc.posse()) { p.x = g.x + (p.slot - 1.5) * 0.9; p.z = g.z + 1.8; }
+  for (let i = 0; i < T * 10 && enc.mode !== 'ended'; i++) evs.push(...enc.step({}));
+  assert.ok(evs.some(e => e.type === 'Cornered' && e.cat === 'goma'));
+  const swings = evs.filter(e => e.type === 'TelegraphStart' && e.attacker === 'goma').length;
+  assert.ok(swings >= 4, `cornered Goma swung ${swings} times in 10 s`);
+});
+
+test('the last opponent falling emits one FinalKO before EncounterEnded; a loss emits none', () => {
+  const win = createEncounter('toughs_2', { seed: 3, showcase: true });
+  const w = run(win, withCommandQueue(skilledBot()), T * 120).events;
+  const kos = w.filter(e => e.type === 'FinalKO');
+  assert.equal(win.outcome, 'win'); assert.equal(kos.length, 1);
+  assert.ok(w.indexOf(kos[0]) < w.findIndex(e => e.type === 'EncounterEnded'));
+  assert.ok(kos[0].freeze_ms > 0 && kos[0].slow.ms >= 1000);
+  const loss = createEncounter('lose_to_daifuku', { seed: 1, showcase: true });
+  const l = run(loss, () => ({}), T * 300).events;
+  assert.equal(loss.outcome, 'loss'); assert.ok(!l.some(e => e.type === 'FinalKO'));
+});
+
+test('every Hit carries its per-hit damage for the damage numbers', () => {
+  const enc = createEncounter('sandbox', { seed: 2, showcase: true });
+  const { events } = run(enc, withCommandQueue(skilledBot()), T * 60);
+  const hits = events.filter(e => e.type === 'Hit');
+  assert.ok(hits.length > 20 && hits.every(e => Number.isInteger(e.dmg) && e.dmg >= 0 && typeof e.target === 'string'));
 });
 
 test('a wipe Gloats then hands off exactly one EncounterEnded(loss) naming the victor, and writes no data', () => {
@@ -228,21 +290,21 @@ test('AI cats spend Paws by personality: Hige (Stalwart) and Pon (Goofball) each
 
 test('the showcase challenger is a Captain with the Water Fear and its fight lands in 23-34 s; canon keeps a Tough', () => {
   // Arrange + Act
-  const lens = [], fulls = [];
+  const lens = [], fulls = [], chains = [];
   for (const seed of [1, 2, 3, 4, 5, 6, 7, 8]) {
     const enc = createEncounter('challenger', { seed, showcase: true });
     const ch = enc.byId.get('challenger');
     assert.equal(ch.rank, 'captain'); assert.deepEqual(ch.row.fears, ['water']);
     const { events } = run(enc, withCommandQueue(skilledBot()), T * 120);
     assert.equal(enc.outcome, 'win');
-    lens.push(enc.fightT); fulls.push(events.filter(e => e.type === 'TeamFinisher').length);
+    lens.push(enc.fightT); fulls.push(events.filter(e => e.type === 'TeamFinisher').length); chains.push(events.filter(e => e.type === 'SpecialChainStart').length);
   }
   const canon = createEncounter('challenger', { seed: 1 });
   // Assert
   assert.equal(canon.byId.get('challenger').rank, 'tough'); assert.deepEqual(canon.byId.get('challenger').row.fears, []);
   const med = lens.slice().sort((a, b) => a - b)[lens.length >> 1];
   assert.ok(med >= 23 && med <= 34, `median ${med.toFixed(1)} s`);
-  assert.ok(fulls.filter(n => n >= 1).length >= 6, 'a Team finisher lands on the Captain-rank challenger in most runs');
+  assert.ok(chains.every(n => n >= 1), 'a Special chain plays in every run');
 });
 
 test('the bucket splashes a 3 m cone away from the hitter: Soggy in front, dry behind', () => {
