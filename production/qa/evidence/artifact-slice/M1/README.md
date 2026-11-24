@@ -127,6 +127,43 @@ P Pause.
 
 **M1.1 weak spots:** gamepad untested; no audio.
 
+
+## M1.2 (owner direction, `design/reviews/owner-feedback/combat-m1.2-spec.md`): presentation
+
+Controls: WASD move (1.6 m/s); LMB light, near-instant; RMB heavy, with a readable wind-up; **Space evade** (cancels
+anything, 0.8 s cooldown shown as a drain ring on Mikan's plate); **Tab locks / unlocks**; while locked, a horizontal
+mouse flick picks the next enemy on that side (`lockSwitch`); F Special at any time; R skills; **N toggles damage
+numbers** (on by default; `?dmg=0` starts them off).
+
+| File | What it shows |
+|---|---|
+| `pan120-1..6.png`, `pan120-sheet.png`, `results.json.pan` | Mikan walking while the camera turns 60°/s, stepped at 1/120 s like a 120 Hz display. Horizontal mouse look is now applied 1:1: 29.5° of the requested 30° in 0.5 s, against 0.67° before the fix. Every cat, Mikan included, now interpolates between sim ticks, so screen steps are even (no repeated or alternating positions, i.e. no 60 Hz double image). The pivot follows on a critically damped spring, and the paint wobble eases to 25% during camera motion |
+| `damage-numbers.png` | Damage numbers. Hits on one cat within 0.35 s merge into one count, and older counts stack upward. Cream-on-Ink for hits given, Ink-on-Cream for hits taken, `+N` in Purr Rose for heals. Also a ≈ 133 ms flash on the hit cat only, allies outlined yellow, enemies red with a red wedge over the head |
+| `finalko-01..05.png`, `finalko-sheet.png` | Final KO, from the sim's `FinalKO {freeze_ms, slow}`. A 0.4 s freeze over an impact background (a Cream panel value-matched to the frame, Ink lines, 3-drawing halftone wipe) with only the KO'd cat and its attacker drawn, then slow motion on a slowly turning close two-shot with the giant K.O.!, then the outcome card. The KO waits until any Special chain has ended |
+| `daifuku-bellyflop-telegraph.png`, `daifuku-shockwave.png`, `daifuku-phase1-end.png` | Daifuku on the ground in the `yard_ground` arena (no wall, no tub, fenced). The red belly-flop telegraph grows over its windup. `ShockwaveStart` draws a Cream-and-Ink ring expanding linearly at the sim's front speed, so the drawn ring is the hitbox, with THOOM!, dust and a crack. Phase 1 ends with `FinalKO`, then the end card. `BossRage` shows a RAGE! banner and steam |
+| `special-*`, `team-finisher-*` | Sequential chain. Each `SpecialStart` plays its cut-in for `cutin_s`, then that cat's action plays in the world. While a cut-in is up, nothing else draws over it (damage numbers, shards and the KO are held back), and the acting cat is never dither-faded. The F prompt adds "×1.3 STAGGER" when `special_prompt.staggered` |
+
+**M1.2 numbers:**
+- **Latency:** the light lands 1 tick after the press. Presses 2 and 3 (4 ticks apart) are dropped by the one-slot buffer.
+- **Camera:** the 120 Hz pan applies 29.5° of the requested 30°. Screen steps average 1.8 px with no repeated positions. The largest step-to-step change, 3 px, is the spring's start.
+- **Triangles:** the 10-cat brawl draws 0.34–0.49 M (median 0.41 M). With M1.2's bigger on-screen cats, at most the 2 nearest non-controlled cats draw at full detail.
+- **Flash screening** on the 10 s Special-chain capture (stagger, sequential cut-ins, KO) passes: 2 per 1 s, 2 per 5 s, red change 1%.
+- `publish-check` is green for `?chapter=combat&fight=toughs3|captain|daifuku` and the default page.
+
+**Sim issue found:** at one Daifuku FinalKO, a routed Mikan's position came out non-finite. Every pose and camera value went NaN, and the frame rendered black. The presentation now keeps the last finite position; the sim should fix the root cause.
+
+**Weak spots:**
+- Chains that include the final blow defer the KO until the chain ends.
+- The demo bot often loses cats against Daifuku.
+- Gamepad still untested.
+
+Other changes:
+- Near-camera cats and ring props now dither-fade to 30% with an ordered Bayer pattern in 8 steps, instead of being hidden.
+- Cornered cats hiss (`Cornered`, `intent: cornered`).
+- `KnockedDown` uses the flat splat pose.
+- A perfect evade draws a Cream clock ring.
+- The heavy wind-up is a crouch-and-rear sized to the attack's `startup_s`. The walk blend follows `can_move`, which is 0.3 from the first frame and 1.0 from 60% of the attack.
+
 ## Known gaps / deviations (for the art + creative directors)
 
 - **Combat poses are procedural** (lunge, recoil, squash, arch, puff, splat) on a wrapper: the cat rig has only

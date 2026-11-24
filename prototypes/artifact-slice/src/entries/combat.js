@@ -71,7 +71,7 @@ let world, shadow, post, enc, snap, prevSnap, fighters = new Map(), fx, scr, cca
 let realT = 0, acc = 0, paused = false, script = null, cmdQueue = [], injectQ = [], pile = null, impact = null, dip = null, midTone = new THREE.Color('#8C88B8');
 const DT = 1 / 60, TWO = 1 / 30, evLog = [], counts = {};
 let lastTagWindow = null, routedTrail = new Map(), crackedUntil = new Map(), standoffFocus = null, fightStartT = null, endShown = false, lastStats = {};
-let camPrev = null, driveInp = null, driveYaw = 0, ko = null, lastEnemyOut = null, lastOutBy = null, sawShockwaveEvent = false; const teleById = new Map();
+let pendingKO = null, camPrev = null, driveInp = null, driveYaw = 0, ko = null, lastEnemyOut = null, lastOutBy = null, sawShockwaveEvent = false; const teleById = new Map();
 let quiet = null, hudBackAt = null, chainMean = 0.4, staggerSeen = false, latencyLog = [], cin = null, chainPending = false, chainFired = false; const banners = new Set(), bonusShown = new Set();
 let pendingCard = null, seedCounter = 1, skipDraw = false; const pendingMenu = [];
 
@@ -338,7 +338,7 @@ function onEvent(ev) {
       const t = { win: ['ROUTED THEM!', ' The lot is ours'], loss: ['WIPED OUT', ' Back home by nightfall'], rival_fled: ['DAIFUKU BOLTS!', ' Phase 1 cleared'], player_fled: ['SCRAM!', ''] }[ev.outcome] || ['FIGHT OVER', ''];
       // the final KO cinematic, unless the sim already sent FinalKO this tick
       if (!ko && (ev.outcome === 'win' || ev.outcome === 'rival_fled')) { const last = ev.outcome === 'rival_fled' ? (ev.rival || (ev.boss_ids || [])[0]) : lastEnemyOut; if (last) startKO(last, lastOutBy); }
-      pendingCard = { at: realT + (ko ? 1.6 : 1.1), text: t[0], sub: t[1], clowder: ev.outcome === 'loss' ? 'ink' : 'gold' };
+      pendingCard = { at: realT + (ko ? ko.freeze + ko.slowS + 0.25 : pendingKO ? 4 : 1.1), text: t[0], sub: t[1], clowder: ev.outcome === 'loss' ? 'ink' : 'gold' };
       break;
     }
     case 'FinalKO': if (!ko) startKO(ev.cat || ev.target, ev.by, ev.freeze_ms, ev.slow); break;
@@ -422,13 +422,16 @@ function toSim(f) {
 /** Final KO (M1.2 §8): a freeze frame over an impact background (≈ 0.4 s), then slow motion (≈ 1.1 s) on a
  * slowly turning two-shot of the KO'd cat and its attacker, with the giant K.O.! — ≈ 1.5 s, flash-safe. */
 function startKO(id, byId, freezeMs = 400, slow = { scale: 0.25, ms: 1100 }) {
+  // never over a Special chain: the KO waits for the chain to end (the last opponent can fall to a chained Special)
+  if (cin.holding || snap.mode === 'special' || pile) { pendingKO = [id, byId, freezeMs, slow]; return; }
   const f = F(id); if (!f) return;
   const a = F(byId) || F(snap.controlled);
+  if (pendingCard) pendingCard.at = Math.max(pendingCard.at, realT + (freezeMs || 400) / 1000 + Math.min(1.5, (slow && slow.ms || 1100) / 1000) + 0.25);
   ko = { f, a, t0: realT, mean: measureMean(), freeze: (freezeMs || 400) / 1000, slowS: Math.min(1.5, (slow && slow.ms || 1100) / 1000), slowK: (slow && slow.scale) || 0.25 };
   const koLen = ko.freeze + ko.slowS;
   ccam.stagger = { T: f, C: a || f, from: realT, until: realT + koLen, full: true, spin: 0.3, close: 0.75 };
   scr.word = null; scr.fx = scr.fx.filter((x) => x.kind === 'dmg'); scr.add({ kind: 'ko', dur: koLen, delay: 0.1 });
-  quiet = { id, until: realT + koLen }; hud.showChrome(false); fx.clearNear(f.pos, 4); impact = null; dip = null; ccam.shakes = []; ccam.punch = null; pendingCard = null;
+  quiet = { id, until: realT + koLen }; hud.showChrome(false); fx.clearNear(f.pos, 4); impact = null; dip = null; ccam.shakes = []; ccam.punch = null;
 }
 /** The enemy the F prompt points at: a staggered enemy while Mikan's Special is ready (M1 sim: the offered Pile-On). */
 function specialTarget(s) {
@@ -478,6 +481,7 @@ function normSnap(s) {
 function lerpEnt(e, a) {
   const p = prevSnap && prevSnap.entities.find((x) => x.id === e.id);
   if (!p || a >= 1) return e;
+  if (!p.pos.every(Number.isFinite) || !e.pos.every(Number.isFinite)) return e;
   return { ...e, pos: [p.pos[0] + (e.pos[0] - p.pos[0]) * a, p.pos[1] + (e.pos[1] - p.pos[1]) * a, p.pos[2] + (e.pos[2] - p.pos[2]) * a],
     facing: [p.facing[0] + (e.facing[0] - p.facing[0]) * a, p.facing[1] + (e.facing[1] - p.facing[1]) * a] };
 }
@@ -497,6 +501,7 @@ function frame(dt) {
   const menu = input.takeMenu();
   if (menu.includes('pause')) { paused = !paused; hud.setHint(paused ? 'Paused · P / Esc to resume' : ''); }
   const cut = cin.update(realT);
+  if (pendingKO && !cin.holding && snap.mode !== 'special' && !pile) { const k = pendingKO; pendingKO = null; startKO(...k); }
   let rate = paused || (cin.holding && !simM11()) ? 0 : 1;
   const koU = ko ? realT - ko.t0 : null;
   if (ko && koU < ko.freeze) rate = 0; else if (ko && koU < ko.freeze + ko.slowS) rate = Math.min(rate, ko.slowK);
@@ -537,7 +542,8 @@ function present(dt, alpha, menu = [], cut = null) {
       blocker = along > 0 && along < dT + 0.3 && Math.abs(vx * uz - vz * ux) < 0.9 * Math.max(1, f.scaleK);
     }
     f.hidden = hidden;
-    f.fadeTarget = crowd || blocker ? 0.3 : 1; f.stepFade(dt);   // dither-fade, never hidden (M1.2 §6)
+    const koCast = ko && (ko.f === f || ko.a === f) && realT - ko.t0 < ko.freeze + ko.slowS;
+    f.fadeTarget = (crowd || blocker) && !(cut && cut.id === e.id) && !koCast ? 0.3 : 1; if (koCast) f.fade = 1; if (cut && cut.id === e.id) f.fade = 1; f.stepFade(dt);   // dither-fade, never hidden (M1.2 §6)
     // nearest standing opponent (for intent reading and squaring off)
     const le = lerpEnt(e, alpha);   // every cat, the controlled one included, interpolates between ticks (no 60 Hz stepping / ghosting on high-refresh displays)
     if (!e.controlled && !e.routed && e.present) {
@@ -547,8 +553,9 @@ function present(dt, alpha, menu = [], cut = null) {
     }
     const koFreeze = ko && realT - ko.t0 < ko.freeze;
     f.update(le, cut && cut.id === e.id ? dt : (frozen || koFreeze) ? 0 : dt * (s.slow_blink ? 0.05 : 1) * (ko ? 0.25 : 1), realT, tw, dt);
+    if (ko && ko.f === f && realT - ko.t0 < ko.freeze + ko.slowS) f.root.visible = true;   // the KO'd cat stays on stage for its cinematic (a fleeing Boss included)
     // posturing cats hiss and lash (a hiss glyph every ~1.6 s, staggered per cat); dash-ins leave a streak
-    if (!skipDraw && f.root.visible && (f.intent === 'posture' || f.intent === 'strut') && e.side === 'enemy' && (!f.hissT || realT - f.hissT > 1.6 + (e.id.length % 3) * 0.4)) {
+    if (!skipDraw && f.root.visible && (f.intent === 'posture' || f.intent === 'strut') && e.side === 'enemy' && le._opp && (!f.hissT || realT - f.hissT > 1.6 + (e.id.length % 3) * 0.4)) {
       f.hissT = realT; fx.spawn('hiss', f.head.clone().add(new THREE.Vector3(le._opp.dir[0] * 0.3, -0.04, le._opp.dir[1] * 0.3)), { size: 0.32, drawings: 4, breakAt: 0.7 });
       fx.spawn('claws', f.pos.clone().add(new THREE.Vector3(-le._opp.dir[0] * 0.45, 0.35, -le._opp.dir[1] * 0.45)), { size: 0.22, drawings: 3, rot: 1.2 });
     }
@@ -639,7 +646,7 @@ function present(dt, alpha, menu = [], cut = null) {
     const c = pile.phase === 'out' ? pile.screen : pile.anchor;
     pileCtx = { ...pile, center: { x: Math.min(w * 0.7, Math.max(w * 0.3, c.x)), y: Math.min(h * 0.62, Math.max(h * 0.4, c.y)) } };
   }
-  scr.update(dt, { skip: skipDraw, w, h, project, controlledBox: cb, hudRects: opt.hud && !skipDraw ? hud.rects() : [], pile: pileCtx, tw, overheads, arrows });
+  scr.update(dt, { cut: !!cut, skip: skipDraw, w, h, project, controlledBox: cb, hudRects: opt.hud && !skipDraw ? hud.rects() : [], pile: pileCtx, tw, overheads, arrows });
   // HUD
   if (skipDraw) pendingMenu.push(...menu);
   else if (opt.hud) {
@@ -781,7 +788,7 @@ async function boot() {
   addEventListener('resize', layout);
   window.__cat = {
     state: () => ({ fight: opt.fight, seed: opt.seed, tick: enc.tick, realT: +realT.toFixed(4), mode: snap.mode, outcome: snap.outcome, slow_blink: snap.slow_blink, controlled: snap.controlled,
-      counts: { ...counts }, pile: !!pile, impact: !!impact, camera: cam.position.toArray().map((v) => +v.toFixed(3)), yaw: +ccam.pose.yaw.toFixed(2), stats: { ...lastStats } }),
+      counts: { ...counts }, ko: ko ? +(realT - ko.t0).toFixed(3) : null, pile: !!pile, impact: !!impact, camera: cam.position.toArray().map((v) => +v.toFixed(3)), yaw: +ccam.pose.yaw.toFixed(2), stats: { ...lastStats } }),
     hash: () => enc.hash(),
     latency: () => latencyLog.slice(),
     debug: () => ({ screen: scr.fx.map((f) => ({ kind: f.kind, t: +f.t.toFixed(3), dur: f.dur, from: f.from && project(f.from), to: f.to && project(f.to) })), word: scr.word && scr.word.text, world: fx.items.length, cats: [...fighters.values()].map((f) => ({ id: f.id, intent: f.intent, vis: f.root.visible, lod: f.cat.lod, tri: f.cat.triangles, d: +f.pos.distanceTo(cam.position).toFixed(2) })) }),

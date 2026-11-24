@@ -253,7 +253,7 @@ export class WorldFX {
       else { this.scene.remove(it.mesh); this.pool.push(it.mesh); }
     }
     this.items = this.items.filter((i) => !i.dead);
-    for (const w of this.waves) { w.t += dt; const k = Math.min(1, Math.floor(w.t / TWO) * TWO / w.dur); const u = w.d.material.uniforms; u.R.value = w.r0 + (w.radius - w.r0) * (w.linear ? k : 1 - Math.pow(1 - k, 2));   // linear = the sim's constant front speed (it hits on this ring) u.fill.value = k; if (w.t > w.dur + TWO * 2) { w.dead = true; this.decals.remove(w.d); w.d.material.dispose(); } }
+    for (const w of this.waves) { w.t += dt; const k = Math.min(1, Math.floor(w.t / TWO) * TWO / w.dur); const u = w.d.material.uniforms; u.R.value = w.r0 + (w.radius - w.r0) * (w.linear ? k : 1 - Math.pow(1 - k, 2)); /* linear = the sim's constant front speed */ u.fill.value = k; if (w.t > w.dur + TWO * 2) { w.dead = true; this.decals.remove(w.d); w.d.material.dispose(); } }
     this.waves = this.waves.filter((w) => !w.dead);
     for (const r of this.tagRings) { r.t += dt; const k = Math.floor(r.t / TWO); r.d.material.uniforms.R.value = 0.4 + 0.15 * Math.min(k, 4); if (k >= 7) r.dead = true; }
     for (const r of this.tagRings) if (r.dead) { this.decals.remove(r.d); r.d.material.dispose(); }

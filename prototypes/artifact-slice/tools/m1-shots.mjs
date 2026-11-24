@@ -145,6 +145,8 @@ if (want('latency')) {
   await ev(p, '__cat.frames(200)');
   // walk Mikan to her nearest enemy, then three light presses 4 ticks apart
   await ev(p, `(() => { for (let i = 0; i < 240; i++) { const s = __cat.snapshot(); const c = s.entities.find(e => e.controlled), t = s.entities.filter(e => e.side === 'enemy' && !e.routed).sort((a, b) => Math.hypot(a.pos[0]-c.pos[0], a.pos[2]-c.pos[2]) - Math.hypot(b.pos[0]-c.pos[0], b.pos[2]-c.pos[2]))[0]; const d = Math.hypot(t.pos[0]-c.pos[0], t.pos[2]-c.pos[2]); if (d < 1.2) break; __cat.inject({ move: [t.pos[0]-c.pos[0], t.pos[2]-c.pos[2]] }); __cat.frames(1); } })()`);
+  // wait for a free Mikan (no attack, not flinched/knocked down, full movement) so the test measures the press, not a stun
+  await ev(p, `__cat.untilWhere((s) => { const c = s.entities.find((e) => e.controlled); return c && !c.attack && c.can_move >= 1 && !['flinch', 'splat', 'knocked_down', 'evade', 'skitter'].includes(c.anim); }, 600)`);
   const t0 = (await ev(p, '__cat.state()')).tick;
   const imgs = [];
   for (let k = 0; k < 3; k++) { await ev(p, '__cat.inject({ light: true })'); await ev(p, '__cat.frames(1)'); if (k === 0) { await ev(p, '__cat.frames(2)'); imgs.push(await shot(p, 'latency-click1-plus3.png', 'click 1, +3 ticks: the light hit is on screen')); await ev(p, '__cat.frames(1)'); } else await ev(p, '__cat.frames(3)'); }
@@ -209,7 +211,8 @@ if (want('dmg')) {
 }
 if (want('ko')) {
   const p = await open('fight=toughs3&seed=3&script=demo');
-  const k = await ev(p, `__cat.untilWhere((s, log) => log.some((e) => e.type === 'FinalKO' || e.type === 'EncounterEnded'), 6000)`);
+  // the KO cinematic starts at FinalKO, or after the Special chain if the last enemy fell to a chained Special
+  const k = await ev(p, `__cat.untilWhere(() => __cat.state().ko != null, 7000)`);
   const imgs = [];
   for (const [n, label] of [[2, 'freeze frame over the impact background (halftone wipe in), only the KO\'d cat and its attacker, K.O.!'], [12, 'freeze held'], [30, 'slow motion, the camera turning on the two-shot'], [60, 'slow motion'], [92, 'back to normal speed: the outcome card']]) {
     await ev(p, `__cat.frames(${n - (imgs.lastN || 0)})`); imgs.lastN = n;

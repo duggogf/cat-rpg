@@ -159,7 +159,7 @@ export class Fighter {
   update(e, dtAnim, t, tw, dtReal) {
     const show = e.present && e.anim !== 'gone' && e.anim !== 'offstage' && e.anim !== 'yowl_offstage' && !this.hidden;
     this.root.visible = show;
-    this.pos.set(...e.pos);
+    if (e.pos.every(Number.isFinite)) this.pos.set(...e.pos);   // a non-finite sim position (seen once at a Daifuku FinalKO) keeps the last good one
     if (dtReal > 0) this.vel.subVectors(this.pos, this.prevPos).divideScalar(Math.max(1e-3, dtReal));
     this.prevPos.copy(this.pos);
     this.root.position.copy(this.pos);
@@ -168,7 +168,7 @@ export class Fighter {
     // the sim's intent when it is specific; its default 'stalk' (or none) is refined from motion
     const intent = this.intent = (e.intent && SIM_INTENT[e.intent]) || deriveIntent(e, this.vel, e._opp);
     // cats square off: while circling, stalking, posturing or backing off, the body faces the opponent
-    let wantYaw = Math.atan2(e.facing[0], e.facing[1]);
+    let wantYaw = e.facing.every(Number.isFinite) ? Math.atan2(e.facing[0], e.facing[1]) : this.yaw;
     if (e._opp && ['circle', 'stalk', 'posture', 'flank', 'retreat', 'strut', 'hold', 'feint'].includes(intent)) wantYaw = Math.atan2(e._opp.dir[0], e._opp.dir[1]);
     this.yaw = lerpAngle(this.yaw, wantYaw, Math.min(1, dtReal * 9));
     this.root.rotation.y = this.yaw;

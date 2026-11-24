@@ -102,7 +102,8 @@ export class ScreenFX {
     if (di === this.lastDrawing && !ctx.force && !this.stale) return;
     this.stale = false;   // drawings change on twos
     this.lastDrawing = di;
-    this.g.innerHTML = this.draw(ctx, di);
+    const html = this.draw(ctx, di);
+    this.g.innerHTML = html;
   }
 
   draw(ctx, di) {
@@ -113,6 +114,7 @@ export class ScreenFX {
     let placed = null;
     for (const f of this.fx) {
       if (f.t < 0) continue;
+      if (ctx.cut && f.kind !== 'cutin') continue;   // a Special cut-in owns the screen: nothing else draws over it
       const k = f.t / f.dur;
       if (f.kind === 'radial') {
         if (!f.anchor) f.anchor = f.at ? ctx.project(f.at) : { x: w / 2, y: h / 2 };   // fixed: lines do not ride the shake
@@ -225,8 +227,7 @@ export class ScreenFX {
         for (const at of f.ats) { const p = ctx.project(at); s += Kit.speedLines({ mode: 'parallel', x: p.x - 230, y: p.y - 120, w: 460, h: 110, count: 10, seed: seed + 3, color: f.color || C.ink }); }
       }
     }
-    s += this.drawOverheads(ctx, di);
-    if (this.word) s += this.drawWord(ctx, di);
+    if (!ctx.cut) { s += this.drawOverheads(ctx, di); if (this.word) s += this.drawWord(ctx, di); }
     return s;
   }
 
