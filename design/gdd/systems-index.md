@@ -1,4 +1,4 @@
-# Systems Index: Cat RPG (working title)
+# Systems Index: Cat RPG
 
 > **Status**: Approved for the vertical slice (design final, round 3)
 > **Created**: 2026-11-24
@@ -16,7 +16,7 @@ Cat RPG is a third-person action RPG on one clock: a street game (real-time four
 
 ## Systems Enumeration
 
-Status values: **Approved** = slice spec final after three review rounds (not yet prototyped). **In Review** = final text, owner sign-off pending. Nothing is implemented yet; the engine is not chosen.
+Status values: **Approved** = slice spec final after three review rounds (not yet prototyped). **In Review** = final text, owner sign-off pending. Nothing is implemented yet; the engine is Unreal Engine 5.8 (user decision 2026-11-24).
 
 | # | System Name | Category | Priority | Status | Design Doc | Owner role | Depends On |
 |---|---|---|---|---|---|---|---|
@@ -163,8 +163,9 @@ The design pass is complete for the slice. This table is now the **prototype and
 
 ## Next Steps
 
-- [ ] User decides the open questions in `design/GDD.md` §20 (engine first)
-- [ ] `/setup-engine` once the engine is chosen
+- [x] Engine, title and reference closeness decided by the user (2026-11-24): Unreal Engine 5.8, "Cat RPG", reference-close
+- [ ] User decides the remaining open questions in `design/GDD.md` §20
+- [ ] `/setup-engine unreal 5.8` on the development machine: probe the editor install, set `engine.path` and `commands.*`, refresh the engine reference
 - [ ] Build the combat grey box and the three sims (`/prototype`, then `/vertical-slice`)
 - [ ] Commission the patent review before the Rivals scope is locked
 - [ ] Align the two known timing disagreements (K1.4 clock time; Turf Board day) against the first playable

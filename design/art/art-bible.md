@@ -1,19 +1,23 @@
-# Art Bible: Cat RPG (working title)
+# Art Bible: Cat RPG
 
 > **Status**: Round 2 (vertical-slice rewrite), Under Review
 > **Owned By**: art-director
-> **Last Updated**: 2026-11-23
+> **Last Updated**: 2026-11-24 (Iteration 3b: user decisions on engine, title, art style)
 > **Art Director Sign-Off (AD-ART-BIBLE)**: Not yet reviewed
-> **Canon**: `design/creative-brief.md` v1.3, then `design/reviews/round-1/director-rulings.md` (DR-xx). The first draft is archived at `design/backlog/first-drafts/art-bible.md` and is a content backlog, not canon.
+> **Canon**: `design/creative-brief.md` v1.4, then `design/reviews/round-1/director-rulings.md` (DR-xx). The first draft is archived at `design/backlog/first-drafts/art-bible.md` and is a content backlog, not canon.
 > **Scope**: the vertical slice (DR-01): Lives 1–2, Hidamari Lane, Haru's House, the Lot. Full-game material is one line each in the Backlog section.
 
-**Style reference.** The user's reference is the look of *Shin chan: Shiro and the Coal Town*: flat cel-shaded figures with a thin, even dark line, soft contact shadows, lush painted backgrounds with a soft-gradient sky, and warm, rounded, cream UI. We take that look, not that game's characters, layouts or trade dress (brief §9 originality rule).
+**Style reference.** The user's reference is the look of *Shin chan: Shiro and the Coal Town*: flat cel-shaded figures with a thin, even dark line, soft contact shadows, lush painted backgrounds with a soft-gradient sky, and warm, rounded, cream UI. **User ruling (2026-11-24): reference-close.** We match that look 1:1 on the visuals — 3D cel-shaded characters that read like 2D cartoon cels, in environments that read like 2D painted anime backgrounds — but in full 3D, under a free-rotating third-person camera; the reference's 3C is not copied. This is a rendering/look target only: all characters, names, locations and assets are original, and that game's characters, layouts and trade dress are never drawn, named or reused (brief §9 originality rule). Engine: Unreal Engine 5.8 (§6.1 rendering requirements).
 
 **Ownership boundary.** Combat owns the game-feel/VFX tier table and every timing number (DR-07). The camera doc owns camera numbers (DR-48). UX owns HUD layout. This bible owns how things **look**: drawings, shapes, colours, line, materials, and the look-dev acceptance tests.
 
 ---
 
 ## 1. Visual Identity Statement
+
+### 1.0 Visual identity in one paragraph
+
+**A 2D anime cartoon you can walk around in.** Every frame should look like the reference: a flat, near-shadeless cel character with a thin even line, laid over a soft painted background with a gradient sky — a hand-made TV-anime frame. The difference is that the frame is fully 3D: the player walks Mikan anywhere and swings the camera freely, and from every angle the character still reads as a cel and the town still reads as a painting. Characters are 3D cel-shaded meshes made to read as 2D cels; environments are 3D geometry painted and lit to read as 2D anime backgrounds.
 
 ### 1.1 The one-line rule
 
@@ -47,18 +51,18 @@ The third-person camera makes the rule more valuable than it was under the old b
 | P2 | **Thirty centimetres tall.** Detail is spent where a cat looks: floors, wall bases, under verandas, shoes, hands. Above about 1.2 m the world simplifies into larger painted shapes, then sky. | When budgeting texture, modelling or animation on a human or a room, spend it below 60 cm. | 1 Cat's-Eye Truth |
 | P3 | **Colour says what words cannot.** Every household human owns one colour, every Clowder owns one, every phase owns a key. | When a home beat does not read, change a colour, an object or the light. Never add a readable sign, and never add a gag. | 1; 2 Two Lives, One Clock |
 | P4 | **Loud street, quiet house.** The street gets the action-anime toolbox (§10). The house gets none of it: held shots, soft light, small gestures. | A flat home scene gets slower and better lit, never VFX. A flat street scene gets timing contrast and a bigger drawing, never melancholy. | 2; 3; tone guardrails |
-| P5 | **Printed characters, painted world.** Characters, VFX and combat UI look printed: two flat tones, hard edges, no glow, halftone instead of alpha fades. Environments and sky are soft: gradients, brush texture and soft shadow edges are allowed and wanted (DR-51, E-1 default). | If an effect or character needs to soften, use a stepped tone or halftone. If a background feels harsh, soften it with paint. | 3 (readability) |
+| P5 | **Cel characters, painted world.** Characters look like 2D cels, as in the reference: near-flat two-tone fills, hard edges, no glow. Combat VFX and combat UI (our own content; the reference has no combat) use the same flat language, with halftone instead of alpha fades. Environments and sky are soft painting: gradients, brush texture and soft shadow edges are allowed and wanted (DR-51; reference-close, user ruling 2026-11-24). | If an effect or character needs to soften, use a stepped tone or halftone. If a background feels harsh, soften it with paint. | 3 (readability) |
 
 ### 1.4 What makes this look ours (differentiation)
 
-We share the reference's category, not its signature. Real differentiators, in order of weight:
-1. **Action-anime combat staging** (§10): impact frames, smears, speed lines, a dust-cloud Pile-On, hand-lettered sound words. The reference has no combat.
-2. **A cat cast built from bean, chestnut and pom shapes**, with no human caricature. Humans are naturalistic anime proportions seen from the knee.
-3. **A cat-height third-person world**: a seaside hill town where the sea or the hill is in the backdrop of every exterior view, and Dusk is the signature hour.
-4. **Screen states nobody else has**: Whisker Sense (scent made visible) and Slow Blink.
-5. **Our own UI shapes**: bean panels, pom buttons, a paw-pad cursor, chestnut portrait windows (§7). Cream and brown are warmth we share; shapes are what make it ours.
+**The rendering style is not where we differ.** By the user's ruling (2026-11-24) we match the reference's look as closely as we can: cel characters, thin even line, painted backgrounds, soft gradient sky, warm cream UI. We do not push shading, line or texture away from it to look different. Differentiation comes from **what is drawn and how it is played**, in order of weight:
+1. **Our original characters:** a cat cast built from bean, chestnut and pom shapes (Mikan, the Crew, the Rivals), the household seen from the knee, with no human caricature and nothing taken from the reference's cast.
+2. **Our original world:** Yunagi, a cat-height seaside hill town where the sea or the hill is in the backdrop of every exterior view and Dusk is the signature hour; Haru's House, the Lot and the High Road.
+3. **The free third-person camera:** the reference composes fixed 2D-looking frames; we let the player walk anywhere and orbit freely (`design/gdd/camera-system.md`), so the painted world must hold from every angle (§6.1).
+4. **Our own UI content and shapes:** bean panels, pom buttons, a paw-pad cursor, chestnut portrait windows (§7), and screens nobody else has — Whisker Sense (scent made visible), Slow Blink, the Fence Line, the Turf Board. Cream and brown are warmth we share; shapes and content are ours.
+5. **Action-anime combat staging** (§10): impact frames, smears, speed lines, a dust-cloud Pile-On, hand-lettered sound words. The reference has no combat.
 
-Line hue is **not** a differentiator (aubergine and brown are indistinguishable at 2 px; AB-14). **Composition rule (DR-51):** home key art never uses the inside-looking-out veranda-to-garden frame with a pet in the yard. The veranda is shot from the garden side or along its length at floor level, and Mikan's ginger cap is in every home key frame. Concept art that could be mistaken for a still from the reference fails review even if every other rule is met.
+Line hue is **not** a differentiator (aubergine and brown are indistinguishable at 2 px; AB-14). **Composition rule (DR-51):** home key art never uses the inside-looking-out veranda-to-garden frame with a pet in the yard. The veranda is shot from the garden side or along its length at floor level, and Mikan's ginger cap is in every home key frame. Concept art that could be mistaken for a still from the reference *because it shows that game's characters, places or compositions* fails review even if every other rule is met; matching its rendering style is the target, not a failure.
 
 ---
 
@@ -398,6 +402,19 @@ The camera is at cat height at home and low on the street, so humans are mostly 
 
 **Method:** 3D geometry, toon-shaded, **unlined**, with stylised hand-painted textures and trim sheets plus vertex colour for variation and grime; **painted skydome and painted backdrop cards** for sky, hills and sea. The camera-aligned paint-over plate method is withdrawn because the camera rotates (AB-1 moot).
 
+**Engine rendering requirements (Unreal Engine 5.8; for the look-dev spike to prove).** These are requirements, not verified API claims: each names a plausible UE approach for the spike to try, and the chosen method goes into an ADR checked against `docs/engine-reference/unreal/`. If an approach fails its pass criterion, the spike tries the alternative named in the same row.
+
+| ID | Requirement | Candidate UE 5.8 approach (to verify in the spike) | Pass criterion |
+|---|---|---|---|
+| R-1 | **Characters read as 2D cels:** near-flat two-tone fill with a hard terminator, lit by the decoupled character key (E-3) | A custom toon shading model, or a post-process cel pass driven by a character stencil/custom-depth mask; the material route (unlit/emissive with computed bands) as fallback | Day capture: the shade tone covers 15–25% of the character's visible area with a hard terminator (§4.2 shade share); no third tone or gradient on the fill |
+| R-2 | **Character line** per L-1–L-7 | Inverted-hull outline mesh/material per character (L-5); a post-process outline restricted to the character stencil as the alternative | L-3/L-4 measurements pass; no line pixel on environment geometry |
+| R-3 | **Environments read as 2D painted backgrounds:** painted texture carries the light; no outlines; no PBR look | Unlit or near-unlit environment materials sampling painted albedo, with the 2-band phase ramp and tint (E-1) baked or computed in-material; no Lumen GI/reflection dependence for the look | E-1, E-2 pass; zero ink pixels on environment (L-1) |
+| R-4 | **Painted sky** | Painted skydome mesh plus 2–3 parallax backdrop cards (E-6), not a physical sky/atmosphere | E-6 passes from every orbit angle |
+| R-5 | **The look holds from any camera angle** (free orbit) | Spike captures on a 360° orbit at Explore distance and from the High Road | No angle where a cel loses its line, the sky shows a seam or a backdrop card reads as flat |
+| R-6 | Post-processing does not repaint the cels | Tonemapper, auto-exposure, bloom, motion blur and film grain set so cel colours stay on-palette | Pixel samples of palette swatches within ΔE2000 3 in Day, Dusk and Night (as L-2) |
+
+`project.yaml` records `engine.rendering` as `/setup-engine`'s Unreal default (`Lumen + Nanite (deferred)`); the spike decides whether the look keeps or drops Lumen/Nanite, and the ADR updates that key.
+
 **Environment rendering requirements (testable in the look-dev spike):**
 
 | ID | Requirement | Pass criterion |
@@ -412,7 +429,18 @@ The camera is at cat height at home and low on the street, so humans are mostly 
 | E-8 | All visible writing is **Scribble** (§6.5) | Language-rule review of every capture |
 | E-9 | Stepped character animation (§8.4) composites without ghosting under the chosen AA/upscaler | A 10 s capture of a stepped cat shows no ghost trails |
 
-**The spike:** one alley of Hidamari Lane (≈ 40 m, including a garden wall, a laundry pole, a High Road run and a Scent Post), in Day and Dusk, with Mikan, one generated Wall Sitter, a crow, and Haru's legs. It produces the **two mock frames for E-1** ("reference-close": soft environment and sky, flat characters; "print-stylised": the same with halftone combat UI and transitions) for the user's decision, and fixes the environment budget (§8.3).
+**The spike:** one alley of Hidamari Lane (≈ 40 m, including a garden wall, a laundry pole, a High Road run and a Scent Post), in Day and Dusk, with Mikan, one generated Wall Sitter, a crow, and Haru's legs. It runs in **Unreal Engine 5.8**. The user has already chosen reference-close (2026-11-24), so the spike no longer produces a choice of mock frames; it proves the method and fixes the environment budget (§8.3).
+
+**Look-dev test list:**
+1. **Side-by-side with the reference board:** Day and Dusk captures of our alley next to reference stills (look only; no reference character or location is reproduced). Pass: the art director judges cel fill, line weight, painted texture and sky gradient to match; failures are named per R-/E-/L- item.
+2. **R-1–R-6** above, each with its pass criterion.
+3. **E-1–E-9** below.
+4. **L-1–L-7** (§1.2) on Mikan, the Wall Sitter, the crow and Haru's legs.
+5. **Free-orbit sweep (R-5):** a 360° yaw sweep at pitch −10°, +10° and +55° at Explore distance, plus a High Road run; recorded as video and frame grabs.
+6. **Camera collision** in 1–2 m corridors and on roofs (camera doc T2), checking the cel/paint read survives close-in camera positions.
+7. **Separation and colour-vision checks** (E-5, §4.8) in all four phase keys.
+8. **Frame time** at 1080p60 on the slice PC target with the chosen shading and outline methods (§8.3 budgets).
+Evidence is retained in `production/qa/evidence/`.
 
 ### 6.2 Hidamari Lane (the slice district)
 
@@ -511,7 +539,7 @@ One continuous painted Lane wall in the current phase light. Each cat stands at 
 |---|---|
 | The reference's translucent cloud balloon vs. readability over a busy painted scene | Opaque bean balloon with a soft shadow |
 | Brown text (reference warmth) vs. contrast | Ink body text; Cocoa for frames, headers and secondary text (≥ 6.4:1) |
-| Halftone UI tones vs. "warm and bubbly" | Halftone only in transitions and combat UI; menus use flat colour (E-1 default; confirmed by the mock frames) |
+| Halftone UI tones vs. "warm and bubbly" | Halftone only in transitions and combat UI; menus use flat colour (reference-close, user ruling 2026-11-24) |
 
 ---
 
@@ -578,7 +606,7 @@ Target: 1080p60 on a GTX 1060 / RX 580-class PC (min spec, proposed). The handhe
 
 | Reference | Take | Avoid |
 |---|---|---|
-| **Shin chan: Shiro and the Coal Town** (the user's reference) | Flat, near-shadeless cel figures; thin even line; soft contact shadows; lush painted foliage; soft-gradient summer sky; warm cream UI | Its characters, its brown name tags, cloud balloons, layouts, the veranda-to-garden pet composition |
+| **Shin chan: Shiro and the Coal Town** (the user's reference; reference-close on the look, user ruling 2026-11-24) | The look, matched closely: 3D characters that read as flat, near-shadeless 2D cels; thin even line; soft contact shadows; backgrounds that read as 2D painted anime art; lush painted foliage; soft-gradient summer sky; warm cream UI | Its characters, names, locations and assets; its brown name tags, cloud balloons, layouts, the veranda-to-garden pet composition; its 3C (our camera orbits freely in third person) |
 | **Studio Ghibli background painting** (*Kiki's Delivery Service*, *Ponyo*) | Seaside hill towns, laundry and tiled roofs, cumulus over a sea horizon, Dusk light | Copying specific vistas or architecture shots |
 | **Action anime impact staging** (Trigger, *Mob Psycho 100*) | Impact frames, smears, speed lines, timing contrast, held poses | Seizure-risk strobing, saturated red flashes (DR-50) |
 | **Final Fantasy VII Remake** (camera and combat readability) | A behind-the-shoulder camera that pulls back in a fight; clear lock target framing; cut-ins for limit breaks | Realistic rendering, PBR, particle-heavy effects |
@@ -730,7 +758,7 @@ Per §4.3: white (solid, chevrons), yellow (Cream dashed, triangle), red (Magent
 ## Backlog (post-slice)
 
 - AB-10: handheld budgets (Switch 1-class floor, E-5): triangles 1,800 per cat, frame-time per pass, streaming.
-- AB-11: handheld outlines and AA (MSAA 2× vs SMAA 1×, upscaler exclusion, RenderGraph/stencil notes).
+- AB-11: handheld outlines and AA (anti-aliasing and upscaler choice, outline exclusion from the upscaler, render-pass/stencil notes), to be re-scoped for Unreal Engine 5.8 after the look-dev spike.
 - AB-2/AB-3: crowd-fight readability below 6% screen height; readable-axis distinctness at 48 px.
 - Districts 2–3 and the Summit: Akane Arcade, Shiosai, Lighthouse Summit palettes; Awning Gang, Salt Paws, Steam Court colours re-checked under the ΔE 15 rule.
 - Fang damage type and Prowler/Trickster drawings; re-check Bite Violet against Yowl Lilac.
@@ -742,7 +770,6 @@ Per §4.3: white (solid, chevrons), yellow (Cream dashed, triangle), red (Magent
 - Home Moves, Knacks, Kits visual language.
 - More lettering languages beyond English and Japanese.
 - Generator expansion: more tails, ears, patterns and the head axis for portraits.
-- Reference-closeness decision (E-1) beyond the default, once the mock frames are seen.
 - Photo mode and key-art compositions.
 - Raincoat "bloom" (Audio §11) as an optional Melody-presence twin: decide after the home mock; if kept, a stepped tone change, never a glow (P5).
 - Whisker compass ring pointer count (Art ≤ 5): HUD does not restate it; keep 5 unless the compass test shows a need.
@@ -750,6 +777,14 @@ Per §4.3: white (solid, chevrons), yellow (Cream dashed, triangle), red (Magent
 ---
 
 ## Revision Log
+
+### 2026-11-24: Iteration 3b — user decisions
+
+| Decision | How |
+|---|---|
+| Engine: Unreal Engine 5.8 | §6.1 gains engine rendering requirements R-1–R-6 (custom toon shading model or post-process cel pass; inverted-hull or stencil-masked post outlines; unlit painted-texture environments with no outlines; painted sky dome and cards), stated as spike items, not verified API claims; AB-11 Backlog line made engine-neutral |
+| Title: "Cat RPG" (final) | Header title no longer "working title" |
+| Art style: reference-close on the visuals, not the 3C | Style reference paragraph and new §1.0 restate the target (3D cel characters reading as 2D cels, environments reading as 2D painted backgrounds, free third-person camera). P5 renamed "Cel characters, painted world". §1.4 rewritten: differentiation comes from original characters, world, UI content and the free camera, not from pushing the rendering away from the reference. §6.1 spike no longer produces "reference-close vs print-stylised" mock frames; it gets a look-dev test list. §9 reference row updated. Backlog line for the reference-closeness decision removed. Originality guardrail unchanged |
 
 ### 2026-11-24: Iteration 3 (round-2 presentation review, final pass)
 

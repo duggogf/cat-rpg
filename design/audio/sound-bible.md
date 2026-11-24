@@ -1,4 +1,4 @@
-# Sound Bible: Cat RPG (working title)
+# Sound Bible: Cat RPG
 
 > **Location**: `design/audio/sound-bible.md` (not `design/gdd/`)
 > **Owned By**: audio-director · **Version**: round 2, vertical slice · **Date**: 2026-11-23
@@ -581,7 +581,7 @@ Honest limit: comprehension parity is achievable; emotional parity is not fully.
 | Narrative | `KeystonePlayed`; the **Late Home** Routine variant on Life 2 day 3 with K2.2 (**confirmed**, round-2 R1; Narrative §3.3) | Story cues |
 | UX / Art | Call glyph, glint, lamp wave, ear Sense Icon, raincoat bloom, sting contour glyph | §11 |
 
-**Middleware**: engine is OPEN; FMOD Studio is recommended for stems, quantised transitions and side-chaining. The technical-director decides.
+**Middleware**: the engine is Unreal Engine 5.8 (user decision 2026-11-24). FMOD Studio is still recommended for stems, quantised transitions and side-chaining; whether UE's built-in audio covers them instead is unverified against `docs/engine-reference/unreal/`. The technical-director decides in an ADR.
 
 ---
 
@@ -708,6 +708,10 @@ Bark *lines* (≤ 240, text) belong to Narrative; each plays over one of the ges
 ---
 
 ## Revision Log
+
+### 2026-11-24 — Iteration 3b (user decisions)
+
+Title is final ("Cat RPG"); §12 Middleware note updated for the engine decision (Unreal Engine 5.8). No audio rule changed.
 
 ### 2026-11-24 — Iteration 3 (round-2 presentation review, final pass)
 

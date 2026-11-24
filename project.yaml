@@ -25,3 +25,39 @@ framework:
 # here. `/project-settings --local <key>=<value>` writes there; `/project-settings <key>=<value>`
 # edits this file. See `.claude/docs/config-resolution.md` for the full
 # precedence order.
+
+# Engine set by hand on 2026-11-24 from the user's decision (Unreal Engine 5.8),
+# writing the keys /setup-engine §5.5 writes for Unreal. The engine reference
+# (docs/engine-reference/unreal/VERSION.md) is pinned to 5.8; the editor install
+# was not probed, so engine.path and commands are not set yet — run
+# /setup-engine unreal 5.8 on the development machine to probe the install,
+# refresh the reference with web access, and fill them.
+# Code root: unset on purpose — the engine table gives Source/ (modules under
+# Source/<Module>/); engine.code_root must name an existing folder or every
+# code check reports NOT ASSESSED, and no Source/ exists yet.
+engine:
+  name: "Unreal"
+  version: "5.8"
+  language: "C++"            # C++ primary; Blueprint for tuning and prototyping
+  rendering: "Lumen + Nanite (deferred)"   # /setup-engine's Unreal default; the cel-shading look-dev spike (design/art/art-bible.md) may change it
+  physics: "Chaos"
+
+specialists:
+  code: "unreal-specialist"
+  shader: "unreal-specialist"
+  ui: "ue-umg-specialist"
+  additional: ["ue-gas-specialist", "ue-blueprint-specialist", "ue-replication-specialist"]
+
+naming:
+  classes: PascalCase        # plus UE's mandatory U/A/F/E/I/T type prefix, which this enum cannot express
+  variables: PascalCase
+  constants: SCREAMING_SNAKE   # UNVERIFIED — not sourceable from
+                               # docs/engine-reference/unreal/; confirm before relying on it
+  signals: On<Event>         # PascalCase On<Event> delegate handlers
+  files: PascalCase
+  scenes: PascalCase         # Unreal has Levels/Maps, not scenes; key shared across engines
+
+# commands: not set — <UE root> and <project>.uproject are unknown until the
+# editor is installed and the .uproject exists.
+# TODO: set build/test/run/smoke via /setup-engine or /project-settings
+# (Linux templates: .claude/skills/setup-engine/references/5.5-project-yaml.md).

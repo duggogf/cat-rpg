@@ -1,6 +1,6 @@
-# Creative Brief — Shared Canon: "Cat RPG" (working title)
+# Creative Brief — Shared Canon: "Cat RPG"
 
-*Created: 2026-11-23 · Owner: creative-director · Status: **v1.3** (folds in `design/reviews/round-1/director-rulings.md` and the round-2 cross-doc rulings R1–R5 in `design/reviews/round-2/`; decisions marked OPEN await the user)*
+*Created: 2026-11-23 · Owner: creative-director · Status: **v1.4** (records the user's 2026-11-24 decisions on engine, title and art style; folds in `design/reviews/round-1/director-rulings.md` and the round-2 cross-doc rulings R1–R5 in `design/reviews/round-2/`; decisions marked OPEN await the user)*
 
 **Read this in full before writing or revising a GDD.** Anything named or numbered here is canon: use the exact terms; do not rename or redefine them. If your system needs something this brief does not cover, decide it inside your own boundary (§6) and list it under "Assumptions for creative-director review". Companion docs: `design/gdd/game-pillars.md`, `design/gdd/game-concept.md`. Where this brief and the pillars disagree, this brief wins (see changelog).
 
@@ -14,7 +14,7 @@ A 3D third-person action RPG. You are **Mikan**, a house cat in the seaside town
 
 **Core fantasy:** *Boss outside, pet at home.* A ruthless little alley tyrant who still comes running when one particular human calls.
 
-**Title:** working title "Cat RPG"; recommended release title "Nine Lives of a Boss Cat" (OPEN).
+**Title:** **"Cat RPG"** — final, settled by the user on 2026-11-24 (simple and straightforward; no alternative release title).
 
 ---
 
@@ -182,7 +182,7 @@ Bosses are authored personalities who use the nemesis trait and memory system; e
 - **Cat scale (v1.3):** one global cat scale, **1.25× a real cat (≈ 0.56 m nose to rump)**, the same on the street and at home, no per-context swap; humans, furniture and props are true scale (Art §3.4).
 - **Options:** FOV, camera speed, auto-centre, motion comfort.
 
-**Environments:** 3D toon-shaded geometry with stylised hand-painted textures and trim sheets; **painted skydome and backdrop cards (sky, hills, sea are in frame)**. The method is proven by a one-alley look-dev test. All visible human writing is Scribble.
+**Look (v1.4, settled by the user):** match the reference's *visuals* 1:1 — **3D cel-shaded characters that read like 2D cartoon cels, in environments that read like 2D painted anime backgrounds** — but built in full 3D for a free-rotating third-person camera (the reference's 3C is not copied). **Environments:** 3D geometry with hand-painted, flat-lit textures and trim sheets, no outlines; **painted skydome and backdrop cards (sky, hills, sea are in frame)**. The method is proven by a one-alley look-dev test (Art bible §8). All visible human writing is Scribble.
 
 **Readability:**
 - Posse cats carry a bell-gold keyline plus an overhead **chevron** tick (the controlled cat carries the **bell**); enemies an outline in their Clowder colour. Both have a 1 px Paper Cream rim.
@@ -421,7 +421,9 @@ The **Morning Sniff** shows the Tribute line, tonight's raid forecast (always, w
 - Murmur is never exaggerated for comedy.
 - The ending is sad and then warm.
 
-**Originality rule:** the Shin-chan/Shiro game is a *style* reference only (cel shading, flat colour, clean line, painted nostalgic backgrounds, warm bubbly UI). We take its warmth, not its components (no brown name tags, no cloud-balloon layout, no composition lifts). Home key art never uses the inside-looking-out veranda-to-garden frame with a pet in the yard.
+**Art-style ruling (v1.4, user decision 2026-11-24):** *reference-close*. The look of *Shin chan: Shiro and the Coal Town* — 3D cel-shaded characters that read like 2D cels over backgrounds that read like 2D painted anime art — is the rendering target, matched as closely as we can on the visuals. It is **not** the 3C target: ours is a free-orbit third-person camera you walk and rotate freely. Differentiation comes from our original characters, world, UI content and camera, not from pushing the rendering away from the reference. This supersedes the "print-stylised" default proposed in Iteration 3.
+
+**Originality rule:** the Shin-chan/Shiro game is a *style* reference only (cel shading, flat colour, clean line, painted nostalgic backgrounds, warm bubbly UI) — a rendering/look target, nothing more. All characters, names, locations and assets are original; that IP's characters are never drawn, named or reused. We take its warmth, not its components (no brown name tags, no cloud-balloon layout, no composition lifts). Home key art never uses the inside-looking-out veranda-to-garden frame with a pet in the yard.
 
 **Sanctioned exceptions** (recorded, not precedent):
 - Readable combat onomatopoeia.
@@ -437,7 +439,7 @@ The **Morning Sniff** shows the Tribute line, tonight's raid forecast (always, w
 
 **Platforms:** PC (Steam) lead, controller-first, full keyboard/mouse; a handheld console second (the slice is PC; handheld floor OPEN). 60 fps PC, stable 30 fps handheld.
 
-**Engine (OPEN):** Unity (URP) recommended; Godot 4 the alternative. GDDs stay engine-agnostic.
+**Engine (settled by the user, 2026-11-24):** **Unreal Engine 5.8** (C++ primary, Blueprint for prototyping and tuning). GDDs stay engine-agnostic; engine specifics live in the art bible's rendering requirements, `project.yaml` and the ADRs.
 
 ---
 
@@ -486,7 +488,7 @@ The **Morning Sniff** shows the Tribute line, tonight's raid forecast (always, w
 4. Combat readability with four cats in a third-person camera; mitigated by keylines, edge arrows, telegraph decals and the effect budget.
 5. Third-person environment cost (sky and every angle visible); mitigated by the look-dev test and one district first.
 6. Tonal whiplash; mitigated by the street/home separation.
-7. Style proximity to the reference.
+7. Style proximity to the reference (the user chose reference-close, v1.4): mitigated by the originality rule — original characters, names, locations, assets and UI content — and by the free third-person camera; the look is matched, the content never is.
 8. Procedural cat variety; mitigated by personality sets and the coat generator.
 9. The nemesis patent; needs a legal review before public showing.
 
@@ -494,17 +496,19 @@ The **Morning Sniff** shows the Tribute line, tonight's raid forecast (always, w
 
 ## 11. Open questions for the user
 
-1. **Engine:** Unity (recommended) or Godot 4?
+1. ~~**Engine.**~~ Settled 2026-11-24: Unreal Engine 5.8.
 2. **Team size, budget, timeline.**
-3. **Title.**
+3. ~~**Title.**~~ Settled 2026-11-24: "Cat RPG" (final).
 4. **Haru's presentation:** canon default, or selectable?
 5. **Mikan customisation:** fixed iconic design (recommended)?
 6. **Ending:** does Life 9 imply Mikan's passing? (Default: no; Mikan is alive in the morning.)
 7. **Handheld floor:** Switch 1-class (default) or Switch 2-class.
 8. **Night lock in Lives 1–2** until the cat flap: acceptable? (Default: yes.)
 9. **Spraying presentation:** sparkle-cloud euphemism? (Default: yes.)
-10. **Reference closeness:** "reference-close" or "print-stylised"? Decided on mock frames from the look-dev test.
+10. ~~**Reference closeness.**~~ Settled 2026-11-24: reference-close on the visuals (3D cel characters reading as 2D cels, environments reading as 2D painted backgrounds), with our own free third-person camera. The look-dev test now proves the method, not the choice.
 11. **IP review** of the nemesis system and a **cultural consultant** for the home rituals (defaults: commission both before public showing / before slice home content is final).
+
+*Settled by the user on 2026-11-24:* engine (Unreal Engine 5.8); title ("Cat RPG", final); art style (reference-close on the visuals, not the 3C).
 
 *Settled by the user on 2026-11-23:* slice-first target; simplified FF7R-structure combat; personality as the Crew hook; third-person camera; the tight three-district game; readable cat speech; readable, localised combat onomatopoeia.
 
@@ -512,6 +516,10 @@ The **Morning Sniff** shows the Tribute line, tonight's raid forecast (always, w
 
 ## Changelog
 
+- **v1.4 (2026-11-24, Iteration 3b — user decisions)** — Records three settled decisions:
+  - **Engine:** Unreal Engine 5.8 (§9); the Unity (URP) / Godot 4 recommendation is withdrawn. `project.yaml` and `CLAUDE.md` carry the engine config.
+  - **Title:** "Cat RPG" is the final title (§1); "Nine Lives of a Boss Cat" is withdrawn. "Nine Lives" remains the game's structure term.
+  - **Art style:** reference-close on the visuals, not the 3C (§4.1, §9 art-style ruling); supersedes the "print-stylised" default. The originality rule is unchanged. Open questions 1, 3 and 10 closed (§11).
 - **v1.3 (2026-11-24, Iteration 3)** — Folds in the round-2 reviews (`design/reviews/round-2/presentation.md`, `combat-and-crew.md`, `nemesis-territory-dayloop.md`):
   - **Rulings R1–R5** recorded in §5.7 (Late Home on L2D3 with K2.2; the Piece never contains the Call cell; the numbers rule; no combat inside the wall; face events vs incidental faces). Turf Board glossary line amended per R3.
   - **Cat scale** 1.25× (≈ 0.56 m), one global value (§4.1). Posse tick = chevron, controlled cat = bell (§4.1). Tone Sense Icons are the four tone puffs (§5.6).

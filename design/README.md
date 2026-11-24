@@ -1,6 +1,6 @@
 # Design Folder — Map and Reading Order
 
-Everything here describes **Cat RPG** (working title), a third-person action RPG about a house cat who is a boss outside and a pet at home. The current target is the **vertical slice** (Lives 1–2, Hidamari Lane, ≈ 2–2.5 h). The design is final for the slice; nothing is implemented yet and the engine is not chosen.
+Everything here describes **Cat RPG**, a third-person action RPG about a house cat who is a boss outside and a pet at home. The current target is the **vertical slice** (Lives 1–2, Hidamari Lane, ≈ 2–2.5 h). The design is final for the slice; nothing is implemented yet; the engine is Unreal Engine 5.8.
 
 ## Read in this order
 

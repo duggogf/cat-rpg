@@ -146,3 +146,17 @@ None of these blocks a prototype. All of them are worth a fourth pass *after* th
 | 12 | **Night locked in Lives 1–2 until the cat flap** | Taste | Yes | The flap is a story beat (K2.3) and staggers teaching. |
 | 13 | **Spraying presentation** | Taste / rating | Sparkle-cloud euphemism | Keeps PEGI 7–12 / E10+ and the slapstick tone. |
 | 14 | **Damage numerals** | Taste | Off by default, option Off / Big hits / All (already ruled, R3) | Listed only so the user can overrule. |
+
+---
+
+## 6. Decisions received (2026-11-24)
+
+Recorded after this assessment; §5 above is left as written.
+
+| §5 # | Decision | User's ruling | Against the recommended default |
+|---|---|---|---|
+| 2 | **Engine** | **Unreal Engine 5.8** | Replaces "Unity 6 LTS with URP; Godot 4". Set in `project.yaml` and `CLAUDE.md`; the art bible's §6.1 rendering requirements now target UE 5.8. |
+| 4 | **Title** | **"Cat RPG"**, final: simple and straightforward | Replaces "Nine Lives of a Boss Cat"; no separate release title. |
+| 6 | **Reference closeness** | **Reference-close on the visuals, not the 3C**: 3D cel-shaded characters that read like 2D cartoon cels, in environments that read like 2D painted anime backgrounds, built in full 3D with a free-rotating third-person camera | Replaces "print-stylised". Differentiation now comes from original characters, world, UI content and the free camera, not from moving the rendering away from the reference. The originality guardrail is unchanged: a look target only; all characters, names, locations and assets are original. |
+
+Applied in `design/creative-brief.md` v1.4, `design/GDD.md` §1/§12/§20, `design/art/art-bible.md` (Iteration 3b) and `design/gdd/camera-system.md` (header note; free orbit already specified).

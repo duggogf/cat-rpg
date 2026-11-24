@@ -1,9 +1,9 @@
-# Game Concept: Cat RPG (working title)
+# Game Concept: Cat RPG
 
 *Created: 2026-11-23*
 *Status: Draft (creative-director pass; awaiting user review)*
 
-Recommended release title: **"Nine Lives of a Boss Cat"** (open). Shared canon, terms and numbers: `design/creative-brief.md`. Pillars in full: `design/gdd/game-pillars.md`.
+Title: **"Cat RPG"**, final (user decision 2026-11-24; the earlier "Nine Lives of a Boss Cat" proposal is withdrawn). Shared canon, terms and numbers: `design/creative-brief.md`. Pillars in full: `design/gdd/game-pillars.md`.
 
 ---
 
@@ -202,9 +202,9 @@ Every named cat carries visible history with you; nobody dies, so everything ret
 
 | Consideration | Assessment |
 | ---- | ---- |
-| **Recommended Engine** | **Unity (URP)**, recommendation only; decision is the user's. Mature toon-shading, VFX, authored-camera and timeline tooling and an established console path for a small team. Godot 4 is the alternative if openness and licence cost matter more than port convenience |
+| **Engine** | **Unreal Engine 5.8**, chosen by the user (2026-11-24); the earlier Unity/Godot recommendation is withdrawn. Engine rendering requirements: `design/art/art-bible.md` §6.1 |
 | **Key Technical Challenges** | Toon shader and outlines readable at bird's-eye distance; 10-combatant fights with heavy VFX at handheld frame rates; deterministic, testable overnight nemesis simulation; procedural cat appearance from few meshes; in-engine wordless vignette tooling; companion AI |
-| **Art Style** | 3D stylised: cel-shaded, flat colour, clean outlines, hand-painted textures and painted backdrops |
+| **Art Style** | Reference-close to *Shin chan: Shiro and the Coal Town* on the visuals (user decision 2026-11-24): 3D cel-shaded characters that read like 2D cels with clean outlines, in unlined environments that read like 2D painted anime backgrounds; free third-person camera; all content original |
 | **Art Pipeline Complexity** | High (custom 3D, custom shader, per-Life redressing of the house, ageing variants of four humans and Mikan) |
 | **Audio Needs** | Music-heavy and adaptive; the Call motif system; Murmur voice design; large cat vocal library |
 | **Networking** | None |
@@ -276,7 +276,7 @@ Pre-agreed fallback: 4 districts instead of 6, 40 Moves, fewer Critters. Never c
 ## Next Steps
 
 - [ ] User reviews concept, pillars and creative brief; answers the open questions
-- [ ] Choose the engine and fill in the technology stack (`/setup-engine`)
+- [x] Choose the engine (Unreal Engine 5.8, 2026-11-24); remaining: `/setup-engine unreal 5.8` on the dev machine for editor path, commands and a reference refresh
 - [ ] **Prototype the combat core** (`/prototype`) before locking system GDDs' numbers
 - [ ] Specialists write system GDDs from `design/creative-brief.md`
 - [ ] Cross-GDD consistency review (`/review-all-gdds`)

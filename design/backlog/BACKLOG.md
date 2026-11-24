@@ -185,7 +185,7 @@
 |---|---|---|
 | Raincoat "bloom" as a Melody-presence twin: decide after the home mock (a stepped tone change, never a glow) | Next | AB, SB, R2-P |
 | Whisker compass pointer count: keep 5 unless the compass test needs more | Next | AB, R2-P |
-| Reference-closeness decision beyond the default, once mock frames are seen | Next | AB |
+| Look-dev spike in Unreal Engine 5.8: prove the reference-close look (user decision 2026-11-24) against R-1–R-6 and E-1–E-9; record the shading/outline method in an ADR | Next | AB |
 | Handheld budgets (1,800 triangles per cat, pass timings, streaming); handheld outlines and AA | Later | AB AB-10, AB-11 |
 | Crowd readability below 6% screen height; readable axes at 48 px | Later | AB AB-2/3 |
 | Arcade, Shiosai and Summit palettes; their Clowder colours under the ΔE 15 rule | Later | AB |

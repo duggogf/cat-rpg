@@ -2,7 +2,7 @@
 
 *Created: 2026-11-23 · Owner: technical-artist · Status: **Draft v1 (round 2, slice scope)** · Reviewers: art-director, combat designer, UX (DR-48)*
 *Canon: `design/creative-brief.md` v1.3 §4.1, §8 (safety row); `design/reviews/round-1/director-rulings.md` DR-07, DR-08, DR-22, DR-24, DR-29, DR-30, DR-48, DR-50; Part 2 §5 (one camera grammar; a gentle lower-and-tighten at the garden wall) and §6 (AB-6 overruled: one camera).*
-*Engine is OPEN (brief §9). This doc is engine-agnostic: no engine API is named as a requirement. Shipping implementation (for example a camera-rig package) is an implementation choice and is unverified against `docs/engine-reference/` until the engine is pinned.*
+*Engine: Unreal Engine 5.8 (user decision 2026-11-24, brief §9 v1.4). This doc stays engine-agnostic: no engine API is named as a requirement. The shipping implementation (for example UE's camera components) is an implementation choice, to be verified against `docs/engine-reference/unreal/` in an ADR.*
 
 ---
 
@@ -315,3 +315,4 @@ Combat distance is solved from frame width (§4.2), so changing FOV does not shr
 ## Revision Log
 
 - **2026-11-24 · Iteration 3 (round-2 presentation review, final pass).** Shake and punch-in values deleted from §3.6, §4.5 and §7; all now cite `combat-system.md` §3.17 (Combat owns the tier table, DR-07); camera keeps playback rules only (screen-space, no roll, ≥ 2-frame holds, deterministic pattern, motion budget). Edge Case 8 rewritten per R4 (crow on the lane-side wall top, normal Explore → Combat blend). Scale set to Art's 1.25× (≈ 0.56 m): BL values, §4.1 size table restated; W_max lowered 11.8 → 10.6 m (D 6.0–7.2 m) so the combat 6.7% floor holds at 1.25×. T3 confirms the scale. Canon reference bumped to brief v1.3.
+- **2026-11-24 · Iteration 3b (user decisions).** Header engine note updated: Unreal Engine 5.8 (brief v1.4). Checked against the user's 3C ruling ("walk around and rotate our camera freely"): Explore already gives free 360° yaw orbit and −10° to +55° pitch (§3.3), auto-recentre only after 1.5 s without input and switchable Off (§3.11); no rule change needed.

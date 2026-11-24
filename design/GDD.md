@@ -2,10 +2,11 @@
 
 | | |
 |---|---|
-| **Working title** | "Cat RPG" (recommended release title *Nine Lives of a Boss Cat*, OPEN) |
-| **Version** | 1.0 · 2026-11-24 · compiled by the producer from the final round-3 design set |
+| **Title** | "Cat RPG" (final; user decision 2026-11-24) |
+| **Engine** | Unreal Engine 5.8 (user decision 2026-11-24) |
+| **Version** | 1.1 · 2026-11-24 · compiled by the producer from the final round-3 design set; 1.1 records the user's engine, title and art-style decisions (brief v1.4) |
 | **Status** | Design final for the slice; ready to prototype. Open user decisions: §20 |
-| **Canon order** | [`creative-brief.md`](creative-brief.md) v1.3 → [`director-rulings.md`](reviews/round-1/director-rulings.md) (DR-xx) → round-2 rulings R1–R5 (brief §5.7) → system docs. If this GDD and a source disagree, the source wins |
+| **Canon order** | [`creative-brief.md`](creative-brief.md) v1.4 → [`director-rulings.md`](reviews/round-1/director-rulings.md) (DR-xx) → round-2 rulings R1–R5 (brief §5.7) → system docs. If this GDD and a source disagree, the source wins |
 
 Read this once to know the game, the slice and how the systems fit; each section links its full spec. Mock-up frames: [`previews/`](previews/).
 
@@ -28,9 +29,9 @@ Read this once to know the game, the slice and how the systems fit; each section
 - **Territory that feeds you:** take Patches, post Sentries against forecast raids, collect **Tribute** as a real pile of fish on Haru's Doorstep.
 - **The house:** a daily sniff-out, a piano to walk on, and vignettes that make you care about one person.
 
-**Audience:** 16–40; action-RPG players who also buy emotional indies; cat people. PEGI 7–12 / ESRB E10+. Solo, premium, offline. **Platforms:** PC (Steam) lead, controller-first with full KB/M, 60 fps; a handheld second at 30 fps (floor OPEN). The slice is PC.
+**Audience:** 16–40; action-RPG players who also buy emotional indies; cat people. PEGI 7–12 / ESRB E10+. Solo, premium, offline. **Platforms:** PC (Steam) lead, controller-first with full KB/M, 60 fps; a handheld second at 30 fps (floor OPEN). The slice is PC. **Engine:** Unreal Engine 5.8.
 
-**References** (structure and feel, never components): *Final Fantasy VII Remake* (combat structure, slow-mo commands, stagger) · *Pokémon* (recruit, teach, swap) · *Shadow of Mordor* (remembering enemies, a hierarchy screen) · *Shin chan: Shiro and the Coal Town* (art style only) · *Stray* (cat scale) · *Yakuza* (turf melodrama played straight and funny).
+**References** (structure and feel, never components): *Final Fantasy VII Remake* (combat structure, slow-mo commands, stagger) · *Pokémon* (recruit, teach, swap) · *Shadow of Mordor* (remembering enemies, a hierarchy screen) · *Shin chan: Shiro and the Coal Town* (the look, matched closely: 3D cel characters reading as 2D cels on backgrounds reading as 2D painted art; never its characters, names, places, assets or 3C) · *Stray* (cat scale) · *Yakuza* (turf melodrama played straight and funny).
 
 **Why it stands out.** Combat and Rivals carry the word of mouth ("my whole gang piled on, and I knocked the Boss off his wall into a bucket"); the wordless home story is why people remember it; territory carries half the play time. No other game puts a petty gang war and a quiet human life on one clock.
 
@@ -336,7 +337,7 @@ Plus **Late Home** (L2D3 Dusk, a Routine variant): no Call, the bell alone, Gran
 
 **Palette highlights:** Paper Cream and Cocoa UI; **Mikan Ginger** reserved for the hero; **Bell-Gold** for everything that is the player's; **Haru Yellow** exclusive inside the house; **Wall Sitter Sage** for the slice's enemy Clowder; **Frazzle Magenta** the loudest combat colour; shadows Wisteria, never grey. Phase keys Morning, Day, **Dusk** (the key-art hour), Night in bright moon-blue.
 
-**Characters:** cats from bean, chestnut and pom shapes; one animation set per personality; a coat generator that never produces Mikan's look or a Scar shape. Humans are naturalistic, seen from the knee. **Combat VFX** draws Combat's tiers, including hand-lettered onomatopoeia (English and Japanese). **Originality:** the Shin chan reference's warmth, not its components; home key art never uses the inside-looking-out veranda frame. A one-alley look-dev test proves the method first.
+**Characters:** cats from bean, chestnut and pom shapes; one animation set per personality; a coat generator that never produces Mikan's look or a Scar shape. Humans are naturalistic, seen from the knee. **Combat VFX** draws Combat's tiers, including hand-lettered onomatopoeia (English and Japanese). **Reference closeness (user decision 2026-11-24): reference-close on the visuals.** Characters are 3D cel-shaded so they read like 2D cartoon cels; environments read like 2D painted anime backgrounds; both are built in full 3D for a free-rotating third-person camera. Differentiation comes from our original characters, world, UI content and camera, not from moving the rendering away from the reference. **Originality:** a look target only; all characters, names, locations and assets are original, and the reference's characters are never drawn, named or reused; home key art never uses the inside-looking-out veranda frame. A one-alley look-dev test in Unreal Engine 5.8 proves the method first.
 
 ---
 
@@ -456,8 +457,8 @@ Combat and territory alternate inside every day; neither runs > ≈ 4 min withou
 **Build first** (brief §10):
 1. **Combat grey box** — the highest risk. Mikan + 3; 3 Styles; the 8 ★ Moves; Tag-In, Relay, Pile-On; a Captain; a 3-phase Daifuku on his wall with the bucket; personality AI for **Stalwart Hige, Goofball Pon, Braggart Togemaru** (the early Crew; test the Brooder separately). Camera Explore/Combat/Slow Blink/Cinematic; the tier table with the safety arbiter and a Harding capture.
 2. **Three sims** (started in [`reviews/round-2/sim/`](reviews/round-2/sim/), [`reviews/round-3/sim/`](reviews/round-3/sim/)): fight lengths, the 7-day Night Shuffle, the Lives 1–2 economy. Keep them as regression checks.
-3. **One-alley look-dev test:** shader and line rule, painted sky cards, camera collision in 1–2 m corridors and on roofs.
-4. **Home mock:** Main Room, face-out clamp, a two-cut vignette, Mikan at 1.25× in a lap; decides reference closeness.
+3. **One-alley look-dev test (Unreal Engine 5.8):** cel shader and line rule matched to the reference, painted sky cards, camera collision in 1–2 m corridors and on roofs.
+4. **Home mock:** Main Room, face-out clamp, a two-cut vignette, Mikan at 1.25× in a lap; checks the reference-close look holds at cat height indoors.
 
 **Questions it must answer.**
 - Is conducting fun at 20 min (≥ 75% do ≥ 1 Tag-In and ≥ 3 commanded Moves per normal encounter)?
@@ -480,7 +481,7 @@ Combat and territory alternate inside every day; neither runs > ≈ 4 min withou
 | **Four-cat readability** in third person | Keylines, chevrons, edge arrows, decals above dust, one screen-wide effect, random-pause test |
 | **Environment cost** (sky and every angle visible) | Look-dev test; one district first |
 | **Tonal whiplash** | Hard street/home separation; HUD falls away at the wall |
-| **Style proximity** / **procedural variety** | Originality rule, own UI shapes, mock-frame review / personality sets, coat generator |
+| **Style proximity** (reference-close by user choice) / **procedural variety** | Originality rule (original characters, names, places, assets), own UI shapes and content, free third-person camera, mock-frame review / personality sets, coat generator |
 | **Nemesis patent** | Legal review before scope lock and any showing (§20) |
 | **Day overrun** (L2D2/L2D3 at 28.9 min heavy) | Measure Lot/Doorstep first; move the Turf Board, take Tofu Shop Step earlier, trim Night |
 | **Low-stakes posting** | Motive counters and neighbours; spare levers in the Backlog |
@@ -493,19 +494,18 @@ Combat and territory alternate inside every day; neither runs > ≈ 4 min withou
 
 | # | Decision | Default / recommendation |
 |---|---|---|
-| 1 | **Engine** (none set in `project.yaml`) | Unity (URP) recommended; Godot 4 the alternative; then `/setup-engine` |
-| 2 | **Title** | *Nine Lives of a Boss Cat* |
-| 3 | **Legal review** of Rivals against the Warner Bros. nemesis patent (cited as US 10,926,179, to verify) | Qualified patent counsel before the Rivals scope is locked and before any public showing; distance levers each cost design ([`nemesis-system.md`](gdd/nemesis-system.md) §6.4) |
-| 4 | Cultural consultant for the home rituals | Before slice home content is final |
-| 5 | Team size, budget, timeline | — |
-| 6 | Haru's presentation: canon or selectable | Canon |
-| 7 | Mikan customisation | Fixed iconic design |
-| 8 | Does Life 9 imply Mikan's passing? | No; the last sound is the bell |
-| 9 | Handheld floor | Switch 1-class |
-| 10 | Night locked until the cat flap | Yes |
-| 11 | Spraying as a sparkle cloud | Yes |
-| 12 | Reference-close or print-stylised | Decide on look-dev mock frames |
-| 13 | Doc alignments | K1.4 time; Turf Board day; Daifuku Lv 8 vs ≈ 9 (Bribe 256 vs 288); Pile-On prompt word vs hint card |
+| 1 | **Legal review** of Rivals against the Warner Bros. nemesis patent (cited as US 10,926,179, to verify) | Qualified patent counsel before the Rivals scope is locked and before any public showing; distance levers each cost design ([`nemesis-system.md`](gdd/nemesis-system.md) §6.4) |
+| 2 | Cultural consultant for the home rituals | Before slice home content is final |
+| 3 | Team size, budget, timeline | — |
+| 4 | Haru's presentation: canon or selectable | Canon |
+| 5 | Mikan customisation | Fixed iconic design |
+| 6 | Does Life 9 imply Mikan's passing? | No; the last sound is the bell |
+| 7 | Handheld floor | Switch 1-class |
+| 8 | Night locked until the cat flap | Yes |
+| 9 | Spraying as a sparkle cloud | Yes |
+| 10 | Doc alignments | K1.4 time; Turf Board day; Daifuku Lv 8 vs ≈ 9 (Bribe 256 vs 288); Pile-On prompt word vs hint card |
+
+*Settled 2026-11-24:* **engine** — Unreal Engine 5.8 (`project.yaml`; the Unity/Godot recommendation is withdrawn); **title** — "Cat RPG", final (*Nine Lives of a Boss Cat* withdrawn); **reference closeness (old #12)** — reference-close, settled: match the reference's visuals 1:1, not its 3C; our camera is free third-person (§12, brief §9).
 
 *Settled 2026-11-23:* slice first; simplified FF7R-structure combat; personality as the Crew hook; third-person camera; three districts; readable cat speech; readable localised onomatopoeia.
 

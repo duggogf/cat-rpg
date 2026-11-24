@@ -1,4 +1,4 @@
-# Game Pillars: Cat RPG (working title)
+# Game Pillars: Cat RPG
 
 ## Document Status
 - **Version**: 1.0
