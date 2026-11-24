@@ -8,8 +8,8 @@
   body { margin: 0; background: #111; }
   /* HUD placement only; component looks come from kit.css */
   #dial { right: 44px; top: 36px; }
-  #prompt-spray { left: 1128px; top: 250px; }
-  #prompt-home { left: 762px; top: 596px; }
+  #prompt-spray { left: 1188px; top: 296px; }
+  #prompt-home { left: 786px; top: 606px; }
 </style>
 </head>
 <body>
@@ -25,11 +25,11 @@ const s = [];
 
 /* ---------- sky, cumulus, sea, far hill ---------- */
 s.push(K.sky({ w: W, h: 470, phase: 'day' }));
-s.push(K.glow(260, 40, 620, 300, '#FFF6D8', 0.55));
+s.push(K.glow(200, 0, 1000, 520, '#FFF6D8', 0.6));
 s.push(K.cloud({ x: 330, y: 345, w: 560, h: 250, seed: 12, opacity: 0.96 }));
-s.push(K.cloud({ x: 1170, y: 350, w: 760, h: 430, seed: 3 }));
-s.push(K.cloud({ x: 1700, y: 340, w: 520, h: 250, seed: 21 }));
-s.push(K.cloud({ x: 860, y: 338, w: 300, h: 110, seed: 8, opacity: 0.92 }));
+s.push(K.cloud({ x: 1420, y: 350, w: 800, h: 440, seed: 3 }));
+s.push(K.cloud({ x: 960, y: 344, w: 380, h: 170, seed: 21, opacity: 0.95 }));
+
 s.push(K.sea({ x: 560, y: HZ, w: 800, h: 90 }));
 s.push(`<rect x="560" y="${HZ - 5}" width="800" height="12" fill="#DDF1FA" opacity="0.7" filter="url(#k-soft)"/>`);
 s.push(K.hill({ pts: [[1030, 334], [1110, 322], [1210, 296], [1340, 262], [1500, 226], [1700, 204], [1930, 176]], baseY: 430, color: '#6DAE95', seed: 5 }));
@@ -69,10 +69,27 @@ s.push(K.ground({ pts: [[-10, 398], [W + 10, 398], [W + 10, H + 10], [-10, H + 1
 s.push(`<path d="M790 404L1010 404L1500 1090L330 1090Z" fill="#FFF1CF" opacity="0.34" filter="url(#k-soft2)"/>`);
 s.push(`<rect x="700" y="394" width="460" height="9" fill="#F6ECD2" opacity="0.9" filter="url(#k-rough)"/>`);
 
+s.push(`<g filter="url(#k-rough)" fill="none" stroke="#9A8C78" stroke-width="2.5" opacity="0.55"><path d="M1030 520l40 26l-12 40l52 60"/><path d="M1240 800l70 30l30 70"/><path d="M930 440l18 14l-6 16"/></g>`);
+s.push(`<path d="M${P(1.6, 0, 10)[0]} ${P(1.6, 0, 10)[1]}L${P(1.6, 0, 1.6)[0]} ${P(1.6, 0, 1.6)[1]}L${P(1.25, 0, 1.6)[0]} ${P(1.25, 0, 1.6)[1]}L${P(1.3, 0, 10)[0]} ${P(1.3, 0, 10)[1]}Z" fill="#D9CDB4" opacity="0.8" filter="url(#k-rough)"/>`);
+
+s.push(`<path d="M790 404L1010 404L1260 760L620 760Z" fill="#FFF4D6" opacity="0.3" filter="url(#k-soft)"/>`);
+
 /* ---------- left plaster wall (in shade; its lit coping is the High Road ribbon) ---------- */
 const wallQ = [[-200, -13], [770, 289], [770, 411.5], [-200, 1018]];
-s.push(K.wall({ quad: wallQ, color: '#D3C6C2', top: '#C3BCCB', bottom: '#E6CFAE', grime: 0.5, copingH: 0.075 }));
-s.push(K.glow(520, 560, 300, 120, '#FFE9B8', 0.3)); // warm bounce from the lane
+const wp = (Y, d) => P(-1.6, Y, d);
+const quadW = (y0, y1, d0, d1) => 'M' + [wp(y1, d0), wp(y1, d1), wp(y0, d1), wp(y0, d0)].map((p) => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join('L') + 'Z';
+let scrib = ''; for (let i = 0; i < 5; i++) { const y = 1.06 - i * 0.085, a = wp(y, 5.42), b = wp(y, 5.42 + 0.5 + (i % 2) * 0.22); scrib += `<path d="M${a[0].toFixed(1)} ${a[1].toFixed(1)}Q${((a[0] + b[0]) / 2).toFixed(1)} ${((a[1] + b[1]) / 2 - 3).toFixed(1)} ${b[0].toFixed(1)} ${b[1].toFixed(1)}" stroke="#7A6E86" stroke-width="2.4" fill="none" stroke-dasharray="${9 + i * 2} 4 ${5 + i} 3" opacity="0.7"/>`; }
+const wallArt = `
+  <path d="${quadW(0.0, 1.5, 2.0, 2.9)}" fill="#F3E2C4" opacity="0.5" filter="url(#k-soft2)"/>
+  <path d="${quadW(0.5, 1.2, 7.4, 9.6)}" fill="#EFE1CC" opacity="0.6" filter="url(#k-soft)"/>
+  <path d="${quadW(0.2, 0.9, 3.3, 3.9)}" fill="#C6B8C0" opacity="0.5" filter="url(#k-soft)"/>
+  <path d="${quadW(0.55, 1.18, 5.3, 6.35)}" fill="#EFE7D2"/><path d="${quadW(1.08, 1.18, 5.3, 6.35)}" fill="#7E93B6" opacity="0.85"/>${scrib}
+  <path d="M${wp(1.42, 4.1)[0]} ${wp(1.42, 4.1)[1]}l14 46l-10 38l16 50" stroke="#9A8C9C" stroke-width="2.5" fill="none" opacity="0.7"/>
+  <path d="M${wp(1.4, 11)[0]} ${wp(1.4, 11)[1]}l6 22l-5 18" stroke="#9A8C9C" stroke-width="2" fill="none" opacity="0.7"/>
+  <path d="${quadW(0.0, 0.22, 1.5, 16)}" fill="#6F9A5E" opacity="0.28" filter="url(#k-soft)"/>`;
+s.push(K.wall({ quad: wallQ, color: '#E4D6CB', top: '#D5CCDB', bottom: '#F1DDB9', grime: 0.3, copingH: 0.075, inner: wallArt }));
+s.push(K.glow(480, 600, 480, 170, '#FFE9B8', 0.4)); // warm bounce from the lane
+s.push(`<path d="M${P(-1.6, 0, 16)[0]} ${P(-1.6, 0, 16)[1]}L${P(-1.6, 0, 1.4)[0]} ${P(-1.6, 0, 1.4)[1]}L${P(-1.48, 0, 1.4)[0]} ${P(-1.48, 0, 1.4)[1]}L${P(-1.52, 0, 16)[0]} ${P(-1.52, 0, 16)[1]}Z" fill="#8C7F88" opacity="0.55" filter="url(#k-rough)"/>`);
 s.push(K.surface({ pts: [[770, 280], [800, 286], [800, 408], [770, 411.5]], color: '#F6E9CC', grime: 0.1 })); // the wall's sunlit end face
 
 /* ---------- right: board fence, hedge, utility pole ---------- */
@@ -83,13 +100,13 @@ s.push(K.pole({ x: P(1.45, 0, 7.4)[0], y: P(1.45, 0, 7.4)[1], h: 620, w: 44 }));
 s.push(K.wires({ pts: [[1190, -10], [600, 150]], sag: 46, width: 2.5 }) + K.wires({ pts: [[1230, -10], [540, 120]], sag: 60, width: 2 }) + K.wires({ pts: [[1210, 30], [1920, 110]], sag: 30, width: 2.5 }));
 
 /* ---------- coloured shadows on the lane (wisteria, never grey) ---------- */
-const shEdge = (d) => P(-0.3, 0, d);
+const shEdge = (d) => P(-0.62, 0, d);
 let leaf = ''; const R = K.rng(77);
-for (let i = 0; i < 26; i++) { const d = 1.7 + i * 0.36 + R() * 0.2, p = P(-0.3 + (R() - 0.35) * 0.5, 0, d), r = (0.16 + R() * 0.2) * F / d; leaf += `<ellipse cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" rx="${r.toFixed(1)}" ry="${(r * 0.36).toFixed(1)}"/>`; }
-s.push(`<g fill="${C.wisteria}" opacity="0.5" style="mix-blend-mode:multiply"><g filter="url(#k-leaf)"><path d="M770 411.5L${shEdge(16)[0]} 411.5L${shEdge(5)[0]} ${shEdge(5)[1]}L${shEdge(1.6)[0]} 1150L-200 1150L-200 1018Z"/>${leaf}</g></g>`);
-// dappled sun holes inside the shadow
-let dap = ''; for (let i = 0; i < 16; i++) { const d = 1.9 + R() * 6, p = P(-1.3 + R() * 0.9, 0, d), r = (0.07 + R() * 0.1) * F / d; dap += `<ellipse cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" rx="${r.toFixed(1)}" ry="${(r * 0.34).toFixed(1)}"/>`; }
-s.push(`<g fill="#FFF3CF" opacity="0.55" filter="url(#k-dab)">${dap}</g>`);
+for (let i = 0; i < 90; i++) { const d = 1.5 + Math.pow(R(), 1.5) * 13, p = P(-0.66 + (R() - 0.3) * 0.34, 0, d), r = (0.05 + R() * 0.1) * F / d; leaf += `<ellipse cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" rx="${r.toFixed(1)}" ry="${(r * 0.42).toFixed(1)}" transform="rotate(${Math.round(R() * 50 - 25)} ${p[0].toFixed(1)} ${p[1].toFixed(1)})"/>`; }
+s.push(`<g fill="#7F7CCF" opacity="0.46" style="mix-blend-mode:multiply"><path d="M770 411.5L${shEdge(16)[0]} 411.5L${shEdge(5)[0]} ${shEdge(5)[1]}L${shEdge(1.5)[0]} ${shEdge(1.5)[1]}L-200 1200L-200 1018Z"/><g filter="url(#k-dab)">${leaf}</g></g>`);
+// dappled sun inside the shadow
+let dap = ''; for (let i = 0; i < 9; i++) { const d = 2.0 + R() * 6, p = P(-1.4 + R() * 0.55, 0, d), r = (0.05 + R() * 0.07) * F / d; dap += `<ellipse cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" rx="${r.toFixed(1)}" ry="${(r * 0.36).toFixed(1)}"/>`; }
+s.push(`<g fill="#FFF3CF" opacity="0.5" filter="url(#k-leaf-fine)">${dap}</g>`);
 s.push(K.castShadow(`M${P(1.6, 0, 2)[0]} ${P(1.6, 0, 2)[1]}L${P(1.6, 0, 10)[0]} ${P(1.6, 0, 10)[1]}L${P(1.9, 0, 10)[0]} ${P(1.9, 0, 10)[1]}L${P(2.1, 0, 2)[0]} ${P(2.1, 0, 2)[1]}Z`, 0.3));
 const pb = P(1.45, 0, 7.4); s.push(K.castShadow(`M${pb[0] - 20} ${pb[1]}L${pb[0] + 22} ${pb[1]}L${pb[0] + 330} ${pb[1] + 46}L${pb[0] + 300} ${pb[1] + 60}Z`, 0.34));
 
@@ -97,6 +114,8 @@ const pb = P(1.45, 0, 7.4); s.push(K.castShadow(`M${pb[0] - 20} ${pb[1]}L${pb[0]
 s.push(K.foliage({ x: 130, y: 170, w: 420, h: 220, seed: 57 }));
 s.push(K.foliage({ x: 20, y: 330, w: 260, h: 260, seed: 58, tones: { dark: '#2A6245', mid: '#4C8F4A', light: '#7DB857', hi: '#B5D873' } }));
 s.push(K.foliage({ x: 640, y: 292, w: 150, h: 80, seed: 59 }));
+s.push(K.castShadow('M180 250Q300 330 420 300Q380 400 250 400Q170 360 180 250Z', 0.22));
+s.push(K.foliage({ x: 300, y: 228, w: 250, h: 150, seed: 60 }));
 s.push(K.flowers({ x: P(1.42, 0, 5.2)[0], y: P(1.42, 0.22, 5.2)[1], w: 210, h: 92, seed: 6 }));
 s.push(K.flowers({ x: P(1.45, 0, 8.6)[0], y: P(1.45, 0.2, 8.6)[1], w: 120, h: 54, seed: 9, n: 5 }));
 s.push(K.grass({ x1: 770, y1: 412, x2: 240, y2: 742, n: 30, h: 26, seed: 5, scaleAt: (t) => 0.5 + t * 1.3 }));
@@ -106,23 +125,25 @@ s.push(K.prop({ kind: 'pot', x: P(1.36, 0, 3.7)[0], y: P(1.36, 0, 3.7)[1] + 4, s
 s.push(K.prop({ kind: 'bucket', x: P(1.3, 0, 4.4)[0] - 40, y: P(1.3, 0, 4.4)[1] + 2, scale: 1.25 }));
 
 /* ---------- the pull home: Head Home thread, a bell-gold scent ribbon up onto the High Road ---------- */
-s.push(K.ribbon({ pts: [[742, 842], [690, 760], [640, 700], [612, 560], [640, 400], [668, 262], [700, 256], [744, 272], [790, 284]], width: 9, rimW: 3.5 }));
+const cop = (d, w) => { const p = P(-1.6, 1.5, d); return [p[0] + 6, p[1] - 9 + w]; };
+const tp = []; for (let i = 0; i <= 14; i++) { const d = 16 - i * 0.93; tp.push(cop(d, Math.sin(i * 1.15) * (1.5 + i * 0.8))); }
+s.push(K.ribbon({ pts: [[794, 332], [801, 308], [786, 292], ...tp], width: 13, rimW: 3, taper: true, ink: true, grow: (t) => 0.4 + t * 0.9 }));
 
 /* ---------- rival on the wall top ---------- */
-const rv = { x: 418, y: 176 };
-s.push(K.cat({ ...K.CAST.braggart, pose: 'front-sit', expr: 'smug', x: rv.x, y: rv.y, scale: 0.98, flip: false }));
+const rv = { x: 452, y: 190 };
+s.push(K.cat({ ...K.CAST.braggart, pose: 'front-sit', expr: 'smug', x: rv.x, y: rv.y, scale: 1.12, flip: false }));
 
 /* ---------- the Scent Post: stone lantern, two sage wisps (held by the Wall Sitters, below Strong) ---------- */
-const lp = P(0.5, 0, 4.0);
+const lp = P(0.6, 0, 4.2);
 s.push(K.castShadow(`M${lp[0] - 30} ${lp[1] - 4}L${lp[0] + 40} ${lp[1] - 6}L${lp[0] + 300} ${lp[1] + 26}L${lp[0] + 250} ${lp[1] + 44}Z`, 0.36));
-s.push(K.stoneLantern({ x: lp[0], y: lp[1], scale: 1.42 }));
-s.push(K.scentWisps({ x: lp[0] + 4, y: lp[1] - 392, count: 2, h: 120, color: C.sage, seed: 4 }));
+s.push(K.stoneLantern({ x: lp[0], y: lp[1], scale: 1.36 }));
+s.push(K.scentWisps({ x: lp[0] + 4, y: lp[1] - 376, count: 2, h: 120, color: C.sage, seed: 4 }));
 
 /* ---------- Mikan, from behind ---------- */
-const mk = { x: 866, y: 918 };
+const mk = { x: 900, y: 936 };
 s.push(K.castShadow(`M${mk.x - 40} ${mk.y - 6}L${mk.x + 40} ${mk.y - 12}L${mk.x + 250} ${mk.y + 14}L${mk.x + 190} ${mk.y + 34}Z`, 0.34));
-s.push(K.cat({ ...K.CAST.mikan, pose: 'back', x: mk.x, y: mk.y, scale: 1.95 }));
-s.push(K.ticks({ x: mk.x, y: mk.y - 62, r: 34, n: 2, a0: 200, a1: 160, len: 12 }) + K.ticks({ x: mk.x, y: mk.y - 62, r: 34, n: 2, a0: -20, a1: 20, len: 12 }));
+s.push(K.cat({ ...K.CAST.mikan, pose: 'back', x: mk.x, y: mk.y, scale: 2.15 }));
+s.push(K.ticks({ x: mk.x, y: mk.y - 66, r: 38, n: 2, a0: 200, a1: 165, len: 13 }) + K.ticks({ x: mk.x, y: mk.y - 66, r: 38, n: 2, a0: -20, a1: 15, len: 13 }));
 
 /* ---------- a passer-by, as weather: legs, hem, shopping ---------- */
 const hm = { x: 1640, y: 1010 };
@@ -130,8 +151,7 @@ s.push(K.castShadow(`M${hm.x - 150} ${hm.y - 6}L${hm.x + 110} ${hm.y - 16}L${hm.
 s.push(K.human({ pose: 'walk', palette: 'street', garment: 'skirt', carry: 'bag', x: hm.x, y: hm.y, scale: 2.02, flip: true, shadow: false }));
 
 /* ---------- foreground framing + light ---------- */
-s.push(`<g filter="url(#k-soft)" opacity="0.96">${K.foliage({ x: 60, y: -10, w: 520, h: 190, seed: 71, dabs: false, tones: { dark: '#1F5540', mid: '#2F6E4A', light: '#4C8F4A' } })}</g>`);
-s.push(K.glow(980, 760, 520, 200, '#FFF0C0', 0.22));
+s.push(K.glow(1060, 760, 760, 300, '#FFF0C0', 0.26));
 
 document.getElementById('stage').innerHTML = K.svg(W, H, s.join(''), 'class="k-world"') + `
   <div class="k-drowsy"></div>

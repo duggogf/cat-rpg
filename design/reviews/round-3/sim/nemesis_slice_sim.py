@@ -192,7 +192,7 @@ class World:
         if FIX3 and s.declared is not None: L = s.declared   # the declared Nemesis keeps its daily placement
         if L is None or (s.arc and not FIX3) or s.day < 3: return
         if L.state not in ("Seated", "Roaming") and not (FIX2 and L.state == "Humbled"): return   # crate challenge
-        if s.day <= L.truce_until: return
+        if s.day <= L.truce_until and not (FIX3 and L is s.declared): return   # FIX3: a declared Sworn Rival under truce still turns up, for a sparring challenge off its post
         opener = "rival_ambush" if (L.g >= 50 and s.rng.random() < 0.5) else None
         s.fight(L, opener=opener if opener else None)
 

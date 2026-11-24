@@ -15,10 +15,10 @@ night 4 against the lowest-Scent admissible held Patch).  Two rule sets:
         uprising: Goofball);
       - neighbour pairs: Sentries on ADJACENT Patches (Low Wall Corner included) that are
         bonded each get +0.25 guard; clashing each get -0.25 guard and both Patches -10% Tribute;
-      - Scuffed: loot_held = 2x the Patch's Tribute (its own pay + the same again off the pile);
+      - Scuffed and Lost: loot_held = 2x the Patch's Tribute (its own pay + the same again off the pile);
       - raid parties per motive with real PR: Tough leader 1.0, Captain leader 1.5, escort 0.6
         (x the Sentry's PR); motive mix grudge 40 / boss_orders 25 / gloat 20 / pretender 15,
-        Captain-led 30%; Braggart pay perk +20% (was +10%).
+        Captain-led 30%. (Braggart pay perk stays +10%.)
 
 Posting policies compared (engaged player otherwise):
   best    - reads the forecast (motive known: Schemer posted, or the party portraits) and
@@ -79,7 +79,7 @@ class Rules:
     def __init__(s, r3, post_from=4):
         s.r3, s.post_from = r3, post_from
         s.steal_mult = 2.0 if r3 else 1.0
-        s.braggart_pay = 0.20 if r3 else 0.10
+        s.braggart_pay = 0.10   # unchanged in R3 (raising it to +20% pushed the hand reference above 66)
 
 
 def social(rules, posts, p):
@@ -142,7 +142,7 @@ def expected_night(rules, held, posts, raid, humbled, dsv):
             ph = p_hold(rules, posts, p, sc, raid)
             lost_ok = not (sc >= 60 or (len([q for q in OUTER if q in held]) >= 3 and "DEN" not in held and p != "DEN"))
             rep = ph * ph; scuff = ph - rep if lost_ok else 1 - rep; lost = (1 - ph) if lost_ok else 0
-            tot += rep * pay + scuff * (pay - rules.steal_mult * pay) + lost * 0
+            tot += rep * pay + scuff * (pay - rules.steal_mult * pay) + lost * (-rules.steal_mult * pay if rules.r3 else 0)
         else:
             tot += pay
     return tot
@@ -219,7 +219,7 @@ def run(rules, poster, seed, days=7, claims=None, visit_p=1.0, spray_p=1.0, fiel
             held[p] = min(100, max(10 if p == "LWC" else 0, held[p] - dec + (CATS[posts[p]][3] if p in posts else 0)))
             if held[p] == 0: del held[p]
         stash -= min(2 * len(posts), stash)
-        outcome, scuffed, raided, new_routed = None, set(), None, set()
+        outcome, scuffed, raided, new_routed, lost_pay = None, set(), None, set(), 0.0
         if raid and raid["patch"] in held:
             raided = raid["patch"]
             p = raid["patch"]
@@ -234,7 +234,10 @@ def run(rules, poster, seed, days=7, claims=None, visit_p=1.0, spray_p=1.0, fiel
             elif outcome == "Scuffed":
                 held[p] = max(0, held[p] - 20); scuffed.add(p)
                 if p in posts and CATS[posts[p]][0] not in ("fraidy", "brooder"): new_routed.add(posts[p])
-            else: del held[p]
+            else:
+                if rules.r3:   # R3: a Lost raid also carries off loot_held = 2x the Patch's Tribute
+                    lost_pay = rules.steal_mult * patch_pay(rules, p, held[p], posts, humbled, False, dsv)
+                del held[p]
         routed = new_routed
         # step 3: tomorrow's raid (Nemesis fix 2: every night from night 3, lowest-Scent admissible)
         raid = None
@@ -248,6 +251,7 @@ def run(rules, poster, seed, days=7, claims=None, visit_p=1.0, spray_p=1.0, fiel
         for q, s in held.items():
             pay = patch_pay(rules, q, s, posts, humbled, full_house, dsv)
             t += pay * (1 - rules.steal_mult) if q in scuffed else pay
+        t -= lost_pay
         log.append(dict(day=d, tribute=max(0, int(t)), stash=stash, raid=(outcome or "-")))
     return log
 
@@ -290,12 +294,9 @@ if __name__ == "__main__":
     # which cats does 'best' pick, by motive (night 4-7)?
     from collections import Counter
     pick = Counter()
-    for s in range(400):
-        rng = random.Random(s)
-        held = {"LWC": 60, "LPY": 70, "PA": 66, "TSS": 64}
-        for motive in ("grudge", "boss_orders", "gloat", "pretender"):
-            raid = dict(patch="TSS", motive=motive, attack=MOTIVE_MOD[motive] * (1.0 + (0.6 if motive == "boss_orders" else 0)))
-            posts = post_best(R3, held, raid, 5, crew_on(5), set(), {p: 0 for p in YIELD}, rng)
-            pick[(motive, posts.get("TSS", "-"))] += 1
-    print("R3 best guard on the forecast Patch, by motive (night-5 board):",
-          ", ".join(f"{m}: {c}" for (m, c), _ in sorted(pick.items())))
+    held = {"LWC": 60, "LPY": 70, "PA": 66, "TSS": 64}
+    for motive in ("grudge", "boss_orders", "gloat", "pretender"):
+        for lead in (1.0, 1.5):
+            raid = dict(patch="TSS", motive=motive, attack=MOTIVE_MOD[motive] * (lead + 0.6 * ESCORTS[motive]))
+            posts = post_best(R3, held, raid, 5, crew_on(5), set(), {p: 0 for p in YIELD}, random.Random(1))
+            print(f"R3 best posting, night-5 board, raid on TSS, motive {motive}, leader PR {lead}: {posts}")

@@ -280,7 +280,7 @@
     const B = BUILD[o.build], bw = B.bx, hs = B.head, lift = Math.max(0, (B.leg - 1) * 36), T = { sx: bw, sy: B.by, y: -lift };
     const body = xf([[-30, -6], [-35, -22], [-33, -40], [-25, -54], [-13, -61], [0, -63], [13, -61], [25, -54], [33, -40], [35, -22], [30, -6], [14, -3], [0, -7], [-14, -3]], T);
     const fx = 18 * bw, hy = -69 * B.by - lift, hb = hy + 18.5 * hs;
-    const parts = [{ d: tube([[-fx, -18 - lift], [-fx - 1, -6]], [18, 15]) }, { d: tube([[fx, -18 - lift], [fx + 1, -6]], [18, 15]) }, { d: ell(-fx - 1.5, -4.6, 11, 6) }, { d: ell(fx + 1.5, -4.6, 11, 6) }, { d: blob(body) }];
+    const parts = [{ d: tube([[-fx, -18 - lift], [-fx - 1, -6]], [18, 15]) }, { d: tube([[fx, -18 - lift], [fx + 1, -6]], [18, 15]) }, { d: ell(-fx - 1.5, -4.6, 11, 6) }, { d: ell(fx + 2, -8.2, 9.6, 8.6) }, { d: blob(body) }];
     const [eL, eR] = headEars(o), H = { s: hs, y: hy };
     const head = [{ d: blob(xf(eL, H)) }, { d: blob(xf(eR, H)) }, { d: blob(xf(FRONT_HEAD, H)) }];
     if ((o.scars || []).includes('cowlick')) head.push({ d: blob(xf(COWLICK, H)) });
@@ -288,7 +288,7 @@
     const RB = {
       saddle: [tb([[-27, -72], [-30, -44], [-19, -28], [0, -23], [19, -28], [30, -44], [27, -72]])],
       stripes: [-52, -41, -30, -19].map((y, i) => { const w = 38; return tb([[-w, y + 9], [-w * 0.5, y + 2], [-3, y - 2, 1], [-w * 0.5, y + 7], [-w, y + 15]]) + tb([[w, y + 9], [w * 0.5, y + 2], [3, y - 2, 1], [w * 0.5, y + 7], [w, y + 15]]); }),
-      socks: [ell(-fx - 1, -3, 15, 8), ell(fx + 1, -3, 15, 8)],
+      socks: [ell(-fx - 1, -3, 15, 8), ell(fx + 2, -7, 15, 11)],
       patchA: [tb([[-44, -50], [-14, -56], [-3, -40], [-10, -22], [-44, -16]])], patchB: [tb([[44, -36], [12, -42], [5, -24], [16, -8], [44, -4]])],
     };
     const RH = {
@@ -299,10 +299,12 @@
       patchA: [th([[2, -6], [14, -28], [44, -24], [44, 20], [8, 22]])], patchB: [th([[-44, -30], [-8, -32], [-4, -12], [-22, -5], [-44, -6]])],
     };
     const whisk = inkLine(`M${-30 * hs} ${hy + 6 * hs}L${-45 * hs} ${hy + 2 * hs}M${-29 * hs} ${hy + 10 * hs}L${-44 * hs} ${hy + 12 * hs}M${30 * hs} ${hy + 6 * hs}L${45 * hs} ${hy + 2 * hs}M${29 * hs} ${hy + 10 * hs}L${44 * hs} ${hy + 12 * hs}`, 1.25);
-    const tail = tailParts(o, 0, -19 * B.by - lift * 0.6, -1, 'back');
+    const tail = o.tail === 'pom' ? tailParts(o, 0, 0, -1, 'back', [[0, -15 - lift * 0.6], [0, -17 - lift * 0.6]]) : tailParts(o, 0, -19 * B.by - lift * 0.6, -1, 'back');
+    // the lifted hind paw shows its pads: the instant "this cat is walking away from you" read
+    const pc = o.coat.pads || C.pad, pads = `<path d="${ell(fx + 2, -5.6, 4.8, 3.3)}${ell(fx - 3.2, -10.6, 2.1, 2.3)}${ell(fx + 2, -12.2, 2.1, 2.3)}${ell(fx + 7.2, -10.6, 2.1, 2.3)}" fill="${pc}"/>`;
     return {
       layers: [
-        { parts, R: RB, shade: tb([[17, -60], [27, -47], [29, -30], [25, -13], [12, -4], [44, 0], [44, -64]]) + ell(0, hb + 3, 25 * hs, 6.5) + ell(fx + 4, -4, 6, 7), lines: [blob([[-11 * bw, -21 - lift], [-8 * bw, -11], [-10.5 * bw, -5]], false), blob([[11 * bw, -21 - lift], [8 * bw, -11], [10.5 * bw, -5]], false)] },
+        { parts, R: RB, shade: tb([[17, -60], [27, -47], [29, -30], [25, -13], [12, -4], [44, 0], [44, -64]]) + ell(0, hb + 3, 25 * hs, 6.5), lines: [blob([[-11 * bw, -21 - lift], [-8 * bw, -11], [-10.5 * bw, -5]], false), blob([[11 * bw, -22 - lift], [8.5 * bw, -14], [9.5 * bw, -9]], false)], extra: pads },
         { collar: 'band', pts: [[-24 * hs, hb - 8], [-12 * hs, hb - 0.5], [0, hb + 1.5], [12 * hs, hb - 0.5], [24 * hs, hb - 8]] },
         { parts: head, R: RH, shade: headShade(hs, 0, hy), extra: whisk },
         { tail }, { cord: [0, -19 * B.by - lift * 0.6] },
@@ -766,7 +768,10 @@
   /** A coloured cast shadow painted over the ground/walls (path d). Never grey. */
   function castShadow(d, opacity, soft) { return `<path d="${d}" fill="${C.wisteria}" opacity="${opacity == null ? 0.42 : opacity}" filter="url(#k-${soft || 'soft'})" style="mix-blend-mode:multiply"/>`; }
   /** A soft pool of warm light (sun patch, lamp glow). */
-  function glow(x, y, rx, ry, color, opacity) { return `<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${color || '#FFF3C4'}" opacity="${opacity == null ? 0.5 : opacity}" filter="url(#k-soft3)" style="mix-blend-mode:screen"/>`; }
+  function glow(x, y, rx, ry, color, opacity) {
+    const id = uid('g'), c = color || '#FFF3C4';
+    return `<radialGradient id="${id}"><stop offset="0" stop-color="${c}" stop-opacity="1"/><stop offset="0.45" stop-color="${c}" stop-opacity="0.55"/><stop offset="1" stop-color="${c}" stop-opacity="0"/></radialGradient><ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="url(#${id})" opacity="${opacity == null ? 0.5 : opacity}" style="mix-blend-mode:screen"/>`;
+  }
 
   const PHASES = {
     morning: { zenith: '#BFE3F2', horizon: '#FFE9C7', key: '#FFF4DC', shadow: '#8FA0CF' },
@@ -879,8 +884,8 @@
       const h = o.copingH, a = quadPt(q, 0, -h * 0.9), b = quadPt(q, 1, -h * 0.9), c = quadPt(q, 1, h * 0.6), d = quadPt(q, 0, h * 0.6);
       const ov = 0.012; const a2 = quadPt(q, -ov, -h * 0.9), b2 = quadPt(q, 1 + ov, -h * 0.9), c2 = quadPt(q, 1 + ov, h * 0.6), d2 = quadPt(q, -ov, h * 0.6);
       s += `<path d="${polyD([quadPt(q, 0, h * 0.6), quadPt(q, 1, h * 0.6), quadPt(q, 1, h * 2.1), quadPt(q, 0, h * 2.1)])}" fill="${C.wisteria}" opacity="0.3" filter="url(#k-soft)" style="mix-blend-mode:multiply"/>`;
-      s += surface({ pts: [a2, b2, c2, d2], color: o.copingColor || '#8E9AA8', top: '#B9C4CE', bottom: '#66707F', grime: 0, texOpacity: 0.35 });
-      s += `<path d="${polyD([a2, b2, quadPt(q, 1 + ov, -h * 0.55), quadPt(q, -ov, -h * 0.55)])}" fill="#EEF3F2" opacity="0.9" filter="url(#k-rough)"/>`;
+      s += surface({ pts: [a2, b2, c2, d2], color: o.copingColor || '#B4BFC8', top: '#E4EAEA', bottom: '#8794A6', grime: 0, texOpacity: 0.2 });
+      s += `<path d="${polyD([a2, b2, quadPt(q, 1 + ov, -h * 0.55), quadPt(q, -ov, -h * 0.55)])}" fill="#FBFAF0" opacity="0.95" filter="url(#k-rough)"/>`;
     }
     return `<g class="k-wall">${s}</g>`;
   }
@@ -918,7 +923,10 @@
   function ground(o) {
     o = Object.assign({ color: C.lane, seed: 4 }, o); const b = bbox(o.pts), id = uid('g'), R = rng(o.seed * 7 + 3);
     let inner = `<linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="0" y1="${b.y}" x2="0" y2="${b.y + b.h}"><stop offset="0" stop-color="${mix(o.color, '#F3E7C8', 0.55)}"/><stop offset="0.4" stop-color="${mix(o.color, '#E8D9B8', 0.3)}"/><stop offset="1" stop-color="${mix(o.color, '#A8946F', 0.2)}"/></linearGradient><rect x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" fill="url(#${id})"/>`;
-    inner += texture(b.x, b.y, b.w, b.h, 'brush', 0.2) + texture(b.x, b.y, b.w, b.h, 'mottle', 0.13) + texture(b.x, b.y, b.w, b.h, 'mottle-light', 0.5) + texture(b.x, b.y, b.w, b.h, 'grain', 0.16);
+    // gouache strokes: flat, wide dabs that shrink toward the horizon (no smoky noise)
+    let strokes = '';
+    for (let i = 0; i < 46; i++) { const t = Math.pow(R(), 0.7), y = b.y + t * b.h, x = b.x + R() * b.w, k = 0.18 + t * 1.2, lightTone = R() < 0.55; strokes += `<ellipse cx="${r1(x)}" cy="${r1(y)}" rx="${r1((60 + R() * 150) * k)}" ry="${r1((5 + R() * 9) * k)}" fill="${lightTone ? '#FFF2D2' : '#A8977A'}" opacity="${r1(lightTone ? 0.2 + R() * 0.16 : 0.1 + R() * 0.1)}"/>`; }
+    inner += `<g filter="url(#k-rough)">${strokes}</g>` + texture(b.x, b.y, b.w, b.h, 'grain', 0.16);
     let peb = '';
     for (let i = 0; i < 70; i++) { const t = Math.pow(R(), 0.6), y = b.y + t * b.h, x = b.x + R() * b.w, k = 0.25 + t * 1.1; peb += `<ellipse cx="${r1(x)}" cy="${r1(y)}" rx="${r1((3 + R() * 9) * k)}" ry="${r1((1.2 + R() * 2.4) * k)}" fill="${R() < 0.5 ? '#8F8470' : '#E9DFC6'}" opacity="${r1(0.25 + R() * 0.3)}"/>`; }
     return `<g class="k-ground">${clipTo(polyD(o.pts), inner + peb)}</g>`;
@@ -1031,17 +1039,17 @@
   function dustCloud(o) {
     o = Object.assign({ x: 0, y: 0, r: 60, puffs: 5, seed: 1, lw: 3 }, o); const R = rng(o.seed * 29 + 1), parts = [];
     for (let i = 0; i < o.puffs; i++) { const a = i / o.puffs * Math.PI * 2 + R() * 0.5, d = i === 0 ? 0 : o.r * (0.45 + R() * 0.25), rr = o.r * (i === 0 ? 0.78 : 0.42 + R() * 0.22); parts.push({ d: blob(pomPts(o.x + Math.cos(a) * d, o.y + Math.sin(a) * d * 0.7, rr, 8, 0.1, R() * 3)), fill: C.cream }); }
-    const lit = blob(pomPts(o.x - o.r * 0.12, o.y - o.r * 0.16, o.r * 1.12, 9, 0.08, 0.4));
+    const lit = blob(pomPts(o.x - o.r * 0.13, o.y - o.r * 0.17, o.r * 0.98, 9, 0.08, 0.4));
     return `<g class="k-vfx">${celGroup({ parts, shade: { d: `M${o.x - o.r * 3} ${o.y - o.r * 3}h${o.r * 6}v${o.r * 6}h${-o.r * 6}Z` + lit, evenodd: true } }, { lw: o.lw, ol: OUTLINES.ink })}</g>`;
   }
   /** Scent wisps hanging above a Scent Post: 1-4 slow curling ribbons, Clowder colour, Cream rim, no glow. */
   function scentWisps(o) {
-    o = Object.assign({ x: 0, y: 0, count: 3, color: C.sage, h: 120, seed: 1, rim: C.cream }, o); const R = rng(o.seed * 31 + 7); let s = '';
+    o = Object.assign({ x: 0, y: 0, count: 3, color: C.sage, h: 120, seed: 1, rim: C.cream, ink: true }, o); const R = rng(o.seed * 31 + 7); let s = '';
     for (let i = 0; i < o.count; i++) {
       const bx = o.x + (i - (o.count - 1) / 2) * o.h * 0.3, h = o.h * (0.72 + R() * 0.45), dir = i % 2 ? 1 : -1, a = h * 0.16;
       const pts = [[bx, o.y], [bx + dir * a, o.y - h * 0.22], [bx - dir * a * 0.9, o.y - h * 0.48], [bx + dir * a * 0.9, o.y - h * 0.74], [bx + dir * a * 0.2, o.y - h * 0.98], [bx - dir * a * 0.95, o.y - h * 0.95], [bx - dir * a * 0.75, o.y - h * 0.8], [bx - dir * a * 0.2, o.y - h * 0.82]];
       const d = tube(pts, (t) => (2 + 9 * Math.sin(Math.PI * Math.min(1, t * 1.15)) * (0.75 + 0.25 * Math.sin(t * 9))) * o.h / 120, { per: 7 });
-      s += `<path d="${d}" fill="${o.color}" stroke="${o.rim}" stroke-width="5" stroke-linejoin="round" paint-order="stroke"/>`;
+      s += (o.ink ? `<path d="${d}" fill="none" stroke="${C.ink}" stroke-width="8.5" stroke-linejoin="round"/>` : '') + `<path d="${d}" fill="${o.color}" stroke="${o.rim}" stroke-width="5" stroke-linejoin="round" paint-order="stroke"/>`;
     }
     return `<g class="k-vfx">${s}</g>`;
   }
@@ -1049,7 +1057,7 @@
   function ribbon(o) {
     o = Object.assign({ pts: [[0, 0], [100, 0]], color: C.gold, width: 8, rim: C.cream, taper: true }, o);
     const d = tube(o.pts, o.taper ? (t) => o.width * (0.35 + 0.65 * Math.sin(Math.PI * (0.08 + t * 0.84))) * (typeof o.grow === 'function' ? o.grow(t) : 1) : o.width, { per: 8 });
-    return `<path class="k-vfx" d="${d}" fill="${o.color}" stroke="${o.rim}" stroke-width="${o.rimW || 4}" stroke-linejoin="round" paint-order="stroke"/>`;
+    return (o.ink ? `<path d="${d}" fill="none" stroke="${C.ink}" stroke-width="${(o.rimW || 4) + 3}" stroke-linejoin="round"/>` : '') + `<path class="k-vfx" d="${d}" fill="${o.color}" stroke="${o.rim}" stroke-width="${o.rimW || 4}" stroke-linejoin="round" paint-order="stroke"/>`;
   }
   /** Hand-lettered sound word (T4/T5): Cream fill, Ink outline, offset second print, letters growing along the hit. */
   function sfx(o) {

@@ -8,7 +8,7 @@
   body { margin: 0; }
   .grid { display: flex; gap: 18px; flex-wrap: wrap; }
   .cell { position: relative; }
-  .cell .lab { position: absolute; left: 16px; top: 12px; }
+  .cell .lab { position: absolute; left: 12px; top: 10px; background: #FBF3DF; padding: 2px 8px; border-radius: 10px; z-index: 2; }
   .cell svg { display: block; }
   .ui-row { display: flex; gap: 34px; align-items: center; flex-wrap: wrap; padding: 26px 30px; }
   .sub { font: 700 22px/1.3 var(--font); color: var(--cocoa); margin: 0 0 4px; }
@@ -72,7 +72,7 @@ html += cell(340, 330, 'frazzled (reads in silhouette)', floor(340, 330, 300) + 
 let sc = '';
 [['notch', 'oldWallCat'], ['fold', 'stalwart'], ['kink', 'schemer'], ['puff', 'braggart'], ['cowlick', 'fraidy'], ['plaster', 'mikan']].forEach(([s, n], i) => {
   const c = { ...K.CAST[n] }; c.scars = [s]; if (n === 'stalwart') c.scars = ['fold'];
-  sc += K.cat({ ...c, pose: 'back', x: 48 + i * 79, y: 290, scale: 0.78, carry: s === 'kink' || s === 'puff' ? 'flag' : c.carry }) + `<text x="${48 + i * 79}" y="318" text-anchor="middle" font-family="M PLUS Rounded 1c" font-weight="800" font-size="16" fill="${C.cocoa}">${s}</text>`;
+  sc += K.cat({ ...c, pose: 'back', x: 48 + i * 79, y: 290, scale: 0.9, carry: s === 'kink' || s === 'puff' ? 'flag' : c.carry }) + `<text x="${48 + i * 79}" y="318" text-anchor="middle" font-family="M PLUS Rounded 1c" font-weight="800" font-size="16" fill="${C.cocoa}">${s}</text>`;
 });
 html += cell(490, 330, 'silhouette Scars (read from behind)', floor(490, 330, 290) + sc);
 html += '</div>';
@@ -95,14 +95,14 @@ html += cell(680, 420, 'sky + cloud + hill + sea', K.sky({ w: 700, h: 420 }) + K
 html += cell(530, 420, 'foliage · flowers · grass', `<rect width="540" height="420" fill="#BFE0F0"/>` + K.foliage({ x: 380, y: 150, w: 300, h: 220, seed: 6, far: true, tones: { dark: '#4E8F7E', mid: '#6FA98C', light: '#9CC9A0' } }) + K.foliage({ x: 190, y: 190, w: 330, h: 260, seed: 2 }) + `<rect y="340" width="540" height="80" fill="#C9BC9F"/>` + K.flowers({ x: 400, y: 320, w: 230, h: 100, seed: 4 }) + K.grass({ x1: 20, y1: 350, x2: 300, y2: 352, n: 22, h: 30, seed: 3 }));
 html += cell(578, 420, 'wall (coping = High Road ribbon) · fence · roof · ground · pole', K.sky({ w: 560, h: 300 }) + K.roof({ quad: [[250, 70], [560, 60], [600, 170], [210, 180]] }) + K.surface({ pts: [[230, 178], [560, 172], [560, 300], [230, 300]], color: '#E9D6B4' }) + K.ground({ pts: [[0, 290], [560, 290], [560, 420], [0, 420]] }) + K.wall({ quad: [[0, 150], [250, 170], [250, 305], [0, 330]] }) + K.fence({ quad: [[280, 190], [560, 180], [560, 320], [280, 310]], n: 11 }) + K.pole({ x: 262, y: 322, h: 310, w: 16 }) + K.castShadow('M0 330L250 305L330 330L60 400L0 400Z', 0.4));
 html += '</div><div class="grid" style="margin-top:18px">';
-html += cell(520, 330, 'inked props: Scent Post (stone lantern) + wisps · pot · bucket', K.ground({ pts: [[0, 220], [520, 220], [520, 330], [0, 330]] }) + K.surface({ pts: [[0, 0], [520, 0], [520, 224], [0, 224]], color: C.plaster }) + K.stoneLantern({ x: 150, y: 300, scale: 0.72 }) + K.scentWisps({ x: 150, y: 104, count: 3, h: 56 }) + K.prop({ kind: 'pot', x: 330, y: 290, scale: 1.3 }) + K.prop({ kind: 'bucket', x: 440, y: 296, scale: 1.3 }));
+html += cell(520, 330, 'inked props: Scent Post (stone lantern) + wisps · pot · bucket', K.ground({ pts: [[0, 220], [520, 220], [520, 330], [0, 330]] }) + K.surface({ pts: [[0, 0], [520, 0], [520, 224], [0, 224]], color: C.plaster }) + K.stoneLantern({ x: 150, y: 306, scale: 0.66 }) + K.scentWisps({ x: 150, y: 124, count: 3, h: 50 }) + K.prop({ kind: 'pot', x: 330, y: 290, scale: 1.3 }) + K.prop({ kind: 'bucket', x: 440, y: 296, scale: 1.3 }));
 
 /* 7 — VFX */
 html += cell(650, 330, 'VFX: slash arc · impact burst (Thump star) · dust cloud · speed lines · sparkle · scent wisps',
   K.speedLines({ mode: 'radial', x: 0, y: 0, w: 660, h: 330, count: 30, inner: 0.72 })
   + K.slashArc({ x: 120, y: 210, r: 100, a0: -160, a1: -20 }) + K.impactBurst({ x: 300, y: 130, r: 70, star: true, seed: 2 }) + K.impactBurst({ x: 300, y: 262, r: 44, color: C.claw, seed: 5, points: 9 })
-  + K.dustCloud({ x: 470, y: 230, r: 58, seed: 3 }) + K.sparkle({ x: 420, y: 80, r: 22 }) + K.scentWisps({ x: 560, y: 150, count: 4, h: 110, color: C.gold }) + K.ticks({ x: 470, y: 150, r: 20, n: 3 }));
-html += cell(618, 330, 'lettering: Cream fill, Ink line, offset print in the damage colour, letters grow along the hit', `<rect width="608" height="330" fill="#E9DBBB"/>` + K.sfx({ text: 'SKRITCH', x: 310, y: 150, size: 84, rot: -9, color: C.claw }) + K.sfx({ text: 'WHAM', x: 170, y: 292, size: 84, rot: 5, color: C.ink, seed: 4 }) + K.sfx({ text: 'YOWWL', x: 470, y: 290, size: 54, rot: -12, color: C.yowl, seed: 7 }));
+  + K.dustCloud({ x: 470, y: 230, r: 58, seed: 3 }) + K.sparkle({ x: 420, y: 80, r: 22 }) + K.scentWisps({ x: 566, y: 196, count: 3, h: 100, color: C.gold }) + K.ticks({ x: 470, y: 150, r: 20, n: 3 }));
+html += cell(618, 330, 'lettering: Cream fill, Ink line, offset print in the damage colour, letters grow along the hit', `<rect width="608" height="330" fill="#E9DBBB"/>` + K.sfx({ text: 'SKRITCH', x: 310, y: 172, size: 84, rot: -9, color: C.claw }) + K.sfx({ text: 'WHAM', x: 170, y: 292, size: 84, rot: 5, color: C.ink, seed: 4 }) + K.sfx({ text: 'YOWWL', x: 470, y: 290, size: 54, rot: -12, color: C.yowl, seed: 7 }));
 html += '</div><div class="grid" style="margin-top:18px">';
 html += cell(900, 200, 'telegraph decals: white = dodge · yellow = Hiss it · red = get out', K.ground({ pts: [[0, 0], [900, 0], [900, 200], [0, 200]] }) + K.telegraph({ kind: 'white', x: 160, y: 120, rx: 120, ry: 44 }) + K.telegraph({ kind: 'yellow', x: 450, y: 120, rx: 120, ry: 44 }) + K.telegraph({ kind: 'red', x: 740, y: 120, rx: 120, ry: 44 }));
 html += cell(906, 200, 'ribbons: Head Home thread (Bell-Gold, Cream rim) · Tag-In streak', K.ground({ pts: [[0, 0], [906, 0], [906, 200], [0, 200]] }) + K.ribbon({ pts: [[30, 150], [150, 90], [280, 140], [420, 80], [520, 110]], width: 9 }) + K.ribbon({ pts: [[560, 170], [700, 110], [870, 60]], width: 40, grow: (t) => 0.2 + t }));

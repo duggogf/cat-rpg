@@ -10,18 +10,18 @@ Variant: FIX3 = iteration 3 (FIX2 + Grudge>=40 raid requester with boss_orders f
     [humble] exactly 1 Nemesis at slice end: 100.0%; declaration night median 3.0 (deadline used 0%); encounters at declaration 3.0; Sworn Enemy face (G>=R) 100% / Sworn Rival 0%; Nemesis state at end {'Roaming': 166, 'Seated': 334}; raid requests per slice 5.00
 | humble | 11.4% / 16.9% | 1 / 1 | 1 | 100.0% | 3.0 | 0.45 | 1.72 | 100% | 0.01 | 0.02 |
     [mixed] never declared 0.0%; min encounters at declaration 0; end states of slot holders: Counter({1: 500})
-    [mixed] exactly 1 Nemesis at slice end: 100.0%; declaration night median 3.0 (deadline used 37%); encounters at declaration 2.5; Sworn Enemy face (G>=R) 50% / Sworn Rival 50%; Nemesis state at end {'Seated': 318, 'Roaming': 142, 'Humbled': 11, 'Away': 29}; raid requests per slice 4.86
-| mixed | 0.9% / 5.4% | 1 / 1 | 1 | 82.6% | 3 | 0.45 | 1.19 | 85% | 0.00 | 0.02 |
+    [mixed] exactly 1 Nemesis at slice end: 100.0%; declaration night median 3.0 (deadline used 37%); encounters at declaration 2.5; Sworn Enemy face (G>=R) 53% / Sworn Rival 47%; Nemesis state at end {'Away': 59, 'Seated': 255, 'Roaming': 186}; raid requests per slice 4.86
+| mixed | 0.9% / 5.4% | 1 / 1 | 1 | 89.4% | 3 | 0.45 | 1.25 | 85% | 0.01 | 0.02 |
     [pacifist] never declared 0.0%; min encounters at declaration 1; end states of slot holders: Counter({1: 500})
     [pacifist] exactly 1 Nemesis at slice end: 100.0%; declaration night median 3.0 (deadline used 18%); encounters at declaration 2.8; Sworn Enemy face (G>=R) 1% / Sworn Rival 99%; Nemesis state at end {'Seated': 487, 'Roaming': 13}; raid requests per slice 5.00
-| pacifist | 0.0% / 0.0% | 1 / 1 | 1 | 85.2% | 3.0 | 0.45 | 0.42 | 77% | 0.00 | 0.00 |
+| pacifist | 0.0% / 0.0% | 1 / 1 | 1 | 99.6% | 3.0 | 0.45 | 0.42 | 76% | 0.00 | 0.00 |
     [lose40] never declared 0.0%; min encounters at declaration 1; end states of slot holders: Counter({1: 500})
-    [lose40] exactly 1 Nemesis at slice end: 100.0%; declaration night median 5.0 (deadline used 48%); encounters at declaration 2.3; Sworn Enemy face (G>=R) 71% / Sworn Rival 29%; Nemesis state at end {'Seated': 316, 'Roaming': 140, 'Away': 41, 'Humbled': 3}; raid requests per slice 4.94
-| lose40 | 0.6% / 4.7% | 1 / 1 | 1 | 78.0% | 5.0 | 0.45 | 1.17 | 76% | 0.00 | 0.00 |
+    [lose40] exactly 1 Nemesis at slice end: 100.0%; declaration night median 5.0 (deadline used 48%); encounters at declaration 2.3; Sworn Enemy face (G>=R) 72% / Sworn Rival 28%; Nemesis state at end {'Seated': 297, 'Roaming': 147, 'Away': 53, 'Humbled': 3}; raid requests per slice 4.94
+| lose40 | 0.6% / 4.7% | 1 / 1 | 1 | 80.4% | 5.0 | 0.45 | 1.18 | 76% | 0.00 | 0.00 |
 
 Life-1 remembered-rival callback (Thorn has Memory of Mikan at the day-2 placement): chase 100%, humble 100%, mixed 100%, pacifist 100%, lose40 100%
-Mixed-policy Verdict availability-weighted shares: chase 46%, humble 10%, recruit 6%, nose 38% (Nose-Touch accepted 40%)
-Pacifist Nose-Touch acceptance: 49% of offers
+Mixed-policy Verdict availability-weighted shares: chase 47%, humble 9%, recruit 5%, nose 39% (Nose-Touch accepted 43%)
+Pacifist Nose-Touch acceptance: 57% of offers
 
 ### Extrapolation (one district, 30 days): 30 days, 300 seeds per policy
 | Policy | Share seated at G>=75 (L2 nights, mean / p95) | Distinct Nemeses (median / max) | Max simultaneous slots | Arc achieved (by end) | Arc day (median) | Wall events per night | Visible rank changes per night | L2 mornings with >=1 Sniff item | Uprisings (mean) | Bitter cats at end (mean) |
@@ -33,11 +33,11 @@ Pacifist Nose-Touch acceptance: 49% of offers
     [humble] exactly 1 Nemesis at slice end: 100.0%; declaration night median 3.0 (deadline used 0%); encounters at declaration 3.0; Sworn Enemy face (G>=R) 100% / Sworn Rival 0%; Nemesis state at end {'Seated': 285, 'Roaming': 15}; raid requests per slice 28.00
 | humble | 21.3% / 33.0% | 1 / 1 | 1 | 100.0% | 3.0 | 0.41 | 2.77 | 100% | 2.59 | 2.33 |
     [mixed] never declared 0.0%; min encounters at declaration 1; end states of slot holders: Counter({1: 300})
-    [mixed] exactly 1 Nemesis at slice end: 100.0%; declaration night median 3.0 (deadline used 36%); encounters at declaration 2.5; Sworn Enemy face (G>=R) 1% / Sworn Rival 99%; Nemesis state at end {'Seated': 260, 'Roaming': 31, 'Away': 9}; raid requests per slice 27.88
-| mixed | 1.7% / 5.3% | 1 / 1 | 1 | 100.0% | 3.0 | 0.41 | 1.55 | 90% | 0.84 | 0.43 |
+    [mixed] exactly 1 Nemesis at slice end: 100.0%; declaration night median 3.0 (deadline used 36%); encounters at declaration 2.5; Sworn Enemy face (G>=R) 5% / Sworn Rival 95%; Nemesis state at end {'Away': 36, 'Roaming': 59, 'Seated': 205}; raid requests per slice 27.88
+| mixed | 2.0% / 6.0% | 1 / 1 | 1 | 100.0% | 3.0 | 0.41 | 1.81 | 93% | 0.83 | 0.39 |
     [pacifist] never declared 0.0%; min encounters at declaration 1; end states of slot holders: Counter({1: 300})
     [pacifist] exactly 1 Nemesis at slice end: 100.0%; declaration night median 3.0 (deadline used 16%); encounters at declaration 2.8; Sworn Enemy face (G>=R) 0% / Sworn Rival 100%; Nemesis state at end {'Seated': 295, 'Roaming': 5}; raid requests per slice 28.00
 | pacifist | 0.0% / 0.0% | 1 / 1 | 1 | 100.0% | 3.0 | 0.41 | 0.50 | 74% | 0.00 | 0.00 |
     [lose40] never declared 0.0%; min encounters at declaration 1; end states of slot holders: Counter({1: 300})
-    [lose40] exactly 1 Nemesis at slice end: 100.0%; declaration night median 5.0 (deadline used 46%); encounters at declaration 2.4; Sworn Enemy face (G>=R) 9% / Sworn Rival 91%; Nemesis state at end {'Seated': 234, 'Away': 17, 'Roaming': 48, 'Humbled': 1}; raid requests per slice 27.94
-| lose40 | 1.4% / 5.0% | 1 / 1 | 1 | 100.0% | 5.0 | 0.41 | 1.46 | 86% | 0.50 | 0.27 |
+    [lose40] exactly 1 Nemesis at slice end: 100.0%; declaration night median 5.0 (deadline used 46%); encounters at declaration 2.4; Sworn Enemy face (G>=R) 8% / Sworn Rival 92%; Nemesis state at end {'Roaming': 68, 'Seated': 205, 'Away': 27}; raid requests per slice 27.94
+| lose40 | 1.6% / 5.2% | 1 / 1 | 1 | 100.0% | 5.0 | 0.41 | 1.59 | 86% | 0.51 | 0.28 |
