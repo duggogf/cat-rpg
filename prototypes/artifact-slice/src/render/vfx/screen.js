@@ -242,7 +242,7 @@ export class ScreenFX {
     let s = '';
     for (const o of ctx.overheads || []) {
       const p = ctx.project(o.at); if (!p.on) continue;
-      if (o.cls === 'white') s += `<g transform="translate(${r1(p.x)} ${r1(p.y - 34)})"><path d="M-22 -10l10 10l-10 10M2 -10l10 10l-10 10" fill="none" stroke="${C.cream}" stroke-width="11" stroke-linecap="round" stroke-linejoin="round" transform="rotate(90)"/><path d="M-22 -10l10 10l-10 10M2 -10l10 10l-10 10" fill="none" stroke="${C.ink}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" transform="rotate(90)"/></g>`;
+      if (o.cls === 'white') s += `<g transform="translate(${r1(p.x)} ${r1(p.y - 34)}) scale(${o.big ? 1.6 : 1})"><path d="M-22 -10l10 10l-10 10M2 -10l10 10l-10 10" fill="none" stroke="${C.cream}" stroke-width="11" stroke-linecap="round" stroke-linejoin="round" transform="rotate(90)"/><path d="M-22 -10l10 10l-10 10M2 -10l10 10l-10 10" fill="none" stroke="${C.ink}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" transform="rotate(90)"/></g>`;
       else if (o.cls === 'yellow') s += `<g transform="translate(${r1(p.x)} ${r1(p.y - 44)})"><path d="M0 -30L28 20H-28Z" fill="${C.cream}" stroke="${C.ink}" stroke-width="6" stroke-linejoin="round"/>${o.cracked ? `<path d="M-4 -30L4 -6L-4 8L4 20" fill="none" stroke="${C.ink}" stroke-width="5"/>` : `<path d="M0 -14V4" stroke="${C.ink}" stroke-width="8" stroke-linecap="round"/><circle cx="0" cy="13" r="4" fill="${C.ink}"/>`}</g>`;
       else if (o.cls === 'red') { const j = di % 2 ? 1.06 : 1; s += `<g transform="translate(${r1(p.x)} ${r1(p.y - 46)}) scale(${j})">${Kit.impactBurst({ r: 36, points: 9, seed: 3 }).replace(new RegExp(C.cream, 'g'), C.magenta)}</g>`; }
     }

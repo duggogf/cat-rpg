@@ -24,3 +24,6 @@ Collected by the orchestrating session from reviser hand-backs, for the consiste
 | F16 | Designer rulings for owner awareness: no jump in combat (Dash mantles); Brace AI-only; Hiss moved to the skill bar; Specials have no unlock level | M1.1 docs agent | combat-system |
 
 **Closed 2026-11-24 (M1.2):** F14 (Tag-In/Relay/Pile-On leftovers cleared by the docs agent; wall/wash-tub lines in day-loop, sound bible and art bible cleared by the orchestrator, plus Mikan's tail/face description updated to C8/C9). F13 accepted for the showcase (game designer, M1 review).
+| F17 | Territory §4.14 says one point below "two posts at 30" closes the window, but under its own rounding 30 + 29 reads 75 and stays open; 28 closes it. Fix the doc's wording or the threshold | M2 territory sim | territory-management |
+| F18 | Nemesis F10 worked example skips the L2D2 night's −15 anger decay; the reference reaches L2D4 Calm (15), not Riled (30). Fix the example | M2 territory sim | nemesis-system |
+| F19 | Outsiders' wisp colour is a placeholder `#4E9DA6`; art director to set | M2 territory sim | art-bible |

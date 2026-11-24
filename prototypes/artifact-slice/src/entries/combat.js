@@ -71,7 +71,7 @@ let world, shadow, post, enc, snap, prevSnap, fighters = new Map(), fx, scr, cca
 let realT = 0, acc = 0, paused = false, script = null, cmdQueue = [], injectQ = [], pile = null, impact = null, dip = null, midTone = new THREE.Color('#8C88B8');
 const DT = 1 / 60, TWO = 1 / 30, evLog = [], counts = {};
 let lastTagWindow = null, routedTrail = new Map(), crackedUntil = new Map(), standoffFocus = null, fightStartT = null, endShown = false, lastStats = {};
-let pendingKO = null, camPrev = null, driveInp = null, driveYaw = 0, ko = null, lastEnemyOut = null, lastOutBy = null, sawShockwaveEvent = false; const teleById = new Map();
+let koFly = null, pendingKO = null, camPrev = null, driveInp = null, driveYaw = 0, ko = null, lastEnemyOut = null, lastOutBy = null, sawShockwaveEvent = false; const teleById = new Map();
 let quiet = null, hudBackAt = null, chainMean = 0.4, staggerSeen = false, latencyLog = [], cin = null, chainPending = false, chainFired = false; const banners = new Set(), bonusShown = new Set();
 let pendingCard = null, seedCounter = 1, skipDraw = false; const pendingMenu = [];
 
@@ -310,7 +310,7 @@ function onEvent(ev) {
       const f = F(ev.cat); if (!f) break;
       fx.dust('3-puff ring', f.pos);
       const back = new THREE.Vector3(-Math.sin(f.yaw), 0, -Math.cos(f.yaw));
-      scr.add({ kind: 'streak', from: f.pos.clone().add(new THREE.Vector3(0, 0.3, 0)).addScaledVector(back, 0.8), to: f.pos.clone().add(new THREE.Vector3(0, 0.3, 0)), dur: 0.18, seed: 1, len: 120 });
+      void back;
       if (ev.perfect) { scr.add({ kind: 'perfect', at: f.head.clone(), dur: 0.45 }); hud.bark(ev.cat, 'bang', realT, true); }
       break; }
     case 'PerfectEvade': { const f = F(ev.cat); if (f) scr.add({ kind: 'perfect', at: f.head.clone(), dur: 0.45 }); break; }
@@ -341,8 +341,15 @@ function onEvent(ev) {
       pendingCard = { at: realT + (ko ? ko.freeze + ko.slowS + 0.25 : pendingKO ? 4 : 1.1), text: t[0], sub: t[1], clowder: ev.outcome === 'loss' ? 'ink' : 'gold' };
       break;
     }
-    case 'FinalKO': if (!ko) startKO(ev.cat || ev.target, ev.by, ev.freeze_ms, ev.slow); break;
-    case 'TelegraphStart': teleById.set(ev.id, ev); break;
+    case 'FinalKO': koFly = ev.fly_dir || null; if (!ko) startKO(ev.cat || ev.target, ev.by, ev.freeze_ms, ev.slow); break;
+    case 'TelegraphStart': {
+      teleById.set(ev.id, ev);
+      // leaders (Captains, Bosses) swing every ~1.3-1.9 s: their basic string reads from a wind-up pop over the head
+      const e = ent(ev.attacker), f = F(ev.attacker);
+      if (e && f && (e.rank === 'captain' || e.rank === 'boss')) { f.impulse('coil', tw, { dur: ev.windup_s || 0.4, mag: 2 }); fx.spawn('claws', f.head.clone().add(new THREE.Vector3(0, 0.25 * f.scaleK, 0)), { size: 0.35 * f.scaleK, drawings: Math.max(4, Math.round((ev.windup_s || 0.4) * 30)), breakAt: 0.85, order: 4 }); }
+      break; }
+    case 'Retaliate': { const f = F(ev.cat); if (f) { hud.bark(ev.cat, 'bang', realT, true); f.impulse('hiss', tw, { dur: 0.3 }); } break; }
+    case 'Swarmed': { const f = F(ev.cat); if (f) { fx.spawn('hiss', f.head.clone(), { size: 0.45 * f.scaleK, drawings: 5, breakAt: 0.7 }); } break; }
     case 'TelegraphEnd': {   // a belly-flop / slam resolving sends its shockwave ring (unless the sim sends its own)
       const tl = teleById.get(ev.id); teleById.delete(ev.id);
       if (tl && ev.reason === 'resolved' && !sawShockwaveEvent && !('hazards' in snap) && /belly|flop|slam|shock/.test(tl.move || '') && tl.shape && tl.shape.type === 'circle') {
@@ -431,7 +438,7 @@ function startKO(id, byId, freezeMs = 400, slow = { scale: 0.25, ms: 1100 }) {
   const koLen = ko.freeze + ko.slowS;
   ko.p0 = f.pos.clone(); ko.trailN = 0;
   const from = a && a !== f ? a.pos : (F(snap.controlled) || f).pos;
-  ko.dir = new THREE.Vector3(f.pos.x - from.x, 0, f.pos.z - from.z); if (ko.dir.lengthSq() < 1e-4) ko.dir.set(0, 0, -1); ko.dir.normalize();
+  ko.dir = koFly ? new THREE.Vector3(koFly[0], 0, koFly[1]) : new THREE.Vector3(f.pos.x - from.x, 0, f.pos.z - from.z); if (ko.dir.lengthSq() < 1e-4) ko.dir.set(0, 0, -1); ko.dir.normalize();   // the sim's FinalKO.fly_dir
   fx.dust('ring plus crack decal', f.pos.clone());
   ccam.stagger = { T: f, C: a || f, from: realT, until: realT + koLen, full: true, spin: 0.3, close: 0.75, track: () => f.root.position, trackK: 0.45 };
   scr.word = null; scr.fx = []; scr.add({ kind: 'ko', dur: koLen, delay: 0.1 });
@@ -592,6 +599,12 @@ function present(dt, alpha, menu = [], cut = null) {
       const right = new THREE.Vector3().setFromMatrixColumn(cam.matrixWorld, 0);
       fx.spawn('puffSmall', f.head.clone().addScaledVector(right, sg * 0.22 * f.scaleK).add(new THREE.Vector3(0, 0.08, 0)), { size: 0.16 * f.scaleK, drawings: 8, vel: new THREE.Vector3(0, 0.5, 0), grow: 0.3, order: 4 });
     }
+    if ((e.anim === 'evade' || e.anim === 'skitter') && f.root.visible && !skipDraw && (!f.evT || realT - f.evT > 0.04)) {
+      f.evT = realT;   // the dash trail follows the real (stick-steered, curving) path: a puff and an ink streak per drawing
+      fx.spawn('puffSmall', f.pos.clone().add(new THREE.Vector3(0, 0.12, 0)), { size: 0.22, drawings: 6 });
+      if (f.prevEv) scr.add({ kind: 'streak', from: f.prevEv.clone(), to: f.pos.clone().add(new THREE.Vector3(0, 0.3, 0)), dur: 0.14, seed: 1, len: 70 });
+      f.prevEv = f.pos.clone().add(new THREE.Vector3(0, 0.3, 0));
+    } else if (e.anim !== 'evade' && e.anim !== 'skitter') f.prevEv = null;
     if (e.controlled && f.root.visible) f.cat.lookAt(s.lock && F(s.lock) ? F(s.lock).head : null);
   }
   // camera-soft ring dressing: a prop crowding the lens is hidden outright (never half-transparent)
@@ -640,7 +653,7 @@ function present(dt, alpha, menu = [], cut = null) {
   // screen layer
   const w = app.clientWidth, h = app.clientHeight;
   const cb = C ? (() => { const a = project(C.pos), b = project(C.head); const hh = Math.max(40, a.y - b.y) * 1.5; return { x: a.x - hh * 0.8, y: b.y - hh * 0.4, w: hh * 1.6, h: hh * 1.4 }; })() : { x: 0, y: 0, w: 0, h: 0 };
-  const overheads = s.telegraphs.map((tl) => { const f = F(tl.attacker); return f ? { at: f.head.clone().add(new THREE.Vector3(0, 0.12 * f.scaleK, 0)), cls: tl.cls } : null; }).filter(Boolean);
+  const overheads = s.telegraphs.map((tl) => { const f = F(tl.attacker); return f ? { at: f.head.clone().add(new THREE.Vector3(0, 0.12 * f.scaleK, 0)), cls: tl.cls, big: f.scaleK > 1.1 } : null; }).filter(Boolean);
   for (const [id, until] of crackedUntil) { if (realT > until) crackedUntil.delete(id); else { const f = F(id); if (f) overheads.push({ at: f.head.clone().add(new THREE.Vector3(0, 0.12 * f.scaleK, 0)), cls: 'yellow', cracked: true }); } }
   const arrows = [];
   if (s.mode === 'fight' && !s.slow_blink) for (const e of s.entities) {
@@ -784,6 +797,7 @@ async function boot() {
     if (stag) return { ...out, move: [stag.pos[0] - c.pos[0], stag.pos[2] - c.pos[2]], dash: n++ % 40 === 0 };
     const t = foes.find((e) => e.id === s.lock) || foes.sort((a, b) => Math.hypot(a.pos[0] - c.pos[0], a.pos[2] - c.pos[2]) - Math.hypot(b.pos[0] - c.pos[0], b.pos[2] - c.pos[2]))[0];
     const tl = s.telegraphs.find((x) => x.aimed_at === c.id && x.dur - x.t < 0.22);
+    if (c.anim === 'evade' || c.anim === 'skitter') return { ...out, move: [t.pos[2] - c.pos[2], c.pos[0] - t.pos[0]] };   // keep steering through the evade (it curves)
     if (tl && !(c.evade_cd_s > 0)) return { ...out, dodge: true, evade: true, move: [c.pos[0] - t.pos[0], c.pos[2] - t.pos[2]] };
     const d = Math.hypot(t.pos[0] - c.pos[0], t.pos[2] - c.pos[2]);
     if (d > 1.3) return { ...out, move: [t.pos[0] - c.pos[0], t.pos[2] - c.pos[2]], dash: d > 3.5 && n % 90 === 0 };

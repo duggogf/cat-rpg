@@ -165,7 +165,7 @@ export class Fighter {
     this.prevPos.copy(this.pos);
     this.root.position.copy(this.pos);
     // AI intent (M1.1 §4): the sim's `intent` when it publishes one, else read from motion vs the nearest opponent
-    const SIM_INTENT = { cornered: 'posture', circle: 'circle', posture: 'posture', flank: 'flank', dash_in: 'dash_in', retreat: 'retreat', feint: 'feint', strut: 'strut', hold: 'hold', sidestep: 'circle', stalk: 'stalk', pace: 'stalk', attack: 'neutral', ground: 'neutral' };
+    const SIM_INTENT = { pressure: 'strut', cornered: 'posture', circle: 'circle', posture: 'posture', flank: 'flank', dash_in: 'dash_in', retreat: 'retreat', feint: 'feint', strut: 'strut', hold: 'hold', sidestep: 'circle', stalk: 'stalk', pace: 'stalk', attack: 'neutral', ground: 'neutral' };
     // the sim's intent when it is specific; its default 'stalk' (or none) is refined from motion
     const intent = this.intent = (e.intent && SIM_INTENT[e.intent]) || deriveIntent(e, this.vel, e._opp);
     // cats square off: while circling, stalking, posturing or backing off, the body faces the opponent
