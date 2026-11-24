@@ -65,3 +65,12 @@ scale is 1.25.
 - **Kept from earlier passes:** the C7 body (front legs under the chest, narrow haunches, hind heel) and the per-eye decals (no swap).
 - **Checks:** the walk (8 frames) and the 24-angle orbit are free of artefacts.
 - **Line:** the low-resolution boost is eased (factor 2.2 → 1.0) so the harness lands at about 2.3–2.4 px at 85%.
+
+**C9 pass (owner: a small snout with a nose bridge; a shorter, thick S-curve tail with a white tip).** This supersedes the C8 tail.
+- **Muzzle:** a nose bridge (a narrow capsule from between the eyes down to the nose) and a small snout: the nose tip and upper lip sit about 1 cm ahead of the cheek. The profile now reads forehead, bridge, small nose, small chin. The eye's slide round the skull is eased 45° → 40° so the bridge shows ahead of it.
+- **Front-on (`18`):** the outline stays within about 3% of KEEP, the state already accepted at C8. The bridge is invisible front-on.
+- **Tail:** 0.25 m real size, radius 3.0 → 2.6 cm (about a foreleg), with a blunt tip and a white tip. The root sits at the top of the rump on the spine line, buried so no cap shows. The 'mikan' carriage is an S (up, back, tip hooking forward) with sway and lag. The six carriages still work (`05`, `06`).
+- **Back of the head:** a soft nape fill rounds the lower outline from behind; the crown, ears and front silhouette are unchanged.
+- **Framing:** `19` now shows the front framed like KEEP (ears in) beside the C9 references; `14` is re-spaced so no tail crosses a neighbour; the `16` and `17` orbits are framed higher.
+- **Checks:** walk and orbit are clean. `node tools/build.mjs && node tools/publish-check.mjs` passes.
+- **Shared rules:** the head and tail-root changes apply to every cast, so the M1 lineup is re-rendered.

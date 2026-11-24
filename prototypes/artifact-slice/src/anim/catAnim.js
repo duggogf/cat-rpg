@@ -26,7 +26,7 @@ export const CARRIAGES = {
   // Mikan's pom: a perky stub
   pom: { bones: [[30, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]], sway: 6, speed: 1.6, tip: 0 },
   // Mikan's long tail (C8): raised from the root, a gentle upward curve, the tip swaying
-  mikan: { bones: [[14, 0], [2, 0], [6, 0], [12, 0], [18, 0], [22, 0]], sway: 7, speed: 0.8, tip: 0.8 },
+  mikan: { bones: [[74, 0], [-12, 0], [-16, 0], [6, 0], [24, 0], [30, 0]], sway: 6, speed: 0.8, tip: 0.8 }, // C9: up from the rump in a soft S, tip hooking forward
 };
 
 /** Personality posture (art bible §3.3: ears, head and stance read from behind, in silhouette). Radians.

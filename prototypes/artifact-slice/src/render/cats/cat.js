@@ -183,7 +183,7 @@ export function createCatInternal(opts = {}) {
     for (let e = 0; e < 2; e++) {
       const sd = e === 0 ? -1 : 1;
       let gw = Math.min(1, Math.max(0, sd * psi / (Math.PI / 2))); gw = gw * gw * (3 - 2 * gw);
-      const a = sd * gw * 68 * Math.PI / 180, ac = sd * gw * 45 * Math.PI / 180, grow = 1 + 0.12 * gw;
+      const a = sd * gw * 68 * Math.PI / 180, ac = sd * gw * 40 * Math.PI / 180, grow = 1 + 0.12 * gw;
       U.uEyeAx.value[e].set(Math.sin(a), 0, Math.cos(a));
       U.uEyeT.value[e].set(Math.cos(a), 0, -Math.sin(a)).multiplyScalar(1 / grow); // |T| < 1: the eye grows a little side-on
       const c0 = eyeC0[e], dx = c0.x - meta.headC[0], dz = c0.z - meta.headC[2];

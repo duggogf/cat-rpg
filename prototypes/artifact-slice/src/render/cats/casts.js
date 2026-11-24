@@ -54,7 +54,7 @@ export const CASTS = {
       if (dot(q, q) < 1.0 && h.z > 0.0) return c_ginger;
       return c_white;
     }
-    if (vP < 2.5) return c_ginger;
+    if (vP < 2.5) return vAux.x > 0.84 ? c_white : c_ginger; // white tip (C9 tail reference)
     if (vP < 3.5) return c_collar;
     // bell: gold, ink slit, cream highlight
     if (abs(vAux.y + 0.004) < 0.0018 && vAux.z > 0.0) return c_ink;

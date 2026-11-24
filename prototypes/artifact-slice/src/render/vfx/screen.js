@@ -18,14 +18,16 @@ const WORD_COL = { claw: C.claw, thump: C.ink, yowl: C.yowl };
 function rng(seed) { let a = seed | 0; return () => { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
 
 /** Radial focus lines converging on (cx, cy): Ink wedges from beyond the screen edge to `inner` x the edge distance. */
-function radialLines(w, h, cx, cy, edgeShare, seed, color = C.ink, count = 46) {
-  const R = rng(seed * 31 + 7), far = Math.hypot(w, h); let s = '';
+function radialLines(w, h, cx, cy, edgeShare, seed, color = C.ink, count = 46, wob = 0) {
+  // the line SET (angles, widths, lengths) is fixed by `seed`; successive drawings (`wob`) only nudge the
+  // inner tips a few percent, so swapping drawings on twos never repaints > 20% of the screen (DR-50)
+  const R = rng(seed * 31 + 7), J = rng(wob * 97 + 13), far = Math.hypot(w, h); let s = '';
   for (let i = 0; i < count; i++) {
     const a = (i + R() * 0.8) / count * Math.PI * 2, ca = Math.cos(a), sa = Math.sin(a);
     // distance from the focus to the screen edge along this ray
     const tx = ca > 0 ? (w - cx) / ca : ca < 0 ? -cx / ca : 1e9, ty = sa > 0 ? (h - cy) / sa : sa < 0 ? -cy / sa : 1e9;
     const edge = Math.min(tx, ty);
-    const r0 = Math.max(edge * (1 - edgeShare * (0.7 + R() * 0.6)), Math.min(w, h) * 0.17), wd = (0.008 + R() * 0.022);
+    const r0 = Math.max(edge * (1 - edgeShare * (0.7 + R() * 0.6)), Math.min(w, h) * 0.17) * (1 + (J() - 0.5) * 0.05), wd = (0.008 + R() * 0.022);
     s += `<path d="M${r1(cx + ca * r0)} ${r1(cy + sa * r0)}L${r1(cx + Math.cos(a - wd) * far)} ${r1(cy + Math.sin(a - wd) * far)}L${r1(cx + Math.cos(a + wd) * far)} ${r1(cy + Math.sin(a + wd) * far)}Z" fill="${color}"/>`;
   }
   return s;
@@ -102,8 +104,8 @@ export class ScreenFX {
       if (f.t < 0) continue;
       const k = f.t / f.dur;
       if (f.kind === 'radial') {
-        const p = f.at ? ctx.project(f.at) : { x: w / 2, y: h / 2 };
-        s += radialLines(w, h, p.x, p.y, f.share * (k > 0.66 ? 0.6 : 1), seed + f.seed, f.color || C.ink);
+        if (!f.anchor) f.anchor = f.at ? ctx.project(f.at) : { x: w / 2, y: h / 2 };   // fixed: lines do not ride the shake
+        s += radialLines(w, h, f.anchor.x, f.anchor.y, f.share * (k > 0.66 ? 0.6 : 1), 1 + f.seed, f.color || C.ink, 46, seed);
       } else if (f.kind === 'streak') {
         const a = ctx.project(f.from), b = ctx.project(f.to);
         const ang = Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI;
@@ -213,7 +215,7 @@ export class ScreenFX {
         const rr = [3, 6, 9][wipe];
         s += `<pattern id="sx-wipe" width="18" height="18" patternUnits="userSpaceOnUse"><circle cx="9" cy="9" r="${rr}" fill="${P.panel}"/></pattern><rect width="${w}" height="${h}" fill="url(#sx-wipe)"/>`;
       } else s += `<rect width="${w}" height="${h}" fill="${P.panel}"/>`;
-      s += radialLines(w, h, cx, cy, 0.62, di % 3 + 1, C.ink, 70);
+      s += radialLines(w, h, cx, cy, 0.62, 3, C.ink, 70, di % 3 + 1);
       // the cloud: big scalloped Paper Cream cloud, lavender shade, heavy Ink line, 8-drawing boil loop
       const boil = di % 8, sc = wipe < 3 ? 0.6 + wipe * 0.15 : 1;
       // starburst behind

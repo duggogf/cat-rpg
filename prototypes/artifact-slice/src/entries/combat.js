@@ -224,7 +224,7 @@ function onEvent(ev) {
     }
     case 'PileOnBeat': if (pile) { pile.beat = ev.beat; pile.beatT = 0; pile.beatDx = ((ev.beat * 37) % 7 - 3) / 6; if (ev.feel?.shake) ccam.addShake(ev.feel.shake, realT, [0, 1]); } break;
     case 'PileOnEnd': {
-      if (pile) { pile.phase = 'out'; pile.outT = 0; pile.screen = project(pile.centerW.clone().add(new THREE.Vector3(0, 0.35, 0))); }
+      if (pile) { pile.phase = 'out'; pile.outT = 0; pile.screen = pile.anchor || project(pile.centerW.clone().add(new THREE.Vector3(0, 0.35, 0))); }
       const at = pile ? pile.centerW.clone().add(new THREE.Vector3(0, 0.4, 0)) : new THREE.Vector3();
       applyFeel(ev.feel, at, { noFull: true, finalRout: snap.mode === 'ended' || snap.entities.filter((e) => e.side === 'enemy' && !e.routed && e.present).length === 0, hitType: 'thump', text: 'KA-BLAM!' });
       break;
@@ -369,7 +369,8 @@ function present(dt, alpha, menu = []) {
   }
   let pileCtx = null;
   if (pile) {
-    const c = pile.phase === 'out' ? pile.screen : project(pile.centerW.clone().add(new THREE.Vector3(0, 0.35, 0)));
+    if (!pile.anchor) pile.anchor = project(pile.centerW.clone().add(new THREE.Vector3(0, 0.35, 0)));   // fixed for the set-piece
+    const c = pile.phase === 'out' ? pile.screen : pile.anchor;
     pileCtx = { ...pile, center: { x: Math.min(w * 0.7, Math.max(w * 0.3, c.x)), y: Math.min(h * 0.62, Math.max(h * 0.4, c.y)) } };
   }
   scr.update(dt, { skip: skipDraw, w, h, project, controlledBox: cb, hudRects: opt.hud && !skipDraw ? hud.rects() : [], pile: pileCtx, tw, overheads, arrows });
@@ -447,6 +448,8 @@ async function boot() {
   fx = new WorldFX(spr, fxScene, decalScene);
   scr = new ScreenFX(app);
   hud = new CombatHUD(app, DATA); if (!opt.hud) hud.el.style.display = 'none';
+  // deterministic captures step frames faster than wall-clock CSS transitions: snap them in test mode
+  if (opt.test) { const st = document.createElement('style'); st.textContent = '.ch, .ch * { transition: none !important; animation: none !important; }'; document.head.appendChild(st); }
   try { await Promise.all(["400 64px 'Dela Gothic One'", "800 32px 'M PLUS Rounded 1c'", "700 32px 'M PLUS Rounded 1c'"].map((f) => document.fonts.load(f))); } catch (e) { /* fonts optional */ }
   hud.setup(snap);
   ccam = new CombatCamera(cam);
