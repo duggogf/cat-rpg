@@ -55,6 +55,7 @@ export class Encounter {
     this._emit({ type: 'EncounterStarted', encounter_id: def.Name, opener: def.opener, arena: def.arena,
       posse: def.posse.slice(), enemies: this.enemies().map(e => e.id), guest: def.guest?.cat ?? null });
     if (this.mode === 'standoff') this._standoffStart(); else this._fightStart();
+    this._carry = this.events; // constructor events are returned by the first step()
   }
 
   /* ------------------------------------------------------------ setup */
@@ -104,7 +105,7 @@ export class Encounter {
 
   /* ------------------------------------------------------------ events */
 
-  _emit(ev) { ev.t = +this.realT.toFixed(6); ev.sim_t = +this.simT.toFixed(6); ev.tick = this.tick; this.events.push(ev); return ev; }
+  _emit(ev) { ev.t = +this.realT.toFixed(6); ev.sim_t = +this.simT.toFixed(6); ev.tick = this.tick; this.events.push(ev); this.log.push(ev); return ev; }
 
   /** Emit with a feel request; applies the arbiter's hit-stop to the sim. */
   _emitFeel(ev, req, att, tgt) {
@@ -124,7 +125,7 @@ export class Encounter {
    */
   step(input = {}) {
     if (this.mode === 'ended') return [];
-    this.events = [];
+    this.events = this._carry || []; this._carry = null;
     this.tick++; this.realT = this.tick * this.DT;
     let scale = 1;
     if (this.globalStop > 1e-9) { this.globalStop = Math.max(0, this.globalStop - this.DT); scale = 0; }
@@ -156,7 +157,6 @@ export class Encounter {
       this._fedUpCheck();
       this._endCheck(dt);
     }
-    for (const ev of this.events) this.log.push(ev);
     return this.events;
   }
 
@@ -1168,7 +1168,7 @@ export class Encounter {
     const k = this.k;
     for (const e of this.entities) {
       if (e.gone) continue;
-      const d = e.edt;
+      const d = dt; // timers stop in global hit-stop and run at 5% in Slow Blink (rule 6); local hit-stop freezes only the action
       e.hissCd = Math.max(0, e.hissCd - d);
       for (const m in e.moveCd) e.moveCd[m] = Math.max(0, e.moveCd[m] - d);
       e.flinchT = Math.max(0, e.flinchT - d);
@@ -1189,7 +1189,8 @@ export class Encounter {
       }
       // Frazzle window and decay.
       if (e.side === 'enemy' && !e.routed) {
-        if (e.frazzledT > 0) { e.frazzledT -= d; if (e.frazzledT <= 1e-9) { e.frazzledT = 0; e.fzg = 0; this._emit({ type: 'FrazzleEnded', cat: e.id, reason: 'window' }); } }
+        if (e.frazzledT > 0 && this.pile && this.pile.ids.has(e.id)) { /* the window is held while the Pile-On plays */ }
+        else if (e.frazzledT > 0) { e.frazzledT -= d; if (e.frazzledT <= 1e-9) { e.frazzledT = 0; e.fzg = 0; this._emit({ type: 'FrazzleEnded', cat: e.id, reason: 'window' }); } }
         else if (e.fzg > 0 && this.simT - e.lastFzGainT >= e.rankRow.fz_decay_after_s) e.fzg = Math.max(0, e.fzg - e.rankRow.fz_decay * d);
         const ps = k.enemy_paw_s[e.rank] / this.diff.enemy_paw;
         e.enemyPaws = Math.min(k.paw_cap, e.enemyPaws + k.paw_points / ps * d);
