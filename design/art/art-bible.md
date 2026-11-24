@@ -150,7 +150,7 @@ The slice tracks ≤ 12 Rivals plus Strays and generated Crew, so the generator 
 | Axis | Options | Notes |
 |---|---|---|
 | **Base mesh** | 3 on one skeleton: **Round** (heavy, Bruiser-weighted), **Standard**, **Long** (lean) | Size, fur puff and kitten proportions come from bone scale; smoothed outline normals baked per mesh |
-| **Tail shape** | 4: **long whip**, **plume**, **thick ringed**, **short stub** | The round **pom** is reserved for Mikan. "Kinked" and "puffed" are Scars, not generator options |
+| **Tail shape** | 4: **long whip**, **plume**, **thick ringed**, **short stub** | Mikan's tail is a thick S-curve with a white tip (owner C9; the pom is retired). "Kinked" and "puffed" are Scars, not generator options |
 | **Ears** | 3: **standard**, **tall narrow**, **small round** | "Notched" and "folded" are Scars |
 | **Pattern class** | 6: **solid**, **bicolour with white**, **tabby** (3–5 bold bands), **patched** (calico/tortie, large blocks), **pointed**, **tuxedo** | Borderless flat shapes. The dominant mark is ≥ 8% of dorsal area. Max 3 coat colours |
 | **Coat colour** | 10 fills (§4.3), each with an authored shade | Mikan Ginger never generated |
@@ -339,7 +339,7 @@ The UI never uses the household hues at full saturation, and never painted textu
 
 ### 5.1 Mikan (fixed design; canon brief §3.1)
 
-A ginger-and-white Japanese bobtail: white body `#FFF8EC`, ginger cap over both ears and a ginger patch over the left eye in Mikan Ginger, **pom-pom stub tail** (a hero shape), amber eyes `#FFB52E`, **red collar with one small brass bell**. From behind, the read is: ginger cap and two ginger ears, the red collar line, white back, pom tail. That read must survive every lighting key.
+A ginger-and-white cat: white body `#FFF8EC`, ginger cap over both ears and a ginger patch over the left eye in Mikan Ginger, a round fat face, a small snout with a visible nose bridge, a **thick S-curve ginger tail with a white tip** (owner C8/C9), amber eyes `#FFB52E`, **red collar with one small brass bell**. From behind, the read is: ginger cap and two ginger ears, the red collar line, white back, the S-curve tail. That read must survive every lighting key.
 
 - **Kitten (Life 1):** big head (≈ 1.35× bone scale on the head), short legs, the bell oversized on the collar, a wobble in the walk.
 - **Young adult (Life 2):** standard Scrapper proportions, bouncing toes in a fight.
@@ -450,7 +450,7 @@ A Showa-nostalgic hillside lane of old wooden houses and plaster garden walls st
 - **High Road:** wall tops, fence tops, laundry-pole rails, eaves and a run of roofs give a continuous upper route. From cat height, these are skylines: the High Road is always readable as a lighter ribbon against the sky or a darker wall.
 - **Scent Post kit** (inked hero props; Territory/Level assign them to Patches): a persimmon tree trunk, a laundry pole, a stone lantern, a utility pole with a crooked transformer box, a roadside Jizo-style stone post. Each stands on quiet ground and is visible at 30 m.
 - **Scent wisps** (DR-47): 1–4 drawn, slowly curling ribbons in the Clowder colour with a Cream rim, hanging above the post. Wisp count is the strength read. Flat colour, no glow.
-- **Den:** Daifuku's wall, the tallest garden wall in the Lane with a knock-off ledge, a bucket below and a sightline to the sea.
+- **Den:** Daifuku's ground arena at the foot of the tallest garden wall in the Lane, with a sightline to the sea (M1.2: he fights on the ground).
 - **Low Wall Corner** (Home Ground, tutorial): the corner by Haru's wall, the friendliest light in the district.
 - **Sunspots (4):** a warm painted light patch (`#FFE7A3` with a halftone rim) on a flat surface, with a cushion-like prop (a folded towel, a sunlit step, a warm car bonnet, a tin roof).
 - **Prop density:** dense at the ground band (pots, bikes, buckets, crates, cats' ledges); sparse above 1.2 m, so the sky and roofs read as calm masses. Every fight space keeps a ≈ 10 m ring of mid-value ground clear of high-contrast clutter.
@@ -592,8 +592,8 @@ Target: 1080p60 on a GTX 1060 / RX 580-class PC (min spec, proposed). The handhe
 
 | Group | Items |
 |---|---|
-| **Cats** | Mikan (kitten + adult proportions, pet set, Scrapper set) · Daifuku (3 phases' hero poses, knock-off, bucket splat) · the old wall cat · 3 base meshes · 4 tails · 3 ears · 6 silhouette Scars + 3 close-up Scars · 6 regalia · gold Crew cord · 10 coat fills · 6 pattern masks · 12 face decals |
-| **Animation** | **6 personality sets** × (2 idles, walk, trot, sit, 3 bark poses, Fence Line pose, Pile-On flourish) = 60 clips · **3 Style sets** (Scrapper, Bruiser, Yowler) × (3-hit string, Pounce, Tag-In strike, Hop, Skitter, Brace, Hiss, 4 Move poses, Zoomies, hit-react ×2, Frazzled, Routed bolt, Back Down) ≈ 57 clips · shared (Spray, Sniff, nap, climb, ledge-hang, knock-off fall, Splat) |
+| **Cats** | Mikan (kitten + adult proportions, pet set, Scrapper set) · Daifuku (3 phases' hero poses, belly-flop wind-up and slam) · the old wall cat · 3 base meshes · 4 tails · 3 ears · 6 silhouette Scars + 3 close-up Scars · 6 regalia · gold Crew cord · 10 coat fills · 6 pattern masks · 12 face decals |
+| **Animation** | **6 personality sets** × (2 idles, walk, trot, sit, 3 bark poses, Fence Line pose, Pile-On flourish) = 60 clips · **3 Style sets** (Scrapper, Bruiser, Yowler) × (3-hit string, Pounce, Tag-In strike, Hop, Skitter, Brace, Hiss, 4 Move poses, Zoomies, hit-react ×2, Frazzled, Routed bolt, Back Down) ≈ 57 clips · shared (Spray, Sniff, nap, climb, ledge-hang, knocked-down tumble) |
 | **Humans** | Haru (raincoat, uniform, home clothes) · Gran · 4 street sets · hand pose library (≈ 20 poses) |
 | **Critters** | Crow (walk, hop, peck, take-off, hit, flee) |
 | **Environment** | Hidamari Lane (5 Patches, High Road, Den, 4 Sunspots, 5 Scent Post types) · Haru's House (garden, genkan, Main Room with piano, Haru's room, Alcove) · the Lot · 4 phase skies and backdrop sets · Narrative's 8 daily-find states |

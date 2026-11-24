@@ -270,8 +270,8 @@ Totals: C 3.5 · T 7.25 · H 1.75 · S 3. Optional (heavy): the challenger fight
 | 0:00–0:15 | P | Wake; Mikan wears the plaster (yesterday's wipe) | Narrative | H |
 | 0:15–0:45 | P | Sniff: Daifuku plastered (−10%); the raid forecast; a town event or the challenger's stamp | Nemesis | T |
 | 0:45–1:45 | P | Lot: Yowler into the Posse; Share a Morsel | Crew | T |
-| 1:45–3:15 | 0:00–1:30 | High Road to his Morning stop (Laundry Pole Yard's yard wall, the wash tub) | Territory | T |
-| 3:15–6:45 | P | Daifuku Standoff (Calm: anger spent by yesterday's loss), 3 phases (sim 157 s at −10%), knock-off into the wash tub, Full Pile-On, Verdict (any of three) | Combat, Nemesis | C |
+| 1:45–3:15 | 0:00–1:30 | High Road to his Morning stop (Laundry Pole Yard, a ground arena) | Territory | T |
+| 3:15–6:45 | P | Daifuku Standoff (Calm: anger spent by yesterday's loss), phase 1 on the ground (belly-flop shockwave; universal Boss pattern; M1.2), Special chain and team finisher, Verdict (any of three) | Combat, Nemesis | C |
 | 6:45–7:15 | 1:30–2:00 | The thread to the Den corner stone; **Claim Spray the Den post** → `DistrictClaimed` | Territory | T |
 | 7:15–7:30 | 2:00→4:00 | Nap | Day loop | T |
 | 7:30–14:00 | 4:00–8:00 | Victory lap: 2 fights (2.5 P, one is usually the Nemesis's daily placement), approaches (1), roam | Combat, Territory | C/T |

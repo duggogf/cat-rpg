@@ -146,9 +146,9 @@ A sumo entrance that refuses to speed up: tuba, ō-daiko, a yawning trombone gli
 
 | Phase | Music |
 |---|---|
-| 1 · Seated on his wall | 80 BPM, will not double; the joke is that the music is as immovable as he is |
+| 1 · Squaring off on the ground | 80 BPM, will not double; the joke is that the music is as immovable as he is |
 | 2 · He stands | Brawl double-time arrives on the phase-break T5 |
-| 3 · At the edge (the bucket) | Full brass and taiko; his gesture as a riff; the knock-off into the bucket is a Splat with a Water Fear sting |
+| 3 · Rage (belly-flop shockwaves) | Full brass and taiko; his gesture as a riff; each shockwave slam lands on the downbeat |
 
 Phase breaks are T5 (Combat). A Pile-On that plays a phase break as its final beat carries the phase transition on that beat (DR-32).
 
@@ -347,7 +347,7 @@ Rules:
 | **Fears** (`FearTriggered`) | Universal: a shamisen screech glissando + the cat's own shriek. Then: **Water/bucket** slosh and splash · **Loud Noise/scooter horn** a two-tone toot (the horn is diegetic) · **Cucumber/ledge junk** a vegetable thunk and a vibraslap |
 | **Statuses** | Soggy: drips on each step · Cowed: a flat, muffled vocal colour · Fired Up: a brighter, faster effort layer |
 | **Rout** | Dust puff, receding bolt yelp panned off-screen. Posse cat Routed: its voice leaves the music's off-beat chirps. |
-| **Knock-off** | Scrabble at the edge, a falling yowl, Splat (Boss: Ruffled, DR-32) |
+| **Shockwave** | Wind-up grunt, the slam, a ground-rumble ring; KnockedDown cats get a tumble yowl (M1.2; replaces the knock-off) |
 
 ### 7.3 Pile-On and Zoomies
 

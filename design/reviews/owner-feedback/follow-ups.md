@@ -22,3 +22,5 @@ Collected by the orchestrating session from reviser hand-backs, for the consiste
 | F14 | M1.1 doc sweep leftovers: brief §4.1/§6.1/§7/§8/§10 and GDD §6, §17–§21 still mention Tag-In/Relay/Pile-On inputs; crew lines 23/45/618; nemesis "clean Pile-On" and `by_pile_on` | M1.1 docs agent | brief, GDD, crew, nemesis |
 | F15 | M1.1 doc vs sim: docs specify a bonded-chain bonus and Special values the sim does not use; reconcile when the sim lands (sim data wins for numbers) | M1.1 docs agent | combat-system, src/data/combat |
 | F16 | Designer rulings for owner awareness: no jump in combat (Dash mantles); Brace AI-only; Hiss moved to the skill bar; Specials have no unlock level | M1.1 docs agent | combat-system |
+
+**Closed 2026-11-24 (M1.2):** F14 (Tag-In/Relay/Pile-On leftovers cleared by the docs agent; wall/wash-tub lines in day-loop, sound bible and art bible cleared by the orchestrator, plus Mikan's tail/face description updated to C8/C9). F13 accepted for the showcase (game designer, M1 review).
