@@ -895,9 +895,9 @@ export class Encounter {
     this._emitFeel({ type: 'KnockOff', cat: b.id, by: att.id, land: land.slice() }, { tier: BASE_TIER.splat, authored: att.id === this.controlledId ? 'player' : 'ai', victim: 'enemy', kind: 'splat' }, att, b);
   }
 
-  _landBoss(b) {
-    const k = this.k, by = this.byId.get(b.act.by);
-    b.x = b.act.to[0]; b.z = b.act.to[1]; b.y = 0; b.act = null;
+  _landBoss(b, a) {
+    const k = this.k, by = this.byId.get(a.by);
+    b.x = a.to[0]; b.z = a.to[1]; b.y = 0; b.act = null;
     b.boss.state = 'ground'; b.boss.groundT = k.boss_ground_s;
     this._ruffle(b, by);
     this._addFz(b, k.knockoff_fz, by);
@@ -1244,7 +1244,7 @@ export class Encounter {
             e.act = null;
             if (a.kind === 'mantle') { e.onHR = a.hr; e.mantleAt = this.simT; e.hrSince = this.simT; }
             if (a.kind === 'climb') { e.onHR = a.hr; e.boss.state = 'wall'; e.boss.swingCd = Math.max(e.boss.swingCd, 1.5); }
-            if (a.kind === 'fall') this._landBoss(e);
+            if (a.kind === 'fall') this._landBoss(e, a);
             if (a.kind === 'tagin') { const tg = this.byId.get(a.targetId); e.onHR = tg && tg.onHR ? tg.onHR : null; if (e.onHR) { e.mantleAt = this.simT; e.hrSince = this.simT; } e.act = null; this._tagStrike(e, a); }
             if (a.kind === 'pounce') this._pounceLand(e, a);
             if (a.kind === 'drop') e.y = 0;
