@@ -1,4 +1,4 @@
-# M0 cats: look-dev evidence (character half), owner shape pass
+# M0 cats: look-dev evidence (character half), owner shape pass + eye pass
 
 Re-captured 2026-11-24 after the owner approved the art target and asked for clearer shapes, using the turnaround
 `design/reviews/refs/mikan-turnaround-ref.webp`. The changes:
@@ -32,8 +32,13 @@ scale is 1.25.
 | `13-side-day-res85.png` | As 02 at 85% render scale (canvas upscaled), for the line check | `view=side&res=0.85` |
 | `14-turnaround-mikan.png` | Front / side / back at the reference sheet's eye-level camera | `turn=1&t=0` |
 | `15-turnaround-wallsitter.png` | The same layout for the Wall Sitter (same shape language, Round build) | `turn=1&cast=wallSitter&t=0` |
+| `16-orbit-8x45.png` | Mikan at 8 yaws, 45° apart: one face decal set, no swap | `angle=0..315&dist=1.7&h=0.5&fov=30` |
+| `17-orbit-24x15-continuity.png` | 24 yaws, 15° apart: the near eye travels continuously round the skull. No pop and no doubled eye | same, 15° steps |
+| `18-front-face-check.png` | Front-on face: the kept face before this pass, now (camera 1.22× further to cancel the 1.22× head), and the absolute difference. Measured: eye spacing, nose drop and feature areas match within 1–2% of eye separation; after normalising for scale, nose IoU is 0.92 and eye IoU 0.87 (the eyes now sit on a rounder skull) | `view=front&cast=mikan&t=0` |
 | `turnaround-compare.png` | The owner's reference (left) beside 14 (right). The reference's long tail and back patches are not canon, so they are not modelled | composed from 14 |
 
 **Line (L-3 as revised):** the nominal width is 2.5 px against the OUTPUT height, with a top-up when the render target is smaller than the output. Horizontal ink-run medians are 3 px on `02` and 3 px on `13`; the same count on the first M0 `02` gave 2 px. So the line is heavier, and it no longer thins at 85%. Interior overlap lines (leg over body, haunch, head over neck, tail over rump) come from a separate legs shell, plus a hull pulled toward the eye by a share of the baked local thickness. Thin parts (ears) are never pulled, and the pull is capped at 1.6 cm so far paws never ink solid through leg gaps.
 
 **Cost:** 2 cats = 8 draw calls (fill, hull, whiskers, blob each); about 28k triangles per cat mesh, drawn twice.
+
+**Eye pass (coordinator, after the owner sign-off).** The face card now carries only the nose and mouth. Each eye, with its lids and expression, is its own decal. Front-on it projects along +Z, exactly as the kept face did. As the camera moves round to that eye's side, its projection axis turns toward the camera (up to 68°) and its anchor slides round the skull (up to 38°), and it grows up to 12%. All of this is continuous with the camera's yaw around the head, with no discrete switch, so side-on the near eye reads as the reference's big round eye. The head grew to 1.22× (Round build 1.27×) with a rounder cranium and fuller cheeks; the front legs are straight columns, and the hind shin grows out of the thigh.
