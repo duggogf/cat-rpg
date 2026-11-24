@@ -18,3 +18,4 @@ Collected by the orchestrating session from reviser hand-backs, for the consiste
 | F12 | Nose-Touch gate open on 91–100% of Verdicts because Grudge stays low in the slice: Nose-Touch is nearly free, so the three-way Verdict is not yet a real choice | nemesis reviser | nemesis (creative-director ruling) |
 
 **Status (2026-11-24):** all twelve items are ruled and applied in `consistency-pass.md` (§1 for F11–F12, §2 for F1–F10).
+| F13 | M1 sim fight lengths vs GDD: Toughs fights run 20–30% short (2T 14.2 s vs 18–21; 3T 21.1 vs 25–28; 4T 26.1 vs 33–36); Captain 41.4 vs 37; Daifuku phase 1 39 s vs ~55–60, full fight 128–195 s vs 166–176. Tuning call for the game designer in the M1 review | M1 sim | combat-system (tuning), src/data/combat |
