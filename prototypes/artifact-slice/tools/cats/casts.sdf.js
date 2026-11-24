@@ -8,7 +8,7 @@ const BUILD = {
   round: { bx: 1.2, by: 1.12, leg: 0.84, head: 1.27, len: 1.0 },
   standard: { bx: 1, by: 1, leg: 1, head: 1.22, len: 1 },  // head ≈ 45–50% of height (owner turnaround)
   long: { bx: 0.88, by: 0.94, leg: 1.2, head: 1.12, len: 1.12 },
-  huge: { bx: 1.38, by: 1.2, leg: 0.8, head: 1.32, len: 1.05 },   // Daifuku: Round at maximum puff (× rank 1.6 at runtime)
+  huge: { bx: 1.42, by: 1.24, leg: 0.76, head: 1.08, len: 1.08 },   // Daifuku: Round at maximum puff (× rank 1.6 at runtime)
 };
 export const BONES = ['root', 'hips', 'chest', 'neck', 'head', 'earL', 'earR',
   'tail1', 'tail2', 'tail3', 'tail4', 'tail5', 'tail6',

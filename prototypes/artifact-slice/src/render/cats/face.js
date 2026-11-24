@@ -62,14 +62,29 @@ function drawFace(g, s, frame, opt = {}) {
       line(() => { g.moveTo(x - 6.5, 0); g.quadraticCurveTo(x, 4.2, x + 6.5, 0); }, 2.1);
       continue;
     }
+    if (expr === 'happy') { // kit 'happy': closed upward arcs (^ ^); blink frames are the same drawing
+      line(() => { g.moveTo(x - 6.5, 1); g.quadraticCurveTo(x, -7, x + 6.5, 1); }, 2.2);
+      continue;
+    }
+    if (expr === 'shock' && frame === 0) { // kit 'shock' (Fraidy): white round eyes, small pupils
+      g.beginPath(); g.arc(x, -1, 8.5, 0, Math.PI * 2); g.fillStyle = '#fff'; g.fill(); g.strokeStyle = ink; g.lineWidth = lw; g.stroke();
+      g.beginPath(); g.arc(x + 0.6 * Math.sign(x), -0.6, 2.6, 0, Math.PI * 2); g.fillStyle = ink; g.fill();
+      continue;
+    }
     // eye disc + pupil + one hard highlight
     g.beginPath(); g.ellipse(x, 0, 6.8, 7.6, 0, 0, Math.PI * 2); g.fillStyle = s.eye; g.fill();
     g.beginPath(); g.ellipse(x + 0.4 * Math.sign(x), 0.5, 6.8 * 0.44, 7.6 * 0.8, 0, 0, Math.PI * 2); g.fillStyle = ink; g.fill();
     g.beginPath(); g.arc(x - 6.8 * 0.36, -7.6 * 0.4, 6.8 * 0.3, 0, Math.PI * 2); g.fillStyle = '#fff'; g.fill();
     g.beginPath(); g.ellipse(x, 0, 6.8, 7.6, 0, 0, Math.PI * 2); g.strokeStyle = ink; g.lineWidth = lw; g.stroke();
     // lids: expression lid (smug) and blink half-lid, in the coat colour around the eye
-    let lidY = expr === 'smug' ? -2.4 : null;
+    let lidY = expr === 'smug' ? -2.4 : expr === 'sleepy' ? 0.2 : null;
     if (frame === 1) lidY = 1.0;
+    if (expr === 'angry' && frame === 0) { // kit 'angry': a lid wedge slanting down toward the nose
+      const o = -Math.sign(x); // toward the centre
+      g.save(); g.beginPath(); g.ellipse(x, 0, 7.8, 8.6, 0, 0, Math.PI * 2); g.clip();
+      g.beginPath(); g.moveTo(x - o * 9, -10.5); g.lineTo(x + o * 9, -10); g.lineTo(x + o * 9, -2); g.closePath(); g.fillStyle = lid; g.fill(); g.restore();
+      line(() => { g.moveTo(x - o * 8.5, -9.4); g.lineTo(x + o * 8.6, -2.6); }, 2.2);
+    }
     if (lidY != null) {
       g.save(); g.beginPath(); g.ellipse(x, 0, 7.8, 8.6, 0, 0, Math.PI * 2); g.clip();
       g.beginPath(); g.moveTo(x - 9, -10); g.lineTo(x + 9, -10); g.lineTo(x + 9, lidY - 0.6); g.quadraticCurveTo(x, lidY - 2.2, x - 9, lidY - 0.6); g.closePath();

@@ -27,6 +27,18 @@ export const CARRIAGES = {
   pom: { bones: [[30, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]], sway: 6, speed: 1.6, tip: 0 },
 };
 
+/** Personality posture (art bible §3.3: ears, head and stance read from behind, in silhouette). Radians.
+ *  earX: + forward / − back; earZ: outward splay ("airplane"); head: + low / − high; crouch: 0..1 (bent legs). */
+export const POSTURE = {
+  flag: { earX: 0.18, earZ: -0.05, head: -0.12, chest: -0.06, crouch: 0 },        // Braggart: forward, high, chest out
+  post: { earX: 0.05, earZ: 0, head: -0.03, chest: 0, crouch: 0 },                // Stalwart: upright, steady
+  spring: { earX: 0.05, earZ: 0.1, head: 0.0, chest: 0, crouch: 0, oddEar: 0.55 }, // Goofball: one ear out of sync
+  blade: { earX: -0.1, earZ: 0.3, head: 0.12, chest: 0.04, crouch: 0.3 },        // Schemer: low slink, ears swivel
+  anchor: { earX: -0.25, earZ: 0.75, head: 0.2, chest: 0.05, crouch: 0.12 },     // Brooder: airplane ears, head low
+  comma: { earX: -0.45, earZ: 0.38, head: 0.16, chest: 0.06, crouch: 0.5 },      // Fraidy: ears flat back, half-crouched
+  pom: { earX: 0, earZ: 0, head: 0, chest: 0, crouch: 0 },                        // Mikan: the player's personality
+};
+
 function mulberry(seed) {
   let a = seed | 0;
   return () => { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
@@ -44,6 +56,7 @@ export function createAnimator(B, o) {
   const rest = {}; for (const k in B) rest[k] = B[k].position.clone();
   let t = 0, gait = 'idle', speed = 0, phase = 0, walkW = 0;
   let carry = CARRIAGES[o.carry] || CARRIAGES.pom;
+  const pose = POSTURE[o.posture] || POSTURE[o.carry] || POSTURE.pom;
   const isPom = carry === CARRIAGES.pom;
   let nextBlink = 1.2 + rnd() * 2.5, blinkT = -1;
   let nextFlick = 1.5 + rnd() * 2.5, flickT = -1, flickSide = 1;
@@ -78,14 +91,15 @@ export function createAnimator(B, o) {
       const br = Math.sin(t * TAU / 3.4) * (1 - walkW);
       const bounce = walkW * (0.5 - 0.5 * Math.cos(p2));       // 0 at contact, 1 at passing
       const settle = walkW * Math.max(0, Math.cos(p2)) ** 6;   // sharp, at contact
-      B.hips.position.y = rest.hips.y + (bounce * 0.016 - 0.008 * walkW - settle * 0.004) * k;
+      const cr = pose.crouch * (1 - 0.5 * walkW), lh = (o.legRest || 0.14) * 0.5;
+      B.hips.position.y = rest.hips.y + (bounce * 0.016 - 0.008 * walkW - settle * 0.004) * k - 2 * lh * (1 - Math.cos(cr));
       const sq = settle * 0.05;
       B.chest.scale.set(1 + br * 0.018 + sq * 0.6, 1 + br * 0.03 - sq, 1);
       const inv = [1 / (1 + br * 0.018 + sq * 0.6), 1 / (1 + br * 0.03 - sq), 1];
       B.neck.scale.set(...inv); B.fUL.scale.set(...inv); B.fUR.scale.set(...inv);
       const sway = Math.sin(phase * TAU);
       setRot('hips', walkW * (0.04 * Math.sin(p2 + 0.6)), walkW * 0.07 * sway, walkW * 0.05 * sway);
-      setRot('chest', -0.03 * br - walkW * 0.05 + walkW * 0.03 * Math.sin(p2 - 0.4), -walkW * 0.1 * sway, -walkW * 0.06 * sway);
+      setRot('chest', pose.chest - 0.03 * br - walkW * 0.05 + walkW * 0.03 * Math.sin(p2 - 0.4), -walkW * 0.1 * sway, -walkW * 0.06 * sway);
 
       // ---- legs (lateral sequence); swing is quick and lifted high
       const legs = { hUL: 0, fUL: 0.25, hUR: 0.5, fUR: 0.75 };
@@ -97,8 +111,9 @@ export function createAnimator(B, o) {
         else { const s = (p - stance) / (1 - stance); a = A - 2 * A * easeOut(s); bend = Math.sin(Math.PI * Math.min(1, s * 1.1)); }
         const front = up[0] === 'f';
         // lift comes mostly from the shoulder/hip; the wrist/hock bend stays under ~55° so the skin never folds through
-        setRot(up, walkW * (a - (front ? bend * 0.25 : bend * 0.45)), 0, 0);
-        setRot(lo, walkW * bend * (front ? 0.95 : 0.85), 0, 0);
+        // crouch: a Z-bend (front: elbow back, wrist forward; hind: knee forward, hock back)
+        setRot(up, walkW * (a - (front ? bend * 0.25 : bend * 0.45)) + (front ? cr : -cr), 0, 0);
+        setRot(lo, walkW * bend * (front ? 0.95 : 0.85) + (front ? -2 * cr : 2 * cr), 0, 0);
       }
 
       // ---- head: look target, else idle glances (on twos); a head bob a beat behind the bounce
@@ -120,7 +135,7 @@ export function createAnimator(B, o) {
       lookYaw += (ty - lookYaw) * ls; lookPitch += (tp - lookPitch) * ls;
       const headBob = walkW * Math.sin(p2 - 1.3);              // late: overlaps the body bounce
       setRot('neck', walkW * 0.08 + lookPitch * 0.35, lookYaw * 0.35, 0);
-      setRot('head', 0.04 * br + lookPitch * 0.65 - headBob * 0.07, lookYaw * 0.65, 0.04 * Math.sin(t * 0.29) * (1 - walkW) + lookYaw * 0.08);
+      setRot('head', 0.04 * br + lookPitch * 0.65 - headBob * 0.07 + pose.head, lookYaw * 0.65, 0.04 * Math.sin(t * 0.29) * (1 - walkW) + lookYaw * 0.08);
       B.head.position.y = rest.head.y - headBob * 0.004 * k;
 
       // ---- tail: carriage pose + sway + idle tip curl + walk wave, followed by lagging springs
@@ -163,8 +178,9 @@ export function createAnimator(B, o) {
         if (flickT > 0.42) { flickT = -1; nextFlick = t + 1.8 + rnd() * 3; }
       }
       const earWalk = -0.1 * walkW + walkW * 0.06 * Math.sin(p2 - 1.6);
-      setRot('earL', earWalk - (flickSide > 0 ? fl * 0.55 : 0), 0, flickSide > 0 ? fl * 0.5 : 0);
-      setRot('earR', earWalk - (flickSide < 0 ? fl * 0.55 : 0), 0, flickSide < 0 ? -fl * 0.5 : 0);
+      const swivel = o.posture === 'blade' ? 0.35 * Math.sin(t * 1.3) : 0; // Schemer: ears swivel independently
+      setRot('earL', pose.earX + earWalk - (flickSide > 0 ? fl * 0.55 : 0), swivel, -pose.earZ + (flickSide > 0 ? fl * 0.5 : 0) - (pose.oddEar || 0));
+      setRot('earR', pose.earX + earWalk - (flickSide < 0 ? fl * 0.55 : 0), -swivel * 0.7, pose.earZ - (flickSide < 0 ? fl * 0.5 : 0));
     },
   };
 }

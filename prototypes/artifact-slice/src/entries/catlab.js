@@ -63,6 +63,23 @@ if (strip) {
     c.object3D.rotation.y = Math.atan2(c.object3D.position.x, -num('dist', 4.6)); // each seen square from behind
     scene.add(c.object3D); cats.push(c);
   });
+} else if (q.get('lineup') === '1') {
+  // M1 cast lineup: every named cast plus three generated toughs, each seen at the same angle
+  const L = (q.get('casts') || 'mikan,hige,pon,kinako,togemaru,kagi,daifuku,tough1,tough2,tough3').split(',');
+  const TOUGHS = {
+    tough1: { cast: 'tough', build: 'round', ears: 'round', tail: 'ringed', coat: { base: 'cream', patch: 'marmalade' }, pattern: 'tabby', personality: 'brooder', eye: 'copper', seed: 1 },
+    tough2: { cast: 'tough', build: 'standard', ears: 'standard', tail: 'stub', coat: { base: 'charcoal', white: 'white' }, pattern: 'bicolour', personality: 'stalwart', eye: 'yellowgreen', seed: 2 },
+    tough3: { cast: 'tough', build: 'long', ears: 'tall', tail: 'whip', coat: { base: 'silver' }, pattern: 'solid', personality: 'schemer', eye: 'blue', expr: 'smug', seed: 3 },
+  };
+  const yawL = (q.has('angle') ? num('angle', 0) : VIEW[q.get('view') || 'front34']) * Math.PI / 180;
+  const D = num('dist', 9.0); let x = 0; const xs = [];
+  const made = L.map((n, i) => { const o = TOUGHS[n] || { cast: n }; const c = createCatInternal({ ...o, scale: 1.25, seed: o.seed != null ? o.seed + 20 : i + 3 }); return c; });
+  made.forEach((c) => { const w = 0.3 * c.object3D.scale.x / 1.25 + 0.12; x += w; xs.push(x); x += w; });
+  made.forEach((c, i) => {
+    c.object3D.position.set(xs[i] - x / 2, 0, 0);
+    c.object3D.rotation.y = Math.atan2(c.object3D.position.x, -D) + Math.PI + yawL; // same view angle for each cat
+    c.setLighting(PH.light); scene.add(c.object3D); cats.push(c);
+  });
 } else if (turn) {
   // owner turnaround layout: FRONT, SIDE (facing left), BACK at the sheet's eye-level camera
   (turn4 ? [0, -90, 180, -40] : [0, -90, 180]).forEach((deg, i, A) => {
@@ -88,7 +105,8 @@ for (const c of cats) { c.setGait(gait, speed); c.setOutlineScale(num('ol', 1));
 // ---- camera: third-person height by default
 const cam = new THREE.PerspectiveCamera(num('fov', 40), W / H, 0.05, 200);
 if (strip) { cam.fov = num('fov', 37); cam.updateProjectionMatrix(); cam.position.set(0, num('h', 1.0), num('dist', 4.6)); cam.lookAt(0, 0.3, 0); }
-else if (turn) { cam.fov = num('fov', turn4 ? 15 : 12.5); cam.updateProjectionMatrix(); cam.position.set(0, num('h', 0.34), num('dist', 4.6)); cam.lookAt(0, 0.2, 0); ground.visible = false; }
+else if (q.get('lineup') === '1') { cam.fov = num('fov', 34); cam.updateProjectionMatrix(); cam.position.set(0, num('h', 1.25), num('dist', 9.0)); cam.lookAt(0, 0.3, 0); }
+  else if (turn) { cam.fov = num('fov', turn4 ? 15 : 12.5); cam.updateProjectionMatrix(); cam.position.set(0, num('h', 0.34), num('dist', 4.6)); cam.lookAt(0, 0.2, 0); ground.visible = false; }
   else if (q.get('cam') === 'close') { cam.position.set(0, num('h', 0.55), num('dist', 1.5)); cam.lookAt(0, 0.28, 0); }
 else { cam.position.set(0, num('h', 0.95), num('dist', 2.2)); cam.lookAt(0, 0.26, 0); }
 

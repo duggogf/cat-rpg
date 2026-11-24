@@ -3,43 +3,57 @@
 // (cel fill + inverted-hull ink), a face decal atlas, whiskers, and a soft contact blob.
 // Draw calls per cat: fill 1 + hull 1 + whiskers 1 + blob 1 = 4.
 import * as THREE from 'three';
-import { CASTS, INK } from './casts.js';
+import { INK, resolveStyle } from './casts.js';
 import { fillVert, fillFrag, hullVert, hullFrag, blobVert, blobFrag } from './shaders.js';
 import { makeFaceTexture, makeEyesTexture, eyeHalf, faceRect, FACE_FRAMES } from './face.js';
 import { createAnimator } from '../../anim/catAnim.js';
 
-const assets = {}; // mesh name -> { json, geometry }
+const parts = {};      // part name -> { json, attrs: {name: TypedArray}, index }
+let manifest = null;   // assets/mesh/cats.json: cast / tough entry -> { parts, bones, meta }
+const geoCache = {};   // entry name -> assembled BufferGeometry (shared by every cat of that entry)
 const srgb = (c) => { const o = new THREE.Color(); (c.isColor ? c : new THREE.Color(c)).getRGB(o, THREE.SRGBColorSpace); return new THREE.Vector3(o.r, o.g, o.b); };
 const hexV = (h) => { const c = new THREE.Color(); c.setStyle(h, THREE.SRGBColorSpace); return srgb(c); };
+const KIND = { half: Uint16Array, snorm8: Int8Array, u8: Uint8Array, unorm8: Uint8Array, u16: Uint16Array };
 
+/** Loads the manifest and every mesh part (the parts are shared, so this is all casts at once). */
 export async function loadCatAssets(baseUrl = '') {
-  const names = [...new Set(Object.values(CASTS).map((c) => c.mesh))];
-  await Promise.all(names.map(async (n) => {
-    if (assets[n]) return;
-    const json = await (await fetch(`${baseUrl}mesh/${n}.json`)).json();
+  if (!manifest) manifest = await (await fetch(`${baseUrl}mesh/cats.json`)).json();
+  await Promise.all(Object.keys(manifest.parts).map(async (n) => {
+    if (parts[n]) return;
+    const json = await (await fetch(`${baseUrl}mesh/${manifest.parts[n].json}`)).json();
     // The Artifact host does not serve .bin files: the build packs the binary into the
     // JSON as base64 (`binB64`). Dev builds may still point at the .bin.
     const bin = json.binB64
       ? Uint8Array.from(atob(json.binB64), c => c.charCodeAt(0)).buffer
       : await (await fetch(`${baseUrl}mesh/${json.bin}`)).arrayBuffer();
-    const g = new THREE.BufferGeometry();
-    const A = json.attributes, T = { Float32Array, Uint16Array, Uint32Array };
-    const arr = (k) => new T[A[k].type](bin, A[k].offset, A[k].count);
-    g.setAttribute('position', new THREE.BufferAttribute(arr('position'), 3));
-    g.setAttribute('normal', new THREE.BufferAttribute(arr('normal'), 3));
-    g.setAttribute('skinIndex', new THREE.Uint16BufferAttribute(arr('skinIndex'), 4));
-    g.setAttribute('skinWeight', new THREE.BufferAttribute(arr('skinWeight'), 4));
-    g.setAttribute('part', new THREE.BufferAttribute(arr('part'), 1));
-    g.setAttribute('aux', new THREE.BufferAttribute(arr('aux'), 3));
-    g.setAttribute('snormal', new THREE.BufferAttribute(arr('snormal'), 3));
-    g.setAttribute('thick', new THREE.BufferAttribute(arr('thick'), 1));
-    g.setIndex(new THREE.BufferAttribute(arr('index'), 1));
-    const n3 = A.index.count;
-    g.addGroup(0, n3, 0); g.addGroup(0, n3, 1);
-    g.computeBoundingSphere();
-    assets[n] = { json, geometry: g };
+    const A = json.attributes, attrs = {};
+    for (const k in A) attrs[k] = new KIND[A[k].kind](bin, A[k].offset, A[k].count);
+    parts[n] = { json, attrs };
   }));
   return true;
+}
+
+/** One geometry per cast entry: its parts concatenated (quantised attributes kept as they are). */
+function entryGeometry(name) {
+  if (geoCache[name]) return geoCache[name];
+  const E = manifest.casts[name];
+  const P = E.parts.map((n) => parts[n]);
+  const cat = (k) => { const T = P[0].attrs[k].constructor, n = P.reduce((a, p) => a + p.attrs[k].length, 0), o = new T(n); let off = 0; for (const p of P) { o.set(p.attrs[k], off); off += p.attrs[k].length; } return o; };
+  const g = new THREE.BufferGeometry();
+  const half = (k, size) => g.setAttribute(k, new THREE.Float16BufferAttribute(cat(k), size));
+  half('position', 3); half('aux', 3); half('thick', 1);
+  g.setAttribute('normal', new THREE.BufferAttribute(cat('normal'), 3, true));
+  g.setAttribute('snormal', new THREE.BufferAttribute(cat('snormal'), 3, true));
+  g.setAttribute('skinIndex', new THREE.BufferAttribute(cat('skinIndex'), 4));
+  g.setAttribute('skinWeight', new THREE.BufferAttribute(cat('skinWeight'), 4, true));
+  g.setAttribute('part', new THREE.BufferAttribute(cat('part'), 1));
+  const idx = new Uint32Array(P.reduce((a, p) => a + p.attrs.index.length, 0));
+  let o = 0, base = 0;
+  for (const p of P) { for (let i = 0; i < p.attrs.index.length; i++) idx[o + i] = p.attrs.index[i] + base; o += p.attrs.index.length; base += p.json.vertexCount; }
+  g.setIndex(new THREE.BufferAttribute(base < 65536 ? Uint16Array.from(idx) : idx, 1));
+  g.addGroup(0, idx.length, 0); g.addGroup(0, idx.length, 1); // fill, then ink hull
+  g.boundingSphere = new THREE.Sphere(new THREE.Vector3(0, 0.25, 0), 0.6);
+  return (geoCache[name] = g);
 }
 
 /** Day key from the art bible §4.4 (sun ≈ 65°). The environment builder passes its own per phase. */
@@ -52,11 +66,13 @@ export const DAY_LIGHT = {
  * Full constructor (the contract's createCat wraps this).
  * Extra lab options: carry (tail-carriage override), silhouette (flat colour, for the strip test), seed.
  */
-export function createCatInternal({ cast = 'mikan', scale = 1.25, carry, silhouette = false, silColor = '#000000', seed = 1 } = {}) {
-  const style = CASTS[cast] || CASTS.mikan;
-  const A = assets[style.mesh];
-  if (!A) throw new Error('loadCatAssets() first');
-  const { json } = A, meta = json.meta, hs = meta.hs;
+export function createCatInternal(opts = {}) {
+  const { cast = 'mikan', scale = 1.25, carry, silhouette = false, silColor = '#000000', seed = 1 } = opts;
+  if (!manifest) throw new Error('loadCatAssets() first');
+  const style = resolveStyle(cast, opts);
+  const entry = style.entry;
+  if (!manifest.casts[entry]) throw new Error('unknown cat mesh entry ' + entry);
+  const json = manifest.casts[entry], meta = json.meta, hs = meta.hs;
 
   // ---- skeleton
   const bones = {}, list = [];
@@ -79,7 +95,8 @@ export function createCatInternal({ cast = 'mikan', scale = 1.25, carry, silhoue
     uTerm: { value: -0.06 },
     uHeadC: { value: new THREE.Vector3(...meta.headC) }, uSpineY: { value: meta.spineY },
     uCollarC: { value: new THREE.Vector3(...(meta.collar ? meta.collar.c : [0, -9, 0])) }, uCollarAx: { value: new THREE.Vector3(...(meta.collar ? meta.collar.axis : [0, 1, 0])) },
-    uEar: { value: new THREE.Vector3(style.ear.hw * hs, style.ear.h * hs, style.ear.tip * hs) },
+    uEar: { value: new THREE.Vector3(meta.earDims.hw * hs, meta.earDims.h * hs, meta.earDims.tip * hs) },
+    uHS: { value: hs }, uZF: { value: meta.zF }, uPattern: { value: style.pattern || 0 }, uSeed: { value: style.seed || 0 },
     uChin: { value: new THREE.Vector4(0, meta.headC[1] - 0.085 * hs, meta.headC[2] - 0.035 * hs, 0.07 * hs) },
     uFace: { value: faceTex }, uFaceRect: { value: new THREE.Vector4(meta.headC[0] + fr.x, meta.headC[1] + fr.y, fr.hw, fr.hh) },
     uFaceFrame: { value: 0 }, uFaceFrames: { value: FACE_FRAMES }, uFaceOn: { value: silhouette ? 0 : 1 },
@@ -92,11 +109,11 @@ export function createCatInternal({ cast = 'mikan', scale = 1.25, carry, silhoue
   const fill = new THREE.ShaderMaterial({ uniforms: U, vertexShader: fillVert, fragmentShader: fillFrag(style.glsl, colorNames) });
   const HU = {
     uRes: { value: new THREE.Vector2(1920, 1080) }, uLinePx: { value: 2 },
-    uPartLine: { value: [1, 1, 1, 0.8, 0.7, 1] }, uPull: { value: 0.6 }, uPullMax: { value: 0.016 }, uInk: { value: hexV(silhouette ? silColor : INK) },
+    uPartLine: { value: [1, 1, 1, 0.8, 0.7, 1, 0.7] }, uPull: { value: 0.6 }, uPullMax: { value: 0.016 }, uInk: { value: hexV(silhouette ? silColor : INK) },
   };
   const hull = new THREE.ShaderMaterial({ uniforms: HU, vertexShader: hullVert, fragmentShader: hullFrag, side: THREE.BackSide });
 
-  const mesh = new THREE.SkinnedMesh(A.geometry, [fill, hull]);
+  const mesh = new THREE.SkinnedMesh(entryGeometry(entry), [fill, hull]);
   mesh.add(bones.root);
   mesh.updateMatrixWorld(true);
   const skeleton = new THREE.Skeleton(list);
@@ -106,7 +123,7 @@ export function createCatInternal({ cast = 'mikan', scale = 1.25, carry, silhoue
   const group = new THREE.Group();
   group.name = 'cat:' + cast;
   group.add(mesh);
-  group.scale.setScalar(scale);
+  group.scale.setScalar(scale * (style.rank || 1)); // rank scale multiplies on top of the 1.25 cat scale
 
   // ---- whiskers (1 px ink lines on the head bone; kit: 3 per side, past the cheeks)
   let whiskers = null;
@@ -175,7 +192,7 @@ export function createCatInternal({ cast = 'mikan', scale = 1.25, carry, silhoue
   };
 
   const lookWorld0 = null; let lookWorld = lookWorld0; const lookLocal = new THREE.Vector3();
-  const anim = createAnimator(bones, { carry: carry || (cast === 'mikan' ? 'pom' : 'flag'), legLen: meta.legTop * scale, seed });
+  const anim = createAnimator(bones, { carry: carry || style.carry || 'flag', posture: carry || style.carry, legLen: meta.legTop * scale * (style.rank || 1), legRest: meta.legTop, seed });
 
   return {
     object3D: group,

@@ -20,12 +20,16 @@ const opt = {
   test: Q.get('test') === '1', mask: Q.get('mask'), post: Q.get('post') !== '0' && !['shade', 'albedo'].includes(Q.get('mask')), res: +(Q.get('res') || 1),
 };
 const app = document.getElementById('app');
-const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: opt.test, powerPreference: 'high-performance' });
+let renderer = null, startError = null;
 const dpr = opt.test ? 1 : Math.min(devicePixelRatio, 1.5);
-renderer.setPixelRatio(dpr * opt.res);
-renderer.setSize(app.clientWidth, app.clientHeight);
-renderer.info.autoReset = false;
-app.appendChild(renderer.domElement);
+try { // no WebGL (or a lost context) must surface as the error card, not a blank page
+  if (typeof THREE.WebGLRenderer !== 'function') throw new Error('three.js did not load');
+  renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: opt.test, powerPreference: 'high-performance' });
+  renderer.setPixelRatio(dpr * opt.res);
+  renderer.setSize(app.clientWidth, app.clientHeight);
+  renderer.info.autoReset = false;
+  app.appendChild(renderer.domElement);
+} catch (e) { startError = new Error('WebGL is not available (' + ((e && e.message) || e) + ')'); }
 
 /* ---------------------------------------------------------------- textures */
 const TEX = {
@@ -36,13 +40,19 @@ const TEX = {
   stains: { alpha: true }, groundbits: { alpha: true }, poster: { alpha: true }, manhole: { alpha: true }, vending: {}, aircon: {}, legs: { alpha: true }, townFar: { alpha: true },
 };
 const W = { mirror: THREE.MirroredRepeatWrapping, repeat: THREE.RepeatWrapping };
+const missing = [];
 async function loadTextures() {
   const loader = new THREE.TextureLoader(), out = {}, aniso = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+  // one missing or broken file must never stop the scene: warn and stand in a neutral 1x1 texture
   await Promise.all(Object.entries(TEX).map(([k, o]) => loader.loadAsync(`tex/${k}.webp`).then((t) => {
     if (o.wrap) t.wrapS = t.wrapT = W[o.wrap];
     if (o.wrapS) t.wrapS = W[o.wrapS];
     t.premultiplyAlpha = !!o.alpha; t.anisotropy = aniso; t.colorSpace = THREE.NoColorSpace;
     out[k] = t;
+  }).catch((e) => {
+    console.warn(`texture tex/${k}.webp failed to load; using a neutral stand-in`, e && e.message ? e.message : e);
+    const t = new THREE.DataTexture(new Uint8Array(o.alpha ? [0, 0, 0, 0] : [214, 204, 186, 255]), 1, 1);
+    t.needsUpdate = true; t.premultiplyAlpha = !!o.alpha; out[k] = t; missing.push(k);
   })));
   return out;
 }
@@ -179,6 +189,7 @@ function texMB() {
 
 /* ---------------------------------------------------------------- boot */
 async function boot() {
+  if (startError) throw startError;
   if (Q.get('card') === '1' || !opt.test) desktopCard(Q.get('card') === '1');
   const tex = await loadTextures();
   world = buildWorld(L, tex); world.tex = tex;
@@ -186,8 +197,10 @@ async function boot() {
   shadow = new SunShadow(2048, 21);
   post = new PaintPost(tex.grain);
   U.grainMap.value = tex.grain;
-  await loadCatAssets('');
-  mikan = createCat({ cast: 'mikan', scale: 1.25 }); sitter = createCat({ cast: 'wallSitter', scale: 1.25 });
+  try { await loadCatAssets(''); } catch (e) { console.warn('cat assets failed to load; casts that need them are skipped', e); }
+  const stub = () => ({ object3D: new THREE.Group(), update() {}, setGait() {}, setLighting() {}, setOutlineScale() {}, dispose() {} });
+  const cat = (cast) => { try { return createCat({ cast, scale: 1.25 }); } catch (e) { console.warn(`cat "${cast}" could not be built; skipped`, e); missing.push('cat:' + cast); return stub(); } };
+  mikan = cat('mikan'); sitter = cat('wallSitter');
   catRoots.add(mikan.object3D); catRoots.add(sitter.object3D);
   const [mx, my, mz, mr] = L.spawn.mikan; mikanPos.set(mx, my, mz); mikan.object3D.rotation.y = mr;
   const [sx, sy, sz, sr] = L.spawn.wallSitter; sitter.object3D.position.set(sx, sy, sz); sitter.object3D.rotation.y = sr;
@@ -201,7 +214,7 @@ async function boot() {
   else rig.update(0, mikanPos.clone(), true);
   step(0); if (opt.view !== '01') rig.update(0, mikanPos, true);
   window.__cat = {
-    state: () => ({ phase: phaseName, camera: cam.position.toArray().map((v) => +v.toFixed(3)), yaw: rig.yaw, pitch: rig.pitch, dist: +rig.dist.toFixed(3), mikan: mikanPos.toArray(), stats: { ...lastStats, texMB: texMB() } }),
+    state: () => ({ phase: phaseName, camera: cam.position.toArray().map((v) => +v.toFixed(3)), yaw: rig.yaw, pitch: rig.pitch, dist: +rig.dist.toFixed(3), mikan: mikanPos.toArray(), stats: { ...lastStats, texMB: texMB() }, missing: [...missing] }),
     step: (n = 1) => { for (let i = 0; i < n; i++) step(1 / 60); render(); },
     setPhase: (p) => { setPhase(p); render(); },
     lensCheck: () => {
@@ -234,8 +247,8 @@ async function boot() {
   let last = performance.now(), first = true;
   const loop = (now) => {
     const dt = Math.min(0.05, (now - last) / 1000); last = now;
-    step(dt); render();
-    if (first) { first = false; window.__ready = true; }
+    try { step(dt); render(); } catch (e) { console.error('frame failed:', e); failCard(e); return; }
+    if (first) { first = false; window.__ready = true; loading(false); }
     requestAnimationFrame(loop);
   };
   requestAnimationFrame(loop);
@@ -246,4 +259,24 @@ function hint() {
   d.style.cssText = 'position:fixed;left:16px;bottom:14px;max-width:calc(100% - 32px);padding:8px 14px;border-radius:999px;background:rgba(255,246,227,.88);color:#33273B;font:600 13px/1.3 ui-rounded,system-ui,sans-serif;pointer-events:none';
   document.body.appendChild(d);
 }
-boot().catch((e) => { console.error(e); });
+/* ---------------------------------------------------------------- loading and failure, always visible */
+function loading(on) {
+  let el = document.getElementById('scene-loading');
+  if (!on) { if (el) el.remove(); return; }
+  el = document.createElement('div'); el.id = 'scene-loading'; el.setAttribute('role', 'status');
+  el.textContent = 'Loading the lane…';
+  el.style.cssText = 'position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);padding:12px 24px;border-radius:999px;background:#FFF6E3;color:#33273B;border:3px solid #6B4A35;font:700 18px/1.2 "M PLUS Rounded 1c",ui-rounded,system-ui,sans-serif;z-index:40';
+  document.body.appendChild(el);
+}
+function failCard(e) {
+  loading(false);
+  const reason = String((e && e.message) || e || 'unknown error').split('\n')[0].slice(0, 160);
+  const el = document.createElement('div'); el.id = 'scene-error'; el.setAttribute('role', 'alert');
+  el.style.cssText = 'position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;background:#FFF6E3;z-index:60;font-family:"M PLUS Rounded 1c",ui-rounded,system-ui,sans-serif';
+  el.innerHTML = '<div style="box-sizing:border-box;width:min(100%,460px);background:#FFF6E3;color:#33273B;border:4px solid #6B4A35;border-radius:28px;padding:22px;text-align:center;box-shadow:0 6px 0 #6B4A35"><h2 style="margin:0 0 8px;font-size:26px">Couldn\u2019t load the scene</h2><p style="margin:0 0 16px;font-size:17px;line-height:1.4"></p><button type="button" style="font:inherit;font-weight:700;font-size:17px;background:#6B4A35;color:#FFF6E3;border:0;border-radius:999px;padding:11px 24px;min-height:44px;cursor:pointer">Try again</button></div>';
+  el.querySelector('p').textContent = reason;
+  el.querySelector('button').addEventListener('click', () => location.reload());
+  document.body.appendChild(el);
+}
+if (!opt.test) loading(true);
+boot().catch((e) => { console.error('scene failed to start:', e); failCard(e); });

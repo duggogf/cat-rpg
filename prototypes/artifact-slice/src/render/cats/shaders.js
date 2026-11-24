@@ -25,7 +25,7 @@ export function fillFrag(coatGlsl, colorNames) {
   return /* glsl */`
   ${VARY}
   uniform vec3 uKeyDir; uniform vec3 uLitMul; uniform vec3 uShadeMul; uniform float uTerm;
-  uniform vec3 uHeadC; uniform float uSpineY; uniform vec3 uCollarC; uniform vec3 uCollarAx; uniform vec3 uEar; uniform vec4 uChin;
+  uniform vec3 uHeadC; uniform float uSpineY; uniform float uHS; uniform float uZF; uniform float uPattern; uniform float uSeed; uniform vec3 uCollarC; uniform vec3 uCollarAx; uniform vec3 uEar; uniform vec4 uChin;
   uniform sampler2D uFace; uniform vec4 uFaceRect; uniform float uFaceFrame; uniform float uFaceFrames; uniform float uFaceOn;
   uniform sampler2D uEyes; uniform vec3 uEyeC[2]; uniform vec3 uEyeAx[2]; uniform vec3 uEyeT[2]; uniform float uEyeHalf;
   float vP; // part with legs (5) folded into body (0) for the coat functions

@@ -6,7 +6,13 @@
 //   await loadCatAssets(baseUrl)           -> resolves when meshes/atlases are loaded ('' = same folder)
 //                                             fetches `${baseUrl}mesh/<cast>.json|.bin` (build copies assets/mesh -> dist/mesh)
 //   createCat({ cast, scale })              -> Cat
-//       cast:  'mikan' | 'wallSitter'       (more casts later: 'daifuku', 'togemaru', ...)
+//       cast:  'mikan' | 'wallSitter' | 'hige' | 'pon' | 'kinako' | 'togemaru' | 'kagi' | 'daifuku' | 'tough'
+//              'tough' takes extra options (all optional; ADDITIONS, same signature):
+//                coat (COATS key | hex | {base, white, patch, patch2}), pattern (solid|bicolour|tabby|patched|
+//                pointed|tuxedo|saddle), tail (whip|plume|ringed|stub), ears (standard|tall|round),
+//                build (round|standard|long), eye, expr (neutral|smug|angry|happy|sleepy|shock),
+//                personality (braggart|stalwart|goofball|schemer|brooder|fraidy) or carry, rank, seed
+//              Rank scale (Captain 1.15, Daifuku 1.6, Pon 0.9) multiplies on top of `scale`.
 //       scale: world scale multiplier (art bible: 1.25 x real cat size; 1.0 = real size)
 //   Cat.object3D                            THREE.Object3D, origin at the feet, faces +Z
 //   Cat.update(dt)                          advance animation (dt in seconds, sim time)
@@ -27,8 +33,8 @@ import { loadCatAssets as load, createCatInternal } from './cat.js';
 
 export async function loadCatAssets(baseUrl = '') { return load(baseUrl); }
 
-export function createCat({ cast = 'mikan', scale = 1.25 } = {}) {
-  const c = createCatInternal({ cast, scale });
+export function createCat({ cast = 'mikan', scale = 1.25, ...rest } = {}) {
+  const c = createCatInternal({ ...rest, cast, scale });
   return {
     object3D: c.object3D,
     update: (dt) => c.update(dt),
