@@ -457,7 +457,7 @@ Rounding is to the nearest integer, .5 up, at the end of each formula. Every `rn
 | `ΔG` | int | 0–35 | Grudge change (before any override) |
 | `ΔR` | int | −15 to +50 | Regard change |
 
-**Output range:** ΔG is 0–35 (a Braggart Keeper Ambushed, Fear-hit and Pile-On'd: Σg = 21, × 1.2 = 25; the cap bites only for multi-item later encounters at 20). ΔR runs from −15 (a Fraidy that wins a wipe after an Ambush and a Fear hit: (−10 −3 −2) × 1.0) to +50 (a Stalwart with a clean win and a Nose-Touch: (8 + 25) × 1.5 = 49.5 → 50).
+**Output range:** ΔG is 0–25 in practice, under the 35 / 20 cap. The largest raw input is a Braggart Keeper that is Ambushed, Fear-hit and Pile-On'd: Σg = 6 + 3 + 3 + 3 + 6 = 21, × 1.2 = 25.2 → 25, which the 20 cap holds to 20 from its third encounter. ΔR runs from −15 (a Fraidy that wins a wipe after an Ambush and a Fear hit: (−10 −3 −2) × 1.0) to +50 (a Stalwart with a clean win and a Nose-Touch: (8 + 25) × 1.5 = 49.5 → 50).
 **Worked example:** Togemaru, L1 D2 (Keeper of Laundry Pole Yard, clean Pile-On): Σg = 6 + 3 + 6 = 15, × 1.2 = 18 → G_pending 25 + 18 = **43**.
 
 ### F2. Nightly drift
@@ -602,7 +602,7 @@ On a marking act: `A ← min(100, A + 5·n_over + 15·n_counter)`. Each night: `
 | Verdict shares, mixed (availability-weighted) | chase 47 · humble 9 · recruit 5 · nose 39 | **chase 49 · recruit 7 · nose 43** | Recruit is rare because only 3 slice cats are recruitable |
 | Nose-Touch gate open | (roll: 43–57% accepted) | **100%** of slice Verdicts (lose40: 91%) | Slice Grudge stays low; the gate starts to bite only after wipes or Ambush-heavy play (Backlog) |
 | Join-ins per slice (mean; runs with ≥ 1) | — | chase 0; recruit 0.09 (9%); mixed 0.18 (17%); **pacifist 0.38 (34%)**; lose40 0.06 (5%) | 39–43% of join opportunities succeed. 30 days: pacifist 1.63 per run (84% of runs) |
-| Lane cats discovered by slice end (mean / present) | — | **7.7–9.7 of 9.5–11.7 (76–91%)** | Sniff success 0.25 / 0.5 / 0.75 → 8.1 / 9.1 / 9.7 of 10.8 (mixed); 1.1–2.7 silhouettes left |
+| Lane cats discovered by slice end (mean / present) | — | **7.7–9.7 of 9.5–11.7 (81–91%)** | Sniff success 0.25 / 0.5 / 0.75 → 8.1 / 9.1 / 9.7 of 10.8 (mixed); 1.1–2.7 silhouettes left |
 | Bosses discovered | — | **Daifuku: 97–100%** (the L1D2 prompt); the 4 uphill crowns stay silhouettes by design | |
 | Boss anger: peak / at the first Daifuku fight | — | **quiet:** peak Riled 94%; Calm at the fight 100% · **typical:** peak Seething 51%, Furious 13%; at the fight Riled 53%, Seething 34% · **loud:** Furious 84%; Seething at the fight 92% | Anger tracks the sneak-versus-loud choice; the decay means nobody is Furious *at* the fight unless he marks loudly the same day |
 | Challengers | — | **0.98 per slice**, first arrival median **night 5** (L2D4 Sniff); lose40 0.68 | 30 days ≈ 6.9 per district |
@@ -781,7 +781,7 @@ On a marking act: `A ← min(100, A + 5·n_over + 15·n_counter)`. Each night: `
 | Town-event gap | 2–3 nights | ruled | — |
 | Town-event weights (newcomer / scuffle) | 3 / 2 | 1–4 each | Mix of new faces and plasters |
 | Kin seeding | p 0.15 per pair, ≤ 1 per cat | 0.1–0.25 | — |
-| Sniff-to-discover | 1.0 s within 10 m | 0.5–1.5 s / 6–12 m | Discovery pace (sim: 76–91% of Lane cats by slice end) |
+| Sniff-to-discover | 1.0 s within 10 m | 0.5–1.5 s / 6–12 m | Discovery pace (sim: 81–91% of Lane cats by slice end) |
 | F7 base / Pile-On / 2nd Rout | 0.35 / 0.15 / 0.50 | 0.2–0.5 / 0–0.25 / fixed | Scar frequency |
 | `p_ambush_day` | 0.5 | 0.3–0.7 | Rival Ambush frequency (≤ 1/day fixed) |
 | Lead presence | ≥ 1/day from L2 D1 until his arc closes | fixed | — |
@@ -812,7 +812,7 @@ On a marking act: `A ← min(100, A + 5·n_over + 15·n_counter)`. Each night: `
 11. Share of Seated Rivals at Grudge ≥ 75, averaged over Life 2 nights: **≤ 15%** for every policy. *(Sim: 0.0%.)*
 12. Town events per district-night 0.33–0.5. *(Sim: 0.43–0.44.)*
 13. Challengers: the first arrives on night h + 2 (reference path: night 5, the L2D4 Sniff); ≤ 1 active per district at all times; Repelled twice → `Gone`. *(Sim: median night 5; 0.98 per slice.)*
-14. **Discovery:** at sniff success 0.5, Daifuku is discovered by slice end in ≥ 95% of seeds and ≥ 75% of present Lane cats are discovered. *(Sim: 97–100%; 76–91%.)*
+14. **Discovery:** at sniff success 0.5, Daifuku is discovered by slice end in ≥ 95% of seeds and ≥ 75% of present Lane cats are discovered. *(Sim: 97–100%; 81–91%.)*
 15. **Anger tracks the marking style:** a quiet player meets a Calm Daifuku in ≥ 90% of seeds; a loud player meets him Seething or Furious in ≥ 90%. *(Sim: 100%; 92%.)*
 16. **Join-ins:** ≥ 25% of Nose-Touch-first runs see ≥ 1 join-in inside the slice; join success per opportunity is 35–65%. *(Sim: 34%; 39–43%.)*
 17. **Arc achieved** is reported per policy each re-sim (not gated; A-10). *(Sim: 0 / 0 / 5 / 15 / 41%.)*
@@ -862,6 +862,9 @@ On a marking act: `A ← min(100, A + 5·n_over + 15·n_counter)`. Each night: `
 - **(Owner feedback pass, counsel)** The residual enemy-selection items and G10 watch items in §6.4; a defector-targeted boss line only if counsel clears it (§3.18).
 - **(Owner feedback pass)** Betrayal rate (OR-11: 0% reference, ≤ 10% neglect) is simulated by Crew's sim, not this one.
 - **(Iteration 3, Combat)** Togemaru is a Scrapper (resists Claw ×0.8): check in the combat prototype that a Life 1 kitten can beat him; reconcile Combat's "+15% Nerve" Strength with §3.9's slice list.
+- NS-C10: the Holdout naming split with Territory.
+- Wall Watch: the **victor** of a wipe sits on the wall opposite Haru's gate the next morning (victor only, G1/G8).
+- **(Iteration 3, still open)** Deadline Declarations: 78–86% of declared Togemarus are declared at the deadline, many with < 3 encounters. Playtest whether they read as earned.
 - **(Iteration 3)** Rival Ambush budget: this doc's ≤ 1 per day sits inside Day Loop §3.7's ceiling (≤ 2 per day). Keep them aligned when Life 3+ budgets are set.
 
 ## Revision Log
@@ -977,7 +980,7 @@ On a marking act: `A ← min(100, A + 5·n_over + 15·n_counter)`. Each night: `
 | OR-21 (delete list) | IMPLEMENTED | Items 1–6, 9, 10, 13, 14 removed throughout (Undermark, Humbled, simmer, Restless, uprisings, the Down card, snubs, F4 roll, 5-day truce, Away/F5/Grand Standoff, loss promotion, Mark Over, Snatch, seats, the Fence Line, `RivalRankChanged` / `WallEvent`, re-naming, Recruit greyed for the Nemesis, Stewing, gossip, `pretender`, `boss_orders`, "betrayal unreachable", Botan's Humble, the L1D1 Verdict branch, "never leaves his wall") |
 | §2 write list: v2 patent appendix | IMPLEMENTED | §6.4 rewritten: cites v2, G1–G12 adopted, per-feature claim-element table (observations only), OR-19 residuals with sim figures, counsel review still blocking |
 | §2 write list: new ACs | IMPLEMENTED | AC 4 (≤ 60%; ≥ 70% use ≥ 2), AC 9 (exactly one record, 100%), AC 26–29 (unit and counterfactual tests that a join-in, Verdict, loss or anger change touches only its subject; anger never moves on a fight) |
-| §2 re-sim: DR-57 policies; lose-40 under OR-01/02 | DONE | Humble policy replaced by Recruit. Key outputs: Life 1 memory line 100%; one Nemesis record 100% (declared chase 0 / recruit 0 / mixed 37 / pacifist 100 / lose40 29%); arc achieved 0/0/5/15/41% (was 100/100/89/100/80); join-ins pacifist 0.38 per slice (34% of runs); Daifuku discovered 97–100%, Lane cats 76–91%; anger at the Boss fight Calm 100% (quiet), Riled 53% (typical), Seething 92% (loud); 0 invariant violations in ≈ 51,300 checks |
+| §2 re-sim: DR-57 policies; lose-40 under OR-01/02 | DONE | Humble policy replaced by Recruit. Key outputs: Life 1 memory line 100%; one Nemesis record 100% (declared chase 0 / recruit 0 / mixed 37 / pacifist 100 / lose40 29%); arc achieved 0/0/5/15/41% (was 100/100/89/100/80); join-ins pacifist 0.38 per slice (34% of runs); Daifuku discovered 97–100%, Lane cats 81–91%; anger at the Boss fight Calm 100% (quiet), Riled 53% (typical), Seething 92% (loud); 0 invariant violations in ≈ 51,300 checks |
 | Arc-achieved collapse | DEFERRED (creative director, A-10) | A direct consequence of OR-14/OR-15 as written; lever simulated (greeting counts: pacifist 46%), not adopted |
 | Nose-Touch effectively free in the slice | DEFERRED (Backlog) | Gate open on 91–100% of slice Verdicts; playtest AC 4 decides |
 | Interpretations | NOTED | A-8 (newcomers join as Toughs), A-9 (anger counts only the Boss's own Clowder's objects), A-11 (L1D2 sniff prompt), A-12 (truce-end challenger target). The challenger Rival-tag pool (non-Gone, non-Crew) is implemented as ruled and listed as a counsel residual with an alternative |
