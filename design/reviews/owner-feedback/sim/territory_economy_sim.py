@@ -23,6 +23,8 @@ Successor to round-3 `posting_stakes_sim.py` (copied, then updated).  Encodes
             (`challenge`, leader + 1 Stray, motive_mod 1.10, counters Schemer and Brooder);
             Lost -> it is the Keeper; Repelled twice -> Gone; Routed by day -> Verdict, Gone.
   OR-19/21  `boss_orders` -> `gang_orders`; `pretender` and `uprising` deleted.
+  Crew 2026-11-24: no "none" Bribe from Life 2 (Recruit always costs Morsels); a player who does not pay
+            for Kagi gives another Verdict and has no Schemer.
 
 Players: engaged reference (Day Loop path: Daifuku lost on L2D4, claimed on L2D5), posting
 variants (best / habit / random / none), casual, and exploit seekers (sleep-skip, rub-skip,
@@ -220,9 +222,8 @@ def run(pol, seed, days=7):
                     held[p] = 70; del other[p]; visited.add(p); claimed_today.add(p); extra_loot += 3
             if d in claims and claims[d] not in held and pol["wins"](d):
                 p = claims[d]; held[p] = 70; other.pop(p, None); visited.add(p); claimed_today.add(p)
-                if p == "TSS" and "Kagi" not in crew:
-                    if pol["bribe"] and stash >= 96: stash -= 96; row["spend"] += 96; bribed = True
-                    crew.append("Kagi")
+                if p == "TSS" and "Kagi" not in crew and pol["bribe"] and stash >= 96:   # no free Bribe from Life 2
+                    stash -= 96; row["spend"] += 96; bribed = True; crew.append("Kagi")
             for p in list(held):
                 if (pol.get("visit_only") is None or p in pol["visit_only"]) and prng.random() < pol["visit_p"]:
                     visited.add(p)
@@ -350,7 +351,7 @@ ENGAGED = dict(claims={1: "LWC", 2: "LPY", 3: "PA", 5: "TSS"}, wins=lambda d: Tr
                field_mult=1.0, caches=True, post=post_best, posts=True, fight_ch_p=0.7, retake_p=1.0,
                boss_win_on=2, boss_from=6, presence=lambda d: d == 4)
 CASUAL = dict(ENGAGED, claims={1: "LWC", 2: "LPY", 4: "PA", 6: "TSS"}, share=lambda d: d % 2 == 0,
-              lesson_days=(5, 8), bribe=False, visit_p=0.6, spray_p=0.5, field_mult=0.75, post=post_random,
+              lesson_days=(5, 8), bribe=True, visit_p=0.6, spray_p=0.5, field_mult=0.75, post=post_random,
               fight_ch_p=0.3, retake_p=0.5, boss_from=1, presence=lambda d: False)
 SLEEP_SKIP = dict(ENGAGED, claims={1: "LWC", 2: "LPY"}, share=lambda d: False, lesson_days=(), bribe=False,
                   goes_out=lambda d: d <= 2, posts=False, boss_win_on=None, fight_ch_p=0.0, retake_p=0.0)

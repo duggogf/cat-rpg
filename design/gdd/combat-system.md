@@ -619,19 +619,19 @@ Cowed on a recruit:  D_out = D × cowed_dmg ; AI target set excludes old_boss_id
 
 | System (doc) | Direction | Contract |
 |---|---|---|
-| Nemesis (`nemesis-system.md`) | ← reads | `RivalCombatProfile` (level, style, personality, moves, strengths, fears, title, scars, `flee_threshold`); Memory query for Old Score; leader levels per §3.12; Daifuku's trait kit must not include "cannot be knocked off" |
-| Nemesis | → emits | `EncounterStarted`, `CatRouted` (incl. `by_back_down`, `by_pile_on`), `FearTriggered` (incl. `source = tell`), `EncounterEnded`; Verdict hold at the ring edge |
-| Crew & Progression (`crew-and-progression.md`) | ← reads | Stat curves `N_ref`, `S_ref`; per-cat stats; learnsets by `move_id`; Mikan's ≤ 2 cross-Style Moves; bonded/clashing pairs; Zoomies unlocks (Mikan Life 2 day 3, Crew Lv 6). Crew's personality sheets point to §3.11 for every combat value |
+| Nemesis (`nemesis-system.md`) | ← reads | `RivalCombatProfile` (level, style, personality, moves, strengths, fears, title, scars, `flee_threshold`; **+ `anger_stage`** on a Boss; on Crew cats **`old_gang_nerves`, `old_boss_id`** (from the cat's own Memory) and **`kin_ids`**, OR-20); `AngerChanged` (read at fight start only); `AllyJoined(cat_id, encounter_id)` (the guest, §3.14); Togemaru's Life 1 day 1 uninterruptible flee flag; Memory query for Old Score; leader levels per §3.12; Daifuku's trait kit must not include "cannot be knocked off"; his patrol-stop placement (Nemesis places, Territory opens the window) |
+| Nemesis | → emits | `EncounterStarted`, `CatRouted` (incl. `by_back_down`, `by_pile_on`), `FearTriggered` (incl. `source = tell`), `EncounterEnded(outcome ∈ {win, loss, player_fled, rival_fled})` (Nemesis spends anger on win, loss, `rival_fled`; writes the victor's `WON` and Title on a loss; +5 Regard to a joiner on a win); Verdict hold at the ring edge. **Combat never changes any cat's record; it reports outcomes** |
+| Crew & Progression (`crew-and-progression.md`) | ← reads | Stat curves `N_ref`, `S_ref`; per-cat stats; learnsets by `move_id`; Mikan's ≤ 2 cross-Style Moves; bonded/clashing pairs; Zoomies unlocks (Mikan Life 2 day 3, Crew Lv 6). Crew's personality sheets point to §3.11 for every combat value; **Loyalty for the Sworn check on Old Gang Nerves (§3.5); two Kin in the Crew are a bonded pair (§3.3)** |
 | Crew | → emits | `MoveUsed`, `TagIn`, `EncounterEnded` (XP, Loyalty "Routed in a lost fight") |
-| Territory & Economy (`territory-management.md`) | ↔ | `raid_defence` opener with Sentries as allied AI; `EncounterEnded` for loot; no prices here |
-| Day loop (`day-loop.md`) | ← reads | Well-Fed flag (DR-20); phase for Night Rivals; Combat pauses the clock |
+| Territory & Economy (`territory-management.md`) | ↔ | `raid_defence` opener with Sentries as allied AI; `EncounterEnded` for loot; no prices here. **No combat outcome moves Scent or influence** (G5: the presence rule and "fight to clear, spray to claim" are Territory's); `BossWindowChanged` decides whether Daifuku can be fought at all |
+| Day loop (`day-loop.md`) | ↔ | Reads the Well-Fed flag (DR-20), the phase (Night Rivals; Daifuku's stop) and pauses the clock. **Hands it the loss:** `EncounterEnded(outcome = loss)` after the Gloat; Day Loop jumps the clock to Night, closes the street and sends Mikan home (§3.6 there). Tutorial fights cannot wipe |
 | Camera (`camera-system.md`) | → requires | Combat state (6–8 m, framing the controlled cat + lock target + active telegraphs), Slow Blink view, cinematic cuts for the Standoff, Pile-On, Zoomies and phase breaks; the reduced-shake option |
-| UX (`ux/hud.md`) | → requires | The control map (DR-08) with this doc's actions; Slow Blink menu; Frazzle bar on the enemy with 5 pips; identity ribbon for named enemies; edge arrows; Pile-On prompt; beat sheet (§3.16) |
+| UX (`ux/hud.md`) | → requires | The control map (DR-08) with this doc's actions; Slow Blink menu; Frazzle bar on the enemy with 5 pips; identity ribbon for named enemies; edge arrows; Pile-On prompt; beat sheet (§3.16); **the guest plate and truce-sprig tick for a join-in ally; the Cowed flinch and "steeled" read on a Posse plate; the Boss's Fired Up read (steam puffs on his ribbon) and its doused state** |
 | Art (`art/art-bible.md`) | → requires | Drawings for every row of §3.17; telegraph decals and glyphs; 6 personality animation sets including Pile-On flourishes; Tag-In strikes (3 Styles); lettering sets |
 | Audio (`audio/sound-bible.md`) | → requires | Cues per tier, the §3.17 cue timing list, 8 bark intents, a Rival yowl-sting for Ambush |
 | Accessibility (`design/accessibility-requirements.md`) | ↔ | Mirrors the safety rules; Reduce Flashes and Reduce Motion; remapping; hold toggles |
 | Narrative (`dual-story-progression.md`) | ← reads | Life 1 beats (DR-22); Life 8 Carry AI fill (Backlog) |
-| Level design | → requires | Arena anchors (≈ 10 m ring, ≥ 2 props, a High Road ledge); Daifuku's 3-phase arena with bucket refills |
+| Level design | → requires | Arena anchors (≈ 10 m ring, ≥ 2 props, a High Road ledge); **Daifuku's arena kit at each of the three patrol stops** (Laundry Pole Yard yard wall + wash tub, Tofu Shop back wall + rain barrel, the Den corner stone + bucket): knock-off edge, water prop with refills, noise prop, ledge junk, crumbling ends, wave entries |
 
 ## 7. Tuning Knobs (`assets/data/combat/*`)
 
@@ -666,6 +666,16 @@ Cowed on a recruit:  D_out = D × cowed_dmg ; AI target set excludes old_boss_id
 | `pounce_windup` | +0.5 MV/s, +10 FZ/s, 3 s cap | — | Feel | Rewards waiting on a wall |
 | `zoomies_dmg_cap`, `zoomies_per_frazzle` | 40, 10 | — | Curve | About 1 Zoomies per 2 fights |
 | Feel table rows (§3.17) | as listed | safety caps | Feel | DR-07; safety limits are not knobs |
+| `fu_dmg`, `cowed_dmg` (the existing statuses) | 1.25, 0.75 | 1.15–1.4, 0.6–0.85 | Curve | OR-20: Combat owns the values. At 1.25, Furious adds ≈ 8 points of Posse Nerve lost at the median (F9, F11) |
+| `anger_fu_s` (Riled / Seething / Furious) | 20 / 40 / whole fight | 10–30 / 30–60 / fixed | Gate | OR-07 tiers; a wider spread makes loud marking costlier |
+| `anger_fu_pause_under_status` | true | bool | Gate | False lets the first bucket end a Riled buff; true keeps a tier's seconds honest (F11) |
+| `nerves_s` (default / Fraidy) | 20 / 30 | 10–30 | Feel | OR-06. Unanswered cost ≤ 5 s on Daifuku (F9), so it is a beat, not a tax |
+| `nerves_loyalty_ceiling` | 80 (Sworn) | 60–80 | Gate | Below it, a susceptible recruit flinches |
+| `guest_entry_yowl_s` | 3 | 2–4 | Feel | OR-13: the join-in's arrival tell |
+| `guest_ai_fill` | = `ai_fill` | 0–`ai_fill` | Curve | Guests spend only on `auto` Pay-offs; 0 makes them string-only (the sim's assumption) |
+| `kin_posture_m` | 4–6 | 3–8 | Feel | Where a Kin AI cat waits when its Kin is the only target |
+| `thorn_d1_flee_pct` | 0.25, uninterruptible | fixed | Gate | OR-14.5: the first Verdict is always day 2's |
+| `boss_phase_cap` | 3 (slice) · 1 (showcase bout) | 1–3 | Gate | IMPLEMENTATION-PLAN's optional bout; the slice always runs 3 |
 
 ## 8. Acceptance Criteria
 
@@ -696,6 +706,18 @@ Cowed on a recruit:  D_out = D × cowed_dmg ; AI target set excludes old_boss_id
 18. ≥ 70% of testers can say, unprompted, how one Crew cat "fights differently" (personality reads).
 19. ≥ 60% knock Daifuku into the bucket at least once without a hint after the first knock-off.
 
+**Owner feedback pass (functional unless marked):**
+20. **Loss hand-off:** a Posse wipe produces exactly one `EncounterEnded(outcome = loss)` after the Gloat (≤ 3 s), and Combat writes nothing to any cat's record. Unit test: across 1,000 seeded wipes, the only Nemesis records that differ from before the fight are the **victor's** (`WON` entry, Title if none, Boss plaster) and the Routed Posse cats' own Loyalty step-1 delta; no other cat's level, role, Memory, Grudge or lines change. Scram and `rival_fled` never produce `loss`; Life 1 tutorial fights never reach it.
+21. **Fired Up from anger:** at the end of the Standoff a Boss at Riled / Seething / Furious carries Fired Up for 20 s / 40 s / the whole fight (± one frame of buffed time outside Soggy windows), and a Calm Boss none. No Tough, wave cat or guest ever reads `anger_stage` (static check on AI inputs). Soggy pauses the anger timer and the buff resumes after it.
+22. **Anger spend:** with the Boss in the fight, anger resets to 0 on `win`, `loss` and `rival_fled`, and is unchanged on `player_fled` (integration test with Nemesis). Unit test: no combat event ever *raises* anger.
+23. **Old Gang Nerves:** a recruit with `old_gang_nerves` = true and Loyalty < 80 is Cowed for 20 s (Fraidy 30 s) from `t_seen`; its AI never selects `old_boss_id` while Cowed; a Tag-In to it clears the status within one frame; a plain switch does not. A resisting or Sworn recruit is never Cowed this way. **The Old Boss's AI inputs contain no Posse-membership or recruit field** (static check), and his Standoff line is chosen identically with and without his ex-member present (seeded comparison).
+24. **Join-in guest:** on `AllyJoined` the guest enters 3 s after its yowl (or after its Rival's wave enters), cannot be switched to, commanded or included in a Pile-On, counts toward the 10-combatant cap, and leaves at `EncounterEnded`. **The opposing Rival's AI, targeting weights, buffs and line selection are bit-identical in seeded runs with and without the guest** apart from the guest's presence as a valid target like any Posse cat.
+25. **Kin:** an AI-controlled Crew cat never selects an opponent in its `kin_ids`; the player can switch to it and hit that opponent; one `kin` bark per encounter.
+26. **Daifuku anywhere on the patrol:** the full 3-phase fight completes on each of the three stop kits (build check: knock-off edge, water prop with refills, noise prop, ledge junk, wave entries present at every stop). No Standoff is offered while `BossWindowChanged(open = false)`.
+27. **Togemaru, Life 1 day 1:** his encounter always ends `rival_fled` at 25% Nerve; no input (Hiss, hit, Frazzle, Splat) delays it.
+28. *Sim:* Daifuku at the median stays inside 2–3 min at every anger stage, his rematch at −10% inside it, and Posse Nerve lost inside 50–80% at every stage (sim 52–61%; poor dodging ≤ 80%). A Cowed recruit, unanswered, adds ≤ 10 s. Re-run on any change to `fu_dmg`, `anger_fu_s` or `nerves_s`.
+29. *Playtest:* ≥ 70% of testers who see a recruit flinch Tag it in within its 20 s at least once in the slice; ≥ 60% who get a join-in can say afterwards which cat helped them and why ("the one I spared").
+
 ---
 
 ## Assumptions for creative-director review
@@ -703,7 +725,10 @@ Cowed on a recruit:  D_out = D × cowed_dmg ; AI target set excludes old_boss_id
 - A1. **Damage numerals:** resolved by presentation ruling R3: Off by default in the slice, Options toggle Off / Big hits / All (§3.17).
 - A2. "Normal encounter" means a threat budget of 4–6. Roaming skirmishes of 2–3 are allowed to run 18–28 s (sim, F9).
 - A3. The Pile-On "earlier is worth more" coefficient (k = 1.0) is stated together with the Paw-dump trade-off, so the choice stays non-trivial.
-- A4. The Daifuku phase arena (bucket refills, scooter horn, crumbling wall top) is a request to Level and Nemesis. His Fear is Nemesis's choice. The fight does not require it.
+- A4. The Daifuku arena kit (wall edge, water prop with refills, noise prop, ledge junk, crumbling wall top), now needed at **each of his three patrol stops** (OR-09), is a request to Level and Nemesis. His Fear is Nemesis's choice. The fight does not require it.
+- A5. *(Owner feedback pass)* Anger's Fired Up **pauses under a newer status** instead of being replaced (§3.5). The one-status rule would otherwise let the first bucket end a Riled buff after ≈ 8 s and make the tiers unreadable. Creative-director to confirm; the knob `anger_fu_pause_under_status` reverts it.
+- A6. *(Owner feedback pass)* The join-in guest uses the `raid_defence` guest rules plus one bias of its own (it prefers its own Rival as a target). The bias is keyed to the joiner's own tag (G7). Counsel watch item under '303 (G10), held, not redesigned.
+- A7. *(Owner feedback pass)* Plain switches do not clear the Cowed flinch; only a Tag-In does (the ruling's "conducting moment").
 
 ## Backlog (post-slice)
 
@@ -733,6 +758,11 @@ Cowed on a recruit:  D_out = D × cowed_dmg ; AI target set excludes old_boss_id
 - B-23 · C-10 adopt Crew's old Stalwart idea (step into white telegraphs aimed at the controlled cat) if the Stalwart reads weakly.
 - B-24 · C-11 slice body ≈ 57 KB vs 50 KB target (move rumble/punch-in rows to data, trim log).
 - B-25 · Presentation backlog: Pile-On prompt word (Combat §3.17, first 3 showings) vs HUD §4.1 hint card; pick one. Hit-stop 0% option shipping only once fairness is confirmed.
+- *From the owner feedback pass (2026-11-24):*
+- B-26 · **Held for counsel (OR-06):** a line-only, Boss-voiced taunt aimed at his ex-member. Restore only if counsel clears it; until then the Old Boss's lines never read the Posse.
+- B-27 · Rival personality AI for **join-in guests** beyond the own-Rival bias (with B-22).
+- B-28 · Boss anger for Madam Sabi, Oboro, Ikari (same F11 tiers; their kits are B-10).
+- B-29 · A variance model for the Daifuku sim (bursty damage, controlled-cat Routs) so the wipe rate, not just the expected-value wipe line, can be read per anger stage.
 
 ## Revision Log
 
@@ -810,3 +840,22 @@ Cowed on a recruit:  D_out = D × cowed_dmg ; AI target set excludes old_boss_id
 - Presentation shake note **FIXED** · §3.17 rule 3 now one model: stepped patterns summed and clamped at 1.8%; the separate trauma curve is gone.
 - Teaching ladder (§3.16): Zoomies and Mikan's unlock on Life 2 day 3; Lessons the same day; Den from Life 2 day 4. §3.7 cites Crew's unlocks (C-12 part).
 - Backlog: C-1, C-3–C-11 and two presentation notes moved to B-15–B-25. C-2 resolved by the retune above.
+
+**2026-11-24 — Owner feedback pass (2026-11-24)** (`design/reviews/user-comments-2026-11-24.md` C1–C5 via `design/reviews/owner-feedback-rulings.md`; guardrails `design/legal/nemesis-patent-analysis.md` v2 §5; brief v1.5). Re-sim: `design/reviews/owner-feedback/sim/combat_slice_sim.py` → `combat_slice_sim.out.txt` (before: `combat_slice_sim.before.out.txt`; every round-2 figure reproduces unchanged).
+
+| Ruling | Status | Where / how |
+|---|---|---|
+| OR-01 A loss ends the day | IMPLEMENTED | §3.14 `loss`: Combat ends at the Gloat and hands the day to Day Loop §3.6 (clock to Night, street closed, walk home); Scram and `rival_fled` are not losses; tutorial fights cannot be lost; §6 Day loop row; AC 20 |
+| OR-02 Only the victor changes | IMPLEMENTED | §3.14, §6: victor's `WON`, Title and Boss plaster only (Nemesis writes them); Combat writes no record; AC 20 unit test. Promotion references: none were left in this doc |
+| OR-05 Relationship effects | IMPLEMENTED (Combat's rows) | §3.11 Kin rule (AI never targets its own Kin; player can drive it in; one `kin` bark); the join-in's Rival unchanged (§3.14); edge 36; AC 25. Boss/Gang and feud scuffles are not Combat's |
+| OR-06 Old Gang Nerves | IMPLEMENTED | §3.5 (Cowed 20 s, Fraidy 30 s; Loyalty < 80; resist Braggart/Stalwart/Brooder; AI won't target the Old Boss; a Tag-In clears it, a plain switch does not), §3.11, §3.13 slice halves (Hige, Togemaru resist; Kagi flinches), F11, edges 27–30, AC 23. The Old Boss reads nothing about the Posse. Sim: +0.6 s answered, +4.3 s unanswered |
+| OR-07 Boss anger → Fired Up | IMPLEMENTED | §3.5, §3.13, F11: Riled 20 s / Seething 40 s / Furious all fight, Boss only; spent on win, loss, `rival_fled`, not on Scram (§3.14); Soggy pauses it (A5). Sim: fight length 175.5 s at every stage; Posse Nerve lost 52 → 54 → 56 → 61% (median); EV wipe line 95% → 83% landed |
+| OR-09 Roaming Boss / patrol kit | IMPLEMENTED | §3.13: no Den gate; fought at any of three stops on an arena kit; ignores Mikan before the window; §3.16 row; §6 Level row; edge 33; AC 26 |
+| OR-13 Nose-Touch join-in | IMPLEMENTED | §3.14 allied guest: entry (3 s yowl, wave timing, slot cap), AI (guest rules + own-Rival bias), HUD (Posse side, truce-sprig tick, guest plate), leaving, +5 Regard to the joiner on a win; the opposing Rival untouched (G7); edges 26, 34, 35; AC 24. Sim: −14 s from the start, −6 s with the phase-2 wave. G10 watch item held (A6) |
+| OR-14 Chase Off final; Togemaru day-1 flee | IMPLEMENTED | §3.14 Rival flight: Life 1 day 1 flee at 25% uninterruptible; edge 37; AC 27. Chase Off itself is Nemesis's |
+| OR-16 Challengers | IMPLEMENTED (Combat's part) | §3.14 composition: challenger + 1 Stray, a normal encounter ending in a Verdict |
+| OR-20 Event contracts | IMPLEMENTED | §6: `RivalCombatProfile` + `anger_stage`, `old_gang_nerves`, `old_boss_id`, `kin_ids`; `AngerChanged`, `AllyJoined` read; `EncounterEnded.outcome` set |
+| OR-21 Delete list | IMPLEMENTED | "Daifuku never leaves his wall" → "never comes down off the walls" (§3.13); "his garden wall" → the stop's wall; the Den approach composition and the "Life 2 day 4+, Den" teaching row replaced; Revision-log history left as history |
+| OR-03, 04, 08, 10–12, 15, 17–19 | NOT COMBAT'S | No Combat rule depends on them beyond the above; the Verdict stays "one full Verdict per fight" (three options, Nemesis) |
+| Showcase bout (doc change list) | IMPLEMENTED | `boss_phase_cap` knob; phase 1 only → `rival_fled` at the break (§3.13) |
+| Sim deliverables | DONE | Daifuku per anger stage, with an ally, rematch, Cowed cost (F9 table). **Not done:** a wipe *rate* needs a variance model (B-29); the EV model wipes only under very poor dodging |

@@ -1,0 +1,81 @@
+Variant: OWNER-FEEDBACK (OR-01..OR-21) as written into nemesis-system.md, 2026-11-24
+
+### Slice (Lives 1-2): 7 days, 500 seeds per policy (marking style cycles quiet/typical/loud by seed)
+| Policy | L1 memory line | Verdicts chase / recruit / nose | Nose gate open | Nemesis record = Togemaru | Declared (night median; by deadline) | Face Sworn Rival | Arc closed early (Gone / Crew) | Arc achieved | Join-ins per run (mean; runs >= 1) | Lane cats discovered at end (mean / of present) | Daifuku discovered | Seated at G>=75 (mean) | L2 days with an antagonist | Violations / checks |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| chase | 100% | 100% / 0% / 0% | 100% | 100% | 0% (night -; 0%) | 0% | 100% / 0% | 0% | 0.00; 0% | 9.7 / 11.7 | 100% | 0.0% | 67% | 0 / 10496 |
+| recruit | 100% | 0% / 28% / 72% | 100% | 100% | 0% (night -; 0%) | 0% | 0% / 100% | 0% | 0.09; 9% | 7.7 / 9.5 | 100% | 0.0% | 67% | 0 / 10497 |
+| mixed | 100% | 49% / 7% / 43% | 100% | 100% | 37% (night 5.0; 86%) | 100% | 38% / 25% | 5% | 0.18; 17% | 9.1 / 10.8 | 100% | 0.0% | 79% | 0 / 10491 |
+| pacifist | 100% | 0% / 0% / 100% | 100% | 100% | 100% (night 5.0; 86%) | 100% | 0% / 0% | 15% | 0.38; 34% | 9.1 / 10.0 | 100% | 0.0% | 100% | 0 / 10491 |
+| lose40 | 100% | 50% / 10% / 39% | 91% | 100% | 29% (night 5; 78%) | 73% | 50% / 28% | 41% | 0.06; 5% | 8.9 / 10.6 | 97% | 0.0% | 63% | 0 / 9337 |
+
+#### Boss anger by marking style (all policies pooled)
+| Style | Peak stage reached (Calm / Riled / Seething / Furious) | Stage at the first Daifuku fight (Calm / Riled / Seething / Furious) | Mornings with a Seething+ Sniff card (mean) | Daifuku fights per run (mean) | Old Gang Nerves moments per run |
+|---|---|---|---|---|---|
+| quiet | 6% / 94% / 0% / 0% | 100% / 0% / 0% / 0% (n=654) | 0.00 | 1.08 | 0.33 |
+| typical | 2% / 34% / 51% / 13% | 13% / 53% / 34% / 0% (n=644) | 0.46 | 1.14 | 0.35 |
+| loud | 0% / 4% / 12% / 84% | 0% / 7% / 92% / 0% (n=647) | 2.94 | 1.16 | 0.36 |
+
+#### Town, challengers, residual
+| Policy | Town events per L2 night (newcomer / feud scuffle) | Newcomers per run | Challengers per run (first arrival night median) | Challenger outcomes (took a Patch / left town / truce_end) | Raid requests per run | Adaptations per run | Wipes per run | Residual: raid requester changes under counterfactual (per night) |
+|---|---|---|---|---|---|---|---|---|
+| chase | 0.34 / 0.10 | 1.71 | 0.98 (5) | 0.01 / 0.10 / 0.00 | 4.96 | 0.90 | 0.70 | 12.9% |
+| recruit | 0.30 / 0.13 | 1.51 | 0.98 (5) | 0.01 / 0.10 / 0.00 | 4.95 | 0.90 | 0.69 | 7.6% |
+| mixed | 0.26 / 0.18 | 1.32 | 0.98 (5.0) | 0.01 / 0.10 / 0.00 | 4.93 | 0.90 | 0.70 | 9.6% |
+| pacifist | 0.00 / 0.44 | 0.00 | 0.99 (5) | 0.01 / 0.08 / 0.00 | 4.74 | 0.91 | 0.71 | 7.0% |
+| lose40 | 0.21 / 0.23 | 1.05 | 0.68 (5.0) | 0.03 / 0.06 / 0.00 | 4.57 | 0.53 | 2.59 | 11.5% |
+
+#### Join-ins (OR-13.4)
+| Policy | Join opportunities per run | Joins per run | Joins per opportunity | Runs with >= 1 join | Joiners |
+|---|---|---|---|---|---|
+| chase | 0.00 | 0.00 | 0% | 0% | {} |
+| recruit | 0.21 | 0.09 | 41% | 9% | {'Sasa': 9, 'Tough3': 7, 'Roamer0': 6, 'Roamer1': 6} |
+| mixed | 0.43 | 0.18 | 43% | 17% | {'Togemaru': 60, 'Sasa': 7, 'Roamer1': 5, 'Tough3': 5} |
+| pacifist | 0.97 | 0.38 | 39% | 34% | {'Togemaru': 154, 'Tough3': 9, 'Kagi': 5, 'Sasa': 5} |
+| lose40 | 0.14 | 0.06 | 41% | 5% | {'Togemaru': 25, 'Tough3': 1, 'Goma': 1, 'Kagi': 1} |
+
+#### Discovery sensitivity (mixed policy, typical style): Whisker Sense sniff success per sighting
+| p_ws | Lane cats discovered (mean / present) | All prehistory Lane cats discovered | Daifuku discovered | Silhouettes left on the Lane row (mean) |
+|---|---|---|---|---|
+| 0.25 | 8.1 / 10.8 | 11% | 100% | 2.7 |
+| 0.5 | 9.1 / 10.8 | 35% | 100% | 1.7 |
+| 0.75 | 9.7 / 10.8 | 60% | 100% | 1.1 |
+
+#### Self-test: deleted rules re-injected (the checks must catch them)
+| Injected rule | Runs | Violations caught | Where |
+|---|---|---|---|
+| loss_demote (lose40) | 250 | 622 | {'_loss': 622} |
+| stewing (mixed) | 250 | 70 | {'night_step3': 70} |
+
+#### Lever (not the ruling): a truce lead's daily greeting counts as an arc encounter
+| Policy | Arc achieved (ruling) -> (lever) |
+|---|---|
+| mixed | 5% -> 16% |
+| pacifist | 15% -> 46% |
+
+### Extrapolation (one district, 30 days; counterfactual check off): 30 days, 300 seeds per policy (marking style cycles quiet/typical/loud by seed)
+| Policy | L1 memory line | Verdicts chase / recruit / nose | Nose gate open | Nemesis record = Togemaru | Declared (night median; by deadline) | Face Sworn Rival | Arc closed early (Gone / Crew) | Arc achieved | Join-ins per run (mean; runs >= 1) | Lane cats discovered at end (mean / of present) | Daifuku discovered | Seated at G>=75 (mean) | L2 days with an antagonist | Violations / checks |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| chase | 100% | 100% / 0% / 0% | 100% | 100% | 0% (night -; 0%) | 0% | 100% / 0% | 0% | 0.00; 0% | 20.4 / 20.8 | 100% | 0.0% | 94% | 0 / 10759 |
+| recruit | 100% | 0% / 9% / 90% | 100% | 100% | 0% (night -; 0%) | 0% | 0% / 100% | 0% | 0.39; 31% | 14.7 / 15.0 | 100% | 0.0% | 94% | 0 / 9423 |
+| mixed | 100% | 52% / 3% / 45% | 100% | 100% | 36% (night 5.0; 82%) | 100% | 56% / 39% | 36% | 0.66; 47% | 18.1 / 18.5 | 100% | 0.0% | 96% | 0 / 10347 |
+| pacifist | 100% | 0% / 0% / 100% | 100% | 100% | 100% (night 5.0; 84%) | 100% | 0% / 0% | 100% | 1.63; 84% | 13.5 / 13.7 | 100% | 0.0% | 100% | 0 / 8936 |
+| lose40 | 100% | 52% / 3% / 45% | 98% | 100% | 28% (night 5.0; 75%) | 73% | 60% / 38% | 55% | 0.39; 31% | 17.3 / 17.8 | 100% | 0.0% | 91% | 0 / 12644 |
+
+#### Town, challengers, residual
+| Policy | Town events per L2 night (newcomer / feud scuffle) | Newcomers per run | Challengers per run (first arrival night median) | Challenger outcomes (took a Patch / left town / truce_end) | Raid requests per run | Adaptations per run | Wipes per run | Residual: raid requester changes under counterfactual (per night) |
+|---|---|---|---|---|---|---|---|---|
+| chase | 0.39 / 0.02 | 10.81 | 6.92 (5.0) | 0.01 / 0.51 / 0.00 | 21.31 | 2.76 | 0.98 | 0.0% |
+| recruit | 0.25 / 0.10 | 7.03 | 6.93 (5.0) | 0.01 / 0.52 / 4.93 | 18.46 | 2.27 | 0.95 | 0.0% |
+| mixed | 0.33 / 0.08 | 9.26 | 6.93 (5.0) | 0.01 / 0.51 / 4.34 | 20.25 | 2.56 | 0.97 | 0.0% |
+| pacifist | 0.13 / 0.27 | 3.72 | 6.94 (5.0) | 0.00 / 0.53 / 4.94 | 16.32 | 1.96 | 0.96 | 0.0% |
+| lose40 | 0.30 / 0.10 | 8.46 | 6.34 (7.0) | 0.07 / 1.64 / 3.79 | 23.81 | 2.42 | 12.70 | 0.0% |
+
+#### Join-ins (OR-13.4)
+| Policy | Join opportunities per run | Joins per run | Joins per opportunity | Runs with >= 1 join | Joiners |
+|---|---|---|---|---|---|
+| chase | 0.00 | 0.00 | 0% | 0% | {} |
+| recruit | 1.12 | 0.39 | 35% | 31% | {'Sasa': 17, 'Roamer1': 14, 'Daifuku': 13, 'Challenger101': 12} |
+| mixed | 1.66 | 0.66 | 40% | 47% | {'Togemaru': 63, 'Goma': 33, 'Daifuku': 15, 'Kagi': 13} |
+| pacifist | 4.33 | 1.63 | 38% | 84% | {'Togemaru': 214, 'Goma': 193, 'Challenger101': 15, 'Challenger100': 13} |
+| lose40 | 0.97 | 0.39 | 40% | 31% | {'Togemaru': 33, 'Goma': 12, 'Kagi': 10, 'Challenger101': 8} |

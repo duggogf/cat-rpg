@@ -57,6 +57,8 @@ import copy, hashlib, statistics as st, sys
 from collections import Counter
 
 QUICK = "--quick" in sys.argv
+INJECT = set()          # --selftest re-injects deleted rules to prove the invariant checks catch them
+GREET_COUNTS = False    # lever run: a truce/Friend lead's daily greeting counts as an arc encounter (NOT the ruling)
 
 # personality: m_g, m_r, decay, flee_p (chance it bolts before the Rout), gate shift (OR-13)
 P = {"braggart": (1.2, 0.7, 2, 0.00, -5), "brooder": (1.1, 0.8, 1, 0.00, -5),
@@ -319,6 +321,9 @@ class World:
         c.g = min(100, c.g + round(mg * 5))
         c.r = max(0, min(100, c.r + (10 if c.pers == "stalwart" else round(-10 * mr))))
         if c.rank == "Boss": c.anger = 0; s.daifuku_fights += 1; c.plaster_until = s.day + 99  # -10% Nerve for the rematch
+        if "loss_demote" in INJECT:   # DELETED rule (old 3.10): the victor climbs, another cat drops with a feud
+            other = next((x for x in s.cats if x is not c and x.state == "Seated" and x.rank == "Tough"), None)
+            if other: other.rank = "Roamer"; other.state = "Roaming"; other.rivals.add(c.id)
         return "loss"
 
     # ---------------- daily placements ----------------
@@ -326,7 +331,10 @@ class World:
         """OR-15.5: Togemaru turns up once a day from L2D1 until his arc closes."""
         T = s.by["Togemaru"]
         if s.day < 3 or T.state in ("Gone", "Crew"): return
-        if T.state in ("Truce", "Friend"): return          # a non-hostile greeting (no encounter) or a join-in
+        if T.state in ("Truce", "Friend"):                 # a non-hostile greeting (no encounter) or a join-in
+            if GREET_COUNTS and T.joined_day != s.day:
+                T.enc += 1; T.last_enc_day = s.day; s.discover(T)
+            return
         if T.keeper_of and s.patches.get(T.keeper_of) != "mikan": return   # today's contest places him
         opener = "rival_ambush" if (T.g >= 50 and s.R.u(s.day, "D", "ambush_roll") < 0.5) else None
         s.fight(T, keeper=(T.keeper_of is not None), opener=opener, patch=T.keeper_of)
@@ -400,7 +408,8 @@ class World:
         if s.wipe_day():
             foes = [c for c in s.active() if c.rank != "Boss"] or s.active()
             if d == 2 and T.state == "Seated": foes = [T]
-            s.loss(R.choice(sorted(foes, key=lambda x: x.id), d, "D", "victor")); return
+            if foes:
+                s.loss(R.choice(sorted(foes, key=lambda x: x.id), d, "D", "victor")); return
         if d == 2:
             s.contest("LPY")
         elif d == 3:
@@ -550,6 +559,9 @@ class World:
             if c.last_enc_day != d and not (c.name == "Togemaru" and s.arc_closed is None):
                 c.g = max(0, c.g - P[c.pers][2])
         if D.state == "Seated": D.anger = max(0, D.anger - 15)
+        if "stewing" in INJECT and d >= 5 and not any(c.g >= 60 for c in s.active()):   # DELETED rule (old 3.12 Stewing)
+            el = [c for c in s.active() if c.enc >= 1 and c.r < 50]
+            if el: y = max(el, key=lambda c: (s.arc_score(c), -c.id)); y.g = min(74, y.g + 5)
         # 3f the Declaration (fixed lead, OR-15)
         T = s.by["Togemaru"]
         if s.arc_closed is None and T.state in ("Gone", "Crew"):
@@ -696,13 +708,46 @@ def sniff_sensitivity(n):
         print(f"| {p} | {disc:.1f} / {pres:.1f} | {allp:.0%} | {sum(1 for w in ws if w.daifuku().discovered)/n:.0%} | {sil:.1f} |")
 
 
+def selftest(n=200):
+    global INJECT, QUICK
+    QUICK = False
+    print("\n#### Self-test: deleted rules re-injected (the checks must catch them)")
+    print("| Injected rule | Runs | Violations caught | Where |")
+    print("|---|---|---|---|")
+    for rule, pol in (("loss_demote", "lose40"), ("stewing", "mixed")):
+        INJECT = {rule}
+        ws = [run(sd, pol, 7, ("quiet", "typical", "loud")[sd % 3]) for sd in range(n)]
+        notes = Counter(); [notes.update(w.viol_notes) for w in ws]
+        print(f"| {rule} ({pol}) | {n} | {sum(w.viol for w in ws)} | {dict(notes)} |")
+    INJECT = set()
+
+
+def greet_lever(n=500):
+    global GREET_COUNTS, QUICK
+    QUICK = True; GREET_COUNTS = True
+    print("\n#### Lever (not the ruling): a truce lead's daily greeting counts as an arc encounter")
+    print("| Policy | Arc achieved (ruling) -> (lever) |")
+    print("|---|---|")
+    for pol in ("mixed", "pacifist"):
+        GREET_COUNTS = False
+        a = sum(run(sd, pol, 7, ("quiet", "typical", "loud")[sd % 3]).arc for sd in range(n)) / n
+        GREET_COUNTS = True
+        b = sum(run(sd, pol, 7, ("quiet", "typical", "loud")[sd % 3]).arc for sd in range(n)) / n
+        print(f"| {pol} | {a:.0%} -> {b:.0%} |")
+    GREET_COUNTS = False
+
+
 if __name__ == "__main__":
+    if "--selftest" in sys.argv:
+        selftest(); sys.exit()
     n7 = 150 if QUICK else 500
     n30 = 60 if QUICK else 300
     print("Variant: OWNER-FEEDBACK (OR-01..OR-21) as written into nemesis-system.md, 2026-11-24")
     out = report(7, n7, "Slice (Lives 1-2)")
     anger_table(out); world_table(out, 7); join_detail(out)
     sniff_sensitivity(n7)
+    selftest(n7 // 2 if not QUICK else 60)
+    greet_lever(n7)
     QUICK = True   # the counterfactual check runs on the slice; the 30-day extrapolation skips it for speed
     out30 = report(30, n30, "Extrapolation (one district, 30 days; counterfactual check off)")
     world_table(out30, 30); join_detail(out30)

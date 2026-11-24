@@ -1,0 +1,94 @@
+
+### Engaged reference (Day Loop path: L2D4 Daifuku lost, L2D5 claim; best posting)  (2000 seeds; means)
+| Day | Tribute (that night) | Field+cache | Spend | Stash end (min) | Patches held | Influence | Window open | Challenger active | Raid: Rep/Scuff/Lost | Wiped |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | 6.0 | 14 | 0 | 14 (14) | 1.00 | 25 | 0.00 | 0.00 | 0.00/0.00/0.00 | 0.00 |
+| 2 | 12.0 | 35 | 3 | 52 (52) | 2.00 | 47 | 0.00 | 0.00 | 0.00/0.00/0.00 | 0.00 |
+| 3 | 23.0 | 40 | 10 | 94 (94) | 3.00 | 74 | 0.00 | 0.00 | 0.00/0.00/0.00 | 0.00 |
+| 4 | 26.5 | 45 | 57 | 101 (101) | 3.00 | 75 | 0.00 | 0.00 | 0.90/0.10/0.00 | 0.00 |
+| 5 | 38.0 | 66 | 107 | 82 (75) | 4.00 | 100 | 1.00 | 1.00 | 0.85/0.15/0.00 | 0.00 |
+| 6 | 39.3 | 27 | 72 | 71 (43) | 4.00 | 99 | 1.00 | 0.29 | 0.25/0.04/0.00 | 1.00 |
+| 7 | 58.5 | 91 | 48 | 149 (88) | 5.00 | 98 | 0.00 | 0.02 | 0.69/0.10/0.00 | 0.00 |
+Tribute computed 203; income (Tribute + field + caches) 521; rotted 0; window opened in 100% of runs (mean day 5.00); District claimed in 100% (mean day 7.00); challenger announced in 100% (mean Sniff day 6.00)
+Challenger outcomes per run: arrivals 1.00, beaten_by_day 0.91, challenge_raids 0.38, left_after_2_repels 0.07
+
+### Engaged reference, extra days 8-10 (post-claim shape)  (2000 seeds; means)
+| Day | Tribute (that night) | Field+cache | Spend | Stash end (min) | Patches held | Influence | Window open | Challenger active | Raid: Rep/Scuff/Lost | Wiped |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | 6.0 | 14 | 0 | 14 (14) | 1.00 | 25 | 0.00 | 0.00 | 0.00/0.00/0.00 | 0.00 |
+| 2 | 12.0 | 35 | 3 | 52 (52) | 2.00 | 47 | 0.00 | 0.00 | 0.00/0.00/0.00 | 0.00 |
+| 3 | 23.0 | 40 | 10 | 94 (94) | 3.00 | 74 | 0.00 | 0.00 | 0.00/0.00/0.00 | 0.00 |
+| 4 | 26.5 | 45 | 57 | 101 (101) | 3.00 | 75 | 0.00 | 0.00 | 0.90/0.10/0.00 | 0.00 |
+| 5 | 38.0 | 66 | 107 | 82 (75) | 4.00 | 100 | 1.00 | 1.00 | 0.85/0.15/0.00 | 0.00 |
+| 6 | 39.3 | 27 | 72 | 71 (43) | 4.00 | 99 | 1.00 | 0.29 | 0.25/0.04/0.00 | 1.00 |
+| 7 | 58.5 | 91 | 48 | 149 (88) | 5.00 | 98 | 0.00 | 0.02 | 0.69/0.10/0.00 | 0.00 |
+| 8 | 58.2 | 50 | 37 | 217 (135) | 5.00 | 98 | 0.00 | 0.00 | 0.86/0.12/0.00 | 0.00 |
+| 9 | 57.7 | 50 | 37 | 284 (198) | 5.00 | 97 | 0.00 | 1.00 | 0.88/0.12/0.00 | 0.00 |
+| 10 | 60.8 | 53 | 37 | 353 (245) | 5.00 | 99 | 0.00 | 0.32 | 0.27/0.05/0.00 | 0.00 |
+Tribute computed 380; income (Tribute + field + caches) 850; rotted 0; window opened in 100% of runs (mean day 5.00); District claimed in 100% (mean day 7.00); challenger announced in 100% (mean Sniff day 6.00)
+Challenger outcomes per run: arrivals 2.00, beaten_by_day 1.61, challenge_raids 0.71, left_after_2_repels 0.07, took_the_patch 0.00
+
+### Casual (slower claims, 60% visits, half the rescue Sprays, random posts)  (2000 seeds; means)
+| Day | Tribute (that night) | Field+cache | Spend | Stash end (min) | Patches held | Influence | Window open | Challenger active | Raid: Rep/Scuff/Lost | Wiped |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | 6.0 | 10 | 0 | 10 (10) | 1.00 | 25 | 0.00 | 0.00 | 0.00/0.00/0.00 | 0.00 |
+| 2 | 12.0 | 29 | 3 | 42 (42) | 2.00 | 47 | 0.00 | 0.00 | 0.00/0.00/0.00 | 0.00 |
+| 3 | 12.6 | 32 | 0 | 86 (86) | 2.00 | 42 | 0.00 | 0.00 | 0.00/0.00/0.00 | 0.00 |
+| 4 | 15.9 | 36 | 17 | 114 (113) | 2.76 | 63 | 0.00 | 0.00 | 0.45/0.32/0.24 | 0.00 |
+| 5 | 12.4 | 52 | 40 | 138 (121) | 2.70 | 60 | 0.00 | 0.00 | 0.40/0.42/0.18 | 0.00 |
+| 6 | 25.8 | 27 | 122 | 51 (14) | 3.67 | 84 | 0.32 | 0.76 | 0.28/0.43/0.17 | 0.32 |
+| 7 | 29.7 | 46 | 0 | 119 (55) | 3.85 | 81 | 0.10 | 0.41 | 0.22/0.25/0.28 | 0.10 |
+| 8 | 28.7 | 43 | 77 | 111 (25) | 3.88 | 79 | 0.10 | 0.26 | 0.25/0.35/0.28 | 0.10 |
+| 9 | 28.6 | 43 | 0 | 178 (69) | 3.95 | 79 | 0.09 | 0.09 | 0.24/0.36/0.29 | 0.09 |
+| 10 | 28.9 | 43 | 37 | 208 (71) | 4.01 | 78 | 0.07 | 0.77 | 0.26/0.40/0.29 | 0.07 |
+Tribute computed 201; income (Tribute + field + caches) 561; rotted 0; window opened in 68% of runs (mean day 7.26); District claimed in 62% (mean day 7.96); challenger announced in 100% (mean Sniff day 7.37)
+Challenger outcomes per run: arrivals 1.76, beaten_by_day 0.46, challenge_raids 1.02, left_after_2_repels 0.05, newcomers 0.04, took_the_patch 0.47
+
+### Posting stakes under the owner rulings (engaged player otherwise; posts from night 4)
+| Posting policy | Tribute days 1-7 | Tribute nights 4-7 | Scuffed nights | Lost nights | Claim-night Tribute (night 7) | Min Stash | Window open nights 6-7 | Challenger left (2 repels) |
+|---|---|---|---|---|---|---|---|---|
+| best (reads the forecast) | 198 | 157 | 0.51 | 0.00 | 56.7 | 14 | 2.00 | 0.76 |
+| habit (Stalwart on forecast + Braggart richest) | 193 | 152 | 0.79 | 0.00 | 55.8 | 14 | 2.00 | 0.59 |
+| random 2 cats on 2 Patches | 160 | 119 | 2.17 | 0.18 | 42.6 | 14 | 2.00 | 0.08 |
+| no posts | 132 | 91 | 3.39 | 0.01 | 37.1 | 14 | 2.00 | 0.00 |
+best vs random: +24% slice, +32% nights 4-7 | best vs habit: +2% / +3% | best vs none: +50% / +73%
+
+### The challenger: what defending is worth (10 days; challenger 1 arrives night 5, the next is due night 9)
+| Player | Defence | Staked Patch taken | Challenger left after 2 Repels | Beaten by day | Tribute nights 6-10 | Patches held night 10 | Influence night 10 | Window/claim by day 7 |
+|---|---|---|---|---|---|---|---|---|
+| engaged | posts + fights it by day | 0.00 | 0.07 | 1.61 | 274 | 5.00 | 99 | 100% |
+| engaged | posts only (never fights it) | 0.02 | 0.99 | 0.00 | 263 | 4.99 | 97 | 100% |
+| engaged | ignores it (no posts, no fight) | 0.06 | 0.00 | 0.00 | 164 | 4.97 | 93 | 100% |
+| casual | posts + fights it by day | 0.47 | 0.05 | 0.46 | 142 | 4.01 | 78 | 42% |
+| casual | posts only (never fights it) | 0.82 | 0.13 | 0.00 | 133 | 3.95 | 77 | 42% |
+| casual | ignores it (no posts, no fight) | 0.92 | 0.00 | 0.00 | 64 | 3.27 | 63 | 20% |
+
+### Exploit seekers vs the engaged player (days 1-7)
+| Player | Income d1-7 (Tribute + field) | Stash end day 7 | Tribute night 7 | Patches held night 7 | District claimed by day 7 | Wiped days |
+|---|---|---|---|---|---|---|
+| engaged reference | 521 | 149 | 58.5 | 5.00 | 100% | 1.00 |
+| casual | 346 | 119 | 29.7 | 3.85 | 32% | 0.42 |
+| sleep-skip from day 3 | 95 | 93 | 1.7 | 1.00 | 0% | 0.00 |
+| rub-skip LWC from day 3 | 92 | 87 | 5.5 | 1.29 | 0% | 0.00 |
+| patrol + one fight + Settle In, from day 4 | 231 | 70 | 25.5 | 3.00 | 0% | 0.00 |
+| patrol + throw the first fight (wipe), from day 4 | 226 | 65 | 25.5 | 3.00 | 0% | 4.00 |
+| struggler (wipes every day from day 3, never posts) | 159 | 64 | 3.8 | 2.27 | 0% | 5.00 |
+
+Struggler, 12 days: min Stash 10 | min Patches held 1 | min influence 4 | Tribute per night d3-d12 = [12.6, 0.1, 19.9, 3.8, 3.8, 13.2, 9.2, 9.7, 10.5, 11.0]
+Sleep-skip from day 3: Tribute per night d3-d10 = [12, 5.2, 6.1, 3, 1.7, 0, 0, 0] | influence night 10 4
+Wipe vs Settle In after the same fight (Lv 4): Settle In keeps 6 field + Well-Fed + Bond; a wipe keeps 4.8, no Well-Fed, -3 Loyalty per Routed Posse cat, clock to Night; Tribute identical
+Wipe vs Settle In after the same fight (Lv 8): Settle In keeps 10 field + Well-Fed + Bond; a wipe keeps 8.0, no Well-Fed, -3 Loyalty per Routed Posse cat, clock to Night; Tribute identical
+Best posting, raid on TSS (Scent 54), motive grudge, leader PR 1.0, window shut: {'PA': 'Togemaru', 'TSS': 'Pon'}
+Best posting, raid on TSS (Scent 54), motive grudge, leader PR 1.0, window open: {'PA': 'Togemaru', 'TSS': 'Pon'}
+Best posting, raid on TSS (Scent 54), motive grudge, leader PR 1.5, window shut: {'PA': 'Togemaru', 'TSS': 'Pon'}
+Best posting, raid on TSS (Scent 54), motive grudge, leader PR 1.5, window open: {'PA': 'Togemaru', 'TSS': 'Pon'}
+Best posting, raid on TSS (Scent 54), motive gang_orders, leader PR 1.0, window shut: {'PA': 'Togemaru', 'TSS': 'Hige'}
+Best posting, raid on TSS (Scent 54), motive gang_orders, leader PR 1.0, window open: {'PA': 'Togemaru', 'TSS': 'Hige'}
+Best posting, raid on TSS (Scent 54), motive gang_orders, leader PR 1.5, window shut: {'PA': 'Kinako', 'TSS': 'Hige'}
+Best posting, raid on TSS (Scent 54), motive gang_orders, leader PR 1.5, window open: {'PA': 'Kinako', 'TSS': 'Hige'}
+Best posting, raid on TSS (Scent 54), motive gloat, leader PR 1.0, window shut: {'PA': 'Togemaru', 'TSS': 'Hige'}
+Best posting, raid on TSS (Scent 54), motive gloat, leader PR 1.0, window open: {'PA': 'Togemaru', 'TSS': 'Hige'}
+Best posting, raid on TSS (Scent 54), motive gloat, leader PR 1.5, window shut: {'PA': 'Hige', 'TSS': 'Togemaru'}
+Best posting, raid on TSS (Scent 54), motive gloat, leader PR 1.5, window open: {'PA': 'Hige', 'TSS': 'Togemaru'}
+Best posting, raid on TSS (Scent 54), motive challenge, leader PR 1.0, window shut: {'PA': 'Kinako', 'TSS': 'Kagi'}
+Best posting, raid on TSS (Scent 54), motive challenge, leader PR 1.0, window open: {'PA': 'Kinako', 'TSS': 'Kagi'}

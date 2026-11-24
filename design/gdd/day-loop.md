@@ -1,11 +1,11 @@
 # Day Loop
 
-*Owner: game-designer · Created 2026-11-23 · Iteration 3 (final fix pass) 2026-11-24 · Status: slice spec · Commissioned by DR-25 / DR-56*
-*Canon: `design/creative-brief.md` v1.2 §5.2–5.3, §6; `design/reviews/round-1/director-rulings.md` DR-01, DR-03, DR-13, DR-15–DR-22. Where this doc and canon disagree, canon wins. Phase lengths and Life rules belong to the brief. This doc implements them.*
+*Owner: game-designer · Created 2026-11-23 · Iteration 3 (final fix pass) 2026-11-24 · Owner feedback pass 2026-11-24 · Status: slice spec · Commissioned by DR-25 / DR-56*
+*Canon: the owner's comments C1–C5 (`design/reviews/user-comments-2026-11-24.md`) → `design/reviews/owner-feedback-rulings.md` OR-01…OR-21 (binding) → `design/creative-brief.md` v1.5 §5.2–5.3, §6 → `design/reviews/round-1/director-rulings.md` DR-01, DR-03, DR-13, DR-15–DR-22. Patent guardrails: `design/legal/nemesis-patent-analysis.md` v2 §5. Where this doc and canon disagree, canon wins. Phase lengths and Life rules belong to the brief. This doc implements them. **Day Loop owns the loss time-skip and the closed street (OR-20).***
 
 ## 1. Overview
 
-The day loop is the one system that owns **the day as a whole**. It runs the roaming clock (4 phases × 4 real minutes). It budgets every system's demands against a ≈ 20–25 minute real day. It moves Mikan between home and the street, and it guarantees the trip home. It audits the game's once-a-day actions and holds them at three. It runs the overnight hand-offs in canon order, decides what a lost fight does to the day, and sequences the slice's first hour. The doc exists because round 1 had no owner for the day (PP-13, PP-17, PP-30): four systems each added daily chores, and the day ran 30–55 minutes. Every other GDD must fit inside the budgets set here.
+The day loop is the one system that owns **the day as a whole**. It runs the roaming clock (4 phases × 4 real minutes). It budgets every system's demands against a ≈ 20–25 minute real day. It moves Mikan between home and the street, and it guarantees the trip home. It audits the game's once-a-day actions and holds them at three. It runs the overnight hand-offs in canon order, decides what a lost fight does to the day (since the owner's C2: **a loss ends the day**, the clock jumps to Night and the only thing left to do is walk home to Haru), and sequences the slice's first hour. The doc exists because round 1 had no owner for the day (PP-13, PP-17, PP-30): four systems each added daily chores, and the day ran 30–55 minutes. Every other GDD must fit inside the budgets set here.
 
 ## 2. Player Fantasy
 
@@ -14,6 +14,7 @@ The day loop is the one system that owns **the day as a whole**. It runs the roa
 - **MDA aesthetics:** Submission (a reliable, comfortable rhythm), Challenge (fitting a goal into the clock), Narrative (the clock is also Haru's day).
 - **SDT:** *Autonomy* comes from the curfew trade (home by Dusk or out all Night), and neither choice is punished. *Competence* comes from finishing a Patch take before the Dusk Call. *Relatedness* comes from home twice a day and the Crew at the Lot.
 - **What it must never feel like:** a checklist (anti-pillar: at most 3 once-a-day actions), a commute (the way home is ≤ 60 s), or a timer (no time fail state).
+- **Losing is a bruise, not a game over** (the owner's C2, set against FF7 Remake's game-over): the lane goes moon-blue, the street falls quiet, and the only way left is home, where Haru is waiting with a sticking plaster. You lose the rest of the day, never the save.
 
 ## 3. Detailed Rules
 
@@ -23,7 +24,7 @@ The day loop is the one system that owns **the day as a whole**. It runs the roa
 - **Open clock** `C_open` = 720 before the cat flap and 960 after it. The cat flap arrives with **K2.3, a Dusk beat on Life 2 day 2** (Narrative §3.3; Haru is at school in the morning). Mikan comes home at that Dusk, K2.3 plays, and **leaving through the flap afterwards resumes the clock into Night**. Night is open from then on.
 - **The clock runs only while roaming.** It pauses:
   - in combat, Standoffs and Verdicts;
-  - in menus (pause, Fence Line, Slow Blink);
+  - in menus (pause, the Rivals board, Slow Blink);
   - at the Lot;
   - anywhere inside Haru's wall, garden and Doorstep included;
   - during authored street beats such as the old wall cat's lines. *This last pause is a day-loop addition.*
@@ -33,6 +34,8 @@ The day loop is the one system that owns **the day as a whole**. It runs the roa
 - **Dusk Call:** at clock 480 the Yunagi chime sounds, the Call answers within one bar (DR-53), and the **Head Home thread** appears automatically. **Late Home** (a Routine variant on Life 2 day 3 Dusk, presentation ruling R1): the chime and the bell glint sound with **no Call**; the thread still appears with the chime. Haru's late Call sounds from the house at Dusk + 2:30 on the street clock (clock 630) if Mikan is out, or ≈ 40 real seconds after the Feeding if Mikan is inside the wall (the clock is paused there). Gran lights the Veranda Lamp.
 - **Drowsy:** when the clock reaches `C_open`, Mikan becomes drowsy. This happens at the end of Dusk before the flap and at the end of Night after it. The clock holds at `C_open`, and a **60 s real-time grace** starts. When the grace ends, the thread walks Mikan home on autopilot (§3.3). A fight in progress always finishes first, and drowsiness starts at `EncounterEnded`.
 - **No time fail state:** nothing is lost because the clock ran out.
+- **Loss jump (OR-01):** a Posse wipe sets `clock ← max(clock, 720)`, from any phase, before the cat flap too (§3.6). It is the only thing that moves the clock forward besides naps and Settle In.
+- **The Boss's patrol follows the phases (OR-09):** while the Lane's Boss window is open, Daifuku stands at his Morning stop (Laundry Pole Yard's yard wall), his Day stop (Tofu Shop's back wall) and his Dusk-and-Night stop (the Den corner stone), moving on each `PhaseChanged`. The clock is paused in combat, so he never moves mid-fight.
 
 ### 3.2 Day structure and real-minute budget (DR-16)
 
@@ -51,10 +54,13 @@ A day runs **Wake → (morning slot) → Doorstep → Lot → street (Morning, D
 
 **Design weight per day (DR-16):** ≈ 50% territory and roaming, ≈ 35% combat, ≈ 15% home and story. It is measured with the activity tags in F3.
 
+**A loss day** runs the same segments up to the wipe, then **walk home (≤ 1.0, the street closed) → the Routed Evening (plaster beat ≤ 0.5, then home play to sleep, ≤ 2.0 in all)**. It is always shorter than the same day played out: the owner-feedback budget check gives L2D2 22.4 → 16.6 min typical with a wipe at clock 6:00, and L2D3 24.9 → 22.4 with a wipe in Night (`design/reviews/owner-feedback/sim/day_budget_check.out.txt`).
+
 ### 3.3 Home ↔ street
 
 - **Leaving:** Mikan crosses from the garden onto the low wall top and the lane. The camera makes a gentle lower-and-tighten move at the wall (DS ruling), in reverse on the way out. The clock resumes. The Lot sits behind the house through the back fence. It is outside the wall, but it pauses the clock and is reachable without starting it.
-- **Head Home thread (DR-17):** a bell-gold scent thread along the High Road to Haru's wall. **≤ 60 s of travel from any reachable point in the Lane.** It appears at the Dusk Call and whenever the player holds Head Home (D-pad Down hold / H). It stays until arrival or until it is dismissed. Releasing it costs nothing.
+- **Head Home thread (DR-17):** a bell-gold scent thread along the High Road to Haru's wall. **≤ 60 s of travel from any reachable point in the Lane.** It appears at the Dusk Call, **at once after a loss (it cannot be dismissed then)**, and whenever the player holds Head Home (D-pad Down hold / H). Otherwise it stays until arrival or until it is dismissed. Releasing it costs nothing.
+- **The closed street (OR-01, after a loss):** under moonlight, nothing on the street responds. Closed: every encounter (player-started and unsolicited), Rival Ambushes, Caterwauls, Rub, every Spray, pickups (Shinies, curios, caches), Sunspots, Settle In, the Lot, challengers' and the Boss's Standoffs. Open: walking anywhere, the camera, Whisker Sense (display only), the pause menu and the Rivals board (read-only). Cats on the street keep to themselves (no Standoffs, no lines). **After 60 s real** without reaching the wall, the autopilot walks Mikan home. Before the flap the jump to 720 also reaches `C_open`, so the drowsy grace and this 60 s are one timer, never two.
 - **Autopilot walk** (after the drowsy grace): Mikan follows the thread at sprint speed. Encounters, Ambushes and Caterwauls are suppressed, and any input other than the camera is ignored.
 - **Arrival kinds** (`HomeArrived.kind`):
 
@@ -62,10 +68,10 @@ A day runs **Wake → (morning slot) → Doorstep → Lot → street (Morning, D
 |---|---|---|
 | `on_time` | Mikan enters the wall with clock ∈ [480, 720], or before 480 via Settle In, or at any non-routed arrival before the flap | The evening plays, Bond, and Well-Fed tomorrow (DR-20) |
 | `late` | Mikan enters with clock > 720 (after the flap only) | The Late coda (the covered plate, ≤ 1 min). No Well-Fed. Keystones in their Late form, but **Closings wait** for the next morning slot (DR-21) |
-| `routed` | After a wipe (§3.6) | The evening with the plaster |
+| `routed` | After a wipe (§3.6), whatever the clock | **The Routed Evening:** Haru is home and waiting (it is Night, so even on Late Home her key has turned); the plaster beat (≤ 30 s), then the normal home verbs until sleep (Lap, the piano, the daily find). A Keystone due that evening plays in its **Late form**; a Closing waits for the next morning slot (as `late`). Bond as for `late`. No Well-Fed |
 
 - **Mid-day visit:** Mikan may enter the wall before Dusk. The clock pauses, there is no heal and no vignette. Haru is at school; Gran is home (on school days the house is quiet, not empty).
-- **Settle In:** curling up on the step ends the outing and jumps the clock to 480, giving an `on_time` arrival. It is offered only once the clock has reached 240. That floor guards against day-skipping (§5).
+- **Settle In:** curling up on the step ends the outing and jumps the clock to 480, giving an `on_time` arrival. It is offered only once the clock has reached 240. That floor guards against day-skipping (§5). It is not offered on the closed street after a loss.
 
 ### 3.4 Once-a-day actions: the full audit (DR-18)
 
@@ -73,7 +79,7 @@ A day runs **Wake → (morning slot) → Doorstep → Lot → street (Morning, D
 
 | # | Action | System | How it is surfaced |
 |---|---|---|---|
-| 1 | **Tribute pick-up** (automatic) | Economy | The pile on the Doorstep. Crossing it banks the pile to the Stash, and the Sniff's Tribute line reads it. No prompt. |
+| 1 | **Tribute pick-up** (automatic) | Economy | The pile on the Doorstep. Crossing it banks the pile to the Stash, and the Sniff's Tribute line reads it. No prompt. **Tribute is unchanged by a loss** (OR-02). |
 | 2 | **Share a Morsel** (whole Crew; Σ Crew levels; +2 Loyalty) | Crew, Territory | The shared bowl at the Lot. While it is available, Crew cats sit round it and glance at Mikan. When the Stash is short, the bowl looks empty. No reminder anywhere else. |
 | 3 | **"What changed today?" find** | Narrative | A fresh Home Scent trail inside the house, open morning and evening. It fills the day's Bond "other" slot. |
 
@@ -81,7 +87,9 @@ A day runs **Wake → (morning slot) → Doorstep → Lot → street (Morning, D
 - There is no daily list, no quest log, no badge and no Sniff nag.
 - Nothing stacks or catches up: a missed day is simply gone.
 - Missing an action costs only the gain it would have given.
-- **Any new once-a-day proposal must replace one of these three, by creative-director ruling.**
+- **Any new once-a-day proposal must replace one of these three, by creative-director ruling.** The owner-feedback rulings add none (OR-18): influence, anger, challengers and the Boss window are state, not tasks.
+
+**On a loss day** (OR-01): Tribute was banked that morning and is unaffected. **Share a Morsel** is at the Lot, which closes with the street: if it was not given before the wipe, the day's chance is simply gone (it costs only its gain; nothing stacks). **The "What changed today?" find** stays open in the Routed Evening. So a loss neither adds a chore nor creates a catch-up.
 
 **Near-dailies that are not resets** (audited so they never become chores):
 
@@ -96,34 +104,48 @@ A day runs **Wake → (morning slot) → Doorstep → Lot → street (Morning, D
 | Routine verbs (Eat, Rub, Lap, Meow, Knock) | **Must give no once-per-day reward** beyond the find (Narrative to confirm) |
 | Well-Fed | The outcome of the curfew choice, not a task |
 
-### 3.5 Overnight step order (DR-13, canon steps 1–5)
+### 3.5 Overnight step order (DR-13, canon steps 1–5; amended by OR-20)
 
 | Step | Owner | Resolves |
 |---|---|---|
-| 0 · Close the day | **Day loop** | `HomeArrived` already fired. Territory banked the field haul on arrival. The Posse is fully healed. Routine tags are written (`evenings_home` / `nights_out`). The Well-Fed flag is set for an `on_time` arrival. Emits `DayEnded`. |
-| 1 · Crew | Crew | Loyalty deltas; Sentry XP |
-| 2 · Territory | Territory | Scent decay; flat upkeep; tonight's raid, requested **last** night and forecast in today's Sniff (an uprising is that raid, not a separate step) |
-| 3 · Nemesis | Nemesis | Betrayals; comebacks; wall events; refills and promotions; Grudge decay, the arc-lead check and the Declaration; tomorrow's raid request (one a night from night 3, ≤ 1 per district) |
+| 0 · Close the day | **Day loop** | `HomeArrived` already fired. Territory banked the field haul on arrival (less 20% after a loss, none in Life 1). The Posse is fully healed. Routine tags are written (`evenings_home` / `nights_out`). The Well-Fed flag is set for an `on_time` arrival. Emits `DayEnded`. |
+| 1 · Crew | Crew | Loyalty deltas (−3 per Posse cat Routed in a lost fight); Sentry XP; **Wavering flags** |
+| 2 · Territory | Territory | Scent decay and refresh; **challenger over-mark** (−10 on its target; a posted Goofball 0); flat upkeep; **tonight's raid or challenge**, requested **last** night and forecast in today's Sniff (a challenger takes its district's raid slot with motive `challenge`); then **recompute influence and the Boss window** (open at 100, stays open while ≥ 75, closes below 75) |
+| 3 · Nemesis | Nemesis | Betrayals (live from Life 2); town events (newcomers, feud scuffles); **the challenger calendar and truce expiry**; adaptation; **Grudge and anger decay** (anger −15); the Declaration; **tomorrow's raid request** (≤ 1 per district, a challenger first) |
 | 4 · Economy | Economy | Tribute to the Doorstep |
 | 5 · Narrative | Narrative | Next morning slot; Life-end check (DR-21) |
 | 6 · Open the next day | **Day loop** | Autosave; `day_index + 1`; then the Life-end montage (or the slice title card), or the wake. |
 
-Every draw uses `rng(save_seed, day_index, step, subsystem, cat_id, ordinal)`. Steps never reorder, and no system reads another system's output from a later step.
+Every draw uses `rng(save_seed, day_index, step, subsystem, cat_id, ordinal)`. Steps never reorder, and no system reads another system's output from a later step. *(Deleted by OR-21: comebacks, promotions and refills at step 3; the uprising raid at step 2; Stewing.)*
 
-### 3.6 Losing a fight (DR-19)
+**Influence, anger and the window across the day** (Day Loop sequences them; Territory and Nemesis own the values):
+- **Influence** is a read-out of Scent (Territory), so it moves exactly when Scent moves: by day only through Mikan's marking acts (Claim, Rescue and Counter-Sprays, Over-marks), and overnight only at step 2 (decay for everyone, refresh, challenger over-mark, the raid result). A loss, a win or a Verdict never moves it.
+- **The Boss window opens** the moment influence reaches 100: after a daytime Spray (Daifuku's yowl, the climb down, ≈ 15 s, clock paused as an authored street beat; he goes to the **current phase's stop**), or at step 2. **It closes only at step 2**, when influence is below 75; nothing by day can close it. A closed window means he is back at the Den the next morning. While it is open, held outer Patches cannot be Lost at step 2 (Lost becomes Scuffed).
+- **Anger** rises only by day through marking acts in his district (Over-mark +5, Counter-Spray +15) and falls −15 at step 3; a win, loss or `rival_fled` with him spends it at `EncounterEnded` (Scram does not). The Sniff names it at Seething or Furious.
 
-**A loss** is a Posse wipe, meaning every Posse cat is Routed. Scram and a Rival fleeing are not losses, and the outing continues after them. After a loss:
+### 3.6 Losing a fight: the day ends (OR-01, OR-02; the owner's C2)
 
-1. The victor Gloats (≤ 3 s) and is promoted (Nemesis). A Lick In applies only to a won fight.
-2. Mikan slinks home on autopilot, with the thread and encounter suppression from §3.3.
-3. **If the clock is before 480, it jumps to 480.** Skipped roaming time is not refunded.
-4. Arrival is `routed`. The evening plays, Haru puts on the plaster, and `mikan_plastered` is set for tomorrow.
-5. **The Night is forfeit**, so there is no Well-Fed decision to make.
-6. 20% of the day's field haul is lost (rounded down). Nothing is lost in Life 1. The Stash is always safe.
-7. The Posse heals at step 0, and the Crew's −3 Loyalty applies at step 1.
-8. A Boss that wipes the Posse is plastered at −10% max Nerve for the rematch. This stacks to −30% (DR-21).
+**A loss** is a Posse wipe, meaning every Posse cat is Routed. Scram (`player_fled`) and a Rival fleeing (`rival_fled`) are not losses, and the outing continues after them. Life 1 tutorial fights cannot be lost. Where FF7 Remake ends the game when the party falls, here **the day ends**. After a loss:
 
-At most one loss per day is possible, because the outing ends.
+1. **The Gloat** (Combat, ≤ 3 s). Only the victor changes (OR-02, Nemesis): a `WON` Memory entry, its Glory Title if it has none, and for a Boss the −10% plaster for the rematch (stacking to −30%) and his anger spent. **No promotion, level, seat, feud or line for any other cat.**
+2. **Nightfall.** At `EncounterEnded(outcome = loss)` the clock jumps to **720, the start of Night**, from any phase (F5). If the wipe happens during Night, the clock stays where it is. **Before the cat flap** (Lives 1–2 until K2.3) the jump stages a nightfall the player cannot stay out in: moon-blue light, an empty street. `PhaseChanged(Night)` fires if a boundary was crossed; an autosave follows. Skipped roaming time is not refunded.
+3. **The street closes** (§3.3). Mikan comes to on the spot, ears down, and the Head Home thread is drawn at once (≤ 60 s from anywhere). The player walks Mikan home under moonlight; nothing else works. After 60 s real, the autopilot takes over.
+4. **Home: the Routed Evening.** `HomeArrived(kind = routed)`. Haru is home and waiting. The evening opens with the **plaster beat** (≤ 30 s: she kneels and puts a sticking plaster on Mikan's ear; Narrative stages it). Then the normal home verbs are open until sleep: Lap, the piano, the daily find. A Keystone due that evening plays in its **Late form**; a Closing waits for the next morning slot, as for a `late` arrival. **A loss never plays a Closing sooner than walking home would.** `mikan_plastered` is set for tomorrow; only the victor may cite it.
+5. **What the loss costs** (OR-02): no Dusk, so **no Well-Fed**; Bond as for a `late` evening; the Night is forfeit; **20% of the day's field haul** is lost (rounded down; none in Life 1). The Stash is always safe and **Tribute is unchanged**. **A loss changes no territory**: no Scent, influence, Patch or window moves (Mark Over and Snatch are cut).
+6. **Overnight runs as normal** (§3.5): the Posse heals at step 0; −3 Loyalty per Routed Posse cat at step 1; tonight's forecast raid **auto-resolves** at step 2 with no Caterwaul, because Mikan is home; influence decays as on any night.
+
+At most one loss per day is possible, because the street closes.
+
+**Why losing on purpose does not pay** (OR-02; Territory §4.13 owns the economy check): a wipe is dominated by Settle In in every currency. Settle In (clock ≥ 240, `on_time`) gives the evening, Bond, Well-Fed and the full haul; a wipe gives a plaster, −20% haul, −3 Loyalty per Routed cat, no Well-Fed and a later clock. Tribute is invariant to wipes, and influence decays every night whatever happens, so a skipped day is one more night of decay. **Known residue, accepted (OR-02):** a wipe before clock 240 ends the outing sooner in *real time* than Settle In can (worst case ≈ 9–10 min for the whole day, budget check); its costs are real and the story's day gates are unchanged.
+
+**How a loss meets the 7-day slice script** (Narrative owns the beats; `design/narrative/dual-story-progression.md` must follow OR-01, its "jump to Dusk" text is superseded):
+- **Day gates never move.** A loss shortens the day it happens on; it never skips, delays or brings forward a `day_gate`.
+- **L1D1** (after the tutorial): a wipe (rare; Togemaru's day-1 flee at 25% is uninterruptible) plays nightfall, the walk home and **K1.3 in its Late form, which keeps the Call**: Haru sings from the step into the moon-blue lane and the thread is the Call's thread (PP-06: the first Call is never lost). Nothing is lost in Life 1. If Low Wall Corner is not yet held, the turf goal carries to day 2.
+- **L1D2:** K1.4 is the Life 1 **Closing**, so after a wipe it waits for the L1D3 morning slot; **Settle In is offered at once** after it (the existing Closing rule, §5), and the Life ends at that sleep. Cost: one ≈ 4–5 min bonus morning.
+- **L2D2:** K2.3 (the flap) plays in its Late form at the Routed Evening; the flap is there from then on, but this day's Night and Caterwaul are gone (the raid auto-resolves). The first Night moves to L2D3.
+- **L2D3:** a wipe by day or in Night lands in the Routed Evening with Haru home (the clock is Night, past her late Call at 630); then K2.2.
+- **L2D4** is the reference loss (§3.10): K2.5, the Closing, already played that morning, so the loss costs no story beat; the Life ends at the first sleep after the claim (L2D5).
+- **The Boss window survives a loss:** influence is unchanged, so if it was ≥ 75 at step 2 he is on patrol again tomorrow, Calm (anger spent) and plastered.
 
 ### 3.7 Encounter density (owned here; values are tuning)
 
@@ -131,7 +153,11 @@ At most one loss per day is possible, because the outing ends.
 - **Unsolicited pressure:**
   - Life 1: 0 Rival Ambushes.
   - Life 2: ≤ 1 per phase and ≤ 2 per day before the flap. Night adds ≤ 1. These are ceilings: Nemesis §3.10 uses ≤ 1 Rival Ambush per day as the slice value inside them.
-  - Suppressed during the drowsy grace and the autopilot walk.
+  - Suppressed during the drowsy grace, the autopilot walk and **the closed street after a loss**.
+- **What counts toward the opportunity floor and the 4–6 fights (OR-09, OR-16):**
+  - **A challenger** standing at its staked post by day is an engageable, optional encounter (challenger + 1 Stray); it is **not** unsolicited pressure (it never Ambushes), and it counts toward the day's 4–6.
+  - **The roaming Boss** at his current patrol stop is one engageable encounter while the window is open; he never comes to Mikan. His fight is costed at ≈ 3–3.5 paused minutes (Combat F9), so a Boss day carries one or two other fights, not four.
+  - **A join-in** adds no encounter: the ally arrives inside one.
 - **Target:** 4–6 fights and 5–7 paused minutes per day. This is the dial that keeps the day inside its cap.
 
 ### 3.8 Save and suspend
@@ -158,13 +184,15 @@ At most one loss per day is possible, because the outing ends.
 | 0:32–0:40 | **Second story recruit, Pon**, joins after the crows corner her at the laundry poles (Crew §3.3) → 3-cat Posse | **Brace**; Relay |
 | 0:40–0:45 | K1.4; Life-end sleep (turf held, day 2, Closing played) | — |
 | 0:45–0:46 | Montage Life 1 → 2 | — |
-| 0:46–0:60 | L2D1: K2.1 (cicada-shell Gift); 3-item Sniff; **Fence Line**; **Kinako's scent-trail favour, the day's required first objective** (the Lot opens after it; Crew) → 4th cat; **Ambush** a Persimmon Alley Tough; take **Persimmon Alley (Patch 3), which opens the Den** | Fence Line, Ambush |
+| 0:46–0:60 | L2D1: K2.1 (cicada-shell Gift); 3-item Sniff; **the Rivals board** (unlocks today: the Lane row, uphill silhouettes, relationship tags on hover); **Kinako's scent-trail favour, the day's required first objective** (the Lot opens after it; Crew) → 4th cat; **Ambush** a Persimmon Alley Tough; take **Persimmon Alley (Patch 3)**; the influence bar now reads ≈ 75 (three outer posts Strong) | Rivals board, influence, Ambush |
 
 **The Life 2 ladder, one headline a day** (UX owns it: `ux/key-screens.md` §7.4, as ruled in the presentation review; Combat §3.16 and Territory §3.12 agree):
-- **L2D1:** Ambush (and the Rival yowl-sting counter); Fence Line; 3-item Sniff. No posting yet.
+- **L2D1:** Ambush (and the Rival yowl-sting counter); **the Rivals board** and **the influence bar**; 3-item Sniff. No posting yet.
 - **L2D2:** the **first raid, forecast in that morning's Sniff** (DR-46: forecasts are always on), often beside the **Declaration card** (Nemesis §3.6); **Sentries and the Turf Board**, taught at the Lot as the answer to that forecast (one posting decision); **props and Fears**; Relay with a Posse of 4; K2.3 the cat flap at Dusk, the first Night, and the forecast raid offered as **the Caterwaul**.
 - **L2D3:** **Lessons** (Rank I) and **Zoomies** (the hint fires the first time the gauge is full; first used on Captain Kagi at Tofu Shop Step). Late Home at Dusk; K2.2 that evening.
-- **L2D4:** K2.5 in the morning; the Den and Daifuku.
+- **L2D4:** K2.5 in the morning (the Closing); **the first challenger** announced in that morning's Sniff (a silhouette staking a post; its fight is optional); **rescue Sprays fill the influence bar to 100 and the Boss window opens** (Daifuku's yowl, he climbs down onto his patrol); the first Daifuku attempt at his stop, with his anger read as Fired Up; on the reference path **the attempt is lost: nightfall, the walk home, the Routed Evening and the plaster** (the loss rule is taught by living it once).
+- **L2D5:** the rematch (he is plastered −10% and Calm, his anger spent); **Claim Spray the Den post** → `DistrictClaimed`; the Life-end sleep.
+- *Challenger timing note:* OR-16's calendar (Nemesis F-challenger) places the first challenger on the second night after Mikan first holds ≥ 3 Lane Patches. The rulings' slice expectation is the **L2D4** Sniff, used here. If Nemesis's count lands it a day earlier (the L2D3 Sniff), L2D3, the heaviest day, gains only an *optional* fight; skipping it costs one night's −10 over-mark on its target. Both fit (§3.11).
 
 ### 3.10 Worked days
 
@@ -205,48 +233,66 @@ Totals: S 6 · H 2 · C 9 · T 8. The day's only exception is the tutorial nap, 
 | 4:45–6:00 | P | **Ambush** a Tough pair from the High Road | Combat | C |
 | 6:00–8:00 | 2:30–4:30 | To **Tofu Shop Step**: Rub, Counter-Spray | Territory | T |
 | 8:00–11:00 | P | Wave → **Captain Kagi** Standoff → fight (**first Zoomies**) → Verdict | Combat, Nemesis | C |
-| 11:00–11:30 | 4:30–5:00 | Claim Spray: all 4 outer Patches held (the Den has been open since L2D1) | Territory | T |
+| 11:00–11:30 | 4:30–5:00 | Claim Spray: all 4 outer Patches held; **influence ≈ 95** (Persimmon Alley has slipped below Strong), so the Boss window stays shut | Territory | T |
 | 11:30–11:45 | 5:00→7:00 | Sunspot nap | Day loop | T |
 | 11:45–14:45 | 7:00–10:00 | Roam. **Dusk at 12:45: the chime and the bell glint, but no Call (Late Home)**; the thread appears with the chime; the player stays out | Territory | T |
 | 14:45–16:00 | P | Crow and Stray fight | Combat | C |
 | 16:00–18:00 | 10:00–12:00 | Roam. **Haru's late Call rises from the house at Dusk + 2:30 (clock 10:30, ≈ 16:30)**; **Night** begins (moon-blue) | Territory | T |
-| 18:00–22:00 | 12:00–16:00 | Night roam; Fence Line check; a Shiny on the roofs; drowsy at 16:00 | Territory | T |
+| 18:00–22:00 | 12:00–16:00 | Night roam; Rivals board check; a Shiny on the roofs; drowsy at 16:00 | Territory | T |
 | 22:00–22:30 | grace | Takes the thread (≤ 60 s) → `late` | Day loop | T |
 | 22:30–23:00 | P | Late coda: the covered plate | Narrative | H |
 | 23:00–24:00 | P | **K2.2 The Lamp at Night** on the late arrival (Narrative: any hour; Gran lit the Lamp); sleep. Tonight step 2 resolves the raid against the posted Sentry | Narrative | S |
 
 Totals: C 6.75 (5.5 paused + ≈ 1.25 stalking and approach) · T 15.5 · H 0.75 · S 1. Four encounters (the optional Night-only Roamer is left out of the reference so that K2.2 fits). This day is the budget's worst realistic case: round-3 budget check 24.9 typical / 28.9 heavy, so it fits the 25-minute median with almost no slack. A home-by-Dusk version (Late Home's wait inside the wall, then K2.2) is ≈ 22 min.
 
+**The loss day: Life 2 day 4 (L2D4, the window opens and the first attempt is lost; 15.5 min).** The reference path's one planned loss (OR-01). Daifuku is fought at his Day stop; the Combat sim (F9 there) shows a same-level Posse with median dodging *wins*, so this row is the first-attempt case (variance, a lighter Posse, or a Riled-to-Furious Boss after loud marking).
+
+| Real | Clock | Activity | System | Cat |
+|---|---|---|---|---|
+| 0:00–2:30 | P | Wake; **K2.5 *The Envelope*** (the Closing, morning) | Narrative | S |
+| 2:30–3:00 | P | Doorstep: Tribute; Sniff: **"A stranger's scent"** (the challenger's silhouette staking a post; tape star), the raid forecast, one Nemesis item | Economy, Nemesis | T |
+| 3:00–4:00 | P | Lot: Turf Board (post for the forecast); Share a Morsel | Crew, Territory | T |
+| 4:00–5:30 | 0:00–1:30 | Whisker Sense; **rescue Spray** Laundry Pole Yard (slipped below Strong overnight) | Territory | T |
+| 5:30–7:00 | 1:30–3:00 | To Persimmon Alley; **rescue Spray → influence 100** | Territory | T |
+| 7:00–7:15 | P | **The Boss window opens:** a yowl rolls down from his wall, Daifuku climbs down to his Morning stop; the Turf Board crown lights | Territory, Nemesis | T |
+| 7:15–8:45 | 3:00–4:30 | Toward him; **Day at 4:00**: he moves to Tofu Shop's back wall (rain barrel); a crown tick on the compass | Day loop | T |
+| 8:45–12:15 | P | Daifuku Standoff and fight on the stop's kit (≈ 3.2 min), Fired Up if his anger is Riled or worse; **wipe** in phase 3; his Gloat | Combat, Nemesis | C |
+| 12:15–13:15 | 4:30 → **12:00** | **Nightfall** (clock to 720); the street closes; the thread at once; walk home under moonlight → `routed` | Day loop | T |
+| 13:15–13:45 | P | **The plaster beat** (Haru kneels; the ear) | Narrative | S |
+| 13:45–15:30 | P | The Routed Evening: Lap, the piano, the daily find; sleep. Tonight step 2 auto-resolves the raid; the window stays open (influence still ≥ 75) | Home | H |
+
+Totals: C 3.5 · T 7.25 · H 1.75 · S 3. Optional (heavy): the challenger fight at its post before Daifuku (+1.5 min with its Verdict). Budget check: 15.2 typical / 21.8 heavy. *Before this pass* the same day ran 21 min (the wipe jumped the clock to Dusk and the Dusk tail was played out).
+
 **Last slice day: Life 2 day 5 (L2D5, the Daifuku rematch; 16 min).** K2.5 *The Envelope* (the Closing) already played on the L2D4 morning (Narrative §3.3), so the Life ends at tonight's sleep.
 
 | Real | Clock | Activity | System | Cat |
 |---|---|---|---|---|
 | 0:00–0:15 | P | Wake; Mikan wears the plaster (yesterday's wipe) | Narrative | H |
-| 0:15–0:45 | P | Sniff: Daifuku plastered (−10%); the raid forecast; a wall event | Nemesis | T |
+| 0:15–0:45 | P | Sniff: Daifuku plastered (−10%); the raid forecast; a town event or the challenger's stamp | Nemesis | T |
 | 0:45–1:45 | P | Lot: Yowler into the Posse; Share a Morsel | Crew | T |
-| 1:45–3:15 | 0:00–1:30 | High Road to the Den | Territory | T |
-| 3:15–6:45 | P | Daifuku Standoff, 3 phases, knock-off into the bucket, Full Pile-On, Verdict | Combat, Nemesis | C |
-| 6:45–7:15 | 1:30–2:00 | Den Spray → `DistrictClaimed` | Territory | T |
+| 1:45–3:15 | 0:00–1:30 | High Road to his Morning stop (Laundry Pole Yard's yard wall, the wash tub) | Territory | T |
+| 3:15–6:45 | P | Daifuku Standoff (Calm: anger spent by yesterday's loss), 3 phases (sim 157 s at −10%), knock-off into the wash tub, Full Pile-On, Verdict (any of three) | Combat, Nemesis | C |
+| 6:45–7:15 | 1:30–2:00 | The thread to the Den corner stone; **Claim Spray the Den post** → `DistrictClaimed` | Territory | T |
 | 7:15–7:30 | 2:00→4:00 | Nap | Day loop | T |
 | 7:30–14:00 | 4:00–8:00 | Victory lap: 2 fights (2.5 P, one is usually the Nemesis's daily placement), approaches (1), roam | Combat, Territory | C/T |
 | 14:00–14:45 | 8:00–8:45 | Dusk Call → thread → `on_time` | Day loop | T |
 | 14:45–15:15 | P | Evening routine; home find | Home | H |
-| 15:15–16:00 | P | **The Life-end sleep in the suitcase** → the slice title card (the night's pile and the Fence Line with the Nemesis) | Narrative | S |
+| 15:15–16:00 | P | **The Life-end sleep in the suitcase** → the slice title card (the night's pile and the Rivals board with the Nemesis) | Narrative | S |
 
-Totals: C 7 · T 7.5 · H 0.75 · S 0.75. (The round-3 budget check gives 14.4 typical / 20.2 heavy.)
+Totals: C 7 · T 7.5 · H 0.75 · S 0.75. (Owner-feedback budget check, with Daifuku now costed explicitly: 15.7 typical / 23.6 heavy; round 3 gave 14.4 / 20.2 by counting him as one 1.1-minute fight.)
 
-### 3.11 Slice pacing graph (reference path: 7 days, 149 min)
+### 3.11 Slice pacing graph (reference path: 7 days, 143.5 min; was 149)
 
 | Day | Real | C | T | H | S | Beats |
 |---|---|---|---|---|---|---|
 | L1D1 | 25 | 9 | 8 | 2 | 6 | K1.1, crow on the lane-side wall, Pile-On 0:14, Patch 1 (Low Wall Corner), Togemaru flees, K1.3 |
 | L1D2 | 20 | 7 | 10 | 1.5 | 1.5 | Memory line, first Verdict, Patch 2 (Laundry Pole Yard, Togemaru), Pon joins, K1.4 |
-| L2D1 | 20 | 7 | 9.5 | 1 | 2.5 | Montage, K2.1, Fence Line, Kinako's favour, Ambush, Patch 3 (Persimmon Alley), Den opens |
+| L2D1 | 20 | 7 | 9.5 | 1 | 2.5 | Montage, K2.1, Rivals board, Kinako's favour, Ambush, Patch 3 (Persimmon Alley), influence ≈ 75 |
 | L2D2 | 23 | 7.75 | 13 | 1 | 1.25 | Declaration card + first forecast, Sentries and Turf Board, props and Fears, K2.3 flap, first Night, Caterwaul |
-| L2D3 | 24 | 6.75 | 15.5 | 0.75 | 1 | Lessons, Kagi, Zoomies, Patch 4 (Tofu Shop Step), Late Home, K2.2 |
-| L2D4 | 21 | 8.5 | 9 | 1 | 2.5 | K2.5 (morning, the Closing), Daifuku attempt lost in Day → Dusk, plaster |
-| L2D5 | 16 | 7 | 7.5 | 0.75 | 0.75 | Daifuku claimed, Life-end sleep in the suitcase, title card |
-| **Total** | **149** | **53 (36%)** | **72.5 (49%)** | **8 (5%)** | **15.5 (10%)** | |
+| L2D3 | 24 | 6.75 | 15.5 | 0.75 | 1 | Lessons, Kagi, Zoomies, Patch 4 (Tofu Shop Step), influence ≈ 95, Late Home, K2.2 |
+| L2D4 | **15.5** (was 21) | 3.5 | 7.25 | 1.75 | 3 | K2.5 (morning, the Closing), challenger Sniff, rescue Sprays → **the Boss window opens**, Daifuku attempt lost in Day → **Night**, walk home, the Routed Evening and the plaster |
+| L2D5 | 16 | 7 | 7.5 | 0.75 | 0.75 | Daifuku rematch (−10%, Calm), Den Claim Spray → claimed, Life-end sleep in the suitcase, title card |
+| **Total** | **143.5** (was 149) | **48 (33%)** | **70.75 (49%)** | **8.75 (6%)** | **16 (11%)** | |
 
 ```
 cumulative minute 0         30        60        90        120       150
@@ -256,7 +302,7 @@ territory T |########|##########|#########|#############|################|######
            L1D1      L1D2      L2D1      L2D2        L2D3          L2D4      L2D5
 ```
 
-Combat and territory alternate inside every day, because each Patch take is roam → escalate → fight → Spray → post. Neither one runs for more than ≈ 4 real minutes without the other, apart from the Daifuku fight. The **fast path** (Daifuku won on L2D4, after that morning's K2.5) is 6 days and ≈ 2 h 13. Each extra Boss wipe adds ≈ 16–20 min.
+Combat and territory alternate inside every day, because each Patch take is roam → escalate → fight → Spray → post. Neither one runs for more than ≈ 4 real minutes without the other, apart from the Daifuku fight. The **fast path** (Daifuku won on L2D4 after the window opens, then the Den Claim Spray) is 6 days and ≈ 2 h 08 (was 2 h 13). **Each extra Boss wipe** now adds one rematch day, ≈ 16 min (was 16–20: the lost day no longer plays out its Dusk tail), so reference + one extra wipe is ≈ 160 min, over the 150 median as before; AC-P2 is a median. *Owner-feedback re-run:* `design/reviews/owner-feedback/sim/day_budget_check.py` (output `.out.txt`; before `.before.out.txt`).
 
 ## 4. Formulas
 

@@ -1,8 +1,8 @@
 # HUD Design — Cat RPG (vertical slice, round 2)
 
-*Owner: ux-designer · Date: 2026-11-23 · Status: round-2 slice rewrite (the first draft is archived at `design/backlog/first-drafts/hud.md`)*
-*Canon: `design/creative-brief.md` v1.3 and `design/reviews/round-1/director-rulings.md` (DR-xx). Where this doc and a ruling disagree, the ruling wins and this doc is wrong.*
-*Companions: `design/ux/key-screens.md` (Fence Line, Rival card, Verdict, Turf Board, Crew, onboarding) and `design/accessibility-requirements.md` (the project-wide floor every element here must meet).*
+*Owner: ux-designer · Date: 2026-11-23, revised 2026-11-24 (owner feedback pass) · Status: round-2 slice rewrite (the first draft is archived at `design/backlog/first-drafts/hud.md`)*
+*Canon: owner comments C1–C5 → `design/reviews/owner-feedback-rulings.md` (OR-xx, binding) → `design/creative-brief.md` v1.5 → `design/reviews/round-1/director-rulings.md` (DR-xx). Patent guardrails: `design/legal/nemesis-patent-analysis.md` v2 §5. Where this doc and a ruling disagree, the ruling wins and this doc is wrong.*
+*Companions: `design/ux/key-screens.md` (Rivals board, Rival card, Verdict and loss, Turf Board, Crew, onboarding) and `design/accessibility-requirements.md` (the project-wide floor every element here must meet).*
 
 **Scope.** The slice HUD for the three contexts of Lives 1–2: **street** (exploration), **combat** and **home**, under the **third-person camera behind the cat** (brief §4.1, DR-48). It also holds the **control map** (DR-08; UX owns the map, Combat owns the actions). It does not define any system rule: every value shown here is read from the owning system.
 
@@ -68,19 +68,35 @@ Consequences for the HUD:
 | Element | Zone | Shows | Visibility | Owner of data |
 |---|---|---|---|---|
 | **Phase dial** | TR, 48 px at 1080p | Sun pom over a roofline; no digits; moon-blue at Night | **Always while roaming** (setting: Always / Contextual / Off). Enlarges for 4 s at phase change and through the last 60 s of a phase. Hidden in combat, at home and whenever the clock is paused (DR-24) | Clock |
-| **Patch tag** | TL | Patch silhouette stamp, Keeper's Clowder emblem, 1–4 wisps. **No number** (DR-47) | 3 s on entering a Patch; dropped if a fight starts | Territory |
+| **Patch tag** (the street's influence readout) | TL | Patch silhouette stamp, Keeper's Clowder emblem, 1–4 wisps. **No number, no bar** (OR-08: the street shows wisps only; the influence % lives in the Turf Board header). On your own post below Strong the wisp row carries the **cracked-wisp** stamp (the same "fading" badge as the Turf Board), which is exactly when the Spray prompt appears | 3 s on entering a Patch, and 2 s after any Spray, Rub or Counter-Spray, showing the wisps change; dropped if a fight starts | Territory |
+| **Anger puff** (on the Patch tag) | TL, beside the wisps | One steam puff pops off the tag with a distant grumble (Audio) when the act just done raised the district Boss's anger (Over-mark, Counter-Spray in his district, OR-07). A second, larger puff when that act crossed into a new stage. **No number, no meter** | With the Patch tag after the act | Nemesis |
+| **Rivals chip** | TR, under the phase dial | The Rivals board icon + the cat's chip (silhouette until met) + View glyph. Pressing View opens the board focused on that cat (`key-screens.md` §2.8) | 4 s after a key event (discovery, Verdict, first join-in); never in combat, at home or on the walk home | UX |
+| **Roaming-Boss call** | Edge ring toward the Boss's stop | A crown pom with a yowl contour (the Boss's sting, drawn) pointing to his current patrol stop | 3 s when the Boss window opens and at each phase change while it is open (he moves stop), current district only; the persistent cue is the compass tick (§3.2) | Territory (window), Nemesis (stop) |
 | **Caterwaul flare** | TL + edge arrow | Distress-yowl pom, Patch stamp, **shrinking ring = time left** | While the raid is defendable; current district only (DR-17) | Territory |
 | **Ambush sting flare** | Edge ring, direction of the attacker | Jagged pom + a 2.0 s draining arc; the last 0.75 s turns Ink (the Skitter/Brace window) | During a Rival Ambush (DR-36) | Combat |
 | **Call glyph** | Edge ring toward the singer | Three smooth Haru-Yellow arcs drawn as the Call's contour, Ink-outlined | When the Call sounds (always on; DR-54) | Audio / Narrative |
 | **Head Home prompt** | BC (just above the cat) | Bell-gold paw on a thread + D-pad Down hold glyph | First 4 s after the Dusk Call, and while drowsy | Day loop |
 | **Interact prompt** | World-anchored at the object | North / E glyph + a verb pictogram (Spray puff, Sniff nose, Nap zZ) | In range; Spray only when the post is below Strong (DR-18) | Territory / Day loop |
-| **Tail-Up picker** | BL, compact portrait poms | Lounging cats only; posted cats halftoned with a guard-post stamp | D-pad Left/Right pressed (DR-38) | Crew |
+| **Tail-Up picker** | BL, compact portrait poms | Lounging cats only; posted cats halftoned with a guard-post stamp | D-pad Left/Right pressed (DR-38); not on the walk home after a loss | Crew |
 | **Pickup tick** | TR under the dial | Fish icon + count (Morsels), shiny icon (Shinies) | 1.5 s, merged within 500 ms | Economy |
 | **Bark balloon** | World-anchored over the speaking cat | Readable cat speech ≤ 60 characters, Clowder-colour tab with emblem, three-pom tail | One at a time | Nemesis / Narrative |
 
 ### 3.2 Whisker Sense (R2 hold / Tab hold)
 
-The world desaturates; scent trails glow; the **scent compass ring** sits on the ground around Mikan (world-anchored, not screen) with up to 6 ticks: rival marks (Clowder emblem), Rivals (rank claw-marks), hidden finds (sparkle). Scent Posts in view show their wisps brighter. The phase dial enlarges. Nothing else appears. Not usable in combat (DR-08).
+The world desaturates; scent trails glow; the **scent compass ring** sits on the ground around Mikan (world-anchored, not screen) with up to 6 ticks, in this priority when more than 6 compete:
+
+| Tick | Shape (colour is the second channel) | When |
+|---|---|---|
+| **Roaming Boss** | Crown with paw-marks, in his Clowder colour; larger than other ticks | While the Boss window is open: points to his current patrol stop (OR-09) |
+| **Challenger** | Stake flag, Outsiders colour | While a challenger is active in the district: points to the post it stakes (OR-16) |
+| **Your fading post** | Cracked wisp, Bell Gold | Your held posts below Strong (the posts that are dragging influence down) |
+| Rival mark | Clowder emblem | As before |
+| Rival | Role claw-mark | As before |
+| Hidden find | Sparkle | As before |
+
+Scent Posts in view show their wisps brighter. The phase dial enlarges. Not usable in combat (DR-08).
+
+**Sniff to discover** (OR-03). Holding Whisker Sense with an undiscovered cat on screen within **10 m** draws a thin **fill ring** around that cat (world-anchored, 1.0 s). When it closes, the cat's **scent outline** pulses once in its Clowder colour and a **tape star** pops over its head: discovered (`CatDiscovered`). Then the Rivals chip (from Life 2 day 1). Releasing early cancels the ring with no cost. A cat already discovered draws no ring. No text appears; the legend (View hold) on the Rivals board explains it, and the board's name-card for a silhouette says how.
 
 ### 3.3 Wireframe — street, roaming
 
@@ -122,6 +138,42 @@ The world desaturates; scent trails glow; the **scent compass ring** sits on the
 
 Crossing inward: phase dial, Patch tag and pickup ticks fade over 800 ms in that order; the camera gently lowers and tightens (DR-48 allows this move). Crossing outward: the dial fades back in over 400 ms. A Caterwaul that fires while Mikan is home is **not** flared; its result comes in the next Sniff.
 
+### 3.6 The closed street: walking home after a loss (OR-01)
+
+After a Posse wipe the clock jumps to Night (the nightfall transition, `key-screens.md` §4.6) and **the street closes**: Mikan can only walk home. The HUD says so by what it removes, not with text.
+
+| Element | On the walk home |
+|---|---|
+| **Phase dial** | The moon, at Night, with a small **closed-door notch** cut into the roofline (shape twin of "the street is closed"). Stays until the garden wall |
+| **Head Home thread** | Drawn at once from where Mikan comes to (≤ 60 s long); brighter than at Dusk |
+| **Head Home prompt** (BC) | Persistent, with a **60 s drain ring** around the paw pom. When it empties, the drowsy autopilot walks Mikan home (existing rule). Pressing Head Home starts the autopilot at once |
+| Interact prompts | None appear (no Spray, Rub, Sniff, Nap, pickups); the Lot's back fence has no prompt |
+| Patch tags, Caterwaul flares, Ambush stings, pickup ticks, Rivals chip | Off. Tonight's raid auto-resolves overnight; its result comes in the next Sniff |
+| **Whisker Sense** | Shows the thread only: no compass ticks, no sniff-to-discover ring |
+| Tail-Up picker | Off |
+| Posse plates | Hidden (no combat). The Posse limps after Mikan in the world |
+| Other cats | Non-hostile in the world: they turn away or watch (Nemesis/AI); no overhead marks |
+| **Pause** | Mikan · Rivals (read-only) · Options |
+| View / J | Opens the Rivals board (read-only) |
+| First loss only | One hint card: "Day's over. Head home." with the Head Home glyph |
+
+Before the cat flap (Lives 1–2 up to L2D2 Dusk) the same HUD plays over the staged nightfall. Crossing the garden wall, everything falls away as usual (§3.5) and the Routed Evening begins.
+
+```
++--------------------------------------------------------------------------+
+|                                                        (moon) roofline   |
+|   (moon-blue street, empty; no tags, no flares)          with door notch |
+|                                                                          |
+|        . . . . gold Head Home thread . . . . . . . . . . . ->  (wall)    |
+|                                                                          |
+|                     (Pon, Hige limping behind)                           |
+|                               /\_/\                                      |
+|                              ( -.- )   <- Mikan                          |
+|                                                                          |
+|                         ( paw )  <- Head Home prompt, 60 s drain ring    |
++--------------------------------------------------------------------------+
+```
+
 ---
 
 ## 4. Combat HUD
@@ -132,7 +184,7 @@ Goal: under T4/T5 VFX, shake and dust, the player must always find (1) the contr
 
 | Element | Zone | Shows | Rules |
 |---|---|---|---|
-| **Posse plates** (×4) | BL, stacked | One bean plate per cat: portrait, D-pad glyph, Nerve bar, **2 Paw pips** (partial fill visible), 1 status pom (Soggy / Cowed / Fired Up, max 1, DR-28), queued-command pom | **Fixed order by slot = D-pad order: Up (Mikan), Left (Crew 1), Down (Crew 2), Right (Crew 3).** Rows never reorder. The controlled cat's plate enlarges in place (×1.3) and gains the hiss-mouth pom. Routed cat: plate halftoned, portrait flattened, glyph struck through |
+| **Posse plates** (×4) | BL, stacked | One bean plate per cat: portrait, D-pad glyph, Nerve bar, **2 Paw pips** (partial fill visible), 1 status pom (Soggy / Cowed / Fired Up, max 1, DR-28; see §4.1.1), queued-command pom | **Fixed order by slot = D-pad order: Up (Mikan), Left (Crew 1), Down (Crew 2), Right (Crew 3).** Rows never reorder. The controlled cat's plate enlarges in place (×1.3) and gains the hiss-mouth pom. Routed cat: plate halftoned, portrait flattened, glyph struck through |
 | **Hiss pom** | On the controlled plate | Hiss-mouth icon that refills over the 8 s cooldown | Glows when a yellow telegraph is live and Hiss is ready |
 | **"Can act" bell** (conductor cue) | On each Crew plate | A small pad-bell lights when that cat can afford a Move (≥ 1 Paw) | The cue is the cat's D-pad direction plus the bell, not a command-button glyph (CX-C1) |
 | **Shortcut diamond** | Beside the controlled plate | Four Move icons at W/N/E/S with Paw cost pips, Set-up/Pay-off mark | Appears only while L1 is held. Life 1 shows it after the first Slow Blink lesson; never shown otherwise |
@@ -141,7 +193,7 @@ Goal: under T4/T5 VFX, shake and dust, the player must always find (1) the contr
 | **Enemy overhead bar** | World, over the enemy | Thin Nerve bar + **zigzag Frazzle bar** beneath it | Shown on the lock target, on any enemy hit in the last 3 s, and on any Frazzled enemy; otherwise hidden. Handheld: non-target bars drop first |
 | **Frazzled ring** | World, around the Frazzled enemy | Countdown ring over the 6 s window; on Captains and the Boss, **5 pips** that drain as the window passes (earlier Pile-On = worth more, DR-30) | No numeral, ever. Trash shows the ring without pips (Pile-On always Routs below Captain) |
 | **Pile-On prompt** | World, over the Frazzled enemy | North / F glyph inside a dust-cloud pom | Appears only when the Pile-On is legal (≥ 2 standing Posse cats; trash: 2+ Frazzled within 3 m or the last enemy). **No world text**: the word "Pile-On" is taught by a BC hint card |
-| **Identity ribbon** | TC | Slanted Clowder banner, name, Title, claw-mark rank pips (Tough 1, Captain 2, Boss 3), ≤ 3 known Fear/Strength stamps, storm mark if Nemesis, Old Score stamp if active. Boss: **segmented Nerve bar (3 phases)** | **Named Rivals, Captains and Daifuku only.** Strays and Crows get no ribbon. It is the Standoff name-card shrinking into place (one component) |
+| **Identity ribbon** | TC | Slanted Clowder banner, name, Title, role mark (Tough 1 claw, Captain 2, Boss crown), ≤ 3 known Fear/Strength stamps, storm mark on the arc lead (*Sworn Enemy / Sworn Rival*), Old Score stamp if active, **1 status pom** (Fired Up from anger, §4.1.1). Boss: **segmented Nerve bar (3 phases)** and his **anger puffs** (0–3) beside the name | **Named Rivals, Captains and Daifuku only.** Strays and Crows get no ribbon. It is the Standoff name-card shrinking into place (one component) |
 | **Red callout** | Docked under the identity ribbon | Telegraph pictogram (zigzag) for a Captain's or Boss's red move | Never over the cat; no text |
 | **Telegraphs** | World decals + overhead glyph | White = dodge (solid ring), yellow = Hiss it (Paper Cream dashed + triangle), red = get out (Frazzle Magenta zigzag edge) | Owned by Combat/Art; render above the Pile-On dust |
 | **Damage numerals** | World | Size by hit tier, not magnitude. Weakness and resistance read from the **spark shape** (Art §10.3: extra crack wedge / blunted spark), not the numeral frame | Default **Off** in the slice (R3; the manga feel lives in glyphs and the single lettered word); options Off / Big hits (player-authored T3+) / All. AI basic hits never show. Multi-hits merge. Max 6 on screen |
@@ -149,6 +201,29 @@ Goal: under T4/T5 VFX, shake and dust, the player must always find (1) the contr
 | **Bark balloon** | World | Fight barks are **icon-only** (DR-44); the Old Score bark and Standoff lines are text | One at a time |
 | **Tag-In cue** | Crew plates + world | See §4.3 | — |
 | **Relay chain** | Above the plate stack | Up to 4 cat-face poms lighting in order; 3 s drain line | Only during a Relay |
+| **Ally guest plate** (Nose-Touch join-in) | BL, **above** the plate stack, separate from it | See §4.1.2 | Only while a truce cat or Friend fights beside the Posse (OR-13) |
+
+#### 4.1.1 Cowed and Fired Up from the Rivals rules
+
+Both reuse Combat's existing statuses and the one status pom (no new HUD element). What the HUD adds is **why**, shown as a small badge on the pom, so the player can act on it.
+
+| State | Where | Shows | Clears |
+|---|---|---|---|
+| **Cowed by Old Gang Nerves** (OR-06) | The recruit's own Posse plate | The Cowed pom (drooped ears) with a **small crown-with-a-nick badge** (its Old Boss) and a **drain ring** for the 20 s (Fraidy 30 s). The plate's D-pad glyph pulses gently: the answer is a Tag-In | **Tag-In to that cat** clears it at once: the pom pops off with a bell tick and the cat's own "steeled" bark. Or the ring runs out |
+| The flinch itself | World, at the Standoff | The recruit's ears flatten and it flinches; its **own** line in its balloon ("…That's Daifuku's wall."). A resisting cat instead plays its own defiant line ("Not your cat anymore.") and gets no pom | — |
+| **Fired Up from Boss anger** (OR-07) | The Boss's identity ribbon | The Fired Up pom (puffed chest) with his **steam-puff badge** (1–3 puffs = Riled / Seething / Furious) and a drain arc for 20 s / 40 s; **no arc when Furious** (all fight) | Runs out, or the fight ends. After any win, loss or `rival_fled` his ribbon's puffs empty on the next Standoff (anger spent) |
+
+**What the HUD never shows:** any mark on the Old Boss pointing at the recruit (he behaves as with any Posse, G4), or any link line between the two. The Cowed cat's badge is its own memory, not his reaction.
+
+#### 4.1.2 The ally guest plate (Nose-Touch join-in, OR-13)
+
+- **Arrival:** a 3 s yowl from off-screen; an **edge arrow** with the sprig icon points where it comes from; then the plate pops in above the stack and the cat leaps into the ring.
+- **The plate:** a smaller bean (×0.8) with a **dashed Bell-Gold keyline** (allied, not yours), the cat's chestnut portrait with its **truce sprig**, its name ribbon, a Nerve bar. **No D-pad glyph, no Paw pips, no "can act" bell, no command pom:** it cannot be switched to, commanded or join a Pile-On, and the plate says so by what it lacks.
+- **In the world:** a sprig tick over its head instead of the Posse chevron, and the same dashed gold keyline, so it never reads as a sage-outlined enemy (colour twin: the dashed line and the sprig shape).
+- **Slow Blink:** it is not in the L1/R1 cycle; it shows in the tactical view with its sprig tick only.
+- **Routed:** its plate halftones and slides off after 1.5 s.
+- **The opposing Rival:** nothing on its ribbon, outline or overhead changes (G7). No tag or line ties the two on screen in combat.
+- **Max one guest** per encounter (OR-13).
 
 **Rule of no world text (UX-2.5, as ruled; R3):** in real-time combat the only world-space text is **one bark balloon plus one lettered word** (Combat §3.17). Damage numerals are added only if the player turns them on. Ally Move ribbons are cut; the cut-in and VFX carry them.
 
@@ -177,6 +252,31 @@ Goal: under T4/T5 VFX, shake and dust, the player must always find (1) the contr
 |+-----------------------+                                                 |
 +--------------------------------------------------------------------------+
  oo = Paw pips (o. = half)   b = "can act" bell   ) = queued command
+```
+
+**Variant: the Daifuku fight with the Rivals states** (Kagi Cowed by Old Gang Nerves; Daifuku Fired Up while Seething; Togemaru, in truce, joined in against his Rival Goma in the wave):
+
+```
++--------------------------------------------------------------------------+
+|        /=[ (sage) DAIFUKU  ( )( )  [FiredUp: puffs 2, arc 40 s] ]=\       |
+|         \ [Water] [?]   Nerve [=====|=====|=====]  3 phases     /        |
+|                                                                          |
+|   <(sprig) edge arrow: guest arriving from the left (3 s yowl)           |
+|                                                                          |
+|                        DAIFUKU on the wall-top kit                       |
+|                                                                          |
+|   (sprig) dashed gold keyline           (bell)          ^ chevron        |
+|    Togemaru, guest                      /\_/\           Hige             |
+|                                        ( o.o )                          |
+|+---------------------------+                                    .--.     |
+|| (sprig) [Togemaru] ====-  |  <- guest plate: no glyph, no Paws ( ** )   |
+|+---------------------------+                                    '--'     |
+|| ^ [Mikan ] ===== oo  )    |                                             |
+|| < [Hige  ] ===-- o.  b    |                                             |
+|| v [Kagi  ] ====- o.  [Cowed + nicked crown, ring 20 s]  <- glyph pulses |
+|| > [Pon   ] ===== oo  b    |                                             |
+|+---------------------------+                                             |
++--------------------------------------------------------------------------+
 ```
 
 ### 4.3 Tag-In and switching
@@ -233,7 +333,8 @@ Unaffordable rows stay in place, focusable, halftoned, with the reason as an ico
 
 | State | HUD |
 |---|---|
-| **Standoff** (2–4 s) | Name-card slams into the upper third: slanted banner, portrait, claw pips, sting contour glyph, one taunt balloon. A memory-citing line cannot be skipped for 1 s (a fill ring on the skip glyph). Then it shrinks into the identity ribbon. |
+| **Standoff** (2–4 s) | Name-card slams into the upper third: slanted banner, portrait, claw pips, sting contour glyph, one taunt balloon. A memory-citing line cannot be skipped for 1 s (a fill ring on the skip glyph). Then it shrinks into the identity ribbon. **Old Gang Nerves:** if a Posse recruit sees its Old Boss among the opponents, its own flinch and line play here, after the Boss's ordinary taunt, and the Cowed pom lands on its plate as the fight starts (§4.1.1). A Boss's anger puffs and Fired Up pom are on the name-card from the slam. |
+| **Ally joins** | The guest's yowl, edge arrow and plate (§4.1.2); the fight does not pause. |
 | **Ambush by player** | The target's identity ribbon slams in with a Ruffled stamp (no separate corner tag). |
 | **Ambush by Rival** | Sting flare from the attacker's direction (§3.1). |
 | **Real time** | §4.1–4.3 |
@@ -242,7 +343,7 @@ Unaffordable rows stay in place, focusable, halftoned, with the reason as an ico
 | **Leader Routed** | Control passes to the next slot (not Mikan, DR-33); that plate enlarges; 1.5 s plate flash. |
 | **Fed Up (75 s)** | Combat owns the behaviour; HUD shows nothing new. |
 | **Win** | HUD fades; Verdict prompt for the one highest-rank tracked Rival (`key-screens.md` §4); other tracked cats slip away. Then the encounter tally (BR, 2.5 s, any input dismisses): XP pips, Morsels, level-up pip. |
-| **Wipe** | HUD hides; the victor's **Gloat ≤ 3 s** reuses the name-card; Mikan slinks home (DR-19). |
+| **Wipe** (a loss, OR-01) | HUD hides; the victor's **Gloat ≤ 3 s** reuses the name-card (its own line only); then the nightfall transition and the closed-street walk home (§3.6; `key-screens.md` §4.6). |
 
 ### 4.6 Readability under heavy VFX
 
@@ -258,7 +359,7 @@ Unaffordable rows stay in place, focusable, halftoned, with the reason as an ico
 
 | Constraint | Limit |
 |---|---|
-| Screen-anchored elements, real time | 4 (plates, Zoomies pom, identity ribbon, 1 hint card) |
+| Screen-anchored elements, real time | 4 (plates, Zoomies pom, identity ribbon, 1 hint card); +1 ally guest plate when a join-in is live, stacked with the plates (same zone) |
 | HUD screen area, real time / Slow Blink | ≤ 15% / ≤ 28% |
 | Centre 40%, screen-anchored | 0% |
 | Damage numerals on screen | 6 |
@@ -277,7 +378,7 @@ Unaffordable rows stay in place, focusable, halftoned, with the reason as an ico
 - **Nothing translates human speech.** Murmur Ribbons are cut (DR-54). Tone Sense Icons show what Mikan *felt*, authored per vignette, never what a human *meant*. No subtitle track exists for Murmur, in any setting.
 - **Off-screen sound at home:** Mikan's ear-and-head turn plus an **ear Sense Icon** pointing at the source. No edge chips.
 - **The daily find:** a fresh Home Scent trail (faint, the household's textile motif) leads to the "What changed today?" object; no marker, no text.
-- **Pause at home** offers only the **Mikan tab** (hearts, the turf goal as a picture) and **Options** (DR-24). No Fence Line, Turf Board or Crew.
+- **Pause at home** offers only the **Mikan tab** (hearts, the turf goal as a picture) and **Options** (DR-24). No Rivals board, Turf Board or Crew.
 - **No street notification** of any priority shows inside the wall. No toast ever reports a human event.
 - No damage numerals, phase dial or lettered words at home.
 
@@ -305,9 +406,20 @@ Unaffordable rows stay in place, focusable, halftoned, with the reason as an ico
 At the Doorstep each morning, **stamp cards unroll from scent wisps** (Art draws them). Order, top to bottom, max 5 cards:
 1. **Tribute line:** the Doorstep pile (the pile is in the world; the card shows fish count).
 2. **Raid forecast** (always, when one is coming): the target Patch stamp, the raider's portrait, a paw-arrow; the motive icon only if a Schemer is posted in the district (DR-37).
-3. **≤ 3 nemesis items:** portrait + one pictogram (promoted, returned, Restless, Wavering) + at most one cat-voice line ≤ 60 characters. Admitted only for cats with history with the player or that touch the player's Patches or Crew (DR-43).
+3. **≤ 3 Rivals items:** a cat chip (silhouette if undiscovered) + one pictogram + at most one line ≤ 60 characters in that cat's **own** voice, from its own history (G8). Admitted only for cats with history with the player or that touch the player's Patches or Crew (DR-43). Priority when more than 3 compete:
 
-Life 1 shows one card (day 1: Tribute only; day 2: the Thorn at the gatepost). The 3-item Sniff opens on Life 2 day 1 (unlock ladder). North on a nemesis card opens the Fence Line focused on that cat. The cards roll back up as Mikan steps off the Doorstep. Budget ≤ 0.5 min (DR-16).
+| P | Card type (v1.5) | Pictogram | Shows |
+|---|---|---|---|
+| 1 | **Wavering** (OR-11) | Turned-away chip + **two-pip morning mark** ("last warning" on the 2nd) | The posted ex-Rival recruit, its post's stamp, the fix in one line ("Bring it into the Posse, or off its post."). Always admitted; on the 2nd morning it sits first, above the raid forecast |
+| 2 | **Boss window** (OR-09) | Crown with paw-marks | "Daifuku has come down off the walls." + today's three stop landmarks; the Morning stop lit |
+| 3 | **Challenger arrived** (OR-16) | Stake flag | "A stranger's scent." Silhouette + the staked Patch's stamp + tape star |
+| 4 | Declaration / arc closing | Storm mark / bell / paw prints off the edge | *Sworn Enemy* / *Sworn Rival* / "Wears the bell now" / "Run out of town" |
+| 5 | **Boss anger** at Seething or Furious (OR-07) | 2–3 steam puffs | "The big wall is seething." (his own Standoff voice; never a cause other than marking) |
+| 6 | Town event, truce over, victor's plaster line | Tape star / sprig / plaster | One line, the cat's own; never a cause in terms of another cat |
+
+Deleted card types (OR-21): promoted, returned, Restless.
+
+Life 1 shows one card (day 1: Tribute only; day 2: the Thorn at the gatepost). The 3-item Sniff opens on Life 2 day 1 (unlock ladder). North on a Rivals card opens the Rivals board focused on that cat (`key-screens.md` §2). The cards roll back up as Mikan steps off the Doorstep. Budget ≤ 0.5 min (DR-16).
 
 ```
 +--------------------------------------------------------------------------+
@@ -315,12 +427,16 @@ Life 1 shows one card (day 1: Tribute only; day 2: the Thorn at the gatepost). T
 |              +---------------------------------------+                   |
 |              | (fish) Doorstep pile        x 34      |                   |
 |              +---------------------------------------+                   |
-|              | RAID  [Gatepost stamp] <== [Thorn]    |  tonight          |
+|              | RAID  [Persimmon Alley] <== [Thorn]   |  tonight          |
 |              |        (paw-arrow)   (motive: grudge) |                   |
 |              +---------------------------------------+                   |
-|              | [Captain] ^ promoted  "Wall's mine."  |                   |
+|              | (crown) Daifuku has come down off the |                   |
+|              |  walls.  [yard wall][back wall][Den]  |                   |
 |              +---------------------------------------+                   |
-|                (N) See the wall           step off to close              |
+|              | (flag) [ ? ] A stranger's scent.      |                   |
+|              |        staking [Laundry Pole Yard] *  |                   |
+|              +---------------------------------------+                   |
+|                (N) See the Rivals         step off to close              |
 +--------------------------------------------------------------------------+
 ```
 
@@ -343,7 +459,14 @@ Priority 1 is read first and must survive every VFX state; lower priorities hide
 | 5 | Zoomies ready | Limit break | Pom crown burst + glyph | Combat |
 | 5 | Caterwaul / raid in progress | Optional defence | TL flare + shrinking ring + edge arrow | Street |
 | 6 | Time of day | Curfew trade | Phase dial; world light | Street |
-| 6 | Patch ownership and strength | Spray or post | World wisps; Patch tag | Street |
+| 6 | Patch ownership and strength (the street's influence read) | Spray or post | World wisps; Patch tag with the cracked-wisp fading stamp; compass fading-post ticks | Street |
+| 4 | **Cowed by Old Gang Nerves** on a Posse cat | Tag-In to steady it | Cowed pom + nicked-crown badge + drain ring; pulsing D-pad glyph | Combat |
+| 4 | **Boss Fired Up** (anger) | Respect the bigger hits; time the Pile-On | Fired Up pom + puff badge + drain arc on the ribbon | Combat |
+| 5 | **Ally guest** in the fight | Know who is on your side | Dashed gold keyline + sprig tick (world); guest plate | Combat |
+| 5 | **Roaming Boss's stop** (window open) | Where to challenge him | Compass crown tick; edge crown pom at phase change | Street |
+| 6 | Challenger's staked post | Optional fight by day | Compass stake-flag tick | Street |
+| 7 | Anger rose (after a marking act) | Sneak or go loud | Puff off the Patch tag + grumble | Street |
+| 7 | A new face discovered / a key Rivals event | Look at the board later | Sniff fill ring + scent outline + tape star; Rivals chip | Street |
 | 7 | Morsels picked up | Low stakes | Pickup tick | Street |
 | 8 | Damage numerals (Off by default) | Feedback only | Size by tier; weakness/resist in the spark shape | Combat |
 | — | Haru's life | Never HUD | Staging, light, music, Sense Icons | Home |
@@ -362,11 +485,16 @@ Priority 1 is read first and must survive every VFX state; lower priorities hide
 | Phase change | TR dial enlarges | 4 s | 1 | Medium | Clock is paused in combat anyway |
 | Encounter tally | BR | 2.5 s | 1 | Medium | After the Verdict |
 | Clout rank-up | Centre card | Until dismissed | 1 | High | Held until roaming and outside the wall |
+| Boss window opens (yowl) | Edge crown pom + Sniff next morning | 3 s | 1 | High | Never in combat; replayed once after the tally |
+| Roaming Boss moves stop | Edge crown pom | 3 s | 1 | Medium | At phase change; dropped in combat |
+| Ally joins | Edge arrow + guest plate | 3 s yowl | 1 | High | In combat only; never queued |
+| Rivals chip | TR under the dial | 4 s | 1 | Low | Held in combat, flushed after the tally; dropped on the walk home |
+| Anger puff | TL, on the Patch tag | With the tag | 1 | Low | Merged with the Patch tag |
 | Hint card | BC | Until done or dismissed | 1 | Medium | Queued in combat unless it is a combat hint |
 | Patch tag / pickup tick | TL / TR | 3 s / 1.5 s | 1 / 2 merged | Low | Dropped if a fight starts |
 | Bond hearts | Over Mikan | 2 s | 1 | Low | Home only |
 
-Rules: Low and Medium items are held in combat and flushed after the tally (≤ 3 in sequence; stale Low items dropped). Same-type items within 500 ms merge. Rival rank changes and betrayals are never toasts: they arrive by bark, the Sniff or the Fence Line.
+Rules: Low and Medium items are held in combat and flushed after the tally (≤ 3 in sequence; stale Low items dropped). Same-type items within 500 ms merge. Town events, challengers and betrayals are never toasts: they arrive by bark, the Sniff or the Rivals board. No notification states that a cat changed because of what Mikan did to another cat (`key-screens.md` §1.1 rule 6).
 
 ---
 
@@ -388,7 +516,7 @@ Everything is remappable, and every chord or hold has a one-button or toggle alt
 | L1 hold + face button | — | Shortcut Move 1/2/3/4 (W/N/E/S) |
 | L1 + R1 | — | Zoomies |
 | D-pad | Left/Right = Tail-Up picker; Up = Meow; Down = Sit (hold = **Head Home** thread) | Direct switch: Up = Mikan, Left/Down/Right = Crew 1/2/3 (a switch at the right moment is a **Tag-In**) |
-| View / Menu | Fence Line / Pause | — / Pause |
+| View / Menu | **Rivals** board / Pause | — / Pause |
 
 Inside Slow Blink: stick = cursor; L1/R1 = change cat; South = confirm; East = back; R2 = close. Commands **chain** while any cat can afford one. Scram (flee) is a menu entry.
 
@@ -405,12 +533,13 @@ Inside Slow Blink: stick = cursor; L1/R1 = change cat; South = confirm; East = b
 | Z X C V | — | Switch Mikan / Crew 1 / 2 / 3 |
 | MMB / wheel | Recentre | Lock-on / next target |
 | V / T / C / H | Tail-Up / Meow / Sit / Head Home (hold) | — |
-| J / Esc | Fence Line / Pause | — / Pause |
+| J / Esc | **Rivals** board / Pause | — / Pause |
 
 Cut (DR-08): Whack, Bap, Righting input, hold-charge attacks, Tactics (slice), L3+R3 chord, Whisker Sense in combat, the bell ping, the Posse directive, right-stick peek.
 
 **UX notes on the map (no redefinition):**
-- At home, combat-only and Fence Line bindings are inert; View does nothing (DR-24).
+- At home, combat-only and Rivals bindings are inert; View does nothing (DR-24). On the walk home after a loss, View / J opens the Rivals board read-only (§3.6).
+- Desktop only: gamepad and keyboard/mouse. There is no touch layout.
 - Menu navigation everywhere: stick/D-pad move, South confirm, East back; keyboard arrows/WASD, Enter/Space, Esc. Mouse hover focuses; LMB confirms.
 - Hold-to-commit (the Verdict) uses South / Space with a 600 ms ring; a press-then-confirm alternative exists (accessibility doc §4).
 
@@ -428,7 +557,10 @@ Cut (DR-08): Whack, Bap, Righting input, hold-charge attacks, Tactics (slice), L
 | Relay chain drain | 3 s | Combat's value | Read, not owned |
 | Controlled plate scale | ×1.3 | ×1.15–1.5 | |
 | HUD scale | 100% | 80–150% | Accessibility doc §6 |
-| Sniff card max | 5 | 3–5 | Canon caps the nemesis items at 3 |
+| Sniff card max | 5 | 3–5 | Canon caps the Rivals items at 3 |
+| Rivals chip duration | 4 s | 3–6 s | Long enough to press View without stopping |
+| Sniff-to-discover hold | 1.0 s within 10 m | Nemesis's values | Read, not owned |
+| Walk-home autopilot | 60 s | Day Loop's value | Drain ring on the Head Home prompt |
 
 ---
 
@@ -444,6 +576,11 @@ Cut (DR-08): Whack, Bap, Righting input, hold-charge attacks, Tactics (slice), L
 8. Every glyph-bearing element measures ≥ 28 px at 1080p / 18 px at 720p.
 9. A median-skill tester reads the Sniff and leaves the Doorstep in ≤ 30 s (DR-16).
 10. No playtester in the no-briefing test reports missing Dusk without noticing the dial.
+11. In the Daifuku fight with a Cowed recruit, ≥ 70% of testers Tag-In to it before its ring runs out after the first hint; ≥ 80% can say afterwards why it was scared ("its old boss").
+12. In a fight with an ally guest, ≥ 90% of testers never mistake the guest for an enemy (no attacks aimed at it; post-fight question), at 1080p and in deuteranopia simulation.
+13. With the Boss window open, ≥ 80% of testers find Daifuku's current stop within 60 s of roaming using the compass tick.
+14. On the walk home after a loss, ≥ 90% of testers reach the garden wall or start the autopilot without trying another verb more than once.
+15. String and frame audit: no HUD element states or implies that a cat changed because of what Mikan did to a different cat; the Old Boss shows no defector-targeted mark.
 
 ---
 
@@ -465,6 +602,23 @@ Cut (DR-08): Whack, Bap, Righting input, hold-charge attacks, Tactics (slice), L
 - Random-pause test at 10 combatants (full-game stress test; the slice test runs at 6 enemies + Posse).
 
 ## Revision Log
+
+**2026-11-24, Owner feedback pass (2026-11-24): only the elements the rulings touch (OR-01, OR-03, OR-06, OR-07, OR-08, OR-09, OR-11, OR-13, OR-16; patent note v2 §5).**
+
+| Item | How |
+|---|---|
+| Influence on the street (OR-08) | §3.1: the Patch tag stays wisps-only (no bar, no %), gains the cracked-wisp "fading" stamp on your posts below Strong and a 2 s re-show after any marking act; §3.2 compass ticks for your fading posts |
+| Boss anger (OR-07) | §3.1 anger puff off the Patch tag after an anger-raising marking act; §4.1 identity ribbon puffs; §5.3 Seething/Furious Sniff card |
+| Roaming Boss (OR-09) | §3.1 edge crown pom when the window opens and at each stop change; §3.2 compass crown tick (top priority); §5.3 Boss-window Sniff card; §7 notifications |
+| Challenger (OR-16) | §3.2 stake-flag compass tick; §5.3 "A stranger's scent" card |
+| Discovery (OR-03) | §3.2 sniff-to-discover fill ring, scent outline and tape star; §3.1 Rivals chip after key events |
+| Cowed and Fired Up (OR-06, OR-07) | §4.1.1: one status pom each, with a "why" badge (nicked crown / steam puffs) and drain ring; Tag-In clears Cowed; the Old Boss carries no defector-targeted mark (G4); §4.2 Daifuku-fight wireframe; §4.5 Standoff and Ally joins rows |
+| Nose-Touch ally plate (OR-13) | §4.1.2: separate guest plate above the stack, dashed gold keyline and sprig, no glyph or Paws; nothing changes on the opposing Rival (G7) |
+| Loss (OR-01) | §3.6 new: the closed street on the walk home (moon dial with door notch, thread at once, 60 s autopilot ring, everything else off, Rivals read-only); §4.5 Wipe row |
+| Sniff cards (OR-11, OR-16, OR-19) | §5.3 priority table: Wavering (two-pip morning mark; first on the last-warning morning), Boss window, challenger, Declaration/arc closing, anger, town events; promoted/returned/Restless deleted; own-voice lines only (G8) |
+| Naming (G12) | Fence Line → **Rivals** board throughout (§5.1, §5.3, §8); arc lead shown as *Sworn Enemy / Sworn Rival* |
+| Platform | Desktop only (gamepad, keyboard/mouse; §8 note) |
+| Acceptance | §10 items 11–15 |
 
 **2026-11-24, Iteration 3 (round-2 presentation review, final pass).**
 
