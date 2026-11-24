@@ -8,7 +8,7 @@ import * as THREE from 'three';
 export const PHASES = {
   day: {
     zenith: '#3F9BE6', horizon: '#A9DBF5', key: '#FFFBEF', shadow: '#6E6AA8', cel: '#FFFFFF',
-    sunEl: 58, sunAz: -65,         // degrees; azimuth 0 = toward the sea (-Z), +90 = +X
+    sunEl: 58, sunAz: -62,         // degrees; azimuth 0 = toward the sea (-Z), +90 = +X
     shadeK: 0.6,                    // shade = albedo x mix(1, shadow, shadeK)
     shadowTint: '#6F6CC4',          // the 01 frame's lane-shadow wisteria
     bounce: '#FFD9A0', bounceK: 0.22, // warm light kicked up off the lit lane into shaded walls

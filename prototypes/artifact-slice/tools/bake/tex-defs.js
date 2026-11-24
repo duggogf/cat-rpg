@@ -143,8 +143,8 @@
     const y = (deg) => H * (el1 - deg) / (el1 - el0);
     const x = (az) => (az / 360) * W;
     // back range (bluer, higher) then the near shoulder (greener); open window over the sea at az -28..6
-    const back = [[-40, 3.5], [-30, 0.5], [-27, -5], [4, -5], [8, 0.6], [24, 3.2], [50, 6.2], [85, 8.2], [120, 9.8], [160, 11.2], [190, 11.6], [225, 10], [260, 7.6], [290, 6], [320, 4.6], [330, 3.5]];
-    const near = [[60, -5], [80, 2.5], [105, 4.8], [140, 6.8], [175, 7.4], [205, 6.6], [240, 4.6], [270, 2.6], [295, -5]];
+    const back = [[-40, 2.6], [-30, 0.4], [-27, -5], [4, -5], [8, 0.5], [24, 2.6], [50, 4.6], [85, 5.6], [120, 6.4], [160, 7.0], [190, 7.2], [225, 6.4], [260, 5.2], [290, 4.2], [320, 3.4], [330, 2.6]];
+    const near = [[60, -5], [80, 1.6], [105, 3.0], [140, 4.2], [175, 4.6], [205, 4.1], [240, 3.0], [270, 1.6], [295, -5]];
     let s = '';
     for (const off of [0, 360]) {
       const sx = (a) => x(a + off);
@@ -166,15 +166,15 @@
   } };
 
   /* The lower town beyond the crest: roofs and trees stepping down to the sea. 2048 x 512, ring strip. */
-  T.town = { w: 2048, h: 512, alpha: true, svg: () => {
-    const W = 2048, H = 512, R = K.rng(17);
+  T.town = { w: 4096, h: 160, alpha: true, svg: () => {
+    const W = 4096, H = 160, R = K.rng(17);
     let s = '';
-    const farRoof = (x, y, w, h, c) => K.roof({ quad: [[x + w * 0.12, y], [x + w * 0.88, y], [x + w, y + h], [x, y + h]], rows: 3, cols: 7, color: c || '#7E93A8' }) + `<rect x="${x + w * 0.06}" y="${y + h}" width="${w * 0.88}" height="${h * 1.6}" fill="#EFE3C8" filter="url(#k-rough)"/><rect x="${x + w * 0.06}" y="${y + h}" width="${w * 0.88}" height="${h * 0.35}" fill="${C.wisteria}" opacity="0.35" style="mix-blend-mode:multiply"/>`;
-    for (let row = 0; row < 3; row++) {
-      for (let i = 0; i < 12; i++) {
-        const w = 120 + R() * 110, x = i * 175 + R() * 60 - 30 + row * 60, y = 120 + row * 110 + R() * 30, h = 26 + R() * 16;
+    const farRoof = (x, y, w, h, c) => K.roof({ quad: [[x + w * 0.14, y], [x + w * 0.86, y], [x + w, y + h], [x, y + h]], rows: 2, cols: 5, color: c }) + `<rect x="${x + w * 0.06}" y="${y + h}" width="${w * 0.88}" height="${h * 1.3}" fill="#EFE3C8"/><rect x="${x + w * 0.06}" y="${y + h}" width="${w * 0.88}" height="${h * 0.35}" fill="${C.wisteria}" opacity="0.35" style="mix-blend-mode:multiply"/>`;
+    for (let row = 0; row < 4; row++) {
+      for (let i = 0; i < 62; i++) {
+        const w = 40 + R() * 34, x = i * 66 + R() * 20 - 10 + (row % 2) * 33, y = 6 + row * 34 + R() * 8, h = 12 + R() * 6;
+        if (R() < 0.18) { s += K.foliage({ x: x + w / 2, y: y + 16, w: 46 + R() * 30, h: 26 + R() * 12, seed: 700 + row * 70 + i, far: true }); continue; }
         s += farRoof(x, y, w, h, ['#7E93A8', '#8799AC', '#74889E', '#6F8296'][Math.floor(R() * 4)]);
-        if (R() < 0.55) s += K.foliage({ x: x + w * (R() < 0.5 ? 0 : 1), y: y + h + 20, w: 80 + R() * 70, h: 50 + R() * 30, seed: 500 + row * 20 + i, far: true });
       }
     }
     return svg(W, H, s);

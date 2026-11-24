@@ -101,7 +101,7 @@ export function buildWorld(L, tex) {
       g.quad([x0, h(za), za], [x1, h(za), za], [x1, h(zb), zb], [x0, h(zb), zb], (P) => [P.x / 4, -P.z / 4], { nu: 8, nv: 1, ao, wobble: 0 });
     }
     const geo = g.build(); geo.attributes.color.array.forEach((v, i, a) => { }); // ao already in vertex colours
-    const m = envMat({ map: tex.ground, vertexColors: true, grain: 0.0 });
+    const m = envMat({ map: tex.ground, vertexColors: true, grain: 0.0, tint: '#E8DDCB' }); // lit lane kept in the walkable band (L* ≤ 80, art bible §4.2)
     // tint the vertex-colour darkening toward wisteria (the colour channel multiplies per channel)
     const col = geo.attributes.color;
     for (let i = 0; i < col.count; i++) { const k = 1 - col.getX(i); col.setXYZ(i, 1 - k * 0.95, 1 - k, 1 - k * 0.55); }
@@ -159,8 +159,8 @@ export function buildWorld(L, tex) {
       const bb = [x - w / 2, z - d / 2, x + w / 2, z + d / 2];
       if (boxes.some((b) => bb[0] < b[2] + 1.5 && bb[2] > b[0] - 1.5 && bb[1] < b[3] + 1.5 && bb[3] > b[1] - 1.5)) continue;
       boxes.push(bb); made++;
-      const y0 = h(z + d / 2) - 1.2, hh = 2.5 + r2() * 0.6;
-      L.houses.push({ box: [bb[0], y0, bb[1], bb[2], h(z + d / 2) + hh, bb[3]], roof: 1.8 + r2() * 0.6, ridge: r2() < 0.6 ? 'x' : 'z', windows: [['+z', 0.3 + r2() * 0.4, 1.1 + 1.2, 1.3, 0.9]], town: true });
+      const y0 = h(z + d / 2) - 1.2, hh = 2.1 + r2() * 0.5;
+      L.houses.push({ box: [bb[0], y0, bb[1], bb[2], h(z + d / 2) + hh, bb[3]], roof: 1.4 + r2() * 0.5, ridge: r2() < 0.6 ? 'x' : 'z', windows: [['+z', 0.3 + r2() * 0.4, 1.0 + 1.2, 1.2, 0.8]], town: true });
       if (r2() < 0.7) townClumps.push([x + (r2() < 0.5 ? -1 : 1) * (w / 2 + 0.8), h(z) + 1.2, z + (r2() - 0.5) * d, 1.6 + r2(), 1.2, 1.6 + r2()]);
     }
   }
@@ -266,7 +266,7 @@ export function buildWorld(L, tex) {
     mesh(tg.build(), envMat({ vertexColors: true, grain: 0.8 })).name = 'trunks';
     const fol = billboards(items, tex.foliage, { cols: 4, rows: 2, receive: true }); env.add(fol); casters.add(fol); fol.name = 'foliage';
     const fl = L.hydrangeas.map(([x, z, s], i) => ({ pos: [x - s * 0.15, -s * 0.1, z], size: s, rot: 0, cell: i % 2, bright: 1 }));
-    const flw = billboards(fl, tex.flowers, { cols: 2, rows: 1, cylindrical: true, rampLo: -0.6, rampHi: 0.3 }); env.add(flw); casters.add(flw); flw.name = 'hydrangeas';
+    const flw = billboards(fl, tex.flowers, { cols: 2, rows: 1, cylindrical: true, rampLo: -0.6, rampHi: 0.3, keyK: 0.45 }); env.add(flw); casters.add(flw); flw.name = 'hydrangeas';
     const gi = [];
     for (const [x0, z0, x1, z1, n] of L.grassLines) for (let i = 0; i < n; i++) { const t = R(); gi.push({ pos: [x0 + (x1 - x0) * t + (R() - 0.5) * 0.06, -0.01, z0 + (z1 - z0) * t], size: 0.16 + R() * 0.16, rot: 0, cell: Math.floor(R() * 4), bright: 0.9 + R() * 0.2 }); }
     const gr = billboards(gi, tex.grass, { cols: 4, rows: 1, cylindrical: true, castShadow: false, rampLo: -0.8, rampHi: 0.2 }); env.add(gr); gr.name = 'grass';
@@ -275,7 +275,7 @@ export function buildWorld(L, tex) {
   /* ---- the stone-lantern Scent Post: inked cel prop (L-1) */
   {
     const [lx, lz] = L.lantern.at, sc = L.lantern.h / 1.2;
-    const stone = '#B9B5B0', moss = '#8FB36A';
+    const stone = '#B9B5B0', moss = '#A3B581';
     const shadeOf = (hex) => { const a = rgb(hex), s = rgb('#D8D2EA'); return new THREE.Vector3(a.x * s.x * 0.96, a.y * s.y * 0.96, a.z * s.z * 0.96); };
     const parts = [
       [0.22, 0.24, 0.1, 0.05, 6, 0], [0.075, 0.085, 0.46, 0.32, 6, 0], [0.21, 0.19, 0.1, 0.59, 6, 0],
@@ -305,7 +305,7 @@ export function buildWorld(L, tex) {
       g.setAttribute('color', new THREE.BufferAttribute(C, 3)); g.setAttribute('shadeCol', new THREE.BufferAttribute(S, 3));
       cel.add(new THREE.Mesh(g, cm));
     }
-    env.add(cel); cel.name = 'lantern';
+    late.add(cel); cel.name = 'lantern';  // inked: drawn crisp after the paint post, like the cats
     { const b = new THREE.Box3(new THREE.Vector3(lx - 0.25, 0, lz - 0.25), new THREE.Vector3(lx + 0.25, 1.2 * sc, lz + 0.25)); b.soft = true; colliders.push(b); }
     env.add(contactBlob(lx + 0.02, lz, 0.42, 0.3));
   }
@@ -334,7 +334,7 @@ export function buildWorld(L, tex) {
   ringNear.renderOrder = -5;
   backdrop.add(ringFar, sea, ringNear);
   const towns = new THREE.Group();
-  for (const [r, top, hh, hz] of [[115, -0.9, 9, 0.35], [62, -0.4, 8.5, 0.12]]) {
+  for (const [r, top, hh, hz] of [[120, -0.7, 5.5, 0.3]]) {
     const t = new THREE.Mesh(ringGeometry(r, -78, 78, top - hh, top, 64), backdropMat(tex.town, { haze: hz, keyK: 0.9 }));
     t.position.z = -2; t.renderOrder = r > 100 ? -4 : -3; towns.add(t);
   }

@@ -114,6 +114,9 @@ void main() {
   if (!gl_FrontFacing) n = -n;
   vec3 alb = t.rgb * tint * vC;
   alb *= mix(1.0, grainAt(vP, n) / 0.83, grainK);
+  // world-scale paint variation: breaks the trim-sheet repeat over tens of metres (stains, sun-fade)
+  float macro = texture2D(grainMap, vec2(vP.x + vP.z, vP.y * 2.0 + vP.z * 0.3) * 0.021).g * 0.6 + texture2D(grainMap, (vP.xz + vP.y) * 0.0071 + 0.31).g * 0.4;
+  alb *= mix(vec3(1.0), vec3(macro / 0.83) * vec3(1.0, 0.985, 1.02), 0.35);
   gl_FragColor = vec4(envShade(alb, n, vP, shadowSoft, twoSided), 1.0);
 }`;
 
@@ -154,7 +157,7 @@ void main() {
   gl_Position = projectionMatrix * viewMatrix * vec4(wp, 1.0);
 }`;
 const BB_FRAG = /* glsl */`
-uniform sampler2D map; uniform float alphaCut, rampLo, rampHi, receive; uniform vec3 tint;
+uniform sampler2D map; uniform float alphaCut, rampLo, rampHi, receive, keyK; uniform vec3 tint;
 varying vec2 vUv; varying vec3 vN; varying vec3 vP; varying float vBright; varying vec3 vCtr;
 ${LIGHT_PARS}
 void main() {
@@ -165,7 +168,7 @@ void main() {
   float ndl = dot(n, sunDir);
   float lit = smoothstep(rampLo, rampHi, ndl);
   if (receive > 0.5 && lit > 0.0) lit *= mix(1.0, sunShadow(vCtr + (vP - vCtr) * 0.6, sunDir, 3.5), 0.75);
-  vec3 c = alb * mix(mix(shadeMul, vec3(1.0), 0.18), keyColor * 1.1, lit);
+  vec3 c = alb * mix(mix(shadeMul, vec3(1.0), 0.18), mix(vec3(1.0), keyColor, keyK) * 1.1, lit);
   if (debugMode > 1.5) c = alb; else if (debugMode > 0.5) c = vec3(1.0 - lit, 0.0, 0.0);
   gl_FragColor = vec4(hazeIt(c, vP), 1.0);
 }`;
@@ -193,7 +196,7 @@ export function billboards(items, map, o = {}) {
   g.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 1e5);
   const common = { cylindrical: { value: o.cylindrical ? 1 : 0 }, cols: { value: o.cols || 4 }, rows: { value: o.rows || 2 }, map: { value: map }, alphaCut: { value: o.alphaCut || 0.5 } };
   const m = new THREE.ShaderMaterial({
-    uniforms: { ...U, ...common, tint: { value: rgb(o.tint || '#FFFFFF') }, rampLo: { value: o.rampLo ?? -0.35 }, rampHi: { value: o.rampHi ?? 0.45 }, receive: { value: o.receive ? 1 : 0 } },
+    uniforms: { ...U, ...common, tint: { value: rgb(o.tint || '#FFFFFF') }, rampLo: { value: o.rampLo ?? -0.35 }, rampHi: { value: o.rampHi ?? 0.45 }, receive: { value: o.receive ? 1 : 0 }, keyK: { value: o.keyK ?? 1 } },
     vertexShader: BB_VERT, fragmentShader: BB_FRAG, side: THREE.DoubleSide,
   });
   const mesh = new THREE.Mesh(g, m);
@@ -327,28 +330,33 @@ export class SunShadow {
     this.bias = new THREE.Matrix4().set(0.5, 0, 0, 0.5, 0, 0.5, 0, 0.5, 0, 0, 0.5, 0.5, 0, 0, 0, 1);
     this.calls = 0;
   }
-  update(renderer, scene, casters) {
+  update(renderer, scenes, casters) {
     const d = U.sunDir.value;
     this.cam.position.copy(this.target).addScaledVector(d, 80); this.cam.up.set(0, 1, 0);
     if (Math.abs(d.y) > 0.99) this.cam.up.set(0, 0, 1);
     this.cam.lookAt(this.target); this.cam.updateMatrixWorld(); this.cam.updateProjectionMatrix();
     U.shadowMatrix.value.copy(this.bias).multiply(this.cam.projectionMatrix).multiply(this.cam.matrixWorldInverse);
-    // swap in depth materials; hide non-casters
-    const saved = [];
-    scene.traverse((o) => { if (o.isMesh || o.isLine) saved.push([o, o.material, o.visible]); });
-    for (const [o] of saved) {
-      if (!casters.has(o)) { o.visible = false; continue; }
-      if (o.userData.depthMat) o.material = o.userData.depthMat;
-      else if (o.material.userData && o.material.userData.alphaCut) {
-        const src = o.material; let m = this.cutMats.get(src);
-        if (!m) { m = new THREE.MeshBasicMaterial({ map: src.uniforms.map.value, alphaTest: src.userData.alphaCut, side: THREE.DoubleSide }); this.cutMats.set(src, m); }
-        o.material = m;
-      } else o.material = this.depthMat;
+    renderer.setRenderTarget(this.rt); renderer.clear();
+    const ac = renderer.autoClear; renderer.autoClear = false; let calls = 0;
+    for (const scene of scenes) {
+      // swap in depth materials; hide non-casters
+      const saved = [];
+      scene.traverse((o) => { if (o.isMesh || o.isLine) saved.push([o, o.material, o.visible]); });
+      for (const [o] of saved) {
+        if (!casters.has(o)) { o.visible = false; continue; }
+        if (o.userData.depthMat) o.material = o.userData.depthMat;
+        else if (o.material.userData && o.material.userData.alphaCut) {
+          const src = o.material; let m = this.cutMats.get(src);
+          if (!m) { m = new THREE.MeshBasicMaterial({ map: src.uniforms.map.value, alphaTest: src.userData.alphaCut, side: THREE.DoubleSide }); this.cutMats.set(src, m); }
+          o.material = m;
+        } else o.material = this.depthMat;
+      }
+      const bg = scene.background; scene.background = null;
+      renderer.render(scene, this.cam); calls += renderer.info.render.calls;
+      scene.background = bg;
+      for (const [o, m, v] of saved) { o.material = m; o.visible = v; }
     }
-    const bg = scene.background; scene.background = null;
-    renderer.setRenderTarget(this.rt); renderer.clear(); renderer.render(scene, this.cam);
-    this.calls = renderer.info.render.calls;
-    renderer.setRenderTarget(null); scene.background = bg;
-    for (const [o, m, v] of saved) { o.material = m; o.visible = v; }
+    renderer.autoClear = ac; renderer.setRenderTarget(null);
+    this.calls = calls;
   }
 }

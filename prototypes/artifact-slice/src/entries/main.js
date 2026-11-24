@@ -12,7 +12,7 @@ import { PHASES, sunDir } from '../render/phases.js';
 import { PaintPost } from '../render/post.js';
 import { OrbitRig, collideCircle, EXPLORE } from '../camera/rig.js';
 import { loadCatAssets, createCat } from '../render/cats/index.js';
-import { desktopCard } from '../ui/desktopcard.js';
+import { desktopCard, isSmallOrTouch } from '../ui/desktopcard.js';
 
 const Q = new URLSearchParams(location.search);
 const opt = {
@@ -130,7 +130,7 @@ function step(dt) {
     const near = Math.hypot(c.x - lp.x, c.z - lp.z) < 1.1;
     const seg = new THREE.Line3(c.clone(), pv.clone()), cp = new THREE.Vector3(); seg.closestPointToPoint(lp, true, cp);
     const blocks = Math.hypot(cp.x - lp.x, cp.z - lp.z) < 0.3 && cp.y < 1.2 && cp.distanceTo(pv) > 0.3;
-    const want = near || blocks ? 0.3 : 1, k = want < CEL.fade.value ? 0.1 : 0.3;
+    const inside = Math.hypot(c.x - lp.x, c.z - lp.z) < 0.55; const want = inside ? 0 : near || blocks ? 0.3 : 1, k = want < CEL.fade.value ? 0.1 : 0.3;
     CEL.fade.value = dt <= 0 ? want : CEL.fade.value + (want - CEL.fade.value) * (1 - Math.pow(2, -dt / k)); }
   // painted backdrops sit at "infinity": they follow the camera (the near hill ring with a little parallax)
   const R = world.rings;
@@ -141,7 +141,7 @@ function step(dt) {
 
 function render() {
   renderer.info.reset();
-  if (shadowDirty) { shadow.update(renderer, envScene, world.casters); shadowDirty = false; lastStats.shadowCalls = shadow.calls; renderer.info.reset(); }
+  if (shadowDirty) { shadow.update(renderer, [envScene, lateScene], world.casters); shadowDirty = false; lastStats.shadowCalls = shadow.calls; renderer.info.reset(); }
   cam.updateMatrixWorld();
   if (opt.mask === 'cats') {
     const black = new THREE.MeshBasicMaterial({ color: 0x000000 }); envScene.overrideMaterial = black;
@@ -202,7 +202,7 @@ async function boot() {
     return;
   }
   bindInput();
-  hint();
+  if (!isSmallOrTouch()) hint();
   let last = performance.now(), first = true;
   const loop = (now) => {
     const dt = Math.min(0.05, (now - last) / 1000); last = now;
