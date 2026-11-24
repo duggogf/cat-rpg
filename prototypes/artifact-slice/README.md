@@ -56,6 +56,21 @@ phase-1 end, Final KO) and the smoke bots on
 3 seeds. The second prints fight lengths per scenario (skilled, median-policy, scripted-Daifuku and passive bots)
 against the GDD's F9 figures and exits non-zero if a bot misses its expectation (`--only <id>`, `--json out.json`).
 
+## Lane, exploration and territory (M2, world side)
+
+The default page is now ≈ 120 m of Hidamari Lane grown around the approved M0 corner (`src/world/lane-m2.js`):
+Haru's garden wall (the wall blend) and Low Wall Corner uphill, Persimmon Alley, Laundry Pole Yard (the M0 corner,
+High Perch, yard stop), the Den wall with Daifuku within 10 m of the perch, and the stepped slope down to Tofu Shop Step.
+Territory rules come only from the simulation (`src/sim/territory/`, `API.md`) through `src/world/territory.js`;
+`src/render/scent.js` draws wisps, pops, Rub Marks, trails, the compass ring and the Head Home thread;
+`src/ui/street-hud.js` is the street HUD; `src/camera/rig.js` `ExploreRig` is the Explore camera.
+
+Controls: WASD (Shift run), drag or double-click to look (1:1), Space hop onto walls / off the ribbon, E spray / rub /
+nap / pick up (hold), Tab Whisker Sense, H Head Home thread, N nap to Dusk, 1 / 2 Day / Dusk.
+Params: `?start=showcase_l2d2|l1d1`, `?seed=N`, `?vantage=0..5`, `?sense=1`, `?fps=1` (frame-time overlay;
+`__frameLog()` for the real-laptop log), `?hud=0|1`. Evidence: `node tools/m2-shots.mjs`
+(writes to `production/qa/evidence/artifact-slice/M2/`).
+
 ## Status
 
 - **M0 look-dev:** concluded on the studio side — three review iterations (art + creative director): final
