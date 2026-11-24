@@ -110,3 +110,47 @@ Each is a small fix.
   as in the reference, would add appeal. Consider a face-only shade offset when the face is next touched.
 - **Re-shoot after the pass:** `14`, `16`, `04`, `11-walk-seq-sheet.png`, `07` and `turnaround-compare.png`. Re-review
   the 0°, 90°, 180° and walk frames specifically.
+
+## Round 2 (2026-11-24, after the technical artist's pass)
+
+**Evidence re-read:** `turnaround-compare.png`, `14`, `16`, `17`, `18`, `04`, `11-walk-seq-sheet.png` (all re-shot 12:52–12:53).
+
+### Verdict: APPROVED. Show the owner.
+
+| | Round 1 | Round 2 |
+|---|---|---|
+| **Anatomy** | 6.5 / 10 | **8 / 10** |
+| **Appeal** | 7 / 10 | **8 / 10** |
+
+### Check against the five round-1 corrections
+
+1. **The walk's black wedge is gone.** All 8 frames of `11` and `04` are clean. The far foreleg reads as a lined white
+   leg behind the near one. Fixed.
+2. **The forelegs are split, with a chest bib.** Front-on (`14`, and `17` at 0° and 345°), Mikan now stands on two
+   separate foreleg columns, with daylight up to the elbow, under a rounded bib. This is the v2 front view's read.
+   Fixed.
+3. **The skull from behind.** At 180° the ears splay, the line between them dips naturally, and the cheeks are now the
+   widest point, so it reads as a cat's head and no longer as a beanie with ears. Fixed. It holds in `17` from 150° to
+   210°, which is the gameplay angle.
+4. **The muzzle in profile.** At 90° and 270° a small, lifted snout and nose now sit clearly ahead of the eye, and the
+   pug and bug-eyed read is gone. Fixed.
+5. **The hind leg.** The hock is visible, the foot is near-vertical, and the paw sits under the rump. In side view this
+   reads as round thigh, then heel, then paw, as in the v2 side view and the anatomy wireframe. The C7 thigh width is
+   kept. Fixed.
+
+The owner's C7 complaints still hold:
+- The forelegs drop from under the neck base at the front of the chest.
+- The haunches stay inside the rump outline from behind.
+- The face front-on (`18`) is the kept face.
+
+Nothing at any of the 24 orbit angles looks broken.
+
+### Optional polish (not blocking; for a later face or look pass)
+
+- **The muzzle reads as a separate knob in profile.** In `04` and `11` it is a small white bulb with a crease where
+  it joins the cheek. Blending that join (about 3–4 mm more fillet) would make it the reference's soft, lifted muzzle.
+- **A faint new arc above the nose front-on.** In `18`, the muzzle's interior line shows as a thin arc between the
+  eyes. Suppress that interior line within about 20° of front-on, to keep the face exactly as kept.
+- **The eye peeks from behind.** With the eye slide at 45°, the far eye's ring shows on the silhouette edge from 120°
+  to 135° and from 225° to 240°. This is charming, anime-style, and not wrong. If the owner finds it odd, cap the slide
+  at about 40°.
