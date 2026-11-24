@@ -162,7 +162,7 @@ The garden wall blends Explore → Home in 1.0 s (no cut). Tag-Ins retarget in 0
 
 ## 7. Combat
 
-*Owner: combat designer · [`gdd/combat-system.md`](gdd/combat-system.md) · frames [`02-combat-clash.png`](previews/02-combat-clash.png), [`03-combat-slow-blink.png`](previews/03-combat-slow-blink.png)*
+*Owner: combat designer · [`gdd/combat-system.md`](gdd/combat-system.md) · frames [`02-combat-clash.png`](previews/02-combat-clash.png), [`03-combat-slow-blink.png`](previews/03-combat-slow-blink.png), [`04-combat-pile-on.png`](previews/04-combat-pile-on.png)*
 
 **Fantasy.** *"I'm the boss of a gang of very different cats, and I'm conducting a brawl."* Slapstick at maximum, but you never lose your cat, because every big effect answers something you did or ordered.
 
@@ -239,7 +239,7 @@ Zoomies: Midnight Laps · Landslide · Midnight Aria. Each Style resists its own
 
 ## 9. Rivals (the nemesis system)
 
-*Owner: systems-designer (nemesis/AI) · [`gdd/nemesis-system.md`](gdd/nemesis-system.md) · frame [`05-rival-standoff.png`](previews/05-rival-standoff.png) · in-project name **Rivals**; marketing avoids the original name until counsel advises*
+*Owner: systems-designer (nemesis/AI) · [`gdd/nemesis-system.md`](gdd/nemesis-system.md) · frames [`05-rival-standoff.png`](previews/05-rival-standoff.png), [`06-fence-line.png`](previews/06-fence-line.png), [`07-verdict.png`](previews/07-verdict.png) · in-project name **Rivals**; marketing avoids the original name until counsel advises*
 
 **Fantasy.** *"That one, with the kinked tail and the cowlick that never dries. I gave him both."* A petty, funny, persistent neighbour, not an orc warlord. The player should feel, in order: *it remembers me; I marked it; my choice mattered; it got one over on me; the wall moved while I slept; it chose me.*
 
@@ -293,7 +293,7 @@ Zoomies: Midnight Laps · Landslide · Midnight Aria. Each Style resists its own
 
 ## 11. Dual Story Progression
 
-*Owner: narrative-director · [`narrative/dual-story-progression.md`](narrative/dual-story-progression.md) · frame `previews/10-home-evening.png` (in production)*
+*Owner: narrative-director · [`narrative/dual-story-progression.md`](narrative/dual-story-progression.md) · frame [`10-home-evening.png`](previews/10-home-evening.png)*
 
 **Fantasy.** Twenty minutes a tyrant; then a bell-gold thread home, the camera drops at the wall, and a girl in yellow socks taps your bowl twice. You don't know why she's crying at her desk, but you know to sit on her paper. Three feelings: **detective of the ordinary**, **belonging earned by a cat**, **caring about a specific person**.
 
