@@ -1,6 +1,6 @@
 # Cat RPG — Session Handover
 
-**Written:** 2026-11-24 · **Branch:** `design/cat-rpg-gdd` (pushed; no pull request opened)
+**Written:** 2026-11-24 (updated the same day after the owner-feedback pass) · **Branch:** `design/cat-rpg-gdd` (pushed; no pull request opened)
 · **`main`:** the untouched Claude Code Game Studios template baseline
 
 Read this file first in a new session. It says where the project stands, what the
@@ -30,6 +30,9 @@ gameplay and the art direction.
 | Ten static preview mock-ups + shared art kit | **Done** — one art-director critique and one fix pass |
 | User decisions recorded (engine, title, art target) | **Done** |
 | Implementation plan for the Artifact showcase slice | **Done — awaiting the user's go** |
+| Owner feedback on the gallery (6 comments) | **Done** — rulings, patent check, five doc revisions, consistency pass, redrawn previews |
+| Showcase-slice plan v2 (owner feedback + desktop only) | **Done** |
+| Prototype scaffold (`prototypes/artifact-slice/`) | **Done** — build, dev server, headless WebGL screenshots verified |
 | Building the showcase slice | **Not started.** Next step is milestone M0 (look-dev spike) |
 
 Nothing has been played or built. Every balance number is a paper value checked
@@ -38,12 +41,15 @@ by small Python simulations, not by a prototype.
 ## 3. Read these, in this order
 
 1. `design/GDD.md` — master Game Design Document for the vertical slice.
-2. `production/artifact-slice/IMPLEMENTATION-PLAN.md` — the plan for the next phase.
-3. `design/reviews/final-assessment.md` — scores, the 13 open items a fourth
+2. `production/artifact-slice/IMPLEMENTATION-PLAN.md` — the plan for the next phase (v2).
+3. `design/reviews/user-comments-2026-11-24.md` — the owner's six comments, verbatim, and
+   `design/reviews/owner-feedback-rulings.md` + `design/reviews/owner-feedback/consistency-pass.md` — how they were ruled.
+4. `design/legal/nemesis-patent-analysis.md` (v2) — patent risk note; full claim text in `design/legal/claims/`.
+5. `design/reviews/final-assessment.md` — scores, the 13 open items a fourth
    iteration would address, the prototype's test list, decisions received.
-4. `design/creative-brief.md` — binding canon (v1.4). It wins over
+6. `design/creative-brief.md` — binding canon (v1.6). It wins over
    `design/gdd/game-concept.md` and `game-pillars.md`, which predate later rulings.
-5. `design/README.md` — map of the design folder. System docs are 35–80 KB each:
+7. `design/README.md` — map of the design folder. System docs are 35–80 KB each:
    grep headings and read by section.
 
 Also useful:
@@ -85,13 +91,35 @@ Also useful:
   never drawn, named or reused.
 - **Next deliverable:** an implementation plan, then a playable slice **as an
   Artifact**, before any Unreal work.
+- **Showcase plan questions:** phone support **not needed** (desktop only); every other
+  default accepted (private link, `prototypes/artifact-slice/`, both Togemaru outcomes,
+  Japanese sound-word toggle).
+
+**Owner feedback, 2026-11-24** (`design/reviews/user-comments-2026-11-24.md`, C1–C6)
+- **Rivals board** replaces the Fence Line: every unique/boss cat, silhouettes until
+  discovered, hover relationship tags, boss anger → a one-fight buff. Laid out as a
+  **staged scene per gang** (boss on a perch at the end of an alley, gang down the steps
+  by standing, role tags, arrows to the boss) — reference `design/reviews/refs/rivals-board-layout-ref.webp`.
+- **Losing a fight** is not game over: the clock jumps to Night and Mikan goes home.
+- **District influence** from fighting gangs and spraying; it decays everywhere; at full
+  influence (all four outer patches Strong) the district boss roams and can be fought;
+  challengers arrive in town; recruits can (rarely) betray.
+- **Verdict = three options:** Recruit (bribe), Chase Off (gone for good, even Togemaru),
+  Nose-Touch (10-day truce; may join your fights against its own rival).
+- **Turf Board unified:** four zones, one decision a day.
+- Owner accepted the recruit's own-memory flinch in place of the boss's targeted taunt,
+  pending counsel.
+- **Patent working rule (binding):** nothing Mikan does to one cat may change a different
+  cat. Every independent claim of the Warner Bros. family needs exactly that.
 
 ## 5. How the user wants the work run
 
 - **Use the studio template's agents** (`.claude/agents/`): directors working with
   designers, artists and so on, critiquing each other.
-- **Model split:** the session model (Fable) lays foundations only. **Opus** does
-  all reviews, critiques, revisions and iteration loops, and the previews.
+- **Model split:** the session model (Fable) laid foundations only. **Opus** does
+  all reviews, critiques, revisions and iteration loops, and the previews. From
+  2026-11-24 the owner asked that **every agent run on Opus at high effort**
+  (`model: opus`, `effort: high` on each Agent call).
 - **Iteration cap: three per piece of work.** If a fourth would be needed, do not
   run it — write it down with a score out of ten, what needs to improve, and the
   base idea for improving it.
@@ -102,7 +130,9 @@ Also useful:
   legal). The template's `CLAUDE.md` ask-before-every-write protocol was overridden
   by the user's explicit request for an autonomous pass; a new session should
   confirm that still holds before a large autonomous run.
-- **Usage limits:** the user's plan has a 5-hour limit. They asked that when it is
+- **Usage limits:** the user's plan has a 5-hour limit and a weekly limit; on
+  2026-11-24 the weekly limit was in "warning", resetting 2026-11-30 14:00 UTC, and a
+  wake-up is scheduled for 14:10 UTC that day to resume the build. They asked that when it is
   about to run out the session idles and schedules its own wake-up for the reset.
   `get_session` reports `rate_limit_info.resetsAt`; schedule a `send_later` a few
   minutes after it at the start of any long run. Remaining quota is not visible,
@@ -124,8 +154,15 @@ Also useful:
   formulas. Simulation scripts are in `design/reviews/round-{1,2,3}/sim/`.
 - **A stop hook requires a clean tree.** Commit and push after every agent
   hand-back; `git -c push.negotiate=true push -u origin design/cat-rpg-gdd`.
-- **Sandbox network.** npm works; CDNs (cdnjs, jsDelivr) are blocked from the
-  container, so local tests must load libraries from an npm copy. Playwright and
+- **Sandbox network.** The owner enabled full network access on 2026-11-24, but local
+  tests should still load libraries from the npm copy so dev and test runs make no
+  external requests. USPTO patent PDFs are image scans; claim text comes from Google
+  Patents pages (retry with a browser user-agent on 503).
+- **Prototype tooling:** in `prototypes/artifact-slice/`, `node tools/build.mjs`
+  bundles `src/main.js` (three.js as the global `THREE`) and writes `dist/index.html`
+  (published fragment, jsDelivr three@0.160.1) and `dist/dev.html` (local three);
+  `node tools/shot.mjs dist/dev.html out.png` renders with headless SwiftShader WebGL
+  and fails on console errors or any external request. Playwright and
   headless Chromium are pre-installed; do not reinstall them.
 - **Preview frames** render with `node design/previews/render.js <file.html> <out.png>`.
 
@@ -142,34 +179,35 @@ The plan is `production/artifact-slice/IMPLEMENTATION-PLAN.md`. In brief:
   in code. Gameplay data in JSON mirroring the GDD's tables so tuning carries over
   to Unreal.
 - **Milestones:** M0 look-dev spike (go/no-go on the art target) → M1 combat grey
-  box → M2 lane and territory → M3 rivals and Verdict → M4 home and story → M5 full
-  script and overnight → M6 audio (in parallel) → M7 polish and touch.
-  Estimated 42–50 agent-sessions; each milestone republishes the same Artifact URL.
+  box → M2 lane and territory → M3 rivals, Rivals board and Verdict → M4 home and
+  story → M5 full script and overnight → M6 audio (in parallel) → M7 polish (desktop only).
+  Plan v2 estimate: **45–53 agent-sessions**, above the originally accepted 42–50
+  (the owner's new features outweigh the removed phone work); re-confirm with the owner.
+  Each milestone republishes the same Artifact URL.
 - **Start with M0.** It tests the three biggest risks — whether code-authored cats
   and environments can hit the reference look under a free camera — before any
   gameplay work. Show the user the M0 result and get their go before M1.
 
-**Questions in the plan still open for the user** (each has a default that applies
-if unanswered): phone support (default: full touch play in landscape); budget
-(default: accept 42–50 sessions); audience (default: private link only); code
-location (default: `prototypes/artifact-slice/`); supporting both outcomes of
-recruiting Togemaru (default: yes); a Japanese sound-word toggle (default: include).
+**Open with the owner:** the plan v2 budget (45–53 sessions) needs re-confirming.
 
 ## 8. Open items to carry forward
 
-- **Legal:** the nemesis system adapts a mechanic covered by a Warner Bros. patent.
-  `design/gdd/nemesis-system.md` lists how this design differs and recommends review
-  by qualified counsel before any public showing. No legal conclusion has been reached.
+- **Legal:** the nemesis system adapts a mechanic covered by a Warner Bros. patent
+  family (US 10,926,179; 11,660,540; 12,201,908; pending 2025/0108303). The full claim
+  text is in `design/legal/claims/`; `design/legal/nemesis-patent-analysis.md` v2 maps
+  every feature against it and lists the guardrails. Qualified counsel must review before
+  scope lock and any public showing. No legal conclusion has been reached. Watch items for
+  counsel include the staged gang hierarchy on the Rivals board and the Nose-Touch ally.
 - **Reference closeness:** the user chose a look very close to a commercial game's
   style. Keep every character and asset original, keep reference names and logos
   off any page, and keep showcase links private until the user decides otherwise.
-- **Three doc mismatches** survived iteration 3 and are flagged in `design/GDD.md`:
-  the day the Turf Board is taught (director ruled Life 2 day 2; `key-screens.md`
-  §7.4 still says day 1), the timing of home scene K1.4, and the first boss's level
-  (8 vs about 9). Fix them when those systems are built.
-- **Weakest feature:** territory scored 5/10 on "will it stand out". The director's
-  idea is to forecast two possible raid targets so posting becomes a hedge. Worth
-  trying in the showcase slice.
+- **Doc mismatches:** the Turf Board teaching day and Daifuku's level (Lv 8) are now
+  settled; the remaining small alignments are listed in `design/GDD.md` §20.
+- **Owner comment threads:** the six gallery comments stay open on the page because they
+  were not sent to Claude; the owner can resolve them in the artifact view.
+- **Weakest feature:** territory scored 5/10 on "will it stand out" before the owner
+  feedback; influence, decay, challengers and the roaming boss are expected to lift it
+  to about 7. Posting well is now worth +24% over the slice (sim), down from +34%.
 - **Unreal setup:** `engine.path`, build/test commands and `engine.code_root` are
   unset; they need `/setup-engine` on a machine with UE 5.8 installed.
   `.claude/docs/technical-preferences.md` (legacy mirror) was not updated.

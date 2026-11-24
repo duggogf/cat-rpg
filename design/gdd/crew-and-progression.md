@@ -526,7 +526,7 @@ bribe      = 0 in Life 1 (free, PP-07); from Life 2 bribe_fair or bribe_feast on
 
 **Output range.** 0 (Life 1 only) to **640** (feast for a Lv 10 Boss: 2 × 8 × 10 × 4). Territory's sheet wins on any difference.
 
-**Worked example.** Kagi, Lv 6 Captain: fair 8 × 6 × 2 = **96**; feast **192**. Daifuku, Lv 9 Boss: fair **288**, feast 576.
+**Worked example.** Kagi, Lv 6 Captain: fair 8 × 6 × 2 = **96**; feast **192**. Daifuku, Lv 8 Boss: fair **256**, feast 512.
 
 ### F9. Power Rating (query for Territory and Nemesis)
 
@@ -725,7 +725,7 @@ Owned elsewhere (do not tune here): combat-perk magnitudes, Cowed durations (20 
 - **Prowler and Trickster** personality AI notes for those Styles' kits.
 - *From the round-2 check (`design/reviews/round-2/combat-and-crew.md`), not fixed in iteration 3:*
 - **R-1 Brooder dismissal arithmetic** — the edge case says −10 raw → −5, but F7 clamps to ±8 before halving (→ −4). Set dismissal to −8 raw, or exempt it from `DAILY_CAP`.
-- **R-3 Leader levels** — Daifuku Lv ≈ 9 (Bribe 288) and Kagi Lv 6 here vs Combat's leader-level rule (Combat B-21) and Territory's Daifuku Lv 8 (Bribe 256). Settle with Combat/Nemesis; F8's example becomes 256/512 at Lv 8.
+- **R-3 Leader levels** — **Settled 2026-11-24 (orchestrator): Daifuku is Lv 8** (Bribe 256 / 512), matching Territory and inside the Posse's Lv 7–9 band at that fight; Kagi Lv 6.
 - **R-4 Slice body ≈ 79 KB** (bytes, after the 2026-11-24 owner feedback pass; ≈ 54 KB before) vs the 50 KB target. Trim candidates: §5 rows that restate §3.7.4, the §3.3 Verdict row (Nemesis's), §3.5.7's display bullet (UX's).
 - **R-5 AC-6 / F2 pacing** is a hand derivation; confirm in the Lives 1–2 economy sim with Combat's sim encounter lengths (skirmishes 18–28 s, not 16–24).
 - **X-1 Brooder visibility** — Daifuku is the only Brooder and joins at the end of Life 2, so no tester fights beside Brooder AI. Use Stalwart Hige, Goofball Pon and Braggart Togemaru as DR-02's three prototype personalities; test the Brooder in the grey box.

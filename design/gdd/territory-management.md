@@ -875,7 +875,7 @@ Slice values: N3 = 3 (Persimmon Alley claimed on L2D1), so arrival_1 = **night 5
 - Full Clout table effects (Crew cap 7–12, Sentry slots 3–8).
 - **(Iteration 3)** The Brooder's guard perk (and its `challenge` counter) never comes into play in the slice: Daifuku, the only Brooder, can join only at the very end, and his fair Bribe (256) is out of the reference's reach. Acceptable: all six personalities still appear (DR-01).
 - **(Iteration 3, re-confirmed OR-02)** §4.13's "a wipe is dominated by Settle In" is true in every currency. In real time, a wipe before clock 240 ends the outing sooner than Settle In can; its costs are real, so this is accepted.
-- **(Iteration 3)** Daifuku's level: this doc uses Lv 8 (Bribe 256); Crew uses ≈ 9 (288). Combat's leader-level rule decides (combat review C-8).
+- **(Iteration 3)** Daifuku's level: **settled 2026-11-24 at Lv 8** (Bribe 256 / 512) in this doc and Crew.
 - **(Iteration 3)** The adjacency rule is spatial on a 5-Patch board; with 3 districts it needs a per-district board and a cap on stacked neighbour bonuses (Turf Board across districts, UX).
 - **(Iteration 3)** The Turf Board's first use is on Life 2 day 2, the heaviest pre-window day. Measure Lot time on that day first.
 - **Counsel watch (not redesigned):** the nightly raid requester and the challenger's Rival tag are Nemesis's (OR-19 residual items). Territory's own rules change only Patches, posts, Morsels and the calendar-driven window.

@@ -753,7 +753,7 @@ Cowed on a recruit:  D_out = D × cowed_dmg ; AI target set excludes old_boss_id
 - B-18 · C-5 scope AC 16's "≥ 3 commanded Moves per encounter" to normal encounters (threat 4–6) and Captains; supply is 0 in a Tough-length fight.
 - B-19 · C-6 Zoomies pace: F8 gives ≈ 0.7 Zoomies per cat per normal encounter, not 0.5; set `zoomies_per_frazzle` 5 or count only Captain/Boss Frazzles.
 - B-20 · C-7 Yowler basics strongest (Voice 1.35, multi-target cone); watch in prototype, or normalise `Off` by Style offence weight.
-- B-21 · C-8 leader level rule vs Crew's Daifuku Lv ≈ 9 / Kagi Lv 6; say which Lane Captains are "Den" Captains (with Crew R-3).
+- B-21 · C-8 leader level rule (Daifuku settled at Lv 8, Kagi Lv 6, 2026-11-24); say which Lane Captains are "Den" Captains (with Crew R-3).
 - B-22 · C-9 Rival personality AI: one target-choice bias per personality for enemies.
 - B-23 · C-10 adopt Crew's old Stalwart idea (step into white telegraphs aimed at the controlled cat) if the Stalwart reads weakly.
 - B-24 · C-11 slice body ≈ 57 KB vs 50 KB target (move rumble/punch-in rows to data, trim log).
