@@ -11,7 +11,7 @@ one Night Roamer when out at Night.  Observations only.  Usage: python3 -I day_b
 """
 DAYS = {
     # name: (wake, door, lot, clock_min, naps, fights, verdicts, memory_standoffs, home_way, evening)
-    "L1D1 tutorial (day-loop §3.10)":            ((4.0, 4.0), (0, 0), (0, 0), (6, 6), (0, 0), (4, 4), (0, 0), (0, 0), (1, 1), (2, 2)),
+    "L1D1 tutorial (K1.1+garden 6; tutorial fights run long)": ((6.0, 6.0), (0, 0), (0, 0), (6, 6), (0, 0), (8, 8), (0, 0), (0, 0), (1, 1), (2, 2)),
     "L1D2 Thorn + LPY take":                     ((0.25, 1.5), (0.5, 0.5), (1.0, 1.5), (12, 12), (1, 1), (3, 5), (1, 1), (1, 1), (1, 1), (1.5, 2)),
     "L2D1 PA take, Ambush, Turf Board first use": ((1.5, 1.5), (0.5, 0.75), (1.0, 2.0), (12, 12), (1, 1), (4, 6), (2, 2), (1, 2), (1, 1), (1.5, 2)),
     "L2D2 flap, first Night, raid + Caterwaul":  ((1.5, 1.5), (0.5, 0.75), (1.0, 1.5), (13, 16), (1, 1), (4, 6), (2, 3), (1, 2), (1, 1), (1, 1)),
