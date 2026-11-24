@@ -21,7 +21,8 @@ Policies: chase, humble, mixed, pacifist, lose40 (mixed + 40% of days end in a w
 Observations only.  Usage: python3 -I nemesis_slice_sim.py
 """
 import random, statistics as st, sys
-FIX2 = "--fix2" in sys.argv   # N3 as recommended: Humbled lead stays lead (its uprising is the scripted raid), arc = 3 enc + 1 mark + any Verdict state
+FIX3 = "--fix3" in sys.argv   # iteration 3: FIX2 + raid rule N2 (Grudge>=40 requester / boss_orders) + the Declaration (one slot in Lives 1-2, held by the declared arc lead at any Grudge; deadline night 5; Recruit greyed on the declared Nemesis; Boss never lead)
+FIX2 = "--fix2" in sys.argv or FIX3   # N3 as recommended: Humbled lead stays lead (its uprising is the scripted raid), arc = 3 enc + 1 mark + any Verdict state
 FIX = "--fix" in sys.argv or FIX2   # proposed fixes N3/N4 (lead re-naming, Humbled lead, simmer 8)
 SIMMER = 8 if FIX else 2
 from collections import Counter
@@ -82,6 +83,7 @@ class World:
         s.uprisings = 0; s.away_count = 0; s.fresh_id = 100; s.today_items = 0
         s.arc_day = None; s.l1_callback = False; s.wipes = 0; s.stew_on = False
         s.raid_req = None
+        s.declared = None; s.decl_day = None; s.decl_deadline = False; s.decl_enc = 0; s.raids = 0
 
     # ---------- helpers ----------
     def seated(self): return [c for c in self.cats if c.state == "Seated"]
@@ -126,7 +128,7 @@ class World:
             if sum(1 for x in s.cats if x.state == "Away") > 2:
                 old = [x for x in s.cats if x.state == "Away" and x is not c]
                 old.sort(key=lambda x: x.first_meet)
-                nm = [x for x in old if x.marks == 0]
+                nm = [x for x in old if x.marks == 0 and not (FIX3 and x is s.declared)]
                 if nm: nm[0].state = "Gone"
                 else: old[0].away_nights = 1
             if c.chased >= 2 and not c.title_mikan: c.title_mikan = 1
@@ -152,7 +154,7 @@ class World:
     def choose(s, c, keeper, gp, rp):
         pol, rng = s.policy, s.rng
         can_humble = keeper and len(s.crates) < 4
-        can_recruit = c.recruitable and (gp < 90 or rp >= 50) and (c.rank != "Boss" or rp >= 50) and \
+        can_recruit = (not (FIX3 and s.declared is c)) and c.recruitable and (gp < 90 or rp >= 50) and (c.rank != "Boss" or rp >= 50) and \
             sum(1 for x in s.cats if x.state == "Crew") < 3
         if c.rank == "Boss" and not can_recruit and pol == "recruit": pass
         if pol == "chase": return "chase"
@@ -187,7 +189,8 @@ class World:
     # ---------- the director's daily placements ----------
     def lead_placement(s):
         L = s.lead
-        if L is None or s.arc or s.day < 3: return
+        if FIX3 and s.declared is not None: L = s.declared   # the declared Nemesis keeps its daily placement
+        if L is None or (s.arc and not FIX3) or s.day < 3: return
         if L.state not in ("Seated", "Roaming") and not (FIX2 and L.state == "Humbled"): return   # crate challenge
         if s.day <= L.truce_until: return
         opener = "rival_ambush" if (L.g >= 50 and s.rng.random() < 0.5) else None
@@ -316,21 +319,26 @@ class World:
         old = dict(s.slot_holders)
         s.slot_holders = {}
         L = s.lead
-        if L and L.state not in ("Crew", "Gone") and L.g >= 75: s.slot_holders["arc"] = L.id
-        cand = [c for c in s.cats if c.state not in ("Crew", "Gone") and c.g >= 75 and c.id not in s.slot_holders.values()]
-        if cand: s.slot_holders["lane"] = max(cand, key=lambda c: (s.arc_score(c), -c.first_meet)).id
+        if FIX3:
+            if s.declared is not None and s.declared.state not in ("Crew", "Gone"):
+                s.slot_holders["arc"] = s.declared.id
+        else:
+            if L and L.state not in ("Crew", "Gone") and L.g >= 75: s.slot_holders["arc"] = L.id
+            cand = [c for c in s.cats if c.state not in ("Crew", "Gone") and c.g >= 75 and c.id not in s.slot_holders.values()]
+            if cand: s.slot_holders["lane"] = max(cand, key=lambda c: (s.arc_score(c), -c.first_meet)).id
         for v in s.slot_holders.values(): s.ever_nemesis.add(v)
         if s.slot_holders != old: items += 1
         s.max_nem = max(s.max_nem, len(s.slot_holders))
         # arc lead resolution / achievement
         if FIX and not s.arc and (L is None or L.state == "Gone"):
-            pool = [c for c in s.active() if c.enc >= 1] or ([c for c in s.seated() if c.rank == "Tough"] if FIX2 else [])
+            pool = [c for c in s.active() if c.enc >= 1 and not (FIX3 and c.rank == "Boss")] or ([c for c in s.seated() if c.rank == "Tough"] if FIX2 else [])
             s.lead = max(pool, key=s.arc_score) if pool else None; L = s.lead
         if L and not s.arc:
-            if L.state == "Crew" or (L.friend and L.enc < 3) or (FIX and not FIX2 and L.state == "Humbled" and L.enc < 3):
-                if L.enc < 3:
+            if (FIX3 and s.declared is L): pass   # the declared Nemesis stays the lead for the rest of the slice
+            elif L.state == "Crew" or (L.friend and L.enc < 3) or (FIX and not FIX2 and L.state == "Humbled" and L.enc < 3):
+                if L.enc < 3 or (FIX3 and L.state == "Crew"):   # FIX3: a Recruited lead always hands the lead on
                     s.lead_role = "resolved"
-                    pool = [c for c in (s.active() if FIX else s.seated()) if c.enc >= 1 and c is not L]
+                    pool = [c for c in (s.active() if FIX else s.seated()) if c.enc >= 1 and c is not L and not (FIX3 and c.rank == "Boss")]
                     if FIX2 and not pool:   # name a stranger rather than nobody
                         pool = [c for c in s.seated() if c.rank == "Tough" and c is not L]
                     s.lead = max(pool, key=s.arc_score) if pool else None
@@ -338,13 +346,31 @@ class World:
             L = s.lead
             if L and L.enc >= 3 and L.marks >= 1 and (FIX2 or "arc" in s.slot_holders or L.friend or L.recruited_after3):
                 s.arc = True; s.arc_day = d
+        # the Declaration (FIX3): the lead's arc conditions, or the night-5 deadline, name the one Nemesis of Lives 1-2
+        if FIX3 and s.declared is None:
+            L = s.lead
+            if L is None or L.state in ("Crew", "Gone"):   # a Recruited lead always hands the lead on
+                pool = [c for c in s.active() if c.enc >= 1 and c.rank != "Boss"] or [c for c in s.seated() if c.rank == "Tough"]
+                s.lead = L = max(pool, key=s.arc_score) if pool else None
+            if L is not None and d >= 5 and L.enc == 0:      # deadline: prefer a cat Mikan has met
+                met = [c for c in s.active() if c.enc >= 1 and c.rank != "Boss"]
+                if met: s.lead = L = max(met, key=s.arc_score)
+            if L is not None and ((L.enc >= 3 and L.marks >= 1) or d >= 5):
+                s.declared = L; s.decl_day = d; s.decl_deadline = not s.arc; s.decl_enc = L.enc
+                s.slot_holders["arc"] = L.id; s.ever_nemesis.add(L.id); items += 1
+                s.max_nem = max(s.max_nem, len(s.slot_holders))
         # 3f raid request for tomorrow (≤1): first = arc lead on night 3
         s.raid_req = None
         if d == 3 and s.lead and (s.lead.state in ("Seated", "Roaming") or (FIX2 and s.lead.state == "Humbled")):
             s.raid_req = s.lead
         elif d >= 4:
-            req = [c for c in s.active() if c.g >= 60 and d > c.truce_until]
+            thr = 40 if FIX3 else 60
+            req = [c for c in s.active() if c.g >= thr and d > c.truce_until]
             if req: s.raid_req = max(req, key=s.arc_score)
+            elif FIX3:
+                t = [c for c in s.seated() if c.rank == "Tough"]
+                if t: s.raid_req = max(t, key=lambda c: c.seat)   # boss_orders: Daifuku sends the lowest-seat Tough
+        if s.raid_req is not None and d >= 3: s.raids += 1
         # metrics
         if d >= 3:
             seat = s.seated()
@@ -394,6 +420,17 @@ def report(days, label, n=500):
         up = st.mean(w.uprisings for w in ws)
         bit = st.mean(sum(1 for c in w.cats if c.state not in ("Crew", "Gone") and c.g >= 75 and c.id not in w.slot_holders.values()) for w in ws)
         sh_sorted = sorted(sh)
+        if FIX3:
+            end1 = sum(1 for w in ws if len(w.slot_holders) == 1) / n
+            dd = [w.decl_day for w in ws if w.decl_day]
+            dl = sum(w.decl_deadline for w in ws) / n
+            de = st.mean(w.decl_enc for w in ws if w.declared)
+            nd = sum(1 for w in ws if w.declared is None) / n
+            dmin = min((w.decl_enc for w in ws if w.declared), default=0)
+            print(f"    [{pol}] never declared {nd:.1%}; min encounters at declaration {dmin}; end states of slot holders: " + str(Counter(len(w.slot_holders) for w in ws)))
+            face = sum(1 for w in ws if w.declared and w.declared.g >= w.declared.r) / max(1, sum(1 for w in ws if w.declared))
+            bucket = Counter(w.declared.state for w in ws if w.declared)
+            print(f"    [{pol}] exactly 1 Nemesis at slice end: {end1:.1%}; declaration night median {st.median(dd) if dd else '-'} (deadline used {dl:.0%}); encounters at declaration {de:.1f}; Sworn Enemy face (G>=R) {face:.0%} / Sworn Rival {1-face:.0%}; Nemesis state at end {dict(bucket)}; raid requests per slice {st.mean(w.raids for w in ws):.2f}")
         print(f"| {pol} | {st.mean(sh):.1%} / {sh_sorted[int(.95*n)]:.1%} | {st.median(nem):.0f} / {max(nem)} | {max(w.max_nem for w in ws)} | {arc:.1%} | {st.median(ad) if ad else '-'} | {we:.2f} | {rc:.2f} | {sn:.0%} | {up:.2f} | {bit:.2f} |")
         tot = Counter(); [tot.update(w.verdicts) for w in ws]
         allv[pol] = tot
@@ -404,7 +441,7 @@ def report(days, label, n=500):
 
 
 if __name__ == "__main__":
-    print("Variant:", "FIX2 = recommended N3 (Humbled lead stays lead: its uprising is the scripted first raid and the presence guarantee places it as a crate-challenge Standoff; arc = >=3 enc + >=1 mark, any Verdict state) + nightly re-naming + simmer 8" if FIX2 else "PROPOSED FIXES (lead re-named nightly from active cats; Humbled lead with <3 enc resolves; simmer +8)" if FIX else "AS WRITTEN")
+    print("Variant:", "FIX3 = iteration 3 (FIX2 + Grudge>=40 raid requester with boss_orders fallback + the Declaration: one slot in Lives 1-2 held by the declared arc lead at any Grudge, declared at arc achieved or the night-5 deadline; Recruit greyed on it; Boss never lead)" if FIX3 else "FIX2 = recommended N3 (Humbled lead stays lead: its uprising is the scripted first raid and the presence guarantee places it as a crate-challenge Standoff; arc = >=3 enc + >=1 mark, any Verdict state) + nightly re-naming + simmer 8" if FIX2 else "PROPOSED FIXES (lead re-named nightly from active cats; Humbled lead with <3 enc resolves; simmer +8)" if FIX else "AS WRITTEN")
     v = report(7, "Slice (Lives 1-2)")
     print("\nLife-1 remembered-rival callback (Thorn has Memory of Mikan at the day-2 placement):",
           ", ".join(f"{p} {v[p]['_l1cb']:.0%}" for p in v))

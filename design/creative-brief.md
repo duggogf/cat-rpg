@@ -1,6 +1,6 @@
 # Creative Brief — Shared Canon: "Cat RPG" (working title)
 
-*Created: 2026-11-23 · Owner: creative-director · Status: **v1.2** (folds in `design/reviews/round-1/director-rulings.md`; decisions marked OPEN await the user)*
+*Created: 2026-11-23 · Owner: creative-director · Status: **v1.3** (folds in `design/reviews/round-1/director-rulings.md` and the round-2 cross-doc rulings R1–R5 in `design/reviews/round-2/`; decisions marked OPEN await the user)*
 
 **Read this in full before writing or revising a GDD.** Anything named or numbered here is canon: use the exact terms; do not rename or redefine them. If your system needs something this brief does not cover, decide it inside your own boundary (§6) and list it under "Assumptions for creative-director review". Companion docs: `design/gdd/game-pillars.md`, `design/gdd/game-concept.md`. Where this brief and the pillars disagree, this brief wins (see changelog).
 
@@ -54,7 +54,7 @@ Anti-pillars:
 | **Koharu** | Haru and Sora's child, born in Life 6. Coral; toy piano. In Life 9 Koharu sings the Call. |
 | **Gran** | Haru's grandmother; plum; reed organ. Lives 1–4. Taps the Call on the bowl (three taps). |
 | **Rival** | Any named, persistent, non-Crew cat tracked by the nemesis system. |
-| **Nemesis** | A Rival holding one of the scarce **Nemesis slots** (one per district + the arc lead), chosen among cats with Grudge ≥ 75. Others with high Grudge are **Bitter**. |
+| **Nemesis** | A Rival holding one of the scarce **Nemesis slots** (one per district + the arc lead), chosen among cats with Grudge ≥ 75. Others with high Grudge are **Bitter**. **One declared arc lead at a time** (v1.3): a Humbled lead stays the lead; if the lead resolves with < 3 encounters, a new lead is named the same night. Slice target: Nemeses max 2, median 1 for chase/humble players; a mixed player may end with 0. |
 | **Stray** | An unaffiliated cat; not tracked until promoted. Strays have no signature perk. |
 | **Critter** | A non-cat opponent (crows, rats, a weasel, a chained dog set-piece). Never Rival or Crew. The slice has crows only. |
 | **Clowder** | A cat gang, one per district. The player's own is the **Bell Clowder**. |
@@ -64,7 +64,8 @@ Anti-pillars:
 | **Sentry / Warden** | A Crew cat posted to guard a Patch. The **Warden** is the Den's first Sentry slot (True+ Loyalty). |
 | **Personality** | Each cat's one of six fixed personalities, shared by Crew and Rivals (§3.5). **The reason to want this cat over that one.** |
 | **"Collar"** | The street insult for a pet cat. |
-| **The old wall cat** | Life 1's first story recruit ("Use your whiskers, Collar."). Narrative names them; Crew owns their stats. |
+| **The old wall cat** | Life 1's first story recruit ("Use your whiskers, Collar."): **Hige**. Narrative names them; Crew owns their stats. |
+| **The slice six** (v1.3; Crew §3.3, one per personality) | **Hige** (Stalwart Bruiser; the old wall cat, ≈ 0:08–0:10) · **Pon** (Goofball Yowler; story recruit 2, Life 1 day 2) · **Kinako** (Fraidy Scrapper; the Friend Stray, Life 2 day 1's required first objective; recruited by Interact within 4 m, Mikan's slow-blink gesture) · **Togemaru**, *the First Thorn* (Braggart Scrapper; Fear Cucumbers; Keeper of Laundry Pole Yard; flees on day 1, contested at the gatepost on day 2) · **Kagi** (Schemer Yowler; Captain of Tofu Shop Step) · **Daifuku** (Brooder Bruiser; the Boss). The Low Wall Corner Keeper is an untracked Stray: Routing it gives no Verdict. |
 
 ### 3.2 World
 
@@ -79,7 +80,7 @@ Anti-pillars:
 | **Sunspot** | A nap point: checkpoint, full Posse heal, half a phase passes. |
 | **High Road** | Walls, fences, roofs and awnings: the upper traversal layer, played as third-person platforming. |
 | **The Fence Line** | The nemesis hierarchy screen: one continuous wall, height = rank, one disposition pose per cat, no rank labels. Read-only on the street, at the Doorstep and at the Lot; never shown in the house. |
-| **Turf Board** | The Lot's territory screen: drag a portrait onto a Patch. The only map-like view, and the only place numbers appear. |
+| **Turf Board** | The Lot's territory screen: drag a portrait onto a Patch. The only map-like view, and the only place territory numbers appear (R3, §5.7). |
 | **Phase dial** | The always-visible day indicator while roaming (sun over a roofline; no digits). |
 
 ### 3.3 Verbs and systems
@@ -177,13 +178,14 @@ Bosses are authored personalities who use the nemesis trait and memory system; e
 - **Combat:** pulls back (≈ 6–8 m) and up to frame the controlled cat and its lock target; soft lock-on; edge arrows for off-screen Posse cats and attackers; fight ring ≈ 10 m; no scene transition.
 - **Slow Blink:** a lifted tactical three-quarter view.
 - **Cinematics:** Standoff, Pile-On and Zoomies use authored cuts and cut-ins.
-- **Home:** the same camera, at cat height (0.3–0.6 m); vignettes use authored shots; humans are knees and hands unless they bend down.
+- **Home:** the same camera, at cat height (0.3–0.6 m); vignettes use authored shots; humans are knees and hands unless they bend down (faces: R5, §5.7).
+- **Cat scale (v1.3):** one global cat scale, **1.25× a real cat (≈ 0.56 m nose to rump)**, the same on the street and at home, no per-context swap; humans, furniture and props are true scale (Art §3.4).
 - **Options:** FOV, camera speed, auto-centre, motion comfort.
 
 **Environments:** 3D toon-shaded geometry with stylised hand-painted textures and trim sheets; **painted skydome and backdrop cards (sky, hills, sea are in frame)**. The method is proven by a one-alley look-dev test. All visible human writing is Scribble.
 
 **Readability:**
-- Posse cats carry a bell-gold keyline plus an overhead tick; enemies an outline in their Clowder colour. Both have a 1 px Paper Cream rim.
+- Posse cats carry a bell-gold keyline plus an overhead **chevron** tick (the controlled cat carries the **bell**); enemies an outline in their Clowder colour. Both have a 1 px Paper Cream rim.
 - Telegraphs: white = dodge; yellow = Hiss it (Paper Cream dashed with a triangle glyph); red = get out (Frazzle Magenta with a zigzag edge).
 - One screen-wide effect at a time.
 
@@ -223,7 +225,7 @@ Bosses are authored personalities who use the nemesis trait and memory system; e
 Every draw comes from a counter-based seeded substream `(save_seed, day_index, step, subsystem, cat_id, ordinal)`. Daytime outcome rolls are seeded per encounter, so reloads reproduce them.
 
 1. **Crew:** Loyalty deltas; Sentry XP.
-2. **Territory:** Scent decay; flat upkeep; resolve the raids requested last night (forecast in today's Sniff); uprisings.
+2. **Territory:** Scent decay; flat upkeep; resolve the raids requested last night (forecast in today's Sniff); uprisings (an uprising uses the night's single raid slot, v1.3).
 3. **Nemesis:** betrayals; comebacks; wall events; refills and promotions; Grudge decay and Nemesis slots; tomorrow's raid requests (≤ 1 per district).
 4. **Economy:** Tribute to the Doorstep (none in Life 8).
 5. **Narrative:** next morning slot; Life-end check.
@@ -275,13 +277,24 @@ The **Morning Sniff** shows the Tribute line, tonight's raid forecast (always, w
 
 1. **No human utterance is ever intelligible.** No subtitles, readable signage, letters, screens or calendars, trailers and store screenshots included. Speech is Murmur; writing is Scribble.
 2. Human story is told by staging, costume colour, objects, light, weather, music and Murmur tone.
-3. Mikan's understanding shows as **Sense Icons** (fish, heart, rain cloud, ear, tone icons).
+3. Mikan's understanding shows as **Sense Icons** (fish, heart, rain cloud, ear, and the four **tone puffs**: Round = warm, Spiky = sharp, Drooping = low/unhappy, Bouncing = bright/excited).
 4. **Cats understand cats** (user decision, settled): cat speech is readable text in bubbly balloons over meows (no voiced words); barks ≤ 60 characters. System UI is normal localised text.
 5. Cats never explain the human story. Rivals never mention the household in Life 8. In Lives 1–7 they may cite the collar, bell, bowl and the Call, never a human.
 6. **Combat onomatopoeia is readable** (user decision, settled):
    - T4 and T5 hits show **one hand-lettered manga sound-effect word** (≈ 16 per language), at most one on screen; smaller hits use shape glyphs.
    - **Localised:** each language gets its own hand-lettered set; Japanese uses native onomatopoeia.
    - It is the sound of the cat brawl, not human language. It never appears at home and is never a human word.
+
+---
+
+### 5.7 Round-2 presentation rulings (binding; v1.3)
+
+- **R1 · Late Home.** A **Routine variant, not a vignette** (the count of 11 stands), fixed on **Life 2 day 3 Dusk**, stacked with K2.2 "Lamp at Night" (the late return is its cause: she stayed late to cram). No Call at the slot, the bell alone; **Gran lights the Veranda Lamp** (a dark Lamp is reserved for Life 8); Haru's key turns at Dusk + 2:30 on the street clock, or ≈ 40 s of real time after the Feeding if Mikan is inside the wall; then the Melody returns and the Call sounds at the door. It teaches "no Call, bell alone = she's late; she will come" before Life 8 A2.
+- **R2 · The Piece never contains the Call cell.** Haru's Melody (the one piece she practises) opens on the rising four-note answer phrase. The Call's three-note cell sounds only in a voice (Haru sings it; Sora later whistles it), in the Brass Call and in Late Home's door Call. No Call before K1.3.
+- **R3 · Numbers.** *Numbers count what the cat owns or pays; they never measure a feeling, a relationship or a human.* Allowed: Morsels, Shinies, Tribute, the Stash, prices (Lessons, the Bribe row, Share a Morsel), Crew levels and XP pips, on the Lot tabs, Turf Board, Verdict Bribe row and Pause, plus the Doorstep Tribute card and the street pickup tick and encounter tally. Territory numbers (Scent 0–100, upkeep, per-Patch Tribute) only on the Turf Board. Never numbers: Grudge, Regard, Loyalty (moods and tier words), Rival levels (paw size shows threat), anything inside the house except the Doorstep card, anything in the world (Scribble). **Combat damage numerals are Off by default** (Options: Off / Big hits / All); weakness and resistance show in the spark shape.
+- **R4 · No combat inside the wall.** The crow tutorial moves to the lane-side wall top: move and hop in the garden, fight outside.
+- **R5 · Faces.** A **face event** is an authored shot where the human face is the subject at ≥ 20% of screen height; the slice has three (K1.1, K1.3 shot 6, K2.5). **Incidental faces** (the Goodbye crouch, the face from below during Lap, a human kneeling at the low table) are allowed and uncounted: ≤ 15% of screen height, never centre frame for > 2 s.
+- **Also ruled:** K2.3 The Flap stays a Dusk beat; Combat owns every feel number (shake, punch-in, impact frame) and Camera only plays them; the Life 2 teaching sheet is UX's (`key-screens.md` §7.4).
 
 ---
 
@@ -435,9 +448,9 @@ The **Morning Sniff** shows the Tribute line, tonight's raid forecast (always, w
 - **World:** Hidamari Lane (5 Patches); Haru's House (garden, entryway, Main Room with piano, Haru's room); the Lot; 4 Sunspots.
 - **Rivals:** the Wall Sitters (8 seats incl. Daifuku and the First Thorn) + 2 Roamers, ≤ 12 tracked.
 - **Crew:** Mikan + 6 recruitable (the old wall cat by ≈ minute 10, a second story recruit before Life 1 ends, 1 Friend Stray, 3 Rivals), **one per personality**. Crew cap 6.
-- **Combat:** 3 Styles, 12 Moves, 3 Zoomies, 3 Fears; Tag-In, Pile-On, Daifuku in 3 phases.
+- **Combat:** 3 Styles, 12 Moves, 3 Zoomies, 3 Fears; Tag-In, Pile-On, Daifuku in 3 phases. The 12 (Combat §3.10 names; v1.3 corrects the archived ids): Scrapper **Face Swat, Scruff Toss, Bunny-Kick, Shred** · Bruiser **Shoulder Check, Belly Flop, Puff Up, Sit On It** · Yowler **Withering Hiss, Howl, Purr, Banshee Screech**. Claw Flurry, Wall-Kick, Loaf and Big Talk are retired.
 - **Nemesis:** all four Verdicts, the Gloat, Lick In, wall events, the Fence Line.
-- **Territory:** 2 Sentry slots, 1 forecast raid + 1 Caterwaul, Tribute, Lessons I–II, Bribes, Share a Morsel.
+- **Territory:** 2 Sentry slots; **one forecast raid every night** from the first (requested night 3, forecast in the Life 2 day 2 Sniff, fires that Night as the Caterwaul; afterwards ≤ 1 per district per night whenever an admissible target exists, Strong Patches included, worst case Scuffed); Tribute, Lessons I–II, Bribes, Share a Morsel.
 - **Home:** 11 vignettes (7 Keystones, 3 Textures, 1 montage), the Routine layer, the daily find, the piano.
 - **Audio and lines:** ≤ 25 min music; ≤ 240 bark lines.
 - Final art and audio for this content.
@@ -499,6 +512,13 @@ The **Morning Sniff** shows the Tribute line, tonight's raid forecast (always, w
 
 ## Changelog
 
+- **v1.3 (2026-11-24, Iteration 3)** — Folds in the round-2 reviews (`design/reviews/round-2/presentation.md`, `combat-and-crew.md`, `nemesis-territory-dayloop.md`):
+  - **Rulings R1–R5** recorded in §5.7 (Late Home on L2D3 with K2.2; the Piece never contains the Call cell; the numbers rule; no combat inside the wall; face events vs incidental faces). Turf Board glossary line amended per R3.
+  - **Cat scale** 1.25× (≈ 0.56 m), one global value (§4.1). Posse tick = chevron, controlled cat = bell (§4.1). Tone Sense Icons are the four tone puffs (§5.6).
+  - **Named slice cats** and personalities (§3.1): Hige, Pon, Kinako, Togemaru (the First Thorn), Kagi, Daifuku. Kinako's recruit input is Interact, not hold Sit.
+  - **Move names** corrected to Combat §3.10 (§10); the archived Claw Flurry, Wall-Kick, Loaf and Big Talk retired.
+  - **Raids:** one forecast raid every night from Life 2 day 2, Strong Patches admissible (worst case Scuffed); supersedes v1.2's "raids take only Patches below Strong" (§10).
+  - **Nemesis:** one declared arc lead at a time; Humbled lead stays the lead; same-night re-naming (§3.1).
 - **v1.2 (2026-11-23)** — Folds in `design/reviews/round-1/director-rulings.md`:
   - **Target:** the vertical slice (§10), with a Backlog discipline in every doc.
   - **Camera** is third-person (§4.1), replacing the fixed 55° bird's-eye view; painted sky and backdrops return; one camera grammar at home.

@@ -164,9 +164,11 @@ def post_habit(rules, held, raid, d, crew, humbled, dsv, rng):
     cand = [p for p in held if p != "LWC"]
     if not cand: return {}
     first = raid["patch"] if (raid and raid["patch"] in held) else min(cand, key=lambda q: held[q])
-    posts = {first: "Hige"}
+    order = [c for c in ("Hige", "Togemaru", "Pon", "Kagi", "Kinako") if c in crew]
+    if not order: return {}
+    posts = {first: order[0]}
     rest = [p for p in cand if p not in posts]
-    if rest and "Togemaru" in crew: posts[max(rest, key=lambda q: YIELD[q])] = "Togemaru"
+    if rest and len(order) > 1: posts[max(rest, key=lambda q: YIELD[q])] = order[1]
     return posts
 
 
@@ -191,6 +193,7 @@ def run(rules, poster, seed, days=7, claims=None, visit_p=1.0, spray_p=1.0, fiel
     claims = claims or {1: "LWC", 2: "LPY", 3: "PA", 5: "TSS", 6: "DEN"}
     held, dsv = {}, {p: 99 for p in YIELD}
     stash, log, raid, humbled, den_claimed = 0, [], None, set(), False
+    routed = set()   # Sentries Routed-for-a-night by last night's Scuffed (§3.6): not postable tonight
     for d in range(1, days + 1):
         trib = log[-1]["tribute"] if log else 0
         stash = min(400, stash + trib)
@@ -206,7 +209,8 @@ def run(rules, poster, seed, days=7, claims=None, visit_p=1.0, spray_p=1.0, fiel
                     if held[p] < 60 and rng.random() < spray_p: held[p] = 90
         for p in YIELD: dsv[p] = 0 if p in visited else dsv[p] + 1
         stash = min(400, stash + round(FIELD[d] * field_mult * goes_out(d)) + (10 if d in CACHE_DAYS and goes_out(d) else 0))
-        posts = poster(rules, held, raid if (raid and raid["patch"] in held) else None, d, crew_on(d), humbled, dsv, prng) \
+        posts = poster(rules, held, raid if (raid and raid["patch"] in held) else None, d,
+                       [c for c in crew_on(d) if c not in routed], humbled, dsv, prng) \
             if d >= rules.post_from else {}
         # step 2
         for p in list(held):
@@ -215,7 +219,7 @@ def run(rules, poster, seed, days=7, claims=None, visit_p=1.0, spray_p=1.0, fiel
             held[p] = min(100, max(10 if p == "LWC" else 0, held[p] - dec + (CATS[posts[p]][3] if p in posts else 0)))
             if held[p] == 0: del held[p]
         stash -= min(2 * len(posts), stash)
-        outcome, scuffed, raided = None, set(), None
+        outcome, scuffed, raided, new_routed = None, set(), None, set()
         if raid and raid["patch"] in held:
             raided = raid["patch"]
             p = raid["patch"]
@@ -227,8 +231,11 @@ def run(rules, poster, seed, days=7, claims=None, visit_p=1.0, spray_p=1.0, fiel
             if outcome == "Lost" and (held[p] >= 60 or (den_open and p != "DEN") or raid["motive"] == "gloat"):
                 outcome = "Scuffed"
             if outcome == "Repelled": held[p] = max(0, held[p] - 5)
-            elif outcome == "Scuffed": held[p] = max(0, held[p] - 20); scuffed.add(p)
+            elif outcome == "Scuffed":
+                held[p] = max(0, held[p] - 20); scuffed.add(p)
+                if p in posts and CATS[posts[p]][0] not in ("fraidy", "brooder"): new_routed.add(posts[p])
             else: del held[p]
+        routed = new_routed
         # step 3: tomorrow's raid (Nemesis fix 2: every night from night 3, lowest-Scent admissible)
         raid = None
         outer_held = sum(1 for q in OUTER if q in held)

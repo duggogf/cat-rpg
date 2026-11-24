@@ -2,7 +2,7 @@
 
 > **Location**: `design/audio/sound-bible.md` (not `design/gdd/`)
 > **Owned By**: audio-director · **Version**: round 2, vertical slice · **Date**: 2026-11-23
-> **Canon**: `design/creative-brief.md` v1.2, then `design/reviews/round-1/director-rulings.md` (DR-nn). Where this doc and canon disagree, canon wins and this doc is wrong.
+> **Canon**: `design/creative-brief.md` v1.3, then `design/reviews/round-1/director-rulings.md` (DR-nn). Where this doc and canon disagree, canon wins and this doc is wrong.
 > **Scope**: the vertical slice (DR-01): Lives 1–2, Hidamari Lane, Haru's House, the Lot, ≈ 2–2.5 h, **≤ 25 min music**. The full game appears only as framing (§3.1) and in the Backlog. The archived first draft (`design/backlog/first-drafts/sound-bible.md`) is reference and content backlog.
 
 **Ownership boundary.** Audio owns music and the Call system, instruments, Murmur, cat vocals and the 8 bark intents per voice body, the combat mix mapped to the tier table, adaptive music and scent sonification (brief §6). Audio does **not** own story beats (Narrative), combat timings or tier values (Combat, DR-07), bark triggers and lines (Nemesis/Narrative), or the visual carriers for deaf/HoH parity (UX owns the mechanism, Art draws the carriers, DR-54). Where this doc needs one of those, it cites it.
@@ -107,7 +107,7 @@ The home theme is built from **four lines, one per human**. *Who is in the house
 
 | Line | Owner | Instrument | Function | Arc across nine Lives (one line each) |
 |---|---|---|---|---|
-| **Melody** | Haru | upright piano (and her voice for the Call) | The tune; opens with the Call, answered by a rising four-note phrase; 16 bars AABA | L1 hummed, then practised badly · L2 studied, stumbling · L3 absent except visits · L4–7 adult, fuller · **L8 removed** · L9 Koharu plays it, haltingly |
+| **Melody** | Haru | upright piano (and her voice for the Call) | The tune; opens on the rising four-note answer phrase (C–D–E–G) and **never contains the Call cell** (R2); 16 bars AABA | L1 hummed, then practised badly · L2 studied, stumbling · L3 absent except visits · L4–7 adult, fuller · **L8 removed** · L9 Koharu plays it, haltingly |
 | **Foundation** | Gran | reed organ | Bass line and harmony, one note per bar, hymn-like | L1 bare fifths softening to triads · L3 the whole theme · L4 slower · from L5 carried by Sora's cello |
 | **Countermelody** | Sora | cello | Inner voice, contrary motion | Enters wrong in L4; fits from K4.5. He whistles and hums the Call, never sings it |
 | **Ornament** | Koharu | toy piano | High decoration from both parents' halves | Enters out of time in L6; never doubles the Melody's notes |
@@ -123,9 +123,9 @@ The home theme is built from **four lines, one per human**. *Who is in the house
 | Motif | Exact content | First heard (slice) | Where else | Never |
 |---|---|---|---|---|
 | **The Call, Home form** | E4–G4–C4 (up a minor third, down a perfect fifth); short–short–long, a small scoop into the second note; one open vowel with a soft onset, or hummed; never syllables. Same absolute pitches for the whole game. | **K1.3 `first_call`** (day 1 Dusk) | Every Dusk (§5.3); the door on Late Home evenings (§4.4) | Title, naps, UI, combat, street cues (except the Brass Call) |
-| **Haru's Melody** | 16-bar AABA on upright piano: the Call's three notes, answered by a rising four-note phrase (C–D–E–G, ending open). **It is the one piece Haru practises** (DR-23): diegetically she plays it badly at 16, with stumbles and restarts, so the player connects tune, prop and person. | K1.1: she **hums the answer phrase** (not the Call, DR-22) | Home loops; the practice piece; the Dusk bleed | The street; menus |
+| **Haru's Melody** | 16-bar AABA on upright piano, opening on the rising four-note **answer phrase** (C–D–E–G, ending open). **It never quotes the Call cell on piano** (round-2 R2): the cell sounds only in a voice (Haru sings it; Sora later whistles it), in the Brass Call and in Late Home's door Call, so Mikan's name stays a single, scarce signal and no Call sounds before K1.3. **It is the one piece Haru practises** (DR-23): diegetically she plays it badly at 16, with stumbles and restarts, so the player connects tune, prop and person. | K1.1: she **hums the answer phrase** (not the Call, DR-22) | Home loops; the practice piece; the Dusk bleed | The street; menus; the Call cell |
 | **Gran's Foundation** | Reed organ, slow descending stepwise bass, one note per bar. Life 1: stern bare fifths with audible bellows; softens to full triads across Life 1, landing at K1.4. | First entry into the house (K1.1 tail) | Home loops; title; Sunspot naps | Combat |
-| **The bell** | Brass collar bell, diegetic foley on animation (walk, trot, sprint, land, shake). Damped in Stalk and crouch. Reserved narrow band in the mix (§10.4). | K1.3 morning: the collar goes on; its first ring is the last note of that scene | **The fourth beat** (§5.3); the top note of every T5 and the Pile-On; Recruited stings | — |
+| **The bell** | Brass collar bell, diegetic foley on animation (walk, trot, sprint, land, shake). Damped in Stalk and crouch. Reserved narrow band in the mix (§10.4). | K1.1, day-1 morning (Narrative's beat): the collar goes on; its first ring is the last note of that scene | **The fourth beat** (§5.3); the top note of every T5 and the Pile-On; Recruited stings | — |
 | **The Brass Call** | The Call's cell as a syncopated riff over walking bass. Grows with Clout: **House Pet / Lane Cat** melodica + wood block · **Known Face** + bass, clarinet · **Boss** + bari sax, kit (slice ranks; three arrangements). | First Patch held (Low Wall Corner) | Patch claimed (2 s tag), Clout rank up, Lane claimed (8 s fanfare), head of the Lot theme | Inside the wall |
 | **Yowl-stings** | Per Rival, generated (§8.4) | First Standoff with the First Thorn (day 1) | Standoff, Ambush, Fence Line focus, Morning Sniff, Gloat | Matching the Call's or its inversion's contour |
 | **Daifuku's theme** | §3.4 | His first Standoff | Den open gesture | — |
@@ -176,11 +176,11 @@ Narrative owns the beats (DR-01: K1.1, K1.3, K1.4, K2.1, K2.2+K2.4 "Lamp at Nigh
 
 | Cue ID | Beat | Content | The player now knows |
 |---|---|---|---|
-| `mus_story_k1_1_box` | K1.1 The Box | Rain on cardboard, shrine-step drip. A yellow raincoat bends in: **Haru hums the Melody's answer phrase**, close and breathy, unaccompanied. Darkness, heartbeat, rain on fabric. At the house, the reed organ exhales bare fifths (Gran). | A voice and a tune belong to the yellow one. The old one is stern. |
-| `mus_story_k1_3_first_call` | K1.3 The Bell and the First Call | Morning: the collar's first ring ends the scene. **Dusk: the chime, one bar, then the first Call** from the veranda, unaccompanied, then the Feeding with the **Tap-Tap**, then the Melody enters on piano under the eating. Bell's fourth beat on the ear-turn. | *That song is me. It means come, and eat.* The most important teaching cue in the game; no other sound may compete with it. |
+| `mus_story_k1_1_box` | K1.1 The Box | Rain on cardboard, shrine-step drip. A yellow raincoat bends in: **Haru hums the Melody's answer phrase**, close and breathy, unaccompanied. Darkness, heartbeat, rain on fabric. At the house, the reed organ exhales bare fifths (Gran). Day-1 morning: the collar's first ring ends the scene (cue ownership follows Narrative's beat). | A voice and a tune belong to the yellow one. The old one is stern. |
+| `mus_story_k1_3_first_call` | K1.3 The Bell and the First Call | **Dusk: the chime, one bar, then the first Call** from the veranda, unaccompanied, then the Feeding with the **Tap-Tap**, then the Melody enters on piano under the eating (answer phrase first; the piano never quotes the Call cell, R2). Bell's fourth beat on the ear-turn. | *That song is me. It means come, and eat.* The most important teaching cue in the game; no other sound may compete with it. |
 | `mus_story_k1_4_step` | K1.4 The Step (Closing) | Foundation in full triads for the first time; at the lap, the Melody joins it once, both lines complete. | The old one is mine too. |
-| `mus_story_k2_1_shoes` | K2.1 School Shoes | Accent (≈ 15 s): Morning loop; the Goodbye; the Melody leaves with her (stem mute). At the first Tribute: Haru's shriek (Murmur), then **Gran's first laugh**, then the Foundation brightens one step. | She leaves every morning. |
-| `mus_story_k2_2_lamp` | K2.2+K2.4 Lamp at Night | Part 1: the study lamp's buzz, page turns, the Melody practised in fragments on her desk (hummed under breath, piano silent). Part 2 (Exam Nerves): **music withdraws to a held silence**; no Murmur at all; only room tone, clock, a shaky breath. The piano returns softly **only when the player performs Comfort**. Gran's tea cup set down is the only other sound. | She is hurt and it is not her body. My comfort brings her back. |
+| `mus_story_k2_1_shoes` | K2.1 School Shoes | Accent (≈ 15 s): Morning loop; the Goodbye; the Melody leaves with her (stem mute). At the **cicada-shell Gift** (Narrative K2.1; Tribute is food and no food enters the house before Life 8): Haru's shriek (Murmur), then **Gran's first laugh**, then the Foundation brightens one step. | She leaves every morning. |
+| `mus_story_k2_2_lamp` | K2.2+K2.4 Lamp at Night | Part 1: the study lamp's buzz, page turns, her fingers tapping the Melody's rhythm on the desk edge (**silent: no hum**, piano silent; K1.1 stays the only hum, §16.4). Late Home (§4.4) gives this beat its cause: she stayed late to cram. Part 2 (Exam Nerves): **music withdraws to a held silence**; no Murmur at all; only room tone, clock, a shaky breath. The piano returns softly **only when the player performs Comfort**. Gran's tea cup set down is the only other sound. | She is hurt and it is not her body. My comfort brings her back. |
 | `mus_story_k2_3_flap` | K2.3 The Flap | Diegetic: saw rasp, sawdust, Gran's disapproving Murmur, hammer. A square of daylight; the Night theme's first bar heard *through the flap*, then cut as Mikan's head comes back in. | Night is out there now. |
 | `mus_story_k2_5_envelope` | K2.5 The Envelope (Closing) | The envelope's slap through the door; Haru's trembling breath; then the **fullest Life 2 arrangement** (Melody and Foundation in full, fastest tempo of the slice) under the feast. **Cut to the Foundation alone** at the empty suitcase. Hold. Title card in silence, then the bell. | Something wonderful happened, and she is going. |
 
@@ -204,7 +204,7 @@ The full game's Life 8 loss lands only if the player has learned, by ear, that *
 |---|---|---|---|
 | 1 · Leaving | Every morning Goodbye (from K2.1) | The Melody stem mutes at the next phrase boundary as the door shuts; Foundation continues | **The second Goodbye** (she is always late, DR-23): running feet, door, a forgotten thing grabbed; the Melody returns for one phrase, then leaves again |
 | 2 · Out all day | Any daytime return home in Life 2 | Foundation alone | Her return at Dusk (the Call) |
-| 3 · **Late Home** | Life 2 day 3, fixed; repeats once on a later non-Keystone day if the Life runs ≥ 5 days. Never on a Keystone or Closing evening. A Routine variant, not an extra vignette. | Dusk: **the chime, a 1-bar gap, no Call**. Mikan's ear-turn still fires and the **bell rings into the empty slot**. The Lane's Dusk drift reaches its G pedal and waits. If Mikan goes home: Gran fills the Bowl (overfull, no Tap-Tap, a grunt); the home loop is **Foundation alone**; the Veranda Lamp is dark. | At Dusk + 2:30: **her key in the door** (an S0 sound), running feet, the lamp cord click. The Melody enters at the next phrase boundary and she sings the Call **close, at the door, unducked**. If Mikan is still on the street, the Call sounds late from the house at Dusk + 2:30 and the normal bleed follows. Either way, the hole is filled. |
+| 3 · **Late Home** | **Life 2 day 3 Dusk, fixed, alongside K2.2 "Lamp at Night"** (round-2 R1: the only guaranteed slot, so "never on a Keystone evening" yields for this instance); K2.2 plays as written after she returns. Repeats once on a later non-Keystone day if the Life runs ≥ 5 days. Never on a Closing evening. A Routine variant, not an extra vignette. | Dusk: **the chime, a 1-bar gap, no Call**. Mikan's ear-turn still fires and the **bell rings into the empty slot** (the glint with no arcs). The Lane's Dusk drift reaches its G pedal and waits. If Mikan goes home: **Gran lights the Veranda Lamp** (cord click; her plum sleeve at the cord); Gran fills the Bowl (overfull, no Tap-Tap, a grunt); the home loop is **Foundation alone**; the raincoat hook stays empty. | **Her key in the door** (an S0 sound), running feet. Inside the wall the clock is paused, so her key turns **≈ 40 s of real time after the Feeding**; on the street it is **Dusk + 2:30** on the street clock. The Melody enters at the next phrase boundary and she sings the Call **close, at the door, unducked**. If Mikan is still on the street, the Call sounds late from the house at Dusk + 2:30 and the normal bleed follows. Either way, the hole is filled. |
 
 This is the "chime, gap, bell alone" image of the Life 8 Dusk, taught at zero stakes. Life 8 then reuses every element unchanged, and the entrance never comes.
 
@@ -240,7 +240,7 @@ Phase transitions: 8-bar crossfade on the next phrase boundary. Sunspot nap: 4 s
 | 4:00, after the flap | No final Call. The bleed fades; the Night arrangement comes in. Staying out is never scolded: no ticking, no alarm. |
 | Crossing the garden wall | Street music gone within 2 bars. Door, the Feeding, the evening loop. |
 
-**Late Home** (§4.4) replaces the Call slot with silence and the lone bell, and moves the Call to the door at Dusk + 2:30.
+**Late Home** (§4.4; L2D3, with K2.2) replaces the Call slot with silence and the lone bell, and moves the Call to the door: Dusk + 2:30 on the street clock, or ≈ 40 s of real time after the Feeding if Mikan is already inside the wall (where the clock is paused). Gran lights the Veranda Lamp.
 
 ### 5.4 Explore → tension → combat
 
@@ -435,7 +435,7 @@ Nemesis owns trigger → intent mapping; Narrative owns the line; Audio owns the
 | **The Tap-Tap** | Two fingertips on the Bowl's ceramic rim, twice; dry, close, **S0 salience** (always audible over everything at home) | Haru: two taps · Gran: none. (Whole-game variants: Sora learns it in Life 6; Koharu's single tap; absent in Life 8; Sora twice at Carry 3: Backlog.) |
 | **The stroke** | One long stroke down Mikan's back while eating, ringing the bell | Haru only |
 | **The rin** | Struck once in **every Alcove morning ritual** from Life 1 (Gran in the slice). Low, long, bowl-like; tuned and filtered so it is never confusable with the collar bell (DR-52.15) | — |
-| **The Veranda Lamp** | Cord click, a filament tick, a faint hum | Lit by Haru at Dusk; dark on Late Home evenings until her key turns |
+| **The Veranda Lamp** | Cord click, a filament tick, a faint hum | Lit by Haru at Dusk; on Late Home, **lit by Gran** (her plum sleeve at the cord). A dark Lamp is reserved for Life 8 |
 | **Her key in the door** | Key, latch, sliding door, shoes off at the step. S0 salience | The sound that fills the hole (§4.4) |
 | **The wall clock** | Tick loop, every room, every Life; it keeps going while the roaming clock is paused | — |
 | **The Goodbye** | Shoes at the step, a Murmured goodbye, the door; the second Goodbye adds running feet | Haru |
@@ -548,8 +548,8 @@ Standard profile: **−18 LUFS ±2 integrated** over a representative 30-minute 
 |---|---|
 | **The Call** | **The Call glyph, always on for every player**: three smooth arcs (up, up, down) in **Haru Yellow** rising from the direction of the house (at home, over Haru), drawn in the Call's short–short–long rhythm. Shape codes the voice, so it survives colour blindness. Haptic: three soft pulses, short–short–long. |
 | **The bell's fourth beat** | A single bell-gold **glint on the collar** as the head-shake lands. On Late Home, the glint fires with **no arcs before it**: the same image Life 8 will reuse. |
-| **The Dusk chime** | **The lamp wave**: street lamps and windows light in a wave running uphill through the Lane with the chime. **The Veranda Lamp** on Haru's house lights with the Call; on Late Home it **stays dark** until her key turns. |
-| **Her key in the door / Late Home resolution** | The Veranda Lamp clicks on; the Call glyph rises at the door; Mikan's ears snap toward the entryway. |
+| **The Dusk chime** | **The lamp wave**: street lamps and windows light in a wave running uphill through the Lane with the chime. **The Veranda Lamp** on Haru's house lights with the Call; on Late Home **Gran's plum sleeve pulls the cord** (no arcs at the Call slot). |
+| **Her key in the door / Late Home resolution** | The door opens and the raincoat goes back on its empty hook; the Call glyph rises at the door; Mikan's ears snap toward the entryway. |
 | **The Melody present / absent** | Proposal to Art/UX (under Hearing support): Haru's persistent object, the **yellow raincoat on its hook**, takes a faint warm bloom in time with her Melody; Gran's plum cushion with the Foundation. On Late Home and school days the raincoat stays unlit. No HUD motes inside the house. |
 | **The Tap-Tap** | Mikan's ear-turn + ear Sense Icon if off-screen; the two finger-taps are framed in the Feeding's authored shot |
 | **Off-screen sounds at home** (key, cupboard, rin) | **Mikan's ear-turn plus an ear Sense Icon** pointing to the source |
@@ -578,7 +578,7 @@ Honest limit: comprehension parity is achievable; emotional parity is not fully.
 | Territory | `PatchChanged`, `DistrictClaimed`; **request:** a `CaterwaulRaised(patch_id, sentry_id)` event | Brass Call, Caterwaul |
 | Economy | `TributeDelivered` | Tribute plops |
 | Day loop | `HomeArrived` (on_time / late / routed); Head Home on Late Home evenings appears in the Call slot (**request** to `day-loop.md`) | Arrival music, plaster beat |
-| Narrative | `KeystonePlayed`; the **Late Home** Routine variant on Life 2 day 3 (**request**, §4.4) | Story cues |
+| Narrative | `KeystonePlayed`; the **Late Home** Routine variant on Life 2 day 3 with K2.2 (**confirmed**, round-2 R1; Narrative §3.3) | Story cues |
 | UX / Art | Call glyph, glint, lamp wave, ear Sense Icon, raincoat bloom, sting contour glyph | §11 |
 
 **Middleware**: engine is OPEN; FMOD Studio is recommended for stems, quantised transitions and side-chaining. The technical-director decides.
@@ -672,9 +672,9 @@ Bark *lines* (≤ 240, text) belong to Narrative; each plays over one of the ges
 
 ## 16. Assumptions for Creative-Director Review
 
-1. **Late Home** (§4.4) is a Routine variant on Life 2 day 3, not one of the 11 vignettes. It teaches the late idiom inside the slice, as the round-2 brief requires, while SB-N4's whole-game application stays Backlog. Narrative to confirm the day and staging.
+1. **Late Home — CONFIRMED (round-2 R1).** A Routine variant on Life 2 day 3 Dusk, stacked with K2.2, not one of the 11 vignettes. Gran lights the Lamp; the key turns ≈ 40 s after the Feeding inside the wall or at Dusk + 2:30 on the street. SB-N4's whole-game application stays Backlog.
 2. The "bell answers nobody" image is shown at zero stakes in the slice so Life 8 reuses a learned image rather than introducing it.
-3. Haru's practice piece *is* the Melody (DR-23 "one piece").
+3. Haru's practice piece *is* the Melody (DR-23 "one piece"), and it opens on the answer phrase and **never contains the Call cell** (round-2 R2, confirmed).
 4. K1.1's hum (the answer phrase) is the only sung/hummed voice other than the Call in the slice; §2.2 reserves the voice accordingly.
 5. The raincoat bloom (§11) is offered to UX/Art as an option; DR-54 does not list it.
 6. Piano lid closed in Life 8 (§3.5): Narrative to confirm.
@@ -702,10 +702,21 @@ Bark *lines* (≤ 240, text) belong to Narrative; each plays over one of the ges
 - Lot theme second level; Roof Run audio; multi-district bleed; Night spatialised stings (only if Nemesis adds a listening mechanic).
 - Translated ultrasound (TV whine, rodents in walls) and the Life 8 decay sounds.
 - Credits as a rearrangement of existing cues.
+- Mid-day visit wording: Audio plays the Foundation alone (Gran is home on school days); `day-loop.md` §3.3 says "the house is empty". Day-loop to change its wording (not an Audio change).
+- Raincoat bloom (§11) as a Melody-presence twin: Art decides after the home mock (stepped tone change, never a glow).
 
 ---
 
 ## Revision Log
+
+### 2026-11-24 — Iteration 3 (round-2 presentation review, final pass)
+
+| Fix | How |
+|---|---|
+| 1 · R2 (the Piece never contains the Call cell) | §3.1, §3.2: the Melody opens on the four-note answer phrase (C–D–E–G) and never quotes the Call cell on piano; the cell lives only in voices, the Brass Call and Late Home's door Call. K1.3 note added; §16.3 confirmed |
+| 2 · R1 (Late Home) | §4.4 step 3, §5.3, §9.1, §11, §12, §16.1: L2D3 Dusk alongside K2.2; Gran lights the Veranda Lamp (sleeve at the cord, no arcs); key turns ≈ 40 s after the Feeding inside the wall, Dusk + 2:30 on the street; raincoat hook empty until the door opens; Assumption 1 confirmed |
+| 3 · K2.1 cue trigger | `mus_story_k2_1_shoes` fires at the cicada-shell Gift, not the first Tribute |
+| Backlog taken | K2.2 desk is silent (no hum; K1.1 stays the only hum); collar's first ring moved to K1.1's day-1 morning to follow Narrative's beat |
 
 ### 2026-11-23 — Round 2 (fresh slice-focused rewrite; first draft archived)
 

@@ -684,7 +684,7 @@
         s += celGroup({ parts: [{ d: blob([[-40, -400], [-44, -300], [-36, -268], [0, -262], [44, -268], [52, -300], [44, -400]]), fill: p.bottom }], shade: blob([[-50, -410], [-50, -260], [-32, -262], [-28, -410]]) }, G);
       }
       // shirt hem
-      s += celGroup({ parts: [{ d: blob([[-50, -470, 1], [-56, -384], [-20, -372], [20, -370], [56, -380], [50, -470, 1]], true, 0.6), fill: p.top }], shade: blob([[-60, -480], [-60, -370], [-38, -372], [-36, -480]]) }, G);
+      s += celGroup({ parts: [{ d: blob([[-52, -680, 1], [-56, -384], [-20, -372], [20, -370], [56, -380], [52, -680, 1]], true, 0.6), fill: p.top }], shade: 'M-70 -700H-37V-360H-70Z' }, G);
       if (o.carry === 'bag') s += handBag(p, G, 26, -292);
     } else if (o.pose === 'stand') {
       const leg = (sx) => {
@@ -701,7 +701,7 @@
       s += leg(-1) + leg(1);
       if (o.garment === 'skirt') s += celGroup({ parts: [{ d: blob([[-52, -400, 1], [-66, -300], [-80, -190, 1], [-40, -182], [0, -186], [40, -182], [80, -190, 1], [66, -300], [52, -400, 1]]), fill: p.bottom }], shade: blob([[44, -410], [54, -300], [62, -180], [90, -180], [70, -410]]), lines: [blob([[-22, -190], [-18, -250]], false), blob([[24, -190], [20, -260]], false)] }, G);
       else s += celGroup({ parts: [{ d: blob([[-56, -400], [-60, -300], [-52, -262], [0, -256], [52, -262], [60, -300], [56, -400]]), fill: p.bottom }], shade: blob([[42, -410], [46, -256], [70, -256], [64, -410]]), lines: ['M0 -258V-300'] }, G);
-      s += celGroup({ parts: [{ d: blob([[-58, -470, 1], [-64, -384], [-24, -372], [24, -372], [64, -384], [58, -470, 1]], true, 0.6), fill: p.top }], shade: blob([[44, -480], [46, -370], [70, -370], [66, -480]]) }, G);
+      s += celGroup({ parts: [{ d: blob([[-60, -680, 1], [-64, -384], [-24, -372], [24, -372], [64, -384], [60, -680, 1]], true, 0.6), fill: p.top }], shade: 'M45 -700H80V-360H45Z' }, G);
       if (o.carry === 'bag') s += handBag(p, G, 78, -292);
     } else { // reach: a squatting figure, forearm and open palm offered at cat-nose height
       const hip = [-170, -150], knee = [-52, -178], ank = [-92, -34];
@@ -724,9 +724,9 @@
     s += inked(blob([[hx - 20, hy + 70], [hx - 34, hy - 20], [hx - 22, hy - 78, 1], [hx - 8, hy - 16], [hx - 2, hy + 70]]), '#8DB86E', 2.5) + inked(blob([[hx + 2, hy + 70], [hx + 6, hy], [hx + 26, hy - 50, 1], [hx + 22, hy + 6], [hx + 20, hy + 70]]), '#EDEFD8', 2.5);
     s += inkLine(`M${hx - 30} ${hy + 64}Q${hx - 16} ${hy + 6} ${hx - 4} ${hy + 8}M${hx + 34} ${hy + 64}Q${hx + 18} ${hy + 6} ${hx + 6} ${hy + 8}`, 7, C.ink) + inkLine(`M${hx - 30} ${hy + 64}Q${hx - 16} ${hy + 6} ${hx - 4} ${hy + 8}M${hx + 34} ${hy + 64}Q${hx + 18} ${hy + 6} ${hx + 6} ${hy + 8}`, 3, p.accent);
     s += celGroup({ parts: [{ d: bag, fill: p.bag }], shade: blob([[hx + 14, hy + 50], [hx + 22, hy + 150], [hx + 12, hy + 204], [hx + 70, hy + 204], [hx + 70, hy + 50]]), overlays: [{ d: `M${hx - 60} ${hy + 104}H${hx + 70}V${hy + 122}H${hx - 60}Z`, fill: p.accent }] }, G);
-    const arm = tube([[hx - 6, hy - 190], [hx - 2, hy - 90], [hx + 1, hy - 14]], [40, 32, 25], { capRound: 0.2 });
+    const arm = tube([[hx - 8, hy - 380], [hx - 6, hy - 190], [hx - 2, hy - 90], [hx + 1, hy - 14]], [46, 40, 32, 25], { capRound: 0.2 });
     const fist = blob([[hx - 15, hy - 20], [hx - 18, hy], [hx - 13, hy + 16], [hx + 2, hy + 21], [hx + 15, hy + 14], [hx + 18, hy - 2], [hx + 13, hy - 20]]);
-    s += celGroup({ parts: [{ d: arm, fill: p.skin }, { d: fist, fill: p.skin }], shade: `M${hx + 9} ${hy - 200}H${hx + 40}V${hy + 30}H${hx + 9}Z`, lines: [`M${hx - 9} ${hy + 6}Q${hx} ${hy + 10} ${hx + 11} ${hy + 5}`, `M${hx - 4} ${hy + 14}V${hy + 20}M${hx + 5} ${hy + 14}V${hy + 20}`] }, G);
+    s += celGroup({ parts: [{ d: arm, fill: p.skin }, { d: fist, fill: p.skin }], shade: `M${hx + 9} ${hy - 400}H${hx + 40}V${hy + 30}H${hx + 9}Z`, lines: [`M${hx - 9} ${hy + 6}Q${hx} ${hy + 10} ${hx + 11} ${hy + 5}`, `M${hx - 4} ${hy + 14}V${hy + 20}M${hx + 5} ${hy + 14}V${hy + 20}`] }, G);
     return s;
   }
 

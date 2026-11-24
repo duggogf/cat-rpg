@@ -1,7 +1,7 @@
 # Dual Story Progression
 
 *Owner: narrative-director · Round 2 (vertical slice) · 2026-11-23 · Status: slice spec*
-*Canon: `design/creative-brief.md` v1.2, then `design/reviews/round-1/director-rulings.md`. The first draft is archived at `design/backlog/first-drafts/dual-story-progression.md`; it is the content backlog for Lives 3–9.*
+*Canon: `design/creative-brief.md` v1.3, then `design/reviews/round-1/director-rulings.md`. The first draft is archived at `design/backlog/first-drafts/dual-story-progression.md`; it is the content backlog for Lives 3–9.*
 
 **Scope of this doc.** It covers the **slice in full**: Lives 1–2, 11 home vignettes, the Routine layer, the daily find, the piano, and Bond. It gives **the whole game as a one-page framing**, including Life 8 as ruled (DR-27). Everything else is listed under `## Backlog (post-slice)`.
 
@@ -52,7 +52,7 @@ This expands the language rule (brief §5.6). Where they differ, the brief wins.
 | C9 | Music | Confirms what the image shows. Never the only carrier; never anticipates what Mikan cannot know |
 | C10 | Murmur and diegetic sound | Prosody only: no phonemes of a real language, no repeated syllable heard as a name. Never comic |
 | C11 | Mikan's reaction | Ears, tail, pupils, a trot to the door, plus at most one Sense Icon event per vignette |
-| C12 | Camera | Cat height. **A human face entering frame is an event** and is spent deliberately |
+| C12 | Camera | Cat height. **A face event** is an authored shot where the human face is the subject, at ≥ 20% of screen height; it is spent deliberately (three in the slice: K1.1, K1.3 shot 6, K2.5). **Incidental faces** are allowed and not counted: the Goodbye crouch, the face seen from below during Lap (Camera §3.9), a human kneeling at the low table. They stay partial or small (≤ 15% of screen height) and never hold centre frame for > 2 s (round-2 R5) |
 | C13 | Pictures | Photos and drawings; faces allowed, captions never |
 
 **Forbidden.**
@@ -99,6 +99,7 @@ This expands the language rule (brief §5.6). Where they differ, the brief wins.
 | The Goodbye = she leaves, and comes back | K2.1, every school morning after | L8 A2: the last one, unremarked |
 | Late = the lamp stays on for you | K2.3 onward (post-flap): the lamp is lit when Mikan comes in late | L8: dark |
 | A second Goodbye = Haru is late again | T2.1, then Routine | L8 A2: "she's late again" |
+| A Dusk with no Call, the bell alone = she's late; she will come | L2D3 **Late Home** (Routine variant; Audio §4.4) | L8 A2: the same Dusk, and she never comes |
 | Home Scent fading = away a long time | (Haru's trail to the door is fresh every slice day) | L3 thins and floods back · L8 thins for good |
 
 **Ritual, Repetition, Rupture.** Establish a ritual and let the player perform it many times (**≥ 3** before any variation carries a beat). Then change **exactly one** element (who, when, where, how or whether). Rituals live in the Routine layer, not in vignettes.
@@ -107,8 +108,8 @@ This expands the language rule (brief §5.6). Where they differ, the brief wins.
 |---|---|---|
 | **The Feeding** | (1) cupboard door and kibble rattle, mixed loud for cat ears; (2) the Bowl on its spot; (3) the **Tap-Tap**: two fingertips tap the rim twice; (4) one stroke down Mikan's back, ringing the bell | K1.3 |
 | **The Call** | One bar after the Dusk chime, Haru sings three notes from the veranda (rise a third, fall a fifth). Mikan's ear-turn ends in a head-shake that **rings the bell on the downbeat after the Call** (the fourth beat, DR-53) | K1.3 |
-| **The Goodbye** | Leaving, Haru crouches at the entryway step (her face enters frame) and scratches under Mikan's chin with two fingers | K2.1 (seen in K1.1 tail once) |
-| **The Lamp** | Haru pulls the Veranda Lamp cord at Dusk. If Mikan is out, it stays lit all night | K1.3 |
+| **The Goodbye** | Leaving, Haru crouches at the entryway step (an **incidental face**: partial, ≤ 15% of screen height, not a face event, C12) and scratches under Mikan's chin with two fingers | K2.1 (seen in K1.1 tail once) |
+| **The Lamp** | Haru pulls the Veranda Lamp cord at Dusk (on Late Home, Gran's plum sleeve pulls it). If Mikan is out, it stays lit all night | K1.3 |
 | **The Alcove** | Each morning Gran lights incense before Grandpa's photo, strikes the **rin** once (DR-23) and stands still for a breath | Life 1 day 1 Routine; T1.1 |
 
 **Sense Icons** (Narrative owns the vocabulary, UX the look). A bubble over Mikan, ≤ 2 icons at once, ≤ 1 icon event per vignette.
@@ -177,10 +178,11 @@ This expands the language rule (brief §5.6). Where they differ, the brief wins.
 | L2 · 2 | M | T2.1 | The Second Goodbye | Texture |
 | L2 · 2 | D | K2.3 | The Flap (Night opens) | Keystone |
 | L2 · 3 | A (any hour) | K2.2 | The Lamp at Night (K2.2 + K2.4 merged) | Keystone |
+| L2 · 3 | D | — | **Late Home**: Dusk with no Call, the bell alone; **Gran lights the Veranda Lamp** (her plum sleeve at the cord); Haru's key turns late, the Melody returns, the Call at the door; **K2.2 then plays as written** (the late return is its Tier B cause: she stayed late to cram). Round-2 R1 | **Routine variant, not a vignette** (the count of 11 stands) |
 | L2 · 4 | M (+ D tail) | K2.5 | The Envelope (**Closing**) | Keystone |
 | L2 · 5+ | — | — | Plateau "Waiting to Leave"; the slice ends at the Life-end sleep | — |
 
-**Opening timing (DR-22).** K1.1 runs 0:00–0:04. The garden (move, jump, Swat, Skitter on a crow) runs 0:04–0:08. The old wall cat appears at ≈ 0:08–0:10, then the two-Stray lane fight and Quick Pile-On at 0:10–0:15. The rest of day 1 follows; Dusk brings K1.3.
+**Opening timing (DR-22).** K1.1 runs 0:00–0:04. The garden (move, jump), then Swat and Skitter on a crow on the lane-side wall top, runs 0:04–0:08 (round-2 R4: no combat inside the wall). The old wall cat appears at ≈ 0:08–0:10, then the two-Stray lane fight and Quick Pile-On at 0:10–0:15. The rest of day 1 follows; Dusk brings K1.3.
 
 ### 3.4 The slice vignettes, beat by beat
 
@@ -294,6 +296,8 @@ Signature gait: a skidding half-run in socks. Hand habit: two fingers (the Tap-T
 
 ### 3.8 Storyboards (third-person camera, cat height)
 
+*Metre figures in these storyboards ("≈ 0.4 m behind the kitten", "follow at 0.4 m") are camera **heights**. Camera distances follow `camera-system.md` §3.2 (Home 1.8 m, range 0.6–2.2 m).*
+
 **A. "The Bell and the First Call"** (K1.3, Life 1 day 1, Dusk). *Setup: the kitten is in the lane after the first fights. The collar went on this morning. The player has heard Haru hum, never the Call.*
 
 | # | Dur | Camera | Action | Sound | Control |
@@ -342,7 +346,7 @@ Signature gait: a skidding half-run in socks. Hand habit: two fingers (the Tap-T
 eligible(v) = (life == v.life) AND (day_in_life >= v.day_gate) AND slot_matches(v.slot, now)
               AND (v.prev == null OR played(v.prev))
 ```
-Priority when several are eligible for one slot: **Closing > Keystone > Texture > daily find only**. Losers wait for the next matching slot. At most one vignette per slot (two per day).
+Priority when several are eligible for one slot: **Closing > Keystone > Texture > daily find only**. Losers wait for the next matching slot. At most one vignette per slot (two per day). **A Keystone's tail is a Routine extension and does not occupy its slot** (so T2.2 plays on L2·1 Dusk beside K2.1's player-driven Gift tail). Late Home is likewise a Routine variant and does not occupy L2·3's Dusk slot.
 
 **F2. Life end**
 ```
@@ -391,6 +395,8 @@ home_share = (wake_to_door + evening_home) / day_total     # target ≈ 0.15, al
 | Player stays in the house all day | The clock is paused inside the wall, so nothing advances. No fail state; the door is open |
 | Player tries to sleep repeatedly to skip days | Sleep is offered only from Dusk, so the day's clock must be roamed |
 | Late arrival on K2.2's day | Any-hour staging (lighting variant) |
+| Mikan out all Night on L2D3 (Late Home) | The late Call is heard from the house at Dusk + 2:30 on the street clock and the normal bleed follows; Haru is home by the time Mikan comes in, and K2.2 plays on that arrival with its Late-arrival lighting variant |
+| Mikan inside the wall at Dusk on L2D3 | The clock is paused inside the wall, so Haru's key turns ≈ 40 s of real time after the Feeding (Gran feeds, Gran lights the Lamp); then the Call at the door and K2.2 |
 | A Closing would play Late | Cannot happen in the slice: K1.4 is pre-flap (universal Dusk) and K2.5 is a morning beat. Rule kept: Closings never play Forensic; they wait for the next morning |
 | Wipe on L1 day 1 before Dusk | The clock jumps to Dusk; K1.3 plays in full, plus the plaster |
 | Player ignores Haru at the Call (K1.3) | Up to three Calls, then the nose two-step. The Bowl, Tap-Tap and Lamp still play |
@@ -452,7 +458,7 @@ home_share = (wake_to_door + evening_home) / day_total     # target ≈ 0.15, al
 - **Home Scent** look: four freshness steps; plum + incense braid; Haru's yellow.
 - Sense Icons including the four **tone puffs**; the Call glyph (three smooth yellow arcs); the bell glint; the **Dusk lamp wave** (windows light uphill with the chime; the Veranda Lamp visible from any High Road).
 - **Plaster = Scar-kit head plaster asset.**
-- Home scale: cats read correctly in a 16-year-old's lap and on a piano bench (Art sets the scale rule).
+- Home scale: **one global cat scale, 1.25× a real cat (≈ 0.56 m)**, street and home alike (Art §3.4); confirmed in Camera's home mock with Mikan in a 16-year-old's lap and on a piano bench.
 - Composition rule: no inside-looking-out veranda-to-garden key art with a pet in the yard.
 
 **Audio**
@@ -498,6 +504,10 @@ home_share = (wake_to_door + evening_home) / day_total     # target ≈ 0.15, al
 - Full House Memory and Echo prop states (the two Life 7 photos); the second Doorstep saucer for "Mikan's friends" (DS-C12).
 - Full Sense Icon set (empty bowl, jagged burst, coral blob, paw).
 - The Witness/Forensic dual staging for ≤ 1 evening Keystone per Life from Life 3 on; ≥ 70% morning rule audit.
+- First-hour clock: `day-loop.md` puts K1.4 at ≈ 0:40–0:45, `key-screens.md` §7.3 at 0:52–0:57. Align after the first playable (Narrative gates by day and slot, not clock).
+- Life titles on title cards (X5 allows them): confirm "Uniform" and others are written from the cat's side.
+- Confirm Audio §16.6 (piano lid closed in Life 8).
+- K2.5 `day_gate` is L2D4 (§3.3); `territory-management.md` assumes L2D5. Territory to align.
 
 **Life 3** — K3.1, K3.2 (the phone carries the complete Call), K3.3, K3.5; Gran's three taps in the Call's rhythm and one hum (DS-X10, SB-P12); Home Scent fading and flooding back.
 **Life 4** — K4.2–K4.5 (K4.1 folded); Sora, teal, whistles the Call and never sings (DS-X7, SB-P17); the lap war; K4.5 storyboard "The Small Box" with Nose-Touch input at home, bat cap 2 (DS-C11).
@@ -512,6 +522,17 @@ home_share = (wake_to_door + evening_home) / day_total     # target ≈ 0.15, al
 ---
 
 ## Revision Log
+
+**2026-11-24 — Iteration 3 (round-2 presentation review, final pass).**
+
+| Fix | How |
+|---|---|
+| 1 · Late Home (R1) | §3.3 schedule row under L2·3 Dusk, marked Routine variant (count of 11 stands); Gran lights the Lamp; K2.2 plays after Haru returns. §3.1 vocabulary row (taught L2D3, paid off L8 A2); Lamp ritual row notes Gran's sleeve. §5 edge cases: out all Night on L2D3; inside-the-wall ≈ 40 s timer |
+| 2 · F1 slot collision | F1: a Keystone's tail is a Routine extension and does not occupy its slot (T2.2 no longer slips) |
+| 3 · Crow (R4) | Opening timing: garden move/jump, then the crow on the lane-side wall top |
+| 4 · Faces (R5) | C12 defines face events (≥ 20% screen height; three in the slice) against incidental faces (≤ 15%, ≤ 2 s centre); Goodbye ritual marked incidental |
+| Scale | §8 cites Art's 1.25× global cat scale |
+| Backlog taken | Storyboard metres stated as camera heights (§3.8 note) |
 
 **2026-11-23 — Round 2 (fresh slice rewrite; archived draft at `design/backlog/first-drafts/`).**
 
