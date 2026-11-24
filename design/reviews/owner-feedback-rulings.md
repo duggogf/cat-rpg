@@ -634,3 +634,17 @@ Standing item, not a question: **qualified patent counsel** must review this des
 | **G12** naming | OR-03 | Not a claim element (litigation posture) |
 
 *Left alone, as v2 §5 says is not needed on the current claim text:* per-cat Memory, Scars, Titles, Lick In and adaptation, which change only the cat Mikan dealt with.
+
+---
+
+## 5. Owner answers (2026-11-24)
+
+The owner answered the §4 questions; every answer matches the default, so the rulings stand as written.
+
+| Question | Answer |
+|---|---|
+| Recruit's own-memory flinch instead of the boss's targeted taunt, pending counsel | **Accepted** |
+| Nose-Touch truce length | **10 in-game days** |
+| Chase Off final even for Togemaru | **Yes, final for everyone** |
+| "Full influence" = all four outer Patches held at Strong | **Yes** |
+| Recruits can betray in the slice (rarely) | **Yes** (owner: "for all other questions, do as you suggest") |

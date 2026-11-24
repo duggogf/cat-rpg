@@ -1,0 +1,126 @@
+
+== Sensitivity: Daifuku vs time between knock-offs (wall time before each knock-off) ==
+  wall 8 s          :  175.6 s, Frazzles per phase [3, 2, 3]
+  wall 12 s         :  187.4 s, Frazzles per phase [2, 3, 2]
+  wall 16 s         :  194.3 s, Frazzles per phase [2, 2, 3]
+  wall 24 s         :  205.5 s, Frazzles per phase [2, 3, 2]
+  never knocked off :  234.6 s, Frazzles per phase [2, 2, 3]
+
+== Sensitivity: Bruiser Captain (x1.3) vs Captain Frazzle resistance r_rank ==
+  r_rank 0.20: Bruiser Captain  57.9 s (3 Frz) | Yowler Captain  34.5 s
+  r_rank 0.25: Bruiser Captain  51.8 s (3 Frz) | Yowler Captain  29.3 s
+  r_rank 0.30: Bruiser Captain  51.6 s (3 Frz) | Yowler Captain  27.0 s
+== F1 check: Lv 8 Mikan string hit 1 (MV 1.0) with Crew stats ==
+  vs bruiser  Tough: Crew stats ->  19   (Combat F1 example claims 20)
+  vs scrapper Tough: Crew stats ->  21   (Combat F1 example claims 16)
+  vs yowler   Tough: Crew stats ->  30   (Combat F1 example claims 24)
+  neutral hit% by level (integer damage): L1 5.00%, L2 4.72%, L3 4.58%, L4 4.49%, L5 4.44%, L6 4.39%, L7 4.62%, L8 4.57%
+  Style basic-hit power vs a neutral defender (Off/S_ref): {'bruiser': 1.009, 'scrapper': 1.198, 'yowler': 1.355}
+
+== Catalogue per-Paw value (single target, 50% conditional uptime) ==
+  all 12: 2.11 MV, 19.7 FZ per Paw | damage Moves only: 2.54 MV, 23.7 FZ  (F9 assumes 3.5 MV, 30 FZ)
+  Mikan  (scrapper): 3.07 MV / 26.2 FZ per Paw
+  Hige   (bruiser): 2.26 MV / 23.8 FZ per Paw
+  Pon    (yowler): 1.02 MV / 9.2 FZ per Paw
+  Thorn  (scrapper): 3.07 MV / 26.2 FZ per Paw
+
+== Gauge income (F3) ==
+  controlled 9.06 pts/s (1 Paw / 11.0 s); AI 3.36 pts/s (1 Paw / 29.8 s); AI's first self-spend needs 2 Paws = 60 s
+  Posse incl. Tag-Ins: 0.241 Paws/s
+
+== Fight lengths, damage share, gauge ==
+case                           variant    time        target     doc  Frz Moves  Paws ldrBas  aiBas Moves%   Tag  Pile  Crew%
+Tough, focused (in a group)    doc      10.7s        6-10 s   7.9 s    1     0   1.2    65%    35%     0%    0%    0%    35%
+Tough, focused (in a group)    slice     9.7s        6-10 s   7.9 s    1     0   1.1    68%    32%     0%    0%    0%    32%
+Tough, alone (Quick Pile-On)   doc       5.7s        6-10 s       -    1     0   0.7    20%    33%     0%    0%   47%    68%
+Tough, alone (Quick Pile-On)   slice     5.6s        6-10 s       -    1     0   0.7    23%    36%     0%    0%   42%    67%
+2 Toughs                       doc      20.7s skirmish (A2)    16 s    2     1   3.6    27%    43%     6%    3%   22%    62%
+2 Toughs                       slice    17.9s skirmish (A2)    16 s    2     1   3.1    28%    44%     4%    2%   22%    61%
+3 Toughs                       doc      28.3s skirmish (A2)    24 s    3     3   5.6    27%    44%    11%    3%   16%    60%
+3 Toughs                       slice    24.7s skirmish (A2)    24 s    3     3   4.9    29%    45%     8%    2%   16%    59%
+4 Toughs                       doc      35.5s       30-60 s    31 s    4     6   7.5    27%    43%    15%    3%   12%    63%
+4 Toughs                       slice    33.3s       30-60 s    31 s    4     4   6.6    31%    49%     8%    2%   10%    62%
+6 Toughs                       doc      52.6s       30-60 s    44 s    6     9  11.3    29%    46%    15%    3%    8%    60%
+6 Toughs                       slice    47.7s       30-60 s    44 s    6     8  10.3    31%    48%    11%    3%    7%    60%
+Captain (neutral)              doc      37.0s       30-45 s  36.7 s    2     5   7.2    16%    26%     7%    2%   48%    66%
+Captain (neutral)              slice    37.0s       30-45 s  36.7 s    2     5   7.2    16%    32%     6%    2%   44%    68%
+Captain, Bruiser x1.3          doc      55.4s       30-45 s    44 s    3     8  10.8    17%    27%     9%    2%   46%    65%
+Captain, Bruiser x1.3          slice    57.9s       30-45 s    44 s    3     9  11.3    18%    27%     7%    2%   47%    65%
+Captain, Yowler x0.9 (Kagi)    doc      37.0s       30-45 s    33 s    2     5   7.2    16%    26%     7%    2%   48%    66%
+Captain, Yowler x0.9 (Kagi)    slice    34.5s       30-45 s    33 s    2     5   7.2    28%    37%     8%    2%   25%    60%
+Captain, expert policy         doc      30.8s       >= 21 s    25 s    2     3   5.5    18%    29%     8%    2%   44%    66%
+Captain, expert policy         slice    27.8s       >= 21 s    25 s    2     3   5.0    16%    32%     7%    2%   43%    69%
+Daifuku (Boss, x26)            doc     165.7s     120-180 s   140 s 2/3/2    26  24.7    16%    26%    12%    2%   44%    67%
+Daifuku (Boss, x26)            slice   175.6s     120-180 s   140 s 3/2/3    29  27.7    17%    25%     8%    2%   48%    65%
+
+  Crew% = Crew share of Posse damage under a Mikan-only policy (no Tag-Ins), DR-33 target >= 55%.
+  Frz = Frazzles in the fight (Boss: per phase 1/2/3), DR-32 target >= 1 per phase.
+
+== Zoomies pace (F8: +10 per enemy Frazzle to every standing cat, + up to 40 from damage) ==
+  3 Toughs: 3 Frazzles -> +51 per cat (doc claims ~+50, i.e. 1 Zoomies per 2 encounters)
+  4 Toughs: 4 Frazzles -> +61 per cat (doc claims ~+50, i.e. 1 Zoomies per 2 encounters)
+  6 Toughs: 6 Frazzles -> +81 per cat (doc claims ~+50, i.e. 1 Zoomies per 2 encounters)
+
+== Commanded-Move supply in short fights (DR-02: >= 3 commanded Moves per encounter) ==
+  Tough, focused (in a group): 0 Moves castable; first Paw per cat (s): [None, None, None, None]
+  2 Toughs: 1 Moves castable; first Paw per cat (s): [11.0, None, None, None]
+  3 Toughs: 3 Moves castable; first Paw per cat (s): [11.0, None, None, None]
+  4 Toughs: 6 Moves castable; first Paw per cat (s): [11.0, 29.8, 29.8, 29.8]
+
+
+######## OWNER-FEEDBACK PASS (2026-11-24): Daifuku with incoming damage, anger, nerves, join-in ########
+
+== A. Check: incoming model off reproduces the round-2 Daifuku figure (slice, wall 8 s) ==
+  175.6 s (round-2 before: 175.6 s; the new model adds 3 s of opening overhead the same way)
+
+== B. Fired Up tier x dodge quality (rival Posse: Mikan, Hige, Pon, Togemaru; same level; Alley) ==
+  -- good dodging, 35% lands
+     Calm (no Fired Up)      175.6 s  win     Posse Nerve lost  36.6%  Routed: none  (Frz [3, 2, 3])
+     Riled: 20 s             175.6 s  win     Posse Nerve lost  37.8%  Routed: none  (Frz [3, 2, 3])
+     Seething: 40 s          175.6 s  win     Posse Nerve lost  39.2%  Routed: none  (Frz [3, 2, 3])
+     Furious: whole fight    175.6 s  win     Posse Nerve lost  42.4%  Routed: none  (Frz [3, 2, 3])
+  -- median, 50% lands
+     Calm (no Fired Up)      175.5 s  win     Posse Nerve lost  52.3%  Routed: none  (Frz [3, 2, 3])
+     Riled: 20 s             175.5 s  win     Posse Nerve lost  54.0%  Routed: none  (Frz [3, 2, 3])
+     Seething: 40 s          175.5 s  win     Posse Nerve lost  56.1%  Routed: none  (Frz [3, 2, 3])
+     Furious: whole fight    175.5 s  win     Posse Nerve lost  60.6%  Routed: none  (Frz [3, 2, 3])
+  -- poor dodging, 65% lands
+     Calm (no Fired Up)      175.5 s  win     Posse Nerve lost  68.0%  Routed: none  (Frz [3, 2, 3])
+     Riled: 20 s             175.8 s  win     Posse Nerve lost  70.2%  Routed: none  (Frz [3, 2, 3])
+     Seething: 40 s          175.5 s  win     Posse Nerve lost  72.9%  Routed: none  (Frz [3, 2, 3])
+     Furious: whole fight    175.5 s  win     Posse Nerve lost  78.8%  Routed: none  (Frz [3, 2, 3])
+
+== C. Rematch at -10% max Nerve (plastered), anger spent -> Calm ==
+  good dodging, 35% lands   161.3 s  win     Posse Nerve lost  33.2%  Routed: none  (Frz [2, 3, 2])
+  median, 50% lands         157.2 s  win     Posse Nerve lost  45.7%  Routed: none  (Frz [2, 3, 2])
+  poor dodging, 65% lands   157.2 s  win     Posse Nerve lost  59.4%  Routed: none  (Frz [2, 3, 2])
+
+== D. Old Gang Nerves: Kagi (Schemer, susceptible) Cowed at the Standoff; Posse Mikan, Hige, Togemaru, Kagi ==
+  no nerves (Kagi Sworn / resisting)    175.5 s  win     Posse Nerve lost  52.3%  Routed: none  (Frz [3, 2, 3])
+  Cowed 20 s, cleared by the first Tag-In (t=10 s)  176.0 s  win     Posse Nerve lost  52.3%  Routed: none  (Frz [3, 2, 3])   cost +0.6 s
+  Cowed 20 s, no answer                   179.7 s  win     Posse Nerve lost  54.0%  Routed: none  (Frz [2, 3, 3])   cost +4.3 s
+  Cowed 30 s (Fraidy value), no answer    179.7 s  win     Posse Nerve lost  54.0%  Routed: none  (Frz [2, 3, 3])   cost +4.3 s
+  Riled: 20 s            no nerves  175.5 s | Kagi Cowed 20 s, no answer  179.7 s (win) cost +4.3 s
+  Seething: 40 s         no nerves  175.5 s | Kagi Cowed 20 s, no answer  179.7 s (win) cost +4.3 s
+  Furious: whole fight   no nerves  175.5 s | Kagi Cowed 20 s, no answer  179.7 s (win) cost +4.3 s
+
+== E. Nose-Touch join-in ally: Togemaru (truce) as an AI guest; family Posse Mikan, Hige, Pon, Kinako ==
+  Calm (no Fired Up)     no ally  175.5 s (win, lost 54.2%) | ally from the start  161.7 s (win, lost 40.9%) | ally with the phase-2 wave  169.5 s (win, lost 45.8%)
+  Riled: 20 s            no ally  175.5 s (win, lost 55.9%) | ally from the start  161.7 s (win, lost 42.0%) | ally with the phase-2 wave  169.5 s (win, lost 47.5%)
+  Seething: 40 s         no ally  175.5 s (win, lost 58.1%) | ally from the start  161.7 s (win, lost 43.7%) | ally with the phase-2 wave  169.5 s (win, lost 49.4%)
+  Furious: whole fight   no ally  175.5 s (win, lost 62.8%) | ally from the start  162.2 s (win, lost 47.0%) | ally with the phase-2 wave  169.5 s (win, lost 53.0%)
+  (a join-in needs an opponent tagged the truce cat's Rival: in the slice Daifuku has none, so the
+   reachable case is the phase-2 wave holding Goma, a seeded pick never chosen by who is in truce)
+
+== F. Where Fired Up bites: the landed share at which the expected-value Posse wipes ==
+   (Fired Up never changes the Posse's output, so a win takes the same time; it moves the wipe line)
+  Calm (no Fired Up)     wipes once >=  94.8% of his swings land | a wipe just past it:  193.1 s  loss    Posse Nerve lost 121.1%  Routed: Mikan @124s, Hige @177s, Pon @189s, Thorn @193s  (96% of his Nerve gone)
+  Riled: 20 s            wipes once >=  92.9% of his swings land | a wipe just past it:  193.1 s  loss    Posse Nerve lost 121.9%  Routed: Mikan @124s, Hige @177s, Pon @189s, Thorn @193s  (96% of his Nerve gone)
+  Seething: 40 s         wipes once >=  90.5% of his swings land | a wipe just past it:  195.1 s  loss    Posse Nerve lost 122.9%  Routed: Mikan @102s, Hige @169s, Thorn @181s, Pon @195s  (92% of his Nerve gone)
+  Furious: whole fight   wipes once >=  83.3% of his swings land | a wipe just past it:  193.1 s  loss    Posse Nerve lost 123.1%  Routed: Mikan @124s, Hige @177s, Pon @189s, Thorn @193s  (96% of his Nerve gone)
+  Rematch -10%, Calm     wipes once >=  97.9% of his swings land
+
+== G. Context: anger stage reached on L2D4 by marking policy (Nemesis owns F-anger; acts per day assumed) ==
+  quiet: Rubs only, 2 over-marks a day           L2D4 morning anger   0 -> Calm  (peaks by day: [10, 10, 10, 10, 10, 10])
+  reference path: 1 Counter-Spray + 1 over-mark  L2D4 morning anger  30 -> Riled  (peaks by day: [20, 25, 30, 35, 40, 45])
+  loud: 2 Counter-Sprays + 2 over-marks          L2D4 morning anger  85 -> Seething  (peaks by day: [40, 65, 90, 100, 100, 100])

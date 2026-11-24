@@ -1,0 +1,38 @@
+
+### R2 as written (posts from night 3; round-2 S7 baseline)
+| Posting policy | Tribute days 1-7 | Tribute nights 4-7 | Scuffed nights | Lost nights | Day-6 Tribute (anchor) | Min Stash |
+|---|---|---|---|---|---|---|
+| best (reads the forecast) | 233 | 186 | 0.89 | 0.00 | 60.7 | 14 |
+| habit (Stalwart on forecast + Braggart richest) | 233 | 186 | 0.89 | 0.00 | 60.7 | 14 |
+| random 2 cats on 2 Patches | 203 | 157 | 2.49 | 0.30 | 52.0 | 14 |
+| no posts | 168 | 127 | 3.99 | 0.00 | 44.0 | 14 |
+best vs random: +15% slice, +19% nights 4-7 | best vs habit: +0% / +0% | best vs none: +39% / +47%
+
+### R2 rules, posts from night 4 (Sentries taught on L2D2)
+| Posting policy | Tribute days 1-7 | Tribute nights 4-7 | Scuffed nights | Lost nights | Day-6 Tribute (anchor) | Min Stash |
+|---|---|---|---|---|---|---|
+| best (reads the forecast) | 227 | 186 | 0.86 | 0.00 | 60.8 | 14 |
+| habit (Stalwart on forecast + Braggart richest) | 227 | 186 | 0.85 | 0.00 | 61.0 | 14 |
+| random 2 cats on 2 Patches | 198 | 157 | 2.44 | 0.33 | 51.7 | 14 |
+| no posts | 168 | 127 | 3.99 | 0.00 | 44.0 | 14 |
+best vs random: +15% slice, +19% nights 4-7 | best vs habit: +0% / +0% | best vs none: +35% / +47%
+
+### R3 proposal (posts from night 4)
+| Posting policy | Tribute days 1-7 | Tribute nights 4-7 | Scuffed nights | Lost nights | Day-6 Tribute (anchor) | Min Stash |
+|---|---|---|---|---|---|---|
+| best (reads the forecast) | 225 | 184 | 0.53 | 0.00 | 60.8 | 14 |
+| habit (Stalwart on forecast + Braggart richest) | 218 | 177 | 0.83 | 0.00 | 58.2 | 14 |
+| random 2 cats on 2 Patches | 169 | 128 | 2.50 | 0.26 | 41.3 | 14 |
+| no posts | 129 | 88 | 3.99 | 0.00 | 32.1 | 14 |
+best vs random: +34% slice, +45% nights 4-7 | best vs habit: +4% / +4% | best vs none: +74% / +109%
+
+R3 casual (random posts, slower claims, 60% visits, half the Sprays): Tribute per night d3-d8 = [12.6, 18.3, 13.1, 26.9, 21.6, 38.3] min Stash 10
+R3 sleep-skip from day 3: Tribute per night d3-d10 = [12, 0.0, 4.0, 3, 1.0, 0, 0, 0]
+R3 best posting, night-5 board, raid on TSS, motive grudge, leader PR 1.0: {'PA': 'Togemaru', 'TSS': 'Pon'}
+R3 best posting, night-5 board, raid on TSS, motive grudge, leader PR 1.5: {'PA': 'Togemaru', 'TSS': 'Pon'}
+R3 best posting, night-5 board, raid on TSS, motive boss_orders, leader PR 1.0: {'PA': 'Togemaru', 'TSS': 'Hige'}
+R3 best posting, night-5 board, raid on TSS, motive boss_orders, leader PR 1.5: {'PA': 'Kinako', 'TSS': 'Hige'}
+R3 best posting, night-5 board, raid on TSS, motive gloat, leader PR 1.0: {'PA': 'Togemaru', 'TSS': 'Hige'}
+R3 best posting, night-5 board, raid on TSS, motive gloat, leader PR 1.5: {'PA': 'Hige', 'TSS': 'Togemaru'}
+R3 best posting, night-5 board, raid on TSS, motive pretender, leader PR 1.0: {'PA': 'Kinako', 'TSS': 'Kagi'}
+R3 best posting, night-5 board, raid on TSS, motive pretender, leader PR 1.5: {'PA': 'Kinako', 'TSS': 'Kagi'}
