@@ -1,0 +1,48 @@
+# US20250108303A1 — claims (as published on Google Patents, https://patents.google.com/patent/US20250108303A1/en, retrieved 2026-11-24)
+
+Claims (21)
+ 1-36. (canceled)
+ 37. A computer-implemented method for controlling a video game, the computer-implemented method comprising:
+receiving, by at least one processor executing a computer game, input from a player to operate an avatar to interact with at least one non-player character, wherein the at least one non-player character is controlled by the at least one processor to respond to and automatically interact with the avatar; 
+determining, by the at least one processor, an outcome of the interaction between the avatar and the at least one non-player character; 
+changing, by the at least one processor, a status of the at least one non-player character based on the outcome, wherein changing the status affects one or more control parameters for at least one second non-player character; and 
+controlling, by the at least one processor, the at least one second non-player character based on the one or more control parameters after the changing. 
+ 38. The computer-implemented method of claim 37, wherein the changing the status further comprises:
+determining, by the at least one processor, a change of a status of the at least one second non-player character based at least in part on the outcome. 
+ 39. The computer-implemented method of claim 37, wherein the changing the one or more control parameters comprises at least one of: changing a parameter controlling a rendered appearance of the at least one second non-player character, changing a parameter controlling a behavioral personality trait of the at least one second non-player character, changing a parameter controlling a game-playing ability of the at least one second non-player character, changing a player interaction score that increases a probability that the at least one second non-player character will succeed in future interaction with the avatar, or changing a power center attribute.
+ 40. The computer-implemented method of claim 37, wherein the status includes one or more ranks in a hierarchy of a faction correlated with game playing power.
+ 41. The computer-implemented method of claim 37, the computer-implemented method further comprising:
+triggering, by the at least one processor, an initiation of the changing based on the outcome selected from at least one of an avatar death or an entry of the avatar into a new zone of play. 
+ 42. The computer-implemented method of claim 37, the computer-implemented method further comprising:
+detecting, by the at least one processor, an occurrence of a predefined game event involving the at least one non-player character. 
+ 43. The computer-implemented method of claim 42, the computer-implemented method further comprising:
+changing, by the at least one processor, a set of character parameters corresponding to the at least one non-player character. 
+ 44. An apparatus for controlling a video game, comprising:
+at least one processor, a memory and a display device coupled to the at least one processor, wherein the memory holds instructions that when executed by the at least one processor, cause the apparatus to perform:
+receiving input from a player to operate an avatar to interact with at least one non-player character, wherein the at least one non-player character is controlled by the at least one processor to respond to and automatically interact with the avatar;
+determining an outcome of the interaction between the avatar and the at least one non-player character;
+changing a status of the at least one non-player character based on the outcome, wherein changing the status affects one or more control parameters for at least one second non-player character; and
+controlling the at least one second non-player character based on the one or more control parameters after the changing.
+ 45. The apparatus of claim 44, wherein the changing the status further comprises:
+determining a change of a status of the at least one second non-player character based at least in part on the outcome. 
+ 46. The apparatus of claim 44, wherein the changing the one or more control parameters comprises at least one of: changing a parameter controlling a rendered appearance of the at least one second non-player character, changing a parameter controlling a behavioral personality trait of the at least one second non-player character, changing a parameter controlling a game-playing ability of the at least one second non-player character, changing a player interaction score that increases a probability that the at least one second non-player character will succeed in future interaction with the avatar, or changing a power center attribute.
+ 47. The apparatus of claim 44, wherein the status includes one or more ranks in a hierarchy of a faction correlated with game playing power.
+ 48. The apparatus of claim 44, the instructions further comprising:
+triggering an initiation of the changing based on the outcome selected from at least one of an avatar death or an entry of the avatar into a new zone of play. 
+ 49. The apparatus of claim 44, the instructions further comprising:
+detecting an occurrence of a predefined game event involving the at least one non-player character. 
+ 50. The apparatus of claim 49, the instructions further comprising:
+changing a set of character parameters corresponding to the at least one non-player character. 
+ 51. A non-transitory computer readable medium holding program instructions that when executed by at least one processor cause an apparatus to perform:
+receiving input from a player to operate an avatar to interact with at least one non-player character, wherein the at least one non-player character is controlled by the at least one processor to respond to and automatically interact with the avatar; 
+determining an outcome of the interaction between the avatar and the at least one non-player character; 
+changing a status of the at least one non-player character based on the outcome, wherein changing the status affects one or more control parameters for at least one second non-player character; and 
+controlling the at least one second non-player character based on the one or more control parameters after the changing. 
+ 52. The non-transitory computer readable medium of claim 51, wherein the changing the status further comprises:
+determining a change of a status of the at least one second non-player character based at least in part on the outcome. 
+ 53. The non-transitory computer readable medium of claim 51, wherein the changing the one or more control parameters comprises at least one of: changing a parameter controlling a rendered appearance of the at least one second non-player character, changing a parameter controlling a behavioral personality trait of the at least one second non-player character, changing a parameter controlling a game-playing ability of the at least one second non-player character, changing a player interaction score that increases a probability that the at least one second non-player character will succeed in future interaction with the avatar, or changing a power center attribute.
+ 54. The non-transitory computer readable medium of claim 51, wherein the status includes one or more ranks in a hierarchy of a faction correlated with game playing power.
+ 55. The non-transitory computer readable medium of claim 51, the instructions further comprising:
+triggering an initiation of the changing based on the outcome selected from at least one of an avatar death or an entry of the avatar into a new zone of play. 
+ 56. The non-transitory computer readable medium of claim 55, the instructions further comprising:
+detecting an occurrence of a predefined game event involving the at least one non-player character.
