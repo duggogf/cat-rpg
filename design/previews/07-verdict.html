@@ -8,17 +8,16 @@
   body { margin: 0; background: #111; }
   .vc { position: absolute; width: 470px; box-sizing: border-box; padding: 18px 26px 20px; }
   .vc .hd { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
-  .vc .hd .t { font: 800 40px/1 var(--font); color: var(--cocoa); letter-spacing: .01em; }
+  .vc .hd .t { white-space: nowrap; font: 800 40px/1 var(--font); color: var(--cocoa); letter-spacing: .01em; }
   .vc .hd svg { display: block; flex: none; }
   .vc .ln { font: 500 28px/1.25 var(--font); color: var(--ink); }
   .vc .ln b { font-weight: 800; }
   .vc .risk { font: 700 28px/1.25 var(--font); color: #7E6A86; margin-top: 4px; display: flex; align-items: center; gap: 8px; }
   .vc--raised { border-color: var(--ink); border-width: 4px; box-shadow: 0 0 0 6px var(--gold), 6px 10px 0 rgba(110,106,168,.55); }
-  #v-up { left: 690px; top: 30px; width: 540px; }
-  #v-down { left: 690px; top: 868px; width: 540px; }
-  #v-left { left: 40px; top: 400px; }
-  #v-right { left: 1424px; top: 300px; width: 460px; padding-bottom: 22px; }
-  .bribe { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 14px; }
+  #v-up { left: 650px; top: 30px; width: 620px; }
+  #v-left { left: 40px; top: 380px; width: 430px; }
+  #v-right { left: 1380px; top: 290px; width: 510px; padding-bottom: 22px; }
+  .bribe { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 14px; }
   .bribe .opt { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 4px 10px; border: 3px solid var(--cocoa); border-radius: 22px 26px 22px 28px / 26px 22px 28px 22px; background: var(--recessed); }
   .bribe .opt .n { font: 800 28px/1 var(--font); color: var(--cocoa); }
   .bribe .opt .p { font: 800 34px/1 var(--font); color: var(--ink); display: flex; align-items: center; gap: 4px; }
@@ -28,10 +27,14 @@
   .bribe .opt--short { background: repeating-linear-gradient(-45deg, var(--recessed) 0 6px, #E9D7B8 6px 9px); opacity: .75; }
   .stash { display: flex; justify-content: space-between; margin-top: 10px; font: 700 28px/1 var(--font); color: var(--cocoa); }
   .stash span { display: flex; align-items: center; gap: 6px; }
-  #foot-l { left: 44px; bottom: 40px; }
-  #foot-r { right: 44px; bottom: 40px; display: flex; align-items: center; gap: 12px; }
-  #foot-r .ring { width: 46px; height: 46px; border-radius: 50%; background: conic-gradient(var(--gold) 0 38%, var(--recessed) 38% 100%); border: 3px solid var(--cocoa); box-sizing: border-box; }
-  #title { left: 820px; top: 776px; transform: translateX(-50%); display: flex; align-items: center; gap: 14px; }
+  .chip { margin-left: auto; flex: none; display: inline-flex; align-items: center; gap: 4px; height: 40px; padding: 0 12px; border-radius: 20px 22px 19px 23px; background: var(--recessed); border: 3px solid var(--cocoa); font: 800 28px/1 var(--font); color: var(--ink); white-space: nowrap; }
+  .chip--gold { background: #FFE7A8; }
+  .short { margin-top: 8px; font: 700 24px/1 var(--font); color: #7E6A86; text-align: right; }
+  #strip { left: 50%; top: 900px; transform: translateX(-50%); padding: 12px 34px; background: var(--cream); border: 3px solid var(--cocoa); border-radius: 30px 34px 30px 36px; box-shadow: var(--drop); font: 800 30px/1 var(--font); color: var(--cocoa); white-space: nowrap; }
+  #foot { left: 44px; right: 44px; bottom: 34px; display: flex; justify-content: space-between; align-items: center; }
+  #foot .k-prompt .k-btn { height: 44px; }
+  #hold .ring { width: 46px; height: 46px; border-radius: 50%; background: conic-gradient(var(--gold) 0 38%, var(--recessed) 38% 100%); border: 3px solid var(--cocoa); box-sizing: border-box; }
+  #title { left: 820px; top: 780px; transform: translateX(-50%); display: flex; align-items: center; gap: 14px; }
 </style>
 </head>
 <body>
@@ -40,8 +43,8 @@
 <script src="rival-helpers.js"></script>
 <script>
 /* FRAME 07 — THE VERDICT. Tofu Shop Step, late Day. The Posse has Routed Kagi, Captain of Tofu Shop Step.
- * Low two-shot, HUD hidden, the clock paused. Four Verdicts on the fixed compass: Up Nose-Touch, Down Humble,
- * Left Chase Off, Right Recruit (raised: the Bribe row is open on Fair; Feast is beyond the Stash).
+ * Low two-shot, HUD hidden, the clock paused. THREE Verdicts (key-screens §4, OR-12): Left Chase Off, Up Nose-Touch
+ * (10-day truce), Right Recruit (raised: Life 2 Bribe row Fair / Feast, Fair selected, Feast beyond the Stash). No Down card.
  * Perspective: horizon y=470, focal 1300, camera 0.45 m up (low). */
 const K = Kit, C = K.C, W = 1920, H = 1080, HZ = 470, F = 1300, CX = 960, CH = 0.45;
 const P = (X, Y, d) => [CX + X * F / d, HZ + (CH - Y) * F / d];
@@ -102,7 +105,7 @@ s.push(K.castShadow('M620 760L1000 750L1180 840L760 860Z', 0.32) + K.castShadow(
 const kg = { x: 820, y: 742 };
 s.push(K.dustCloud({ x: kg.x - 170, y: kg.y - 20, r: 46, puffs: 5, seed: 3 }) + K.dustCloud({ x: kg.x + 150, y: kg.y - 6, r: 36, puffs: 4, seed: 5 }));
 s.push(K.shadow({ x: kg.x, y: kg.y, rx: 170, ry: 18, opacity: 0.4 }));
-s.push(`<g transform="translate(${kg.x} ${kg.y}) scale(1.16 0.82) translate(${-kg.x} ${-kg.y})">${K.cat({ ...RV.CAST.kagi, pose: 'loaf', expr: 'spiral', x: kg.x, y: kg.y, scale: 2.3, shadow: false })}</g>`);
+s.push(`<g transform="translate(${kg.x} ${kg.y}) scale(1.16 0.82) translate(${-kg.x} ${-kg.y})">${K.cat({ ...RV.CAST.kagi, pose: 'loaf', expr: 'smug', x: kg.x, y: kg.y, scale: 2.3, shadow: false })}</g>`);
 s.push(K.frazzleOrbit({ x: kg.x - 10, y: kg.y - 168, r: 84 }));
 s.push(`<g transform="translate(${kg.x - 40} ${kg.y - 186}) rotate(-20)">${K.inked('M-5 -16H5V12H-5Z', '#F2D8A0', 2)}</g>`); // its clothes-peg, knocked askew
 
@@ -130,23 +133,21 @@ const tail = `<svg width="30" height="30" viewBox="-15 -15 30 30"><path d="M-10 
 const ears = `<svg width="30" height="30" viewBox="-16 -16 32 32"><path d="M-14 8L-10 -12L-2 2ZM14 8L10 -12L2 2Z" fill="#CDD1DC" stroke="${C.ink}" stroke-width="2.6" stroke-linejoin="round"/></svg>`;
 
 document.getElementById('stage').innerHTML = K.svg(W, H, s.join(''), 'class="k-world"') + `
-  <div class="k-panel vc" id="v-up"><div class="hd">${arrow('up')}${ic(noses)}<span class="t">Nose-Touch</span></div>
-    <div class="ln">Offer respect. They may accept.</div><div class="risk">${ears}Keeps the Step. 5-day truce.</div></div>
+  <div class="k-panel vc" id="v-up"><div class="hd">${arrow('up')}${ic(noses)}<span class="t">Nose-Touch</span><span class="chip">10 days</span></div>
+    <div class="ln">Steps down in peace. May side with you against its rival.</div></div>
   <div class="k-panel vc" id="v-left"><div class="hd">${arrow('left')}${ic(G.run)}<span class="t">Chase Off</span></div>
-    <div class="ln">Gone from the Lane.<br>The Step is yours.</div><div class="risk">${tail}Comes back changed.</div></div>
-  <div class="k-panel vc" id="v-down"><div class="hd">${arrow('down')}${ic(crateG)}<span class="t">Humble</span></div>
-    <div class="ln">Stays on the crate and pays.</div><div class="risk">${tail}Simmers unless guarded.</div></div>
-  <div class="k-panel vc vc--raised" id="v-right"><div class="hd">${arrow('right', true)}${ic(cordG, '#FFE7A8')}<span class="t">Recruit</span></div>
+    <div class="ln">Gone from town for good.</div></div>
+  <div class="k-panel vc vc--raised" id="v-right"><div class="hd">${arrow('right', true)}${ic(cordG, '#FFE7A8')}<span class="t">Recruit</span><span class="chip chip--gold">${fish}from 96</span></div>
     <div class="ln">Joins your Crew with everything it remembers.</div>
     <div class="bribe">
-      <div class="opt"><span class="n">None</span><span class="p">0</span><span class="l">Aloof</span></div>
-      <div class="opt opt--on"><span class="n">Fair</span><span class="p">${fish}96</span><span class="l">Aloof</span></div>
-      <div class="opt opt--short"><span class="n">Feast</span><span class="p">${fish}192</span><span class="l">Steady</span></div>
+      <div class="opt opt--on"><span class="n">Fair</span><span class="p">${fish}96</span><span class="l">starts Aloof</span></div>
+      <div class="opt opt--short"><span class="n">Feast</span><span class="p">${fish}192</span><span class="l">starts Steady</span></div>
     </div>
+    <div class="short">Stash short: 150 of 192</div>
     <div class="stash"><span>${fish}Stash 150</span><span>Crew 4/6</span></div></div>
-  <div class="k-abs" id="title"><span class="k-ribbon k-ribbon--sage">Kagi · Captain of Tofu Shop Step</span></div>
-  <div class="k-abs k-prompt" id="foot-l">${K.ui.faceButtons({ size: 46, lit: 'n' })}Their card</div>
-  <div class="k-abs k-prompt" id="foot-r">${K.ui.faceButtons({ size: 46, lit: 's' })}Hold to decide<span class="ring"></span></div>`;
+  <div class="k-abs" id="title"><span class="k-ribbon k-ribbon--sage">Kagi</span></div>
+  <div class="k-abs" id="strip">Every choice clears the post. Then spray it.</div>
+  <div class="k-abs" id="foot"><span class="k-prompt">${K.ui.faceButtons({ size: 46, lit: 'n' })}Their card</span><span class="k-prompt"><span class="k-btn k-key" style="font-size:24px;min-width:64px">L1</span><span class="k-btn k-key" style="font-size:24px;min-width:64px">R1</span>Bribe</span><span class="k-prompt" id="hold">${K.ui.faceButtons({ size: 46, lit: 's' })}Hold to decide<span class="ring"></span></span></div>`;
 </script>
 </body>
 </html>
