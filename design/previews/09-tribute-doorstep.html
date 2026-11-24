@@ -7,7 +7,7 @@
 <style>
   body { margin: 0; background: #111; }
   /* Doorstep Morning Sniff stamp cards (hud.md §5.3): bean cards in Paper Cream with Ink pictograms */
-  .sniff { left: 92px; top: 132px; width: 600px; display: flex; flex-direction: column; gap: 14px; }
+  .sniff { left: 80px; top: 44px; width: 600px; display: flex; flex-direction: column; gap: 14px; }
   .card { background: var(--cream); border: var(--frame) solid var(--cocoa); border-radius: 34px 42px 36px 44px / 40px 34px 42px 36px; box-shadow: var(--drop); padding: 14px 26px 14px 18px; display: flex; align-items: center; gap: 14px; font: 800 32px/1 var(--font); color: var(--ink); white-space: nowrap; }
   .card .lab { font: 700 28px/1 var(--font); color: var(--cocoa); }
   .big { font: 800 52px/1 var(--font); color: var(--ink); }
@@ -28,7 +28,7 @@
  * Doorstep stone in the gate; the Crew never cross the wall (narrative §3.5), so they bring the food
  * up the lane and lay it on the step. The house and garden wait behind. No human in frame.
  * Perspective: horizon y=470, focal 1300 px, camera height 0.6 m, centre x=960.  */
-const K = Kit, C = K.C, W = 1920, H = 1080, HZ = 470, F = 1300, CX = 960, CH = 0.6;
+const K = Kit, C = K.C, W = 1920, H = 1080, HZ = 540, F = 1300, CX = 960, CH = 0.6;
 const P = (X, Y, d) => [CX + X * F / d, HZ + (CH - Y) * F / d];
 const s = [];
 
@@ -92,15 +92,28 @@ s.push(K.glow(300, 600, 700, 200, '#FFE7B8', 0.45));
 const post = (x) => K.surface({ pts: [[x - 22, wTop - 46], [x + 22, wTop - 46], [x + 22, wBot], [x - 22, wBot]], color: '#A97848', tex: 'brush-v', texOpacity: 0.4, grime: 0.2 }) + `<rect x="${x - 30}" y="${wTop - 60}" width="60" height="16" rx="4" fill="#6F5A48" filter="url(#k-rough)"/>`;
 s.push(`<path d="M${gR - 10} ${wTop + 14}L${gR - 120} ${wTop + 40}L${gR - 120} ${wBot - 20}L${gR - 10} ${wBot - 4}Z" fill="#B98654" filter="url(#k-rough)"/><path d="M${gR - 10} ${wTop + 14}L${gR - 120} ${wTop + 40}L${gR - 120} ${wBot - 20}L${gR - 10} ${wBot - 4}Z" fill="${C.wisteria}" opacity="0.35" style="mix-blend-mode:multiply"/>`);
 s.push(post(gL) + post(gR));
+// the garden spills over the wall: a pine-ish shrub, hydrangeas nodding over the coping, ivy down the face
+s.push(K.foliage({ x: 300, y: wTop - 40, w: 420, h: 130, seed: 111, tones: { dark: '#2F6E4A', mid: '#4C8F4A', light: '#7DB857', hi: '#B5D873' } }));
+s.push(K.flowers({ x: 120, y: wTop - 30, w: 220, h: 80, seed: 12, n: 5 }));
+s.push(K.foliage({ x: 1440, y: wTop - 34, w: 360, h: 110, seed: 112 }));
+s.push(K.flowers({ x: 1660, y: wTop - 26, w: 260, h: 86, seed: 14, n: 6, color: '#9AA6E6' }));
+s.push(K.foliage({ x: 1880, y: wTop + 10, w: 200, h: 200, seed: 113, tones: { dark: '#2A6245', mid: '#4C8F4A', light: '#7DB857', hi: '#B5D873' } }));
+{ let ivy = ''; const R = K.rng(5); for (let i = 0; i < 46; i++) { const t = R(), x = 1300 + t * 520 + (R() - 0.5) * 30, y = wTop + 10 + Math.pow(R(), 1.6) * (180 - Math.abs(t - 0.5) * 200); ivy += `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="${(8 + R() * 6).toFixed(1)}" ry="${(5 + R() * 4).toFixed(1)}" fill="${['#3F7E4A', '#5E9A50', '#86BC62'][Math.floor(R() * 3)]}" transform="rotate(${Math.round(R() * 180)} ${x.toFixed(1)} ${y.toFixed(1)})"/>`; } s.push(`<g filter="url(#k-dab)">${ivy}</g>`); }
+// plaster detail: hairline cracks and a water stain under the coping
+s.push(`<g fill="none" stroke="#B9A88E" stroke-width="2.4" opacity="0.6" filter="url(#k-rough)"><path d="M180 ${wTop + 50}l12 30l-8 26l14 40"/><path d="M1380 ${wTop + 60}l-8 24l10 30"/></g>`);
 // the red mailbox: Low Wall Corner's Scent Post, with four bell-gold wisps (Home Ground, Pungent)
-const mb = { x: gL - 150, y: wTop + 40 };
+const mb = { x: gL - 190, y: wTop + 40 };
 s.push(`<g transform="translate(${mb.x} ${mb.y})">${K.inked('M-8 0V150H8V0Z', '#6B5A50')}${K.inked('M-38 0V-96Q0 -124 38 -96V0Z', '#C8504A')}${K.inked('M-24 -70H24V-60H-24Z', '#8E3434')}<path d="M-30 -92Q-20 -110 0 -112" stroke="#F2A49A" stroke-width="6" fill="none" stroke-linecap="round"/></g>`);
 s.push(K.scentWisps({ x: mb.x, y: mb.y - 132, count: 4, h: 110, color: C.gold, seed: 3 }));
 
 /* ---------- the lane in front (camera side) ---------- */
 s.push(K.ground({ pts: [[-10, wBot - 2], [W + 10, wBot - 2], [W + 10, H + 10], [-10, H + 10]], seed: 21 }));
 s.push(`<path d="M-10 ${wBot}H${W + 10}V${wBot + 30}H-10Z" fill="${C.wisteria}" opacity="0.18" filter="url(#k-soft)"/>`);
+s.push(K.castShadow(`M${gL - 22} ${wBot}L${gL + 22} ${wBot}L${gL + 300} ${wBot + 120}L${gL + 250} ${wBot + 130}Z`, 0.3) + K.castShadow(`M${gR - 22} ${wBot}L${gR + 22} ${wBot}L${gR + 300} ${wBot + 120}L${gR + 250} ${wBot + 130}Z`, 0.3));
 s.push(K.grass({ x1: -20, y1: wBot + 2, x2: gL - 30, y2: wBot + 2, n: 16, h: 30, seed: 2 }) + K.grass({ x1: gR + 30, y1: wBot + 2, x2: W + 20, y2: wBot + 2, n: 22, h: 30, seed: 9 }));
+// a concrete gutter with a grate runs along the wall foot (stops at the step)
+{ const g0 = wBot + 6, g1 = wBot + 34; const seg = (x0, x1) => { let gr = ''; for (let x = x0 + 10; x < x1 - 10; x += 26) gr += `<rect x="${x}" y="${g0 + 6}" width="12" height="${g1 - g0 - 12}" rx="2" fill="#5E5868" opacity="0.55"/>`; return `<path d="M${x0} ${g0}H${x1}V${g1}H${x0}Z" fill="#B8B2AA"/><path d="M${x0} ${g0}H${x1}V${g0 + 4}H${x0}Z" fill="#E6E1D8"/>${gr}<path d="M${x0} ${g1}H${x1}V${g1 + 5}H${x0}Z" fill="${C.wisteria}" opacity="0.35"/>`; };
+  const gx0 = P(-0.66, 0, 2.62)[0], gx1 = P(0.76, 0, 2.62)[0]; s.push(`<g filter="url(#k-rough)">${seg(-20, gx0 - 6)}${seg(gx1 + 6, W + 20)}</g>`); }
 // morning sun pool spilling through the gate onto the lane
 s.push(`<path d="M${gL} ${wBot}L${gR} ${wBot}L${gR + 360} ${H}L${gL + 80} ${H}Z" fill="#FFF0C8" opacity="0.32" filter="url(#k-soft2)"/>`);
 
@@ -121,32 +134,32 @@ const okara = (x, y, sc) => `<g transform="translate(${x} ${y}) scale(${sc})">${
 const feather = (x, y, sc, rot) => `<g transform="translate(${x} ${y}) rotate(${rot}) scale(${sc})">${K.inked('M0 0Q6 -14 2 -30Q-6 -14 0 0Z', '#B89878', 1.8)}</g>`;
 
 // the pile on the step, catching the sun (yesterday-night's Tribute: okara, persimmon, sardines in feathers)
-const py = st0[1] + 8, pxm = (st0[0] + st1[0]) / 2;
-s.push(K.shadow({ x: pxm + 70, y: py + 4, rx: 130, ry: 14 }));
-s.push(okara(pxm + 120, py + 2, 1.15) + persimmon(pxm + 20, py + 2, 1.1));
-s.push(feather(pxm + 64, py, 1, -30) + feather(pxm + 76, py, 1, 18) + sardine(pxm + 70, py - 4, 1.0, -8) + sardine(pxm + 160, py - 18, 0.9, 12));
-s.push(K.sparkle({ x: pxm + 110, y: py - 54, r: 12, lw: 2 }) + K.sparkle({ x: pxm - 20, y: py - 36, r: 8, lw: 2 }));
+const py = st0[1] + 8, pxm = (st0[0] + st1[0]) / 2 - 30;
+s.push(K.shadow({ x: pxm + 80, y: py + 6, rx: 170, ry: 18 }));
+s.push(okara(pxm + 160, py + 4, 1.6) + fish(pxm + 40, py - 14, 0.9, -14, '#B7D3E4'));
+s.push(persimmon(pxm + 12, py + 6, 1.5) + feather(pxm + 92, py, 1.4, -30) + feather(pxm + 108, py, 1.4, 18) + sardine(pxm + 100, py - 6, 1.35, -8) + sardine(pxm + 220, py - 26, 1.2, 12));
+s.push(K.sparkle({ x: pxm + 150, y: py - 74, r: 14, lw: 2 }) + K.sparkle({ x: pxm - 30, y: py - 50, r: 9, lw: 2 }) + K.sparkle({ x: pxm + 250, y: py - 60, r: 7, lw: 2 }));
 
 /* ---------- Mikan on the Doorstep: sitting tall, delighted ---------- */
-const mk = P(-0.22, 0.16, 3.05);
+const mk = P(-0.36, 0.16, 3.05);
 s.push(K.castShadow(`M${mk[0] - 30} ${mk[1] - 2}L${mk[0] + 40} ${mk[1] - 4}L${mk[0] + 200} ${mk[1] + 18}L${mk[0] + 150} ${mk[1] + 30}Z`, 0.3));
 s.push(K.cat({ ...K.CAST.mikan, pose: 'front-sit', expr: 'happy', x: mk[0], y: mk[1], scale: 1.75 }));
 s.push(K.sparkle({ x: mk[0] - 12, y: mk[1] - 108, r: 9, lw: 2 }));   // the bell glint
 
 /* ---------- the procession: Pon has just laid her rice ball; Hige brings a fish; Kinako, last, a dried sardine ---------- */
 // Pon, sitting proud beside the step, the rice ball set before Mikan
-const pn = P(0.95, 0, 2.55);
+const pn = P(0.8, 0, 2.5);
 s.push(K.castShadow(`M${pn[0] - 40} ${pn[1] - 4}L${pn[0] + 50} ${pn[1] - 6}L${pn[0] + 260} ${pn[1] + 26}L${pn[0] + 190} ${pn[1] + 40}Z`, 0.32));
-s.push(onigiri(pn[0] - 118, pn[1] - 4, 1.25, -6));
+s.push(onigiri(pn[0] - 140, pn[1] - 6, 1.5, -6));
 s.push(K.cat({ ...K.CAST.goofball, pose: 'front-sit', expr: 'happy', x: pn[0], y: pn[1], scale: 1.6, collar: 'cord' }));
 // Hige: big grey elder, walking in with a whole fish, slow and dignified
-const hg = P(2.05, 0, 2.2);
+const hg = P(1.12, 0, 1.98);
 const hs = 1.95;
 s.push(K.castShadow(`M${hg[0] - 90} ${hg[1] - 4}L${hg[0] + 70} ${hg[1] - 8}L${hg[0] + 330} ${hg[1] + 34}L${hg[0] + 200} ${hg[1] + 50}Z`, 0.32));
 s.push(K.cat({ ...K.CAST.oldWallCat, pose: 'side-walk', carry: 'post', expr: 'neutral', x: hg[0], y: hg[1], scale: hs, flip: true }));
 s.push(`<g transform="translate(${hg[0]} ${hg[1]}) scale(${-hs} ${hs})">${fish(62, -52, 0.62, 76)}</g>`);
 // Kinako: last in line, half-crouched, ears up, a dried sardine held very carefully
-const kn = P(3.35, 0, 3.0);
+const kn = P(1.95, 0, 3.0);
 const ks = 1.45;
 s.push(K.castShadow(`M${kn[0] - 60} ${kn[1] - 4}L${kn[0] + 50} ${kn[1] - 6}L${kn[0] + 230} ${kn[1] + 24}L${kn[0] + 150} ${kn[1] + 36}Z`, 0.3));
 s.push(K.cat({ ...K.CAST.fraidy, pose: 'side-walk', expr: 'neutral', x: kn[0], y: kn[1], scale: ks, flip: true }));
@@ -154,6 +167,10 @@ s.push(`<g transform="translate(${kn[0]} ${kn[1]}) scale(${-ks} ${ks})">${sardin
 // dew glints on the grass
 s.push([[220, 790], [1280, 800], [1720, 812], [90, 900]].map(([x, y]) => K.sparkle({ x, y, r: 6, lw: 1.5 })).join(''));
 
+/* ---------- foreground: a terracotta pot of morning glories by the lane edge, a corner of hedge ---------- */
+s.push(`<g transform="translate(230 1050) scale(1.7)">${K.celGroup({ parts: [{ d: 'M-34 -50L-26 0H26L34 -50Z', fill: '#C9764A' }, { d: 'M-40 -60H40V-48H-40Z', fill: '#D98A5A' }], shade: 'M10 -70H50V10H10Z' }, { lw: 2.5, ol: K.OUTLINES.ink })}</g>`);
+s.push(K.foliage({ x: 230, y: 900, w: 300, h: 170, seed: 121, tones: { dark: '#2F6E4A', mid: '#4C8F4A', light: '#7DB857', hi: '#B5D873' } }));
+s.push(K.flowers({ x: 230, y: 880, w: 260, h: 100, seed: 21, n: 6, color: '#8E9BEA' }));
 /* ---------- foreground: a corner of the lane's hedge, soft, to frame ---------- */
 s.push(K.foliage({ x: 1900, y: 1020, w: 380, h: 260, seed: 99, tones: { dark: '#2A6245', mid: '#4C8F4A', light: '#7DB857', hi: '#B5D873' } }));
 s.push(K.foliage({ x: -10, y: 1060, w: 300, h: 180, seed: 98, tones: { dark: '#2A6245', mid: '#4C8F4A', light: '#7DB857', hi: '#B5D873' } }));
@@ -168,7 +185,7 @@ ui += `<div class="k-abs sniff">
     ${K.ui.portrait({ cat: { coat: 'charcoal', pattern: 'tabby', ears: 'tall', eye: 'yellowgreen', expr: 'angry', scars: ['notch'] }, size: 64, ring: '#7FA34A' })}<span class="night">tonight</span></div>
 </div>`;
 // tally pops over the new arrivals
-ui += `<div class="bub gold" style="left:${pn[0] - 186}px;top:${pn[1] - 170}px">${K.ui.icon({ name: 'fish', size: 36 })}+3</div>`;
+ui += `<div class="bub gold" style="left:${pn[0] - 210}px;top:${pn[1] - 150}px">${K.ui.icon({ name: 'fish', size: 36 })}+3</div>`;
 ui += `<div class="bub" style="left:${hg[0] - 230}px;top:${hg[1] - 290}px">${K.ui.icon({ name: 'fish', size: 36 })}+5</div>`;
 ui += `<div class="bub" style="left:${kn[0] - 130}px;top:${kn[1] - 230}px;transform:scale(.88)">${K.ui.icon({ name: 'fish', size: 36 })}+2</div>`;
 ui += `<div class="k-abs hint"><span>${K.ui.faceButtons({ size: 40, lit: 'n' })}See the wall</span><span>${K.ui.dpad({ size: 40, lit: 's' })}Step off to close</span></div>`;

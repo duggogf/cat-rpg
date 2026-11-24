@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Cat RPG — Frame 04: Pile-On (mock screenshot)</title>
+<link rel="stylesheet" href="kit/kit.css">
+<style>body { margin: 0; background: #111; }</style>
+</head>
+<body>
+<div class="k-stage" id="stage"></div>
+<script src="kit/kit.js"></script>
+<script>
+/* FRAME 04 — PILE-ON (T5 set-piece, art bible §10.5). Full Pile-On on Togemaru (a Captain), final beat.
+ * All screen-anchored HUD is hidden for the cinematic (HUD §4.5). The scene has dropped to a flat panel: STATIC
+ * Bell-Gold backing, value-matched to the Day key (rule §10.4), with full-field lines in Ink only; the panel came in
+ * behind a halftone wipe (its tail still eating the Lot at the lower right). The scalloped cloud (Paper Cream, lavender
+ * shade, 5 px Ink line, 3.5 m) boils; paws, tails and ears pop out in the Posse's real coat colours; chevrons and
+ * Mikan's bell bob on top. Final beat = one big burst drawing (a local Cream flash in the effect's shape only, no
+ * full-screen jump to Cream or Ink: §10.4 drawing 2), the giant lettered word (~30% height), and Togemaru ROUTED:
+ * a wide-eyed take smeared into a bolt, three shrinking dust puffs behind him. Nobody is hurt.
+ * Camera: the authored wide shot at +40 deg (camera-system.md §3.7). */
+const K = Kit, C = K.C, W = 1920, H = 1080, ink = C.ink, gold = C.gold, cream = C.cream;
+const s = [];
+const pt = (p) => p[0].toFixed(1) + ' ' + p[1].toFixed(1);
+const cc = { x: 960, y: 760 };     // cloud centre
+
+/* ---------- the Lot, glimpsed under the closing halftone wipe (lower right) ---------- */
+const HZ = 150, F = 1350, CH = 3.6, CX = 960, P = (X, Y, d) => [CX + X * F / d, HZ + (CH - Y) * F / d];
+let lot = K.sky({ w: W, h: 400, phase: 'day' }) + K.foliage({ x: 1600, y: 150, w: 900, h: 300, seed: 43 });
+const fq = [P(-11, 1.9, 13.5), P(12.5, 1.9, 17.5), P(12.5, 0, 17.5), P(-11, 0, 13.5)];
+lot += K.fence({ quad: fq, n: 44, seed: 7, color: '#B98A5E' });
+lot += K.ground({ pts: [[-60, fq[3][1] - 4], [W + 60, fq[2][1] - 4], [W + 60, H + 60], [-60, H + 60]], color: '#BCA27C', seed: 9 });
+lot += K.prop({ kind: 'bucket', x: 1700, y: 880, scale: 1.4 });
+lot += K.grass({ x1: 1300, y1: 1000, x2: 1920, y2: 960, n: 20, h: 60, seed: 9 });
+// halftone mask: dots grow toward the panel (upper left), solid scene only in the far corner
+let dots = ''; for (let y = 560; y < 1120; y += 34) for (let x = 1100; x < 1960; x += 34) { const t = Math.max(0, Math.min(1, ((x - 1180) / 700 + (y - 620) / 420) / 1.25)); const r = 24 * t; if (r > 1.2) dots += `<circle cx="${x + ((y / 34) % 2 ? 17 : 0)}" cy="${y}" r="${r.toFixed(1)}" fill="#fff"/>`; }
+s.push(`<mask id="ht"><rect width="${W}" height="${H}" fill="#000"/>${dots}</mask>`);
+
+/* ---------- flat panel: static Bell-Gold, value-matched; full-field Ink lines converging on the cloud ---------- */
+s.push(`<rect width="${W}" height="${H}" fill="#EDB436"/>`);
+s.push(`<g mask="url(#ht)">${lot}</g>`);
+{ const R = K.rng(17); let g = ''; const n = 120; for (let i = 0; i < n; i++) { const a = (i + R() * 0.8) / n * Math.PI * 2, r0 = 470 + R() * 260, wd = 0.006 + R() * 0.02, r1 = 1500; g += `<path d="M${pt([cc.x + Math.cos(a) * r0, cc.y + Math.sin(a) * r0 * 0.8])}L${pt([cc.x + Math.cos(a - wd) * r1, cc.y + Math.sin(a - wd) * r1])}L${pt([cc.x + Math.cos(a + wd) * r1, cc.y + Math.sin(a + wd) * r1])}Z" fill="${ink}"/>`; } s.push(`<g opacity="0.92">${g}</g>`); }
+
+/* ---------- final-beat burst: the local Cream flash, limited to the effect shape (Ink line, damage-neutral) ---------- */
+s.push(K.impactBurst({ x: cc.x + 20, y: cc.y - 30, r: 560, points: 16, seed: 4, inner: 0.7 }));
+s.push(K.impactBurst({ x: cc.x + 20, y: cc.y - 30, r: 420, points: 13, seed: 7, inner: 0.72, color: null }).replace(new RegExp(C.cream, 'g'), '#FFE7A6'));
+
+/* ---------- things popping out of the cloud: drawn first (behind) or after (in front) ---------- */
+const coatPaw = (x, y, rot, len, fur, pad, sc) => { sc = sc || 1; const t = `translate(${x} ${y}) rotate(${rot}) scale(${sc})`;
+  return `<g transform="${t}">${K.celGroup({ parts: [{ d: K.tube([[0, 0], [0, -len * 0.5], [2, -len]], [46, 42, 40]), fill: fur }, { d: K.ell(2, -len - 12, 30, 24), fill: fur }], shade: 'M8 -400H60V40H8Z' }, { lw: 3.5, ol: K.OUTLINES.ink })}<g fill="${pad}" stroke="${ink}" stroke-width="2"><ellipse cx="2" cy="${-len - 6}" rx="12" ry="9"/><circle cx="-14" cy="${-len - 22}" r="6"/><circle cx="2" cy="${-len - 30}" r="6"/><circle cx="18" cy="${-len - 22}" r="6"/></g></g>`; };
+const tailOut = (pts, w, fill, ring) => { const d = K.tube(pts, w); return K.celGroup({ parts: [{ d, fill }], overlays: ring ? [{ d: ring, fill: K.mix(fill, ink, 0.4) }] : [], shade: '' }, { lw: 3.5, ol: K.OUTLINES.ink }); };
+const pomTail = (x, y, r) => K.celGroup({ parts: [{ d: K.blob(K.pomPts(x, y, r, 7, 0.14, 0.3)), fill: C.ginger }], shade: K.ell(x + r * 0.4, y + r * 0.4, r * 0.6, r * 0.6) }, { lw: 3.5, ol: K.OUTLINES.ink });
+const ear = (x, y, rot, fill, inner) => `<g transform="translate(${x} ${y}) rotate(${rot})">${K.celGroup({ parts: [{ d: K.blob([[-22, 6], [-16, -24], [-4, -48, 1], [10, -22], [20, 6]]), fill }], shade: 'M6 -60H40V20H6Z' }, { lw: 3.5, ol: K.OUTLINES.ink })}<path d="${K.blob([[-10, 2], [-6, -18], [-2, -32, 1], [6, -16], [10, 2]])}" fill="${inner}"/></g>`;
+const star = (x, y, r, fill, rot) => `<g transform="rotate(${rot || 0} ${x} ${y})">${K.sparkle({ x, y, r, fill: fill || C.staticYellow, lw: 3.5 })}</g>`;
+const padGlyph = (x, y, sc, rot) => `<g transform="translate(${x} ${y}) rotate(${rot}) scale(${sc})"><path d="${K.blob([[-11, 12], [-13, 3], [-6, -3], [0, -5], [6, -3], [13, 3], [11, 12], [4, 10], [0, 12], [-4, 10]])}" fill="${C.pad}" stroke="${ink}" stroke-width="3"/><g fill="${C.pad}" stroke="${ink}" stroke-width="3"><ellipse cx="-13" cy="-8" rx="4.6" ry="6"/><ellipse cx="-4.6" cy="-15" rx="4.6" ry="6.2"/><ellipse cx="4.6" cy="-15" rx="4.6" ry="6.2"/><ellipse cx="13" cy="-8" rx="4.6" ry="6"/></g></g>`;
+const chevron = (x, y, sc, rot) => `<g transform="translate(${x} ${y}) rotate(${rot || 0}) scale(${sc || 1})"><path d="M-15 -4L0 8L15 -4L15 6L0 18L-15 6Z" fill="${gold}" stroke="${ink}" stroke-width="3" stroke-linejoin="round"/></g>`;
+const bellTick = (x, y, sc, rot) => `<g transform="translate(${x} ${y}) rotate(${rot || 0}) scale(${sc || 1})"><path d="M0 -26C-14 -26 -18 -12 -18 0C-18 8 -22 10 -24 14H24C22 10 18 8 18 0C18 -12 14 -26 0 -26Z" fill="${gold}" stroke="${ink}" stroke-width="3.5" stroke-linejoin="round"/><circle cy="18" r="6" fill="${gold}" stroke="${ink}" stroke-width="3"/><path d="M-9 -12Q-8 -20 -2 -21" stroke="${cream}" stroke-width="4" fill="none" stroke-linecap="round"/></g>`;
+const eyes = (x, y, sc, col, mood) => { const e = (ex) => mood === 'happy' ? `<path d="M${ex - 9} 3Q${ex} -8 ${ex + 9} 3" stroke="${ink}" stroke-width="4" fill="none" stroke-linecap="round"/>` : `<ellipse cx="${ex}" cy="0" rx="10" ry="12" fill="${col}" stroke="${ink}" stroke-width="3"/><ellipse cx="${ex + 1}" cy="1" rx="4.4" ry="9" fill="${ink}"/><circle cx="${ex - 3}" cy="-5" r="3" fill="#fff"/>` + (mood === 'angry' ? `<path d="M${ex - 13} -15L${ex + 12} -6L${ex + 12} -16Z" fill="${C.whiteShade}"/><path d="M${ex - 13} -14L${ex + 12} -6" stroke="${ink}" stroke-width="3.5" stroke-linecap="round"/>` : '');
+  return `<g transform="translate(${x} ${y}) scale(${sc})">${e(-16)}${mood === 'angry' ? e(16).replace(/M(\S+) -15L(\S+) -6L(\S+) -16Z/, (m) => m).replace(/rx="10"/g, 'rx="10"') : e(16)}</g>`; };
+
+// coats (from the CAST seeds)
+const COAT = { mikan: { fur: '#FFF8EC', pad: C.pad }, mikanG: { fur: C.ginger }, goof: { fur: '#FFF8EC', patch: '#C98A4A', patch2: '#514D60' }, gin: { fur: '#CDD1DC' }, kin: { fur: '#E3C39A', point: '#5E4636' }, toge: { fur: '#F4DDAA' } };
+
+// behind the cloud
+s.push(tailOut([[cc.x - 230, cc.y - 120], [cc.x - 330, cc.y - 220], [cc.x - 300, cc.y - 330], [cc.x - 380, cc.y - 390]], [30, 34, 36, 26], COAT.goof.patch2));     // Goofball's plume, springing up
+s.push(tailOut([[cc.x + 250, cc.y - 160], [cc.x + 330, cc.y - 250], [cc.x + 420, cc.y - 290], [cc.x + 470, cc.y - 360]], [20, 18, 16, 12], COAT.kin.point));    // Kinako's whip, bottle-brushed
+s.push(coatPaw(cc.x - 150, cc.y - 200, -14, 120, COAT.gin.fur, C.pad, 1.0));    // Gin's paw, raised high
+// heads popping out of the boil (bodies hidden by the cloud drawn over them)
+s.push(`<g transform="translate(${cc.x + 70} ${cc.y - 240}) rotate(8)">${K.cat({ ...K.CAST.mikan, pose: 'front-sit', expr: 'angry', outline: 'gold', x: 0, y: 0, scale: 2.3, shadow: false, lw: 4 })}</g>`);
+s.push(`<g transform="translate(${cc.x - 330} ${cc.y + 10}) rotate(-38)">${K.cat({ ...K.CAST.goofball, pose: 'front-sit', expr: 'happy', outline: 'gold', x: 0, y: 0, scale: 1.9, shadow: false, lw: 4 })}</g>`);
+s.push(pomTail(cc.x + 330, cc.y + 10, 40));                                                                   // Mikan's pom tail
+
+/* ---------- THE CLOUD: big scalloped cel, Paper Cream, lavender shade, 5 px Ink line ---------- */
+{ const R = K.rng(23), parts = [{ d: K.ell(cc.x, cc.y, 300, 230), fill: cream }];
+  // classic scalloped brawl cloud: a ring of fat puffs round an oval core
+  const n = 17; for (let i = 0; i < n; i++) { const a = i / n * Math.PI * 2 + 0.15, r = 82 + R() * 46, ex = 318 + R() * 26, ey = 238 + R() * 20; parts.push({ d: K.ell(cc.x + Math.cos(a) * ex, cc.y + Math.sin(a) * ey, r, r * 0.92, R() * 40), fill: cream }); }
+  const lit = K.ell(cc.x - 60, cc.y - 70, 400, 300);
+  s.push(K.celGroup({ parts, shade: { d: `M${cc.x - 900} ${cc.y - 900}h1800v1800h-1800Z` + lit, evenodd: true } }, { lw: 5, ol: K.OUTLINES.ink }));
+  // interior boil curls
+  let curls = ''; [[-150, -40, 60, 0.3], [110, 30, 70, 2.1], [-20, 120, 56, 4], [200, -90, 44, 1], [-250, 80, 50, 5], [40, -150, 46, 3]].forEach(([dx, dy, r, a]) => { curls += `<path d="M${cc.x + dx - r} ${cc.y + dy}a${r} ${r * 0.8} 0 0 1 ${r * 1.6} ${-r * 0.3}a${r * 0.5} ${r * 0.45} 0 0 1 ${-r * 0.4} ${r * 0.7}" fill="none" stroke="${ink}" stroke-width="4" stroke-linecap="round" transform="rotate(${a * 20} ${cc.x + dx} ${cc.y + dy})"/>`; });
+  s.push(curls);
+}
+// in front of / through the cloud
+s.push(coatPaw(cc.x - 300, cc.y + 150, -100, 90, COAT.mikan.fur, C.pad, 1.0));     // Mikan's white sock paw, swiping out left
+s.push(coatPaw(cc.x + 280, cc.y + 120, 100, 90, COAT.goof.patch, C.pad, 1.0));   // Goofball's marmalade paw
+s.push(coatPaw(cc.x + 20, cc.y + 230, 172, 60, COAT.kin.point, '#B58A7A', 0.95));     // Kinako's seal-point foot kicking down
+s.push(eyes(cc.x + 150, cc.y + 90, 1.7, '#5BB4F0', 'angry'));      // Gin, glaring out of the boil
+s.push(eyes(cc.x - 120, cc.y + 150, 1.4, '#5BB4F0', 'happy'));      // Kinako, eyes screwed shut
+s.push(star(cc.x - 120, cc.y - 420, 34, C.staticYellow, 10) + star(cc.x - 420, cc.y - 200, 26, cream, -10) + star(cc.x + 440, cc.y + 120, 30, C.staticYellow, 20) + star(cc.x - 360, cc.y + 260, 22, cream, 0) + star(cc.x + 380, cc.y - 120, 18, cream, 30));
+s.push(padGlyph(cc.x - 470, cc.y + 40, 2.0, -20) + padGlyph(cc.x + 300, cc.y + 300, 1.6, 24) + padGlyph(cc.x - 40, cc.y - 430, 1.4, -8));
+// a flying tuft (Togemaru's cream tabby fur)
+s.push(`<g transform="translate(${cc.x + 420} ${cc.y - 330}) rotate(-30)">${K.inked('M0 0q20 -24 46 -20q-16 6 -18 16q14 -10 30 -4q-22 6 -30 22q-12 -10 -28 -14z', COAT.toge.fur, 3)}</g>`);
+// chevron ticks + the controlled cat's bell bobbing on top
+s.push(chevron(cc.x - 300, cc.y - 150, 1.3, -24) + chevron(cc.x - 170, cc.y - 310, 1.3, -6) + chevron(cc.x + 300, cc.y - 260, 1.3, 18));
+s.push(bellTick(cc.x + 110, cc.y - 560, 1.5, 12));
+s.push(K.ticks({ x: cc.x + 110, y: cc.y - 570, r: 56, n: 3, a0: -150, a1: -30, len: 18, lw: 4.5 }));
+
+/* ---------- Togemaru, ROUTED: the take smeared into a bolt, up and out to the right ---------- */
+const tg = { x: 1520, y: 400 };
+// three shrinking dust puffs behind him
+s.push(`<g transform="translate(${tg.x - 40} ${tg.y}) rotate(-24)">${K.speedLines({ mode: 'parallel', x: -470, y: -110, w: 330, h: 120, angle: 0, count: 14, seed: 3, color: ink })}</g>`);
+s.push(K.dustCloud({ x: 1230, y: 500, r: 64, puffs: 5, seed: 31, lw: 4 }) + K.dustCloud({ x: 1340, y: 450, r: 46, puffs: 4, seed: 32, lw: 3.5 }) + K.dustCloud({ x: 1420, y: 420, r: 30, puffs: 4, seed: 33, lw: 3 }));
+s.push(`<g transform="translate(${tg.x} ${tg.y}) rotate(-18) scale(1.28 0.92)">${K.cat({ ...K.CAST.braggart, pose: 'side-pounce', outline: 'sage', expr: 'shock', x: 0, y: 70, scale: 1.75, shadow: false, lw: 3.5 })}</g>`);
+s.push(K.ticks({ x: tg.x + 120, y: tg.y - 90, r: 60, n: 4, a0: -110, a1: -20, len: 20, lw: 4.5 }));
+s.push(`<path d="M${tg.x + 40} ${tg.y - 150}q-12 16 -12 26a12 12 0 0 0 24 0q0 -10 -12 -26z" fill="${cream}" stroke="${ink}" stroke-width="3.5"/>`);
+// small spinning star where he stood
+s.push(star(cc.x + 470, cc.y - 40, 26, C.staticYellow, 25) + K.ticks({ x: cc.x + 470, y: cc.y - 40, r: 36, n: 3, a0: 200, a1: 300, len: 12, lw: 3.5 }));
+
+/* ---------- the giant lettered word (T5 ≈ 30% of screen height), Pile-On family, Ink offset print ---------- */
+function sfx(o) {
+  o = Object.assign({ text: 'POW!', x: 0, y: 0, size: 300, rot: -10, color: ink, grow: 1.4, seed: 1 }, o); const R = K.rng(o.seed * 37 + 11);
+  const adv = { W: 1.06, M: 0.98, O: 0.86, I: 0.42, '!': 0.46, '-': 0.5 }; const n = o.text.length; let x = 0; const gl = [];
+  for (let i = 0; i < n; i++) { const k = 1 + (o.grow - 1) * (n > 1 ? i / (n - 1) : 0), fs = o.size * k / ((1 + o.grow) / 2), dy = (R() - 0.5) * o.size * 0.1, rot = (R() - 0.5) * 12; gl.push({ ch: o.text[i], x, fs, dy, rot }); x += fs * (adv[o.text[i]] || 0.8) * 0.9; }
+  const layer = (fill, sw, dx, dy) => gl.map((g) => `<text x="${(g.x + dx).toFixed(1)}" y="${(g.dy + dy).toFixed(1)}" font-size="${g.fs.toFixed(1)}" transform="rotate(${g.rot.toFixed(1)} ${(g.x + dx + g.fs * 0.35).toFixed(1)} ${(g.dy + dy - g.fs * 0.3).toFixed(1)})" fill="${fill}" stroke="${ink}" stroke-width="${sw}" stroke-linejoin="round" paint-order="stroke">${g.ch}</text>`).join('');
+  const off = o.size * 0.045;
+  return `<g class="k-vfx k-sfx" transform="translate(${o.x} ${o.y}) rotate(${o.rot}) translate(${-x / 2} 0)" font-family="'Dela Gothic One',sans-serif" filter="url(#k-dry)">${layer(o.color, o.size * 0.07, off, off)}${layer(cream, o.size * 0.085, 0, 0)}</g>`;
+}
+s.push(sfx({ text: 'KA-BLAM!', x: 600, y: 250, size: 190, rot: -9, grow: 1.35, seed: 5 }));
+
+document.getElementById('stage').innerHTML = K.svg(W, H, s.join(''), 'class="k-world"');
+</script>
+</body>
+</html>

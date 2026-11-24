@@ -84,7 +84,7 @@
     o = Object.assign({ x: 0, y: 0, s: 1, color: '#C8A06A' }, o);
     const w = 120, h = 62, dk = K.mix(o.color, '#6E6AA8', 0.35);
     const body = K.celGroup({ parts: [{ d: `M${-w / 2} ${-h}H${w / 2}V0H${-w / 2}Z`, fill: o.color }, { d: `M${-w / 2 + 6} ${-h - 16}H${w / 2 + 8}L${w / 2} ${-h}H${-w / 2}Z`, fill: K.mix(o.color, '#FFF6E3', 0.35) }],
-      lines: `<path d="M${-w / 2} ${-h * 0.5}H${w / 2}M${-w / 2 + 30} ${-h}V0M${w / 2 - 30} ${-h}V0" stroke="${C.ink}" stroke-width="2" fill="none"/>` }, { lw: 2.5, ol: K.OUTLINES.ink });
+      lines: [`M${-w / 2} ${-h * 0.5}H${w / 2}`, `M${-w / 2 + 30} ${-h}V0`, `M${w / 2 - 30} ${-h}V0`] }, { lw: 2.5, ol: K.OUTLINES.ink });
     return `<g transform="translate(${o.x} ${o.y}) scale(${o.s})">${K.shadow({ x: 0, y: 0, rx: 72, ry: 9 })}${body}<path d="M${-w / 2 + 2} -2H${w / 2 - 2}V${-h * 0.45}H${-w / 2 + 2}Z" fill="${dk}" opacity="0.35" style="mix-blend-mode:multiply"/></g>`;
   }
 
