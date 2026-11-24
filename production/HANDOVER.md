@@ -35,7 +35,8 @@ gameplay and the art direction.
 | Prototype scaffold (`prototypes/artifact-slice/`) | **Done** — build, dev server, headless WebGL screenshots verified |
 | Showcase M0 look-dev | **Done on the studio side** — GO WITH FIXES after 3 iterations; published at https://claude.ai/artifact/MBsJLyudNiAdVyUu9BhpD6 ; **owner: GO** (2026-11-24) |
 | Showcase M1 combat grey box | **Done** — 3 review rounds, final GO WITH FIXES (overall 5 → 7/10); published on the same showcase link (chapter menu → Combat). Carry-overs: `production/qa/evidence/artifact-slice/M1/review-final.md` |
-| Showcase M2–M7 | Not started. Next: M2 lane and territory, carrying the M1 list |
+| Showcase M1.1 combat rework (owner C10) | **Done, awaiting the owner's play test** — Mikan-only control, one-slot buffer, move-out gradient, L/H strings (L-L-L-H finisher), cat-like AI with attack tokens, stagger cinematic, F Special + auto crew chain + team finisher, R skill bar, Tab lock-on cycle. Spec: `design/reviews/owner-feedback/combat-m1.1-spec.md`; published as version 6 of the showcase |
+| Showcase M2–M7 | Not started. Next: M2 lane and territory, carrying the M1 list and follow-ups F13–F16 |
 
 Nothing has been played or built. Every balance number is a paper value checked
 by small Python simulations, not by a prototype.
