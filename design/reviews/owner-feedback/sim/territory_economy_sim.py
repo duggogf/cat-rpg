@@ -487,6 +487,17 @@ def wipe_vs_settle():
               f"a wipe keeps {haul * 0.8:.1f}, no Well-Fed, -3 Loyalty per Routed Posse cat, clock to Night; Tribute identical")
 
 
+def stash_by_day(n=2000):
+    print("\n### Stash at the end of each day (means; min in brackets), days 1-7")
+    print("| Player | D1 | D2 | D3 | D4 | D5 | D6 | D7 |")
+    print("|---|---|---|---|---|---|---|---|")
+    for nm, pol in (("engaged reference", ENGAGED), ("casual", CASUAL), ("sleep-skip from day 3", SLEEP_SKIP),
+                    ("rub-skip LWC from day 3", RUB_SKIP), ("patrol + one fight + Settle In", PATROL_SETTLE),
+                    ("patrol + throw the first fight", WIPE_SKIP), ("struggler", STRUGGLER)):
+        rs = runs(pol, n)
+        print(f"| {nm} | " + " | ".join(f"{m([x[0][i]['stash'] for x in rs]):.0f} ({min(x[0][i]['stash'] for x in rs)})" for i in range(7)) + " |")
+
+
 def trace():
     """One engaged run in which every raid is Repelled and the challenger is beaten on L2D4: the §4.11 hand path."""
     for seed in range(5000):
@@ -511,6 +522,7 @@ if __name__ == "__main__":
     posting_table()
     defence_table()
     exploit_table()
+    stash_by_day()
     struggler_floor()
     wipe_vs_settle()
     picks()
