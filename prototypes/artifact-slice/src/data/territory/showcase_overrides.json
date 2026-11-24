@@ -1,0 +1,8 @@
+[
+  {"Name": "_comment", "value": null, "_src": "PROTOTYPE - NOT FOR PRODUCTION. THROWAWAY, NEVER TRANSFERS (plan §4.4 showcase_overrides.json, territory part). Applied only by createDistrict({ start: 'showcase_l2d2' }) or { showcase: true }."},
+  {"Name": "l2d2_snapshot", "value": {"day": 4, "patches": {"LWC": {"owner": "bell", "keeper": "mikan", "scent": 80}, "LPY": {"owner": "bell", "keeper": "mikan", "scent": 48}, "PA": {"owner": "bell", "keeper": "mikan", "scent": 75}, "TSS": {"owner": "bell", "keeper": "mikan", "scent": 70}, "DEN": {"owner": "wall_sitters", "keeper": "daifuku", "scent": 100}}, "first_three_night": 3}, "_src": "Plan §2.4 Life 2 snapshot: Low Wall Corner 80, Laundry Pole Yard 48, Persimmon Alley 75, Tofu Shop Step 70 -> influence 95; §2.2 9:20 Life 2 day 2"},
+  {"Name": "challenger", "value": {"id": "challenger_1", "patch": "LPY", "arrived_night": 3, "origin": "calendar"}, "_src": "Plan §2.4 'The challenger arrives on night 3 (canon: night 5)'; §2.2 9:20 a silhouette staking Laundry Pole Yard; Territory §6 note 9"},
+  {"Name": "challenger_first_night", "value": 3, "_src": "Plan §2.4 night-3 challenger (canon N3 + 2 = 5)"},
+  {"Name": "boss_stop_by_phase", "value": {"morning": "S_M", "day": "S_M", "dusk": "S_N", "night": "S_N"}, "_src": "Plan §2.4 'Daifuku held at his Morning stop through Morning and Day (no Tofu Shop stop)'"},
+  {"Name": "discovered", "value": ["togemaru", "goma", "daifuku", "hige", "pon", "kinako"], "_src": "Plan §2.2: Togemaru, Goma met in Life 1; Daifuku sniffed at 8:35; Crew always discovered (Nemesis §3.13 c)"}
+]

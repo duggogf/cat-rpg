@@ -30,6 +30,19 @@ export const PHASES = {
   },
 };
 
+/** A phase key between two keys (the ≈ 20 s Day -> Dusk blend): colours lerp in sRGB, numbers and directions lerp. */
+export function mixPhase(a, b, k) {
+  const A = PHASES[a] || a, B = PHASES[b] || b, o = {};
+  for (const key of Object.keys(A)) {
+    const x = A[key], y = B[key] ?? x;
+    if (typeof x === 'string' && x[0] === '#') { const p = rgb(x), q = rgb(y); p.lerp(q, k); o[key] = '#' + [p.x, p.y, p.z].map((v) => Math.round(v * 255).toString(16).padStart(2, '0')).join(''); }
+    else if (typeof x === 'number') o[key] = x + (y - x) * k;
+    else if (Array.isArray(x)) o[key] = x.map((v, i) => v + (y[i] - v) * k);
+    else o[key] = k < 0.5 ? x : y;
+  }
+  return o;
+}
+
 /** Raw sRGB triple (no colour management) for shader uniforms. */
 export function rgb(hex) { const n = parseInt(hex.slice(1), 16); return new THREE.Vector3(((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255); }
 /** Direction toward the sun (world). */

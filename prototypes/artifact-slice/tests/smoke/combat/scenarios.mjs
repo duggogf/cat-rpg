@@ -33,7 +33,8 @@ export const SCENARIOS = [
   { id: 'median_toughs_3', enc: 'toughs_3', bot: () => withCommandQueue(medianBot()), expect: r => r.outcome === 'win' },
   { id: 'median_sandbox', enc: 'sandbox', bot: () => withCommandQueue(medianBot()), expect: r => r.outcome === 'win' },
   { id: 'median_captain', enc: 'captain', bot: () => withCommandQueue(medianBot()), expect: r => r.outcome === 'win' },
-  { id: 'scripted_daifuku_phase_break', enc: 'daifuku_bout', bot: () => withCommandQueue(daifukuBot()), expect: r => r.phaseBreak && r.outcome === 'rival_fled' },
+  // M1.3: Daifuku now fights back on a steady cadence, so a scripted player sometimes loses (the loss branch L).
+  { id: 'scripted_daifuku_phase_break', enc: 'daifuku_bout', bot: () => withCommandQueue(daifukuBot()), expect: r => (r.phaseBreak && r.outcome === 'rival_fled') || r.outcome === 'loss', aggregate: rs => rs.filter(r => r.phaseBreak).length >= Math.ceil(0.9 * rs.length) },
   { id: 'passive_lose_to_daifuku', enc: 'lose_to_daifuku', bot: () => passiveBot(), expect: r => r.outcome === 'loss' },
 ];
 

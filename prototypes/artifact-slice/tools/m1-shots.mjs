@@ -207,6 +207,9 @@ if (want('dmg')) {
   const p = await open('fight=toughs3&seed=3&script=demo');
   await ev(p, `__cat.until('Hit', 3000, 14)`); await ev(p, '__cat.frames(5)');
   await shot(p, 'damage-numbers.png', 'damage numbers (on by default, N toggles): merged per target, Cream-on-Ink for the Posse\'s hits, Ink-on-Cream for hits taken; the 133 ms character-local hit flash; allies yellow, enemies red + red wedge');
+  await ev(p, `__cat.untilWhere((s, log) => { const t = log.length ? log[log.length - 1].tick : 0; return log.some((e) => e.type === 'Hit' && e.tick >= t - 1 && e.dmg > 0 && (s.entities.find((x) => x.id === e.target) || {}).side === 'posse'); }, 3000)`);
+  await ev(p, '__cat.frames(6)');
+  await shot(p, 'damage-numbers-taken.png', 'damage TAKEN by our side (from enemies): red numbers, fixed at the world hit position and drifting up, not following the cat');
   await p.ctx.close();
 }
 if (want('ko')) {

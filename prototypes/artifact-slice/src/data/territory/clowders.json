@@ -1,0 +1,7 @@
+[
+  {"Name": "_comment", "_src": "PROTOTYPE - NOT FOR PRODUCTION. Clowders that can own a Patch, with their wisp colour (art bible §3 palette; wisps are drawn in the owning Clowder's colour, art bible §6 'Scent wisps', Territory §3.2.1)."},
+  {"Name": "bell", "display": "Bell Clowder", "colour": "#F2B01E", "player": true, "_src": "Art bible palette 6 Bell-Gold: the Bell Clowder, everything that is the player's"},
+  {"Name": "wall_sitters", "display": "Wall Sitters", "colour": "#A8C878", "player": false, "_src": "Art bible palette 11 Wall Sitter Sage: the slice's enemy Clowder (DR-51); Nemesis §2 Gang = clowder wall_sitters"},
+  {"Name": "strays", "display": "Strays", "colour": "#33273B", "player": false, "_src": "Art bible §3 role table: Stray (untracked) Ink, emblem-free; Territory §3.4 PP-03 Low Wall Corner's Keeper is an untracked Stray"},
+  {"Name": "outsiders", "display": "Outsiders", "colour": "#4E9DA6", "player": false, "placeholder": true, "_src": "PLACEHOLDER colour: Territory §6 asks Art for 'an outsider colour' and hud.md §3.2 names an 'Outsiders colour', but the art bible defines none yet; needs the DR-51 separation check. Nemesis §3.20: challengers have clowder = outsiders"}
+]

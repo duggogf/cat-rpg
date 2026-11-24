@@ -60,6 +60,8 @@ function planCommands(enc, s, lock) {
   const mikan = by('mikan'), hige = by('hige'), pon = by('pon');
   const level = e => Math.abs(e.pos[1] - lock.pos[1]) < 0.5;
   const hurt = posse.filter(e => e.nerve / e.nerve_max < 0.7).sort((a, b) => a.nerve / a.nerve_max - b.nerve / b.nerve_max)[0];
+  const low = posse.filter(e => e.nerve / e.nerve_max < 0.4).sort((a, b) => a.nerve / a.nerve_max - b.nerve / b.nerve_max)[0];
+  if (pon && free(pon) >= 1 && low) return [{ cat: 'pon', move: 'purr', target: low.id }]; // heal first when someone is low
   if (hige && mikan && free(hige) >= 1 && free(mikan) >= 1 && lock.rank !== 'boss' && level(hige) && lock.splat_s <= 0 && obstacleBehind(s, hige, lock)) {
     cmds.push({ cat: 'hige', move: 'shoulder_check', target: lock.id }, { cat: 'mikan', move: 'bunny_kick', target: lock.id });
   } else if (pon && free(pon) >= 2 && hurt && lock.status?.kind !== 'cowed') {
@@ -80,7 +82,7 @@ function planCommands(enc, s, lock) {
  * Options make it the median policy: `uptime` (share of time attacking), `dodgeEvery` (answer 1 in N telegraphs).
  */
 export function skilledBot({ commands = true, uptime = 1, dodgeEvery = 1, specials = true, focus = null } = {}) {
-  let sbPhase = 0, lastCmdT = -99, readySince = null;
+  let sbPhase = 0, lastCmdT = -99, readySince = null, evadeDir = null, approachEvade = false;
   const memo = new Map(), counter = { n: 0 };
   return enc => {
     const s = enc.snapshot();
@@ -95,8 +97,11 @@ export function skilledBot({ commands = true, uptime = 1, dodgeEvery = 1, specia
     if (specials && s.special_prompt?.ready && (s.special_prompt.staggered || crewReady >= 4 || s.fight_t - readySince > 4)) return { special: true };
     const lock = (focus && foes.find(e => e.id === focus)) || foes.slice().sort((a, b) => (b.staggered_s > 0) - (a.staggered_s > 0) || b.stagger - a.stagger || d2(c, a) - d2(c, b))[0];
     const inp = s.lock === lock.id ? {} : { lockId: lock.id };
+    // The evade is steerable (M1.3): hold the escape direction through it, as a player does.
+    if (c.anim === 'evade' && approachEvade && d2(c, lock) < 3.0) return { ...inp, light: true }; // Evade -> L lunge
+    if (c.anim === 'evade' && evadeDir) return { ...inp, move: evadeDir };
     const def = dodgeIfNeeded(s, c, inp, dodgeEvery, memo, counter);
-    if (def) return def;
+    if (def) { evadeDir = def.move; approachEvade = false; return def; }
     if (c.counter_window_s > 0) return { ...inp, light: true }; // the perfect-evade counter
     if (commands && s.fight_t - lastCmdT > 1.5 && !c.attack) {
       const cmds = planCommands(enc, s, lock);
@@ -104,8 +109,7 @@ export function skilledBot({ commands = true, uptime = 1, dodgeEvery = 1, specia
     }
     const dd = d2(c, lock), sameLevel = Math.abs(c.pos[1] - lock.pos[1]) < 0.5;
     if (!sameLevel) return { ...inp, move: toward(c, lock) };
-    if (dd > 3.0 && dd < 4.2 && !c.attack && c.evade_ready && c.anim !== 'evade') return { ...inp, move: toward(c, lock), evade: true };
-    if (c.anim === 'evade' && dd < 3.0) return { ...inp, light: true }; // Evade -> L lunge
+    if (dd > 3.0 && dd < 4.2 && !c.attack && c.evade_ready && c.anim !== 'evade') { evadeDir = toward(c, lock); approachEvade = true; return { ...inp, move: evadeDir, evade: true }; }
     if (dd > 1.6 && !c.attack) return { ...inp, move: toward(c, lock) };
     const cyc = enc.k.string_cycle_s / uptime;
     if (uptime < 1 && (s.fight_t % cyc) > enc.k.string_cycle_s && !c.attack) return { ...inp, aim: toward(c, lock) };

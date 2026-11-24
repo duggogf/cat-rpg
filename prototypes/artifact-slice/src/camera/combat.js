@@ -178,6 +178,7 @@ export class CombatCamera {
       }
       if (G.spin) { const T = G.T.pos, ang = G.spin * u, rel = G.pose.pos0 || (G.pose.pos0 = G.pose.pos.clone().sub(new THREE.Vector3(T.x, 0, T.z)));
         G.pose.pos.copy(rel).applyAxisAngle(new THREE.Vector3(0, 1, 0), ang).add(new THREE.Vector3(T.x, 0, T.z)); }
+      if (G.track) { const q = G.track(); G.pose.look.lerp(new THREE.Vector3(q.x, q.y + 0.3, q.z), G.trackK || 0.4); }
       const look = new THREE.Vector3(); cam.getWorldDirection(look); look.multiplyScalar(4).add(cam.position);
       cam.position.lerp(G.pose.pos, kk); look.lerp(G.pose.look, kk); cam.lookAt(look);
     } else this.stagger = null;

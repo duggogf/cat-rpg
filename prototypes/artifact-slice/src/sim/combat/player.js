@@ -180,6 +180,14 @@ function impact(enc, e, a, r) {
 }
 
 export function evadeTick(enc, e, a, d) {
+  // Steerable like NieR: Automata (M1.3, owner C12): the stick pivots the dash within it, at a limited turn rate.
+  // The speed is kept, so the distance (2 m), i-frames and cooldown do not change.
+  const m = e.moveIntent;
+  if (m && (m[0] || m[1]) && d > 0) {
+    const sp = len(a.vx, a.vz), u = norm(a.vx, a.vz), st = norm(m[0], m[1]), beta = enc.k.evade.steer_per_s * d;
+    const [ux, uz] = norm(u[0] + st[0] * beta, u[1] + st[1] * beta);
+    if (ux || uz) { a.vx = ux * sp; a.vz = uz * sp; e.fx = ux; e.fz = uz; }
+  }
   e.x += a.vx * d; e.z += a.vz * d;
   if (a.t >= a.dur - 1e-9) { e.act = null; e.evadeEndT = enc.simT; }
 }

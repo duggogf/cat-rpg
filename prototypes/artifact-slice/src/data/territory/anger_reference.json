@@ -1,0 +1,10 @@
+[
+  {"Name": "_comment", "value": null, "_src": "PROTOTYPE - NOT FOR PRODUCTION. NEMESIS-OWNED numbers, copied here only for the territory sim's reference MarkApplied consumer (anger-reference.js) used by tests and tools/territory-run.mjs until M3's nemesis module owns anger. Nemesis = design/gdd/nemesis-system.md."},
+  {"Name": "over_mark", "value": 5, "_src": "Nemesis F10 / OR-07: Over-mark a rival Rub Mark +5 (Boss's own Clowder only, A-9)"},
+  {"Name": "counter_spray", "value": 15, "_src": "Nemesis F10 / OR-07: Counter-Spray a rival post +15"},
+  {"Name": "never_sources", "value": ["claim_spray", "rescue_spray"], "_src": "Nemesis §3.19 / OR-07: Claim Spray and spraying Mikan's own posts are never sources"},
+  {"Name": "nightly_decay", "value": 15, "_src": "Nemesis F10: -15 per night (step 3e)"},
+  {"Name": "max", "value": 100, "_src": "Nemesis F10: clamped at 100"},
+  {"Name": "stages", "value": [{"stage": "Calm", "min": 0}, {"stage": "Riled", "min": 30}, {"stage": "Seething", "min": 60}, {"stage": "Furious", "min": 90}], "_src": "Nemesis F10 / OR-07 stages 30 / 60 / 90"},
+  {"Name": "spent_on", "value": ["win", "loss", "rival_fled"], "_src": "Nemesis §3.19 Spent: reset to 0 at EncounterEnded with the Boss in it, outcome win, loss or rival_fled; not on Scram"}
+]

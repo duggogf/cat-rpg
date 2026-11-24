@@ -1,0 +1,4 @@
+[
+  {"Name": "_comment", "_src": "PROTOTYPE - NOT FOR PRODUCTION. The slice district (UE DataTable shape: rows keyed by Name, plan §4.4). Territory = design/gdd/territory-management.md; OR = design/reviews/owner-feedback-rulings.md."},
+  {"Name": "hidamari", "display": "Hidamari Lane", "patches": ["LWC", "LPY", "PA", "TSS", "DEN"], "outer": ["LWC", "LPY", "PA", "TSS"], "den": "DEN", "home_ground": "LWC", "boss": "daifuku", "gang": "wall_sitters", "player_clowder": "bell", "_src": "Territory §3.1 (one district, five Patches; the four outer Patches are the influence quarters; the Den is the Boss's seat); §3.2.2; OR-08 n_outer = 4"}
+]

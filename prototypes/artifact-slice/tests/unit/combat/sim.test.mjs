@@ -371,3 +371,46 @@ test('every entity\'s position, velocity and facing stay finite on every tick, a
     }
   }
 });
+
+/** Attacks per second of time the enemy could act (standing, not staggered, not in a break or a chain), and the longest such gap. */
+function attackCadence(name, mk, id, seeds) {
+  let n = 0, able = 0, maxGap = 0;
+  for (const seed of seeds) {
+    const enc = createEncounter(name, { seed, showcase: true }), bot = mk();
+    let since = 0;
+    for (let i = 0; i < T * 200 && enc.mode !== 'ended'; i++) {
+      const ev = enc.step(bot(enc, i)), e = enc.byId.get(id);
+      if (enc.mode === 'fight' && enc.timeScale > 0 && enc.standing(e) && e.frazzledT <= 0 && e.act?.kind !== 'break') { able += enc.DT * enc.timeScale; since += enc.DT * enc.timeScale; }
+      if (ev.some(x => x.type === 'TelegraphStart' && x.attacker === id)) { n++; maxGap = Math.max(maxGap, since); since = 0; }
+    }
+  }
+  return { perAttack: able / n, maxGap };
+}
+
+test('Captains and Bosses keep attacking (every 2-3 s while able), with basics between skills', () => {
+  const boss = attackCadence('daifuku_bout', () => withCommandQueue(daifukuBot()), 'daifuku', [1, 2, 3, 4]);
+  assert.ok(boss.perAttack <= 2.5 && boss.maxGap <= 5, `Daifuku: one per ${boss.perAttack.toFixed(1)} s, max gap ${boss.maxGap.toFixed(1)} s`);
+  const cap = attackCadence('captain', () => withCommandQueue(skilledBot()), 'captain', [1, 2, 3]);
+  assert.ok(cap.perAttack <= 2.5 && cap.maxGap <= 5, `Captain: one per ${cap.perAttack.toFixed(1)} s, max gap ${cap.maxGap.toFixed(1)} s`);
+  const enc = createEncounter('daifuku_bout', { seed: 2, showcase: true });
+  const { events } = run(enc, withCommandQueue(daifukuBot()), T * 200);
+  const moves = events.filter(e => e.type === 'TelegraphStart' && e.attacker === 'daifuku').map(e => e.move);
+  assert.ok(moves.filter(m => m === 'enemy_swipe' || m === 'paw_swat').length > moves.filter(m => m === 'belly_flop_shockwave').length, 'basics fill the gaps between signatures');
+});
+
+test('a leader retaliates against the cat hitting it, and Toughs leave it a token on the player', () => {
+  const enc = createEncounter('captain', { seed: 4, showcase: true });
+  const { events } = run(enc, withCommandQueue(skilledBot()), T * 120);
+  const r = events.find(e => e.type === 'Retaliate');
+  assert.ok(r && r.cat === 'captain' && r.hits >= DATA.k.leader_ai.retaliate_hits);
+  const after = events.slice(events.indexOf(r)).find(e => e.type === 'TelegraphStart' && e.attacker === 'captain');
+  assert.equal(after.aimed_at, r.at, 'its next attack goes at the attacker');
+  // With a leader standing, at most one non-leader engages the player.
+  const ch = createEncounter('challenger', { seed: 3, showcase: true });
+  const bot = withCommandQueue(skilledBot());
+  for (let i = 0; i < T * 40 && ch.mode !== 'ended'; i++) {
+    ch.step(bot(ch, i));
+    const toughs = ch.enemies().filter(e => ch.standing(e) && !e.rankRow.leader && e.ai.engageOn === 'mikan' && ['dash_in', 'attack', 'feint'].includes(e.ai.intent));
+    if (ch.standing(ch.byId.get('challenger'))) assert.ok(toughs.length <= 1);
+  }
+});

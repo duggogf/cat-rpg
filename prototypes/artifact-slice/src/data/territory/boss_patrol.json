@@ -1,0 +1,7 @@
+[
+  {"Name": "_comment", "_src": "PROTOTYPE - NOT FOR PRODUCTION. The Boss's seat and three-stop patrol while the window is open (Territory §3.5 item 3; Nemesis §3.19 patrol item 2; Day Loop F7). Each stop is a ground arena kit (M1.2)."},
+  {"Name": "den_wall", "patch": "DEN", "display": "the great wall (the Den)", "phases": [], "roaming": false, "_src": "Territory §3.5 item 1: before the window the Boss stays at the Den and ignores Mikan; Day Loop F7: window closed -> at the Den, no Standoff"},
+  {"Name": "S_M", "patch": "LPY", "display": "Laundry Pole Yard (yard wall above the wash tub)", "phases": ["morning"], "roaming": true, "_src": "Territory §3.5 item 3 Morning: Laundry Pole Yard; plan §2.1 'the yard wall above the wash tub: Daifuku's Morning patrol stop'"},
+  {"Name": "S_D", "patch": "TSS", "display": "Tofu Shop's back lane", "phases": ["day"], "roaming": true, "_src": "Territory §3.5 item 3 Day: Tofu Shop's back lane (M1.2 ground kit; OR-09 said 'back wall')"},
+  {"Name": "S_N", "patch": "DEN", "display": "the Den corner", "phases": ["dusk", "night"], "roaming": true, "_src": "Territory §3.5 item 3: Dusk and Night the Den corner ('staying at the last through Night')"}
+]

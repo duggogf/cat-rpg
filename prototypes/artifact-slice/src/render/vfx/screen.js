@@ -82,10 +82,14 @@ export class ScreenFX {
   /** Damage number (M1.2 §5, on by default): a merged count per target, popping at 120% for one drawing and rising.
    * Out-going (to enemies) = Cream on an Ink outline; in-coming (to the Posse) = Ink on a Cream outline. Max 6. */
   damage(f, n, dir, t, big) {
+    if (this.fx.some((x) => x.kind === 'ko')) return;   // the KO owns the screen
     const prev = this.fx.find((x) => x.kind === 'dmg' && x.f === f && x.t < 0.35);   // hits on one cat within 0.35 s merge into one count
     if (prev) { prev.n += n; prev.t = 0; prev.big = prev.big || big; return; }
     const live = this.fx.filter((x) => x.kind === 'dmg'); if (live.length >= 6) live[0].t = live[0].dur;
-    this.fx.push({ kind: 'dmg', f, n, dir, big, t: 0, dur: 0.8, jx: ((n * 37) % 5 - 2) * 3 });
+    // world-space popup (M1.3, C12): fixed at the hit position (a little above the cat's head, jittered), then drifts up;
+    // it does NOT follow the cat afterwards
+    const j = ((n * 37) % 7 - 3) * 0.06, at = { x: f.head.x + j, y: f.head.y + 0.15 + live.length * 0.02, z: f.head.z - j * 0.5 };
+    this.fx.push({ kind: 'dmg', f, at, n, dir, big, t: 0, dur: 0.9, jx: 0 });
   }
 
   /** The one lettered word (DR-49). o: {cls, ms, tier, hitType, at (world V3), seed} */
@@ -161,13 +165,15 @@ export class ScreenFX {
         const sc = Math.floor(f.t / TWO) === 0 ? 1.2 : 1;
         s += `<g transform="translate(${r1(w * 0.5)} ${r1(h * 0.42)}) scale(${sc}) rotate(-8)">${f.svg.svg}</g>`;
       } else if (f.kind === 'dmg') {
-        const p = ctx.project(f.f.head); if (!p.on) continue;
+        // the world point drifts up 0.45 m over its life (stepped on twos); older numbers at the same spot sit higher
+        const tq = Math.floor(f.t / TWO) * TWO, rise = 0.45 * Math.min(1, tq / f.dur);
+        const p = ctx.project({ x: f.at.x, y: f.at.y + rise, z: f.at.z, clone() { return this; } }); if (!p.on) continue;
         const k2 = Math.floor(f.t / TWO), sc = k2 === 0 ? 1.2 : 1, fs = h * (f.big ? 0.05 : 0.036);
-        // older numbers on the same cat sit higher, so a burst reads as a short column, never an overprint
-        const older = this.fx.filter((x) => x.kind === 'dmg' && x.f === f && x.t > f.t).length;
-        const y = p.y - h * 0.135 - Math.min(1, f.t / 0.5) * h * 0.035 - older * fs * 1.05;
-        const fill = f.dir === 'heal' ? C.purr : f.dir === 'out' ? C.cream : C.ink, line = f.dir === 'out' || f.dir === 'heal' ? C.ink : C.cream;
-        const op = f.t > f.dur - 0.12 ? 0.55 : 1;   // the last drawing thins (halftone-ish), never an alpha fade-out ramp
+        const older = this.fx.filter((x) => x.kind === 'dmg' && x.f === f.f && x.t > f.t && Math.abs(x.at.x - f.at.x) < 0.3).length;
+        const y = p.y - older * fs * 1.05;
+        // damage taken by our side (dir 'in', from enemies) is RED; dealt by our side stays Cream on Ink; heals Purr Rose
+        const fill = f.dir === 'heal' ? C.purr : f.dir === 'out' ? C.cream : '#E2453F', line = C.ink;
+        const op = f.t > f.dur - 0.12 ? 0.4 : f.t > f.dur - 0.3 ? 0.75 : 1;   // fades in two steps (small text: never a flash)
         s += `<text x="${r1(p.x + f.jx)}" y="${r1(y)}" text-anchor="middle" transform="scale(1)" font-family="'Dela Gothic One','M PLUS Rounded 1c',sans-serif" font-size="${r1(fs * sc)}" fill="${fill}" stroke="${line}" stroke-width="${r1(fs * 0.16)}" paint-order="stroke" stroke-linejoin="round" opacity="${op}">${f.dir === 'heal' ? '+' : ''}${f.n}</text>`;
       } else if (f.kind === 'banner') {
         // ability name banner (M1.1 §7): a ribbon in the caster's colour over its head, pops in at 115% for one drawing
@@ -265,7 +271,7 @@ export class ScreenFX {
     if (!W.place) {
       const cb = ctx.controlledBox, hud = (ctx.hudRects || []).slice();
       // damage numbers are HUD too: never under the word
-      for (const d of this.fx) if (d.kind === 'dmg') { const q = ctx.project(d.f.head); hud.push({ x: q.x - ctx.h * 0.06, y: q.y - ctx.h * 0.22, w: ctx.h * 0.12, h: ctx.h * 0.14 }); }
+      for (const d of this.fx) if (d.kind === 'dmg') { const q = ctx.project({ x: d.at.x, y: d.at.y, z: d.at.z, clone() { return this; } }); hud.push({ x: q.x - ctx.h * 0.06, y: q.y - ctx.h * 0.22, w: ctx.h * 0.12, h: ctx.h * 0.14 }); }
       const cands = [[0.25, -1.1], [-0.25, -1.1], [0.6, -0.6], [-0.6, -0.6], [0, -1.5], [0.8, 0.1], [-0.8, 0.1], [0.9, -1.4], [-0.9, -1.4], [1.1, 0.6], [-1.1, 0.6], [0, 1.2], [0, -2.2]];
       // plus a screen grid (as offsets from the anchor), so a clear spot is found even when the near ones are all covered
       for (let gy = 0.14; gy < 0.75; gy += 0.07) for (let gx = 0.12; gx < 0.9; gx += 0.06) cands.push([(gx * ctx.w - anchor.x) / est, (gy * ctx.h - anchor.y) / ht]);

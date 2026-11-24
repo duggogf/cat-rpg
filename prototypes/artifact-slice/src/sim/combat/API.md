@@ -1,5 +1,5 @@
 <!-- PROTOTYPE - NOT FOR PRODUCTION (Cat RPG artifact showcase slice; throwaway, see ../../../README.md) -->
-# Combat simulation API (M1.2)
+# Combat simulation API (M1.3)
 
 Pure, deterministic, headless combat for `design/gdd/combat-system.md`, as amended by the owner's **M1.1** and **M1.2** directions (`design/reviews/owner-feedback/combat-m1.1-spec.md`, `combat-m1.2-spec.md`; M1.2 wins where they differ). There is no rendering, no DOM, no `Math.random` and no wall clock. The presentation **reads** a snapshot and an event stream, and **writes** one input frame per tick.
 
@@ -11,6 +11,27 @@ const events = enc.step(inputFrame);   // once per 1/60 s of real time; ordered,
 const s = enc.snapshot();              // read-only plain object for rendering
 enc.hash();                            // 16 hex chars over the canonical sim state
 ```
+
+## What changed in M1.3 (owner feedback C12)
+
+| Area | Change |
+|---|---|
+| **Leaders fight** | Captains and Bosses always hold an attack token: a Tough on the player has one fewer, so the cap of 2 still holds. They keep a steady cadence, swinging their basic string at whoever is in reach between skills (gap after recovery: Captain 0.6–1.2 s; Daifuku 1.2–1.8 s, ×0.75 when raging). An attacker landing 3 hits within 2 s becomes their target at once: **`Retaliate {cat, at, hits}`**. With 2+ opponents within 3 m they lash out on a 0.6–1.0 s gap: **`Swarmed {cat, opponents}`**. While a leader holds its token its `intent` is `pressure` between swings. Data: `combat_constants.leader_ai`; `bosses.json` `basic_gap_s`, `move_speed_mult` (0.85). |
+| **Boss signature** | Interleaves instead of gating: the Belly-Flop Shockwave is his next attack whenever its 8 s cooldown is up, and basics fill every gap. |
+| **Knockdown** | A cat knocked down by the shockwave is invulnerable while down (`knockdown_invuln`). |
+| **Steerable evade** | During the evade, `move` pivots the dash toward the stick at a limited turn rate (`evade.steer_per_s` 10). Speed is kept, so the distance (2 m), i-frames and cooldown are unchanged. Keep sending `move` through the evade: the stick held at release steers it. |
+| **Final KO** | `FinalKO.fly_dir [x, z]`: the KO'd cat's flight direction, away from the finisher (C12 asks for the KO'd cat to fly). |
+
+Attack rate per enemy (10 seeds; the bots used in tools/sim-run.mjs), M1.2 → M1.3:
+- **Real time** (including staggers and frozen Special chains):
+  - Daifuku: 0.12 → 0.41/s; basics 0.05 → 0.24/s.
+  - Captain: 0.36 → 0.45/s.
+- **Time able to act** (M1.3): Daifuku one attack per 1.9 s (longest gap 4.3 s); Captain one per 1.3 s (longest 2.3–3.0 s). The test asserts at most 2.5 s per attack and a longest gap of at most 5 s.
+
+Fight lengths (skilled bot, 30 seeds):
+- Captain 28.2 → 24.2 s.
+- Challenger 31.0 → 28.6 s.
+- **Daifuku phase 1: 47.0 → 31.9 s, with the scripted bot reaching the phase break in 28/30.** Daifuku now really fights back; the smoke expectation is ≥ 90% (losses take the loss branch L).
 
 ## What changed in M1.2 (for the presentation agent)
 

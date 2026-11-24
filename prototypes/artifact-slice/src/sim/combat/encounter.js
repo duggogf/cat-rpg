@@ -573,6 +573,7 @@ export class Encounter {
   _invuln(t) {
     const a = t.act;
     if (!t.present || t.routed) return true;
+    if (t.downT > 0 && this.k.knockdown_invuln) return true; // knocked down: no hits on a downed cat
     if (this.pile && this.pile.cats.includes(t.id)) return true;
     if (!a) return false;
     if (a.kind === 'skitter' && a.t <= this.k.skitter_iframe_s + 1e-9) return true;
@@ -627,6 +628,7 @@ export class Encounter {
     tgt.nerve = Math.max(0, tgt.nerve - dmg);
     tgt.lastHitT = this.simT;
     if (tgt.side !== 'enemy') this._noteAttack(att, tgt);
+    if (tgt.side === 'enemy' && tgt.rankRow.leader && att.side !== 'enemy') (tgt.ai.hurt = tgt.ai.hurt || []).push({ by: att.id, t: this.simT }); // for retaliation
 
     // Frazzle (F2).
     let frazzling = false, fzGain = 0;
@@ -653,7 +655,7 @@ export class Encounter {
     if (spec.splatExtend && tgt.splatT > 0) tgt.splatT += spec.splatExtend;
     let splat = false;
     if (spec.knockback) splat = this._knockback(att, tgt, spec.knockback);
-    if (spec.knockdown && tgt.side !== 'enemy' && this.standing(tgt) && tgt.nerve > 0) { tgt.splatT = this.k.knockdown_s; tgt.act = null; tgt.bracing = false; this._emit({ type: 'KnockedDown', cat: tgt.id, by: att.id, duration_s: this.k.knockdown_s }); }
+    if (spec.knockdown && tgt.side !== 'enemy' && this.standing(tgt) && tgt.nerve > 0) { tgt.splatT = this.k.knockdown_s; tgt.downT = this.k.knockdown_s; tgt.act = null; tgt.bracing = false; this._emit({ type: 'KnockedDown', cat: tgt.id, by: att.id, duration_s: this.k.knockdown_s }); }
 
     const tierKind = frazzling ? 'frazzling' : (splat && BASE_TIER[spec.kind] < 2 ? 'splat' : spec.kind);
     const ev = { type: 'Hit', attacker: att.id, target: tgt.id, kind: spec.kind, move: spec.moveId ?? null, attack: spec.attack ?? null, dmg, mv: spec.mv, fz: +fzGain.toFixed(3),
@@ -804,7 +806,8 @@ export class Encounter {
   /** The last opponent fell (M1.2 §8): the presentation plays zoom-in, frame freeze, then slow motion. */
   _finalKO(t, by, how) {
     const F = this.k.final_ko;
-    this._emit({ type: 'FinalKO', cat: t.id, by: by?.id ?? null, how, freeze_ms: F.freeze_ms, slow: { ...F.slow }, pos: [t.x, t.y, t.z] });
+    const fly = by ? norm(t.x - by.x, t.z - by.z) : [0, 1]; // the KO'd cat flies off away from the finisher (C12)
+    this._emit({ type: 'FinalKO', cat: t.id, by: by?.id ?? null, how, freeze_ms: F.freeze_ms, slow: { ...F.slow }, pos: [t.x, t.y, t.z], fly_dir: fly[0] || fly[1] ? fly : [0, 1] });
   }
 
   /* ------------------------------------------------------------ props and Fears (Combat §3.9) */
@@ -1008,6 +1011,7 @@ export class Encounter {
       e.clumpedT = Math.max(0, e.clumpedT - d);
       e.puffT = Math.max(0, e.puffT - d);
       if (e.splatT > 0) { e.splatT = Math.max(0, e.splatT - d); }
+      if (e.downT > 0) e.downT = Math.max(0, e.downT - d);
       if (e.ruffledT > 0 && e.ruffledT !== INF) { e.ruffledT -= d; if (e.ruffledT <= 0) { e.ruffledT = 0; if (e.rankRow.leader) e.reruffleCd = k.leader_reruffle_cd_s; this._emit({ type: 'RuffledEnded', cat: e.id }); } }
       else if (e.reruffleCd > 0) e.reruffleCd = Math.max(0, e.reruffleCd - d);
       // Statuses: the newest one ticks; anger's Fired Up ticks only when no newer status is on (F11).
@@ -1151,7 +1155,7 @@ export class Encounter {
       if (e.act && e.act.kind !== 'posture') continue;
       if (e.splatT > 0 || e.flinchT > 0 || e.frazzledT > 0 || e.bracing) continue;
       let vx = 0, vz = 0;
-      const speed = k.move_speed_mps * (e.status?.kind === 'soggy' ? k.soggy_mult : 1) * (e.id === this.controlledId ? 1 : k.ai_speed_mult) * (e.boss ? 0.5 : 1);
+      const speed = k.move_speed_mps * (e.status?.kind === 'soggy' ? k.soggy_mult : 1) * (e.id === this.controlledId ? 1 : k.ai_speed_mult);
       if (e.id === this.controlledId && !e.orders.length) { vx = (e.moveIntent?.[0] || 0) * speed; vz = (e.moveIntent?.[1] || 0) * speed; }
       else if (e.goal) {
         const dx = e.goal.x - e.x, dz = e.goal.z - e.z, l = len(dx, dz), stop = e.goal.stopAt ?? 0.05, sp = speed * (e.goal.speed ?? 1);

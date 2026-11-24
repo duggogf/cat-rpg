@@ -429,8 +429,12 @@ function startKO(id, byId, freezeMs = 400, slow = { scale: 0.25, ms: 1100 }) {
   if (pendingCard) pendingCard.at = Math.max(pendingCard.at, realT + (freezeMs || 400) / 1000 + Math.min(1.5, (slow && slow.ms || 1100) / 1000) + 0.25);
   ko = { f, a, t0: realT, mean: measureMean(), freeze: (freezeMs || 400) / 1000, slowS: Math.min(1.5, (slow && slow.ms || 1100) / 1000), slowK: (slow && slow.scale) || 0.25 };
   const koLen = ko.freeze + ko.slowS;
-  ccam.stagger = { T: f, C: a || f, from: realT, until: realT + koLen, full: true, spin: 0.3, close: 0.75 };
-  scr.word = null; scr.fx = scr.fx.filter((x) => x.kind === 'dmg'); scr.add({ kind: 'ko', dur: koLen, delay: 0.1 });
+  ko.p0 = f.pos.clone(); ko.trailN = 0;
+  const from = a && a !== f ? a.pos : (F(snap.controlled) || f).pos;
+  ko.dir = new THREE.Vector3(f.pos.x - from.x, 0, f.pos.z - from.z); if (ko.dir.lengthSq() < 1e-4) ko.dir.set(0, 0, -1); ko.dir.normalize();
+  fx.dust('ring plus crack decal', f.pos.clone());
+  ccam.stagger = { T: f, C: a || f, from: realT, until: realT + koLen, full: true, spin: 0.3, close: 0.75, track: () => f.root.position, trackK: 0.45 };
+  scr.word = null; scr.fx = []; scr.add({ kind: 'ko', dur: koLen, delay: 0.1 });
   quiet = { id, until: realT + koLen }; hud.showChrome(false); fx.clearNear(f.pos, 4); impact = null; dip = null; ccam.shakes = []; ccam.punch = null;
 }
 /** The enemy the F prompt points at: a staggered enemy while Mikan's Special is ready (M1 sim: the offered Pile-On). */
@@ -553,7 +557,16 @@ function present(dt, alpha, menu = [], cut = null) {
     }
     const koFreeze = ko && realT - ko.t0 < ko.freeze;
     f.update(le, cut && cut.id === e.id ? dt : (frozen || koFreeze) ? 0 : dt * (s.slow_blink ? 0.05 : 1) * (ko ? 0.25 : 1), realT, tw, dt);
-    if (ko && ko.f === f && realT - ko.t0 < ko.freeze + ko.slowS) f.root.visible = true;   // the KO'd cat stays on stage for its cinematic (a fleeing Boss included)
+    if (ko && ko.f === f && realT - ko.t0 < ko.freeze + ko.slowS) {
+      f.root.visible = true;
+      // the defeated cat FLIES (C12): launched away from its attacker on a high arc, spinning, a dust trail behind
+      const u = Math.max(0, realT - ko.t0 - ko.freeze * 0.5), k = Math.min(1, u / (ko.slowS + ko.freeze * 0.5));
+      const d = ko.dir, dist = 6.5 * k, hgt = 2.6 * Math.sin(Math.PI * Math.min(1, k * 0.95));
+      f.root.position.set(ko.p0.x + d.x * dist, ko.p0.y + hgt, ko.p0.z + d.z * dist);
+      f.root.rotation.set(-k * Math.PI * 3.2, f.yaw + k * 1.4, k * Math.PI * 1.1);
+      f.head.copy(f.root.position).add(new THREE.Vector3(0, 0.6 * f.scaleK, 0));
+      if (u > 0 && !skipDraw && (!ko.trailT || realT - ko.trailT > 0.06)) { ko.trailT = realT; fx.spawn(ko.trailN++ % 2 ? 'puffSmall' : 'puff', f.root.position.clone().add(new THREE.Vector3(0, 0.25, 0)), { size: 0.35 - Math.min(0.2, k * 0.2), drawings: 8 }); }
+    }   // the KO'd cat stays on stage for its cinematic (a fleeing Boss included)
     // posturing cats hiss and lash (a hiss glyph every ~1.6 s, staggered per cat); dash-ins leave a streak
     if (!skipDraw && f.root.visible && (f.intent === 'posture' || f.intent === 'strut') && e.side === 'enemy' && le._opp && (!f.hissT || realT - f.hissT > 1.6 + (e.id.length % 3) * 0.4)) {
       f.hissT = realT; fx.spawn('hiss', f.head.clone().add(new THREE.Vector3(le._opp.dir[0] * 0.3, -0.04, le._opp.dir[1] * 0.3)), { size: 0.32, drawings: 4, breakAt: 0.7 });
@@ -732,7 +745,7 @@ function draw(impactMode, s, cut = null) {
     renderer.autoClear = true;
   }
   if (cut) cin.render(cut, realT);
-  else if (ko && realT - ko.t0 < ko.freeze) cin.renderKO(ko, realT, cam);
+  else if (ko && realT - ko.t0 < ko.freeze + ko.slowS) cin.renderKO(ko, realT, cam);
   lastStats = { calls: renderer.info.render.calls, triangles: renderer.info.render.triangles };
 }
 
@@ -748,7 +761,7 @@ async function boot() {
   keyLight = new THREE.DirectionalLight('#ffffff', 2.5); fillLight = new THREE.AmbientLight('#6E6AA8', 0.8); lateScene.add(keyLight, fillLight);
   for (const e of snap.entities) { const f = new Fighter(e, { rim: Q.get('rim') !== '0' }); fighters.set(e.id, f); fGroup.add(f.root); }
   fx = new WorldFX(spr, fxScene, decalScene); fx.cam = cam;
-  cin = new Cinematics({ renderer, cam, scr: null, lateScene, fGroup });
+  cin = new Cinematics({ renderer, cam, scr: null, lateScene, fGroup }); cin.fxScene = fxScene;
   scr = new ScreenFX(app); cin.scr = scr;
   hud = new CombatHUD(app, DATA); if (!opt.hud) hud.el.style.display = 'none';
   // deterministic captures step frames faster than wall-clock CSS transitions: snap them in test mode

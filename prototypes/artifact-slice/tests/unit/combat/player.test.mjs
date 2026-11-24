@@ -211,3 +211,26 @@ test('the player controls Mikan only: switch input is ignored and Mikan Routed p
   assert.equal(enc.controlledId, 'mikan');
   assert.notEqual(enc.mode, 'gloat', 'the crew fight on');
 });
+
+test('the evade is steerable: holding a new direction curves the dash toward it at a limited turn rate, same distance', () => {
+  // Arrange: one evade held straight, one steered from +x toward +z.
+  const run = steer => {
+    const { enc, m } = arena();
+    m.x = 0; m.z = 0;
+    const path = [];
+    steps(enc, Math.round(K.evade.s * T) + 2, i => { path.push([m.x, m.z]); return i === 0 ? { evade: true, move: [1, 0] } : m.act?.kind === 'evade' ? { move: steer ? [0, 1] : [1, 0] } : {}; });
+    path.push([m.x, m.z]);
+    return { m, path };
+  };
+  // Act
+  const straight = run(false), curved = run(true);
+  // Assert
+  assert.ok(Math.abs(straight.m.z) < 1e-6 && Math.abs(straight.m.x - K.evade.m) < 0.05, 'straight evade: 2 m');
+  assert.ok(curved.m.z > 0.4, `curved toward the stick (z ${curved.m.z.toFixed(2)})`);
+  let pathLen = 0; for (let i = 1; i < curved.path.length; i++) pathLen += Math.hypot(curved.path[i][0] - curved.path[i - 1][0], curved.path[i][1] - curved.path[i - 1][1]);
+  assert.ok(Math.abs(pathLen - K.evade.m) < 0.05, `same distance (${pathLen.toFixed(2)} m)`);
+  const [a, b, c] = curved.path.slice(1, 4); // the turn per tick is limited
+  const d1 = [b[0] - a[0], b[1] - a[1]], d2 = [c[0] - b[0], c[1] - b[1]];
+  const cos = (d1[0] * d2[0] + d1[1] * d2[1]) / (Math.hypot(...d1) * Math.hypot(...d2));
+  assert.ok(cos > Math.cos(Math.PI / 6), 'no snap turn');
+});

@@ -90,12 +90,14 @@ export class Cinematics {
     const base = [1, 0.96, 0.89].map(toL), L = 0.2126 * base[0] + 0.7152 * base[1] + 0.0722 * base[2], k = (K.mean || 0.4) / L;
     const B = this.bgMat.uniforms; B.res.value.copy(size); B.panel.value.setRGB(...base.map((v) => toS(Math.min(1, v * k)))); B.seed.value = 11;
     const p = K.f.head.clone().project(cam); B.centre.value.set((p.x * 0.5 + 0.5) * size.x, (p.y * 0.5 + 0.5) * size.y);
-    const outN = Math.floor((0.4 - u) / TWO); B.wipe.value = Math.min(3, drawn, outN < 2 ? outN : 3); B.inner.value = 0.22;
+    // held through the whole KO (freeze + slow motion), like the Special cut-ins: wipe in over 3 drawings, out over the last 2
+    const outN = Math.floor((K.freeze + K.slowS - u) / TWO); B.wipe.value = Math.max(0, Math.min(3, drawn, outN < 2 ? outN : 3)); B.inner.value = 0.22;
     R.autoClear = false; R.setRenderTarget(null); R.render(this.bgScene, this.orth); R.clearDepth();
     const vis = this.late.children.map((o) => o.visible); this.late.children.forEach((o) => { o.visible = o === this.fGroup; });
     const keep = [K.f.root, K.a && K.a.root].filter(Boolean);
     const fv = this.fGroup.children.map((o) => o.visible); this.fGroup.children.forEach((o) => { o.visible = keep.includes(o); });
     R.render(this.late, cam);
+    if (this.fxScene) R.render(this.fxScene, cam);   // the flying cat's dust trail
     this.late.children.forEach((o, i) => { o.visible = vis[i]; }); this.fGroup.children.forEach((o, i) => { o.visible = fv[i]; });
     R.autoClear = true; B.inner.value = 0.3;
   }

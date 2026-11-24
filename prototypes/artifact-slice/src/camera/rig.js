@@ -59,3 +59,54 @@ export function collideCircle(p, r, boxes, footY = 0, headY = 0.4) {
     if (d < r) { if (d > 1e-6) { p.x = cx + dx / d * r; p.z = cz + dz / d * r; } else p.x += r; }
   }
 }
+
+/**
+ * M2 Explore rig (camera-system.md §3.2–§3.4; owner M1.2 feel rules shared with combat):
+ *  - look input is applied 1:1 to yaw/pitch (never through a smoothing filter)
+ *  - the pivot follows Mikan on a critically damped spring (no snaps, no overshoot); vertical tracking holds the
+ *    last landing height during a Hop
+ *  - sub-states blend 0.4 s: Explore (3.0 m, +10°), High Road (3.4 m, +16°), Home inside the garden wall
+ *    (1.8 m, low, −2°; hud.md §3.5 wall blend)
+ *  - collision: five rays (0.15 m sphere-cast), snap in, ease out with a 0.4 s half-life; under 1.2 m pitch lifts;
+ *    the lens never goes below the ground (the lane slopes)
+ *  - auto-recentre after 1.5 s without look input while moving, ≤ 90°/s, never while running toward the lens
+ */
+export const STATES = { explore: { dist: 3.0, pitch: 10, pivotH: 0.45 }, highroad: { dist: 3.4, pitch: 16, pivotH: 0.45 }, home: { dist: 1.8, pitch: -2, pivotH: 0.3 } };
+export class ExploreRig extends OrbitRig {
+  constructor(camera, colliders, groundAt) {
+    super(camera, colliders); this.groundAt = groundAt;
+    this.state = 'explore'; this.k = { ...STATES.explore }; this.zoom = 1; this.pv = [0, 0, 0]; this.p = null; this.lastLook = -99; this.t = 0; this.inside = false;
+  }
+  look(dYaw, dPitch) { if (!dYaw && !dPitch) return; this.yaw += dYaw; this.pitch = THREE.MathUtils.clamp(this.pitch + dPitch, EXPLORE.pitchMin, EXPLORE.pitchMax); this.lastLook = this.t; }
+  setState(s) { if (s !== this.state) { this.state = s; if (this.t - this.lastLook > 1.0) this.pitchTarget = STATES[s].pitch; } }
+  update(dt, target, snap = false, ctx = {}) {
+    this.t += dt; const S = STATES[this.state], b = snap ? 1 : 1 - Math.pow(2, -dt / 0.13);   // 0.4 s blend ≈ 3 half-lives
+    for (const k of ['dist', 'pivotH']) this.k[k] += (S[k] - this.k[k]) * b;
+    if (this.pitchTarget != null) { this.pitch += (this.pitchTarget - this.pitch) * b; if (Math.abs(this.pitchTarget - this.pitch) < 0.2) this.pitchTarget = null; }
+    // auto-recentre
+    if (ctx.moveDir && this.t - this.lastLook > 1.5 && !snap) {
+      const want = Math.atan2(-ctx.moveDir.x, -ctx.moveDir.z) * 180 / Math.PI;   // camera sits behind the movement
+      let d = ((want - this.yaw + 540) % 360) - 180;
+      if (Math.abs(d) < 135) this.yaw += Math.sign(d) * Math.min(Math.abs(d), 90 * dt * Math.min(1, (this.t - this.lastLook - 1.5) / 0.3));
+    }
+    // pivot spring (hold the landing height while airborne)
+    const ty = ctx.airborne ? (this.p ? this.p.y - this.k.pivotH : target.y) : target.y;
+    const tgt = [target.x, ty + this.k.pivotH, target.z];
+    if (!this.p || snap) { this.p = new THREE.Vector3(...tgt); this.pv = [0, 0, 0]; }
+    else { const w = 11, h = Math.min(dt, 1 / 30); const P = ['x', 'y', 'z']; for (let i = 0; i < 3; i++) { const x = this.p[P[i]]; this.pv[i] += (w * w * (tgt[i] - x) - 2 * w * this.pv[i]) * h; this.p[P[i]] = x + this.pv[i] * h; } }
+    this.pivot.copy(this.p);
+    const want = THREE.MathUtils.clamp(this.k.dist * this.zoom, EXPLORE.distMin, EXPLORE.distMax);
+    const dirOf = (p) => new THREE.Vector3(Math.sin(this.yaw * D2R) * Math.cos(p * D2R), Math.sin(p * D2R), Math.cos(this.yaw * D2R) * Math.cos(p * D2R));
+    let pitch = this.pitch, dir = dirOf(pitch), free = this.clearance(this.pivot, dir, want);
+    if (free < 1.2) { pitch = Math.min(EXPLORE.pitchMax, pitch + 20 * (1.2 - free) / 0.4); dir = dirOf(pitch); free = this.clearance(this.pivot, dir, want); }
+    if (snap || free < this.dist) this.dist = free; else this.dist = Math.min(free, this.dist + (free - this.dist) * (1 - Math.pow(2, -dt / EXPLORE.easeOut)));
+    // ground clamp: raise the pitch until the lens clears the lane by 0.25 m
+    for (let i = 0; i < 12; i++) {
+      const c = this.pivot.clone().addScaledVector(dir, this.dist), gy = this.groundAt ? this.groundAt(c.x, c.z) : 0;
+      if (c.y >= gy + 0.25) break; pitch += 3; dir = dirOf(pitch);
+    }
+    this.cam.position.copy(this.pivot).addScaledVector(dir, this.dist);
+    this.cam.lookAt(this.pivot);
+    this.solvedPitch = pitch;
+  }
+}

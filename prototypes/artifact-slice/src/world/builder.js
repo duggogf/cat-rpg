@@ -5,6 +5,7 @@
 import * as THREE from 'three';
 import { envMat, billboards, skyDome, backdropMat, ringGeometry, celMat, hullMat, U, CEL } from '../render/env.js';
 import { rgb } from '../render/phases.js';
+import { groundY } from './lane-m2.js';
 
 /* --------------------------------------------------------------- tiny deterministic noise */
 function rng(seed) { let a = (seed | 0) + 0x6D2B79F5; return () => { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
@@ -15,6 +16,17 @@ function vnoise(x, y, z) {
   const L = (a, b, t) => a + (b - a) * t;
   const c = (i, j, k) => hash(xi + i, yi + j, zi + k);
   return L(L(L(c(0, 0, 0), c(1, 0, 0), u), L(c(0, 1, 0), c(1, 1, 0), u), v), L(L(c(0, 0, 1), c(1, 0, 1), u), L(c(0, 1, 1), c(1, 1, 1), u), v), w) * 2 - 1;
+}
+
+/** Weld coincident vertices and recompute normals (soft, facet-free cel shading on boxy props). */
+function mergeSmooth(g) {
+  g = g.index ? g.toNonIndexed() : g; const P = g.attributes.position, map = new Map(), pos = [], idx = [];
+  for (let i = 0; i < P.count; i++) { const k = `${P.getX(i).toFixed(4)},${P.getY(i).toFixed(4)},${P.getZ(i).toFixed(4)}`; let j = map.get(k);
+    if (j == null) { j = pos.length / 3; map.set(k, j); pos.push(P.getX(i), P.getY(i), P.getZ(i)); } idx.push(j); }
+  const o = new THREE.BufferGeometry(); o.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); o.setIndex(idx); o.computeVertexNormals();
+  // round the block a little: push vertices toward a superellipsoid so the silhouette reads as a worn stone
+  const Q = o.attributes.position; for (let i = 0; i < Q.count; i++) { const v = new THREE.Vector3(Q.getX(i), Q.getY(i), Q.getZ(i)); const l = v.length(); v.multiplyScalar(0.88 + 0.12 * (0.35 / Math.max(l, 0.01))); Q.setXYZ(i, v.x, v.y, v.z); }
+  o.computeVertexNormals(); return o.toNonIndexed();
 }
 
 /* --------------------------------------------------------------- geometry accumulator */
@@ -121,15 +133,16 @@ export function buildWorld(L, tex) {
 
   /* ---- plaster walls with pale coping (the High Road ribbon) */
   {
-    const g = new Geo(), c = new Geo(), n = new Geo();
+    const gs = new Map(), c = new Geo(), n = new Geo();
     for (const w of L.walls) {
       const [x0, y0, z0, x1, y1, z1] = [Math.min(w.box[0], w.box[3]), w.box[1], Math.min(w.box[2], w.box[5]), Math.max(w.box[0], w.box[3]), w.box[4], Math.max(w.box[2], w.box[5])];
-      g.box([x0, y0, z0, x1, y1, z1], { faces: 'pxnxpznz', tu: 3, tv: y1 - y0, wobble: 0.012, seg: 0.5 });
+      const key = w.tint || '#FFFFFF'; if (!gs.has(key)) gs.set(key, new Geo()); const g = gs.get(key);
+      g.box([x0, y0, z0, x1, y1, z1], { faces: 'pxnxpznz', tu: 3, tv: Math.min(y1 - y0, 1.7), wobble: 0.012, seg: 0.5 });
       const k = w.coping, o = 0.035;
       c.box([x0 - o, y1, z0 - o, x1 + o, y1 + k, z1 + o], { tu: 1, tv: 1, faceColor: { py: '#F7F3E8', px: '#CBD2D6', nx: '#CBD2D6', pz: '#D9DEE0', nz: '#D9DEE0', ny: '#9AA4B4' }, wobble: 0.006, seg: 0.5 });
       colliders.push(new THREE.Box3(new THREE.Vector3(x0 - o, y0, z0 - o), new THREE.Vector3(x1 + o, y1 + k, z1 + o)));
     }
-    mesh(g.build(), envMat({ map: tex.wall, grain: 0.05 })).name = 'walls';
+    for (const [tint, g] of gs) mesh(g.build(), envMat({ map: tex.wall, grain: 0.05, tint })).name = 'walls';
     mesh(c.build(), envMat({ vertexColors: true, grain: 0.5 })).name = 'coping';
     // a posted notice with Scribble (E-8)
     const nt = L.notice;
@@ -258,7 +271,7 @@ export function buildWorld(L, tex) {
       }
     };
     for (const t of L.trees) {
-      const [x, z] = t.trunk, c = new THREE.CylinderGeometry(0.1, 0.17, t.h, 8, 3); c.translate(x, t.h / 2, z); tg.add(c, '#8A6A50');
+      const [x, z] = t.trunk, c = new THREE.CylinderGeometry(0.1, 0.17, t.h, 8, 3); c.translate(x, t.h / 2 + (t.base || 0), z); tg.add(c, '#8A6A50');
       for (const k of t.clumps) clump(...k);
     }
     for (const k of L.hedges) clump(...k, 1.2);
@@ -288,9 +301,10 @@ export function buildWorld(L, tex) {
     g.setAttribute('color', new THREE.Float32BufferAttribute(C, 3)); g.setAttribute('shadeCol', new THREE.Float32BufferAttribute(S, 3)); g.setAttribute('smoothN', new THREE.Float32BufferAttribute(SN, 3));
     return g;
   };
-  const cm = celMat(), hm = hullMat(2.0);
-  const celProp = (parts, x, z, name, rotY = 0) => {
-    const grp = new THREE.Group(); grp.position.set(x, 0, z); grp.rotation.y = rotY; grp.name = name;
+  const celProp = (parts, x, z, name, rotY = 0, y = 0) => {
+    // each inked prop owns its fade uniform: camera-soft props dither to 30% (never hidden)
+    const fade = { value: 1 }, cm = celMat(fade), hm = hullMat(2.0, fade);
+    const grp = new THREE.Group(); grp.position.set(x, y, z); grp.rotation.y = rotY; grp.name = name; grp.userData.fade = fade;
     for (const g of parts) { const m = new THREE.Mesh(g, cm); grp.add(m); casters.add(m); if (!g.userData.noHull) grp.add(new THREE.Mesh(g, hm)); }
     late.add(grp); return grp;
   };
@@ -338,7 +352,7 @@ export function buildWorld(L, tex) {
         parts.push(celPart(c, solid('#6FAE55'), new THREE.Vector3(0, 0.4, 0)));
       }
     }
-    const grp = celProp(parts, x, z, kind, pr[3] || 0); if (pr[4]) grp.scale.setScalar(pr[4]);
+    const grp = celProp(parts, x, z, kind, pr[3] || 0, groundY(L, z)); if (pr[4]) grp.scale.setScalar(pr[4]);
     soft.push({ obj: grp, x, z, r: 0.35 });
     env.add(contactBlob(x, z, 0.22 * (pr[4] || 1), 0.2 * (pr[4] || 1)));
     const c = new THREE.Box3(new THREE.Vector3(x - 0.15, 0, z - 0.15), new THREE.Vector3(x + 0.15, 0.3, z + 0.15)); c.soft = true; colliders.push(c);
@@ -347,15 +361,76 @@ export function buildWorld(L, tex) {
   if (L.passerBy) {
     const [x, z, hgt] = L.passerBy, w = hgt * 0.5;
     const m = new THREE.ShaderMaterial({
-      uniforms: { map: { value: tex.legs }, fade: CEL.fade },
+      uniforms: { map: { value: tex.legs }, fade: { value: 1 } },
       vertexShader: /* glsl */`varying vec2 vUv; void main(){ vUv = uv; vec3 r = normalize(vec3(viewMatrix[0][0], 0.0, viewMatrix[2][0])); vec3 c = (modelMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xyz; vec3 wp = c + r * position.x + vec3(0.0, position.y, 0.0); gl_Position = projectionMatrix * viewMatrix * vec4(wp, 1.0); }`,
-      fragmentShader: /* glsl */`uniform sampler2D map; varying vec2 vUv; void main(){ vec4 t = texture2D(map, vUv); if (t.a < 0.5) discard; gl_FragColor = vec4(t.rgb / t.a, 1.0); }`,
+      fragmentShader: /* glsl */`uniform sampler2D map; uniform float fade; varying vec2 vUv; float bb(vec2 p){ ivec2 i = ivec2(mod(p, 4.0)); int b[16] = int[16](0,8,2,10,12,4,14,6,3,11,1,9,15,7,13,5); return (float(b[i.y * 4 + i.x]) + 0.5) / 16.0; } void main(){ vec4 t = texture2D(map, vUv); if (t.a < 0.5) discard; if (fade < 0.999 && bb(gl_FragCoord.xy) > fade) discard; gl_FragColor = vec4(t.rgb / t.a, 1.0); }`,
       side: THREE.DoubleSide,
     });
     const g = new THREE.PlaneGeometry(w, hgt); g.translate(0, hgt / 2, 0);
-    const card = new THREE.Mesh(g, m); card.position.set(x, 0, z); card.frustumCulled = false; card.name = 'passerBy'; late.add(card);
+    const card = new THREE.Mesh(g, m); card.userData.fade = m.uniforms.fade; card.position.set(x, 0, z); card.frustumCulled = false; card.name = 'passerBy'; late.add(card);
     soft.push({ obj: card, x, z, r: 0.8, downLaneOnly: true });
     env.add(contactBlob(x, z, 0.45, 0.22, 0.4));
+  }
+
+  /* ---- M2 inked Scent Posts: Low Wall Corner's red mailbox and the Den's mossy corner stone */
+  if (L.mailbox) {
+    const [x, z] = L.mailbox.at, parts = [];
+    const post = new THREE.CylinderGeometry(0.035, 0.04, 0.78, 10); post.translate(0, 0.39, 0); parts.push(celPart(post, solid('#8A6A50'), new THREE.Vector3(0, 0.4, 0)));
+    const box = new THREE.CapsuleGeometry(0.15, 0.22, 6, 16); box.scale(1, 1, 0.72); box.translate(0, 0.98, 0); parts.push(celPart(box, solid('#C8463C'), new THREE.Vector3(0, 0.98, 0)));
+    const slot = new THREE.BoxGeometry(0.16, 0.025, 0.02); slot.translate(0, 1.04, 0.112); slot.userData.noHull = true; parts.push(celPart(slot.toNonIndexed(), solid('#33273B'), new THREE.Vector3(0, 1.04, 0)));
+    const g = celProp(parts, x, z, 'mailbox', Math.PI / 2, groundY(L, z));
+    soft.push({ obj: g, x, z, r: 0.35 }); env.add(contactBlob(x, z, 0.24, 0.2));
+    colliders.push(Object.assign(new THREE.Box3(new THREE.Vector3(x - 0.18, 0, z - 0.18), new THREE.Vector3(x + 0.18, 1.2, z + 0.18)), { soft: true }));
+  }
+  if (L.den) {
+    const [x, z] = L.den.stone; let b = new THREE.BoxGeometry(0.7, 0.62, 0.7, 4, 4, 4);
+    b = mergeSmooth(b); b.translate(0, 0.31, 0);
+    const moss = rgb('#86A866'), stone = rgb('#B4AE9E');
+    const g = celProp([celPart(b, (p, n) => stone.clone().lerp(moss, THREE.MathUtils.smoothstep(vnoise(p.x * 6, p.y * 6, p.z * 6) + (n.y > 0.5 ? 0.6 : 0), 0.35, 0.6)), new THREE.Vector3(0, 0.31, 0))], x, z, 'denStone', 0.3);
+    soft.push({ obj: g, x, z, r: 0.5 });
+  }
+  /* ---- street lamps: painted posts; heads and ground pools light in a wave at Dusk (U.lampWave) */
+  const lamps = [];
+  if (L.lamps) {
+    const pg = new Geo(), heads = [], pools = [];
+    L.lamps.forEach(([x, z, y0], i) => {
+      const side = x < 0 ? 1 : -1, H = 3.3;
+      const c = new THREE.CylinderGeometry(0.045, 0.06, H, 8); c.translate(x, y0 + H / 2, z); pg.add(c, '#8E8A86');
+      const arm = new THREE.BoxGeometry(0.55, 0.04, 0.04); arm.translate(x + side * 0.26, y0 + H - 0.05, z); pg.add(arm, '#7E7A78');
+      const hood = new THREE.CylinderGeometry(0.05, 0.17, 0.1, 10); hood.translate(x + side * 0.52, y0 + H - 0.08, z); pg.add(hood, '#6F7682');
+      heads.push([x + side * 0.52, y0 + H - 0.17, z, i]); pools.push([x + side * 0.4, y0 + 0.012, z, i]);
+      lamps.push({ x, z, y: y0, i });
+    });
+    mesh(pg.build(), envMat({ vertexColors: true, grain: 0.6 })).name = 'lampPosts';
+    const geoOf = (list, mk) => { const ps = [], ix = [], ids = [], uvs = []; let base = 0;
+      for (const [x, y, z, i] of list) { const q = mk(); const P = q.attributes.position, U2 = q.attributes.uv;
+        for (let k = 0; k < P.count; k++) { ps.push(P.getX(k) + x, P.getY(k) + y, P.getZ(k) + z); ids.push(i); uvs.push(U2.getX(k), U2.getY(k)); }
+        for (const k of q.index.array) ix.push(k + base); base += P.count; }
+      const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(ps, 3)); g.setAttribute('lampIdx', new THREE.Float32BufferAttribute(ids, 1)); g.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2)); g.setIndex(ix); return g; };
+    const lampOn = /* glsl */`uniform float lampWave; attribute float lampIdx; varying float vOn; varying vec2 vUv;
+      void main(){ vOn = clamp((lampWave - lampIdx * 0.32) / 0.22, 0.0, 1.0); vUv = uv; gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0); }`;
+    const lens = new THREE.Mesh(geoOf(heads, () => new THREE.SphereGeometry(0.075, 10, 6)), new THREE.ShaderMaterial({
+      uniforms: { lampWave: U.lampWave, lamp: U.lamp }, vertexShader: lampOn,
+      fragmentShader: /* glsl */`uniform vec3 lamp; varying float vOn; varying vec2 vUv; void main(){ gl_FragColor = vec4(mix(vec3(0.91, 0.89, 0.84), min(lamp * 1.2, vec3(1.0)), vOn), 1.0); }` }));
+    lens.name = 'lampLens'; env.add(lens);
+    const pool = new THREE.Mesh(geoOf(pools, () => { const q = new THREE.PlaneGeometry(2.6, 2.0); q.rotateX(-Math.PI / 2); return q; }), new THREE.ShaderMaterial({
+      uniforms: { lampWave: U.lampWave, lamp: U.lamp }, vertexShader: lampOn, transparent: true, depthWrite: false,
+      fragmentShader: /* glsl */`uniform vec3 lamp; varying float vOn; varying vec2 vUv;
+        void main(){ vec2 d = vUv * 2.0 - 1.0; float r = length(d); if (vOn <= 0.0 || r > 1.0) discard;
+          // a warm painted pool with a halftone rim (art bible §6.2 Sunspot / lamp pool language)
+          float core = 1.0 - smoothstep(0.35, 0.7, r); vec2 cell = fract(gl_FragCoord.xy / 7.0) - 0.5; float dotv = step(length(cell), 0.32 * (1.0 - smoothstep(0.55, 1.0, r)));
+          float a = max(core * 0.45, (r > 0.55 ? dotv * 0.4 : 0.0)) * vOn; gl_FragColor = vec4(lamp, a); }` }));
+    pool.name = 'lampPools'; pool.renderOrder = 3; env.add(pool);
+  }
+  /* ---- the Sunspot (canon nap point): a warm painted light patch with a halftone rim */
+  if (L.sunspot) {
+    const [x, z] = L.sunspot.at, r = L.sunspot.r, q = new THREE.PlaneGeometry(r * 2.4, r * 2); q.rotateX(-Math.PI / 2);
+    const m = new THREE.Mesh(q, new THREE.ShaderMaterial({ transparent: true, depthWrite: false, uniforms: { col: { value: rgb('#FFE7A3') }, keyColor: U.keyColor },
+      vertexShader: /* glsl */`varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0); }`,
+      fragmentShader: /* glsl */`uniform vec3 col, keyColor; varying vec2 vUv; void main(){ vec2 d = vUv * 2.0 - 1.0; float r = length(d * vec2(1.0, 1.15)); if (r > 1.0) discard;
+        vec2 cell = fract(gl_FragCoord.xy / 6.0) - 0.5; float dotv = step(length(cell), 0.35 * (1.0 - smoothstep(0.6, 1.0, r)));
+        float a = r < 0.62 ? 0.55 : dotv * 0.5; gl_FragColor = vec4(col * mix(vec3(1.0), keyColor, 0.5), a); }` }));
+    m.position.set(x, groundY(L, z) + 0.008, z); m.renderOrder = 3; m.name = 'sunspot'; env.add(m);
   }
 
   /* ---- painted set dressing (not interactive, so unlined): decals, drainpipe, gates, broom, vending, air-con */
@@ -442,7 +517,7 @@ export function buildWorld(L, tex) {
   }
   env.add(towns);
 
-  return { env, backdrop, late, colliders, casters, soft, cards, rings: { ringFar, sea, ringNear, sky, clouds: backdrop.getObjectByName('clouds') } };
+  return { env, backdrop, late, colliders, casters, soft, cards, lamps, rings: { ringFar, sea, ringNear, sky, clouds: backdrop.getObjectByName('clouds') } };
 }
 
 /** Soft wisteria contact blob on the ground (E-4). */

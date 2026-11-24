@@ -108,7 +108,7 @@ export function posseThink(enc, e) {
 
 /* ------------------------------------------------------------------ engagement (shared by both sides) */
 
-export const ENGAGED = new Set(['dash_in', 'attack', 'feint']);
+export const ENGAGED = new Set(['dash_in', 'attack', 'feint', 'pressure']);
 const ROT = 0.45, COS_R = Math.cos(ROT), SIN_R = Math.sin(ROT);
 
 /** How many fighters are engaging t right now (dashing in, attacking or feinting). */
@@ -117,10 +117,16 @@ export function engagersOf(enc, t, except = null) {
 }
 
 /** Engagement slots on a target: the controlled cat 2 (1-2 enemies engage the player at once), an AI cat 1, an enemy 2. */
-function engageCap(enc, t) {
+function engageCap(enc, t, e = null) {
   const E = enc.k.engage;
-  if (t.id === enc.controlledId) return enc.diff.tokens_controlled;
+  if (t.id === enc.controlledId) return enc.diff.tokens_controlled - leaderReserve(enc, e);
   return t.side === 'enemy' ? E.crew_per_enemy : E.per_ai_cat;
+}
+
+/** One of the player's attack tokens is held back for a standing Captain or Boss, so leaders are never starved (M1.3). */
+function leaderReserve(enc, e) {
+  if (!e || e.side !== 'enemy' || e.rankRow.leader) return 0;
+  return enc.enemies().some(x => x !== e && enc.standing(x) && x.rankRow.leader) ? 1 : 0;
 }
 
 const pickInt = (rng, v) => (Array.isArray(v) ? Math.floor(rng.range(v[0], v[1] + 1 - 1e-9)) : v);
@@ -160,7 +166,7 @@ function engage(enc, e, t, S, aggression, reach, attackFn) {
   A.engageOn = null;
   if (A.decideT <= 0) {
     A.decideT = E.decide_s;
-    if (A.engageCd <= 0 && engagersOf(enc, t, e) < engageCap(enc, t) && rng.chance(aggression)) {
+    if (A.engageCd <= 0 && engagersOf(enc, t, e) < engageCap(enc, t, e) && rng.chance(aggression)) {
       A.engageOn = t.id;
       if (rng.chance(S.feint_p)) { A.intent = 'feint'; A.phaseT = 1.5; }
       else { A.intent = 'dash_in'; A.phaseT = 2.5; A.comboLeft = pickInt(rng, S.combo ?? 1); }
@@ -329,7 +335,7 @@ function focusTarget(enc, e) {
   const cands = enc.opponentsOf(e).filter(x => x.present);
   const score = x => dist(e, x) - (x.pers?.perk === 'guard_allies' && c && dist(x, c) <= k.stalwart_guard_m ? 1.5 : 0);
   cands.sort((a, b) => score(a) - score(b) || (a.id < b.id ? -1 : 1));
-  t = cands.find(x => engagersOf(enc, x, e) < engageCapOf(enc, x)) || cands[0] || null;
+  t = cands.find(x => engagersOf(enc, x, e) < engageCapOf(enc, x) - (x.id === enc.controlledId ? leaderReserve(enc, e) : 0)) || cands[0] || null;
   e.ai.tokenOn = t ? t.id : null; e.ai.retarget = 2;
   return t;
 }
@@ -366,6 +372,49 @@ function corneredThink(enc, e) {
   return true;
 }
 
+/**
+ * Captains and Bosses (M1.3, owner C12): they always hold an attack token and keep up a steady cadence. Between skills
+ * they swing their basic string at whoever is in reach; an attacker who lands `retaliate_hits` in the window becomes
+ * the focus at once; swarmed by 2+ within 3 m they lash out on a shorter gap. `pick(t, d)` returns the Move to use on
+ * t at distance d, or null if nothing reaches. Reads positions, its own hit log and its data only (G4).
+ */
+function leaderThink(enc, e, pick, gap, approachM, speedMult) {
+  const k = enc.k, L = k.leader_ai, A = e.ai, rng = e.aiStream;
+  A.gapT = (A.gapT ?? 0) - e.edt; A.retarget -= e.edt;
+  const opp = enc.opponentsOf(e).filter(x => x.present && enc._sameLevel(e, x));
+  if (!opp.length) return;
+  A.hurt = (A.hurt || []).filter(h => enc.simT - h.t <= L.retaliate_window_s);
+  const tally = {}; for (const h of A.hurt) tally[h.by] = (tally[h.by] || 0) + 1;
+  const angry = Object.keys(tally).filter(id => tally[id] >= L.retaliate_hits && enc.standing(enc.byId.get(id))).sort((p, q) => tally[q] - tally[p] || (p < q ? -1 : 1))[0];
+  if (angry && A.tokenOn !== angry) { A.tokenOn = angry; A.retarget = 2; A.gapT = Math.min(A.gapT, 0.1); enc._emit({ type: 'Retaliate', cat: e.id, at: angry, hits: tally[angry] }); }
+  const near = opp.filter(x => dist(e, x) <= L.swarm_m);
+  const swarmed = near.length >= L.swarm_n;
+  if (swarmed && !A.swarmed) enc._emit({ type: 'Swarmed', cat: e.id, opponents: near.length });
+  A.swarmed = swarmed;
+  let t = enc.byId.get(A.tokenOn);
+  if (!t || !enc.standing(t) || !t.present || (A.retarget <= 0 && !angry)) {
+    t = opp.slice().sort((p, q) => dist(e, p) - dist(e, q) || (p.id < q.id ? -1 : 1))[0]; A.tokenOn = t.id; A.retarget = 2;
+  }
+  A.engageOn = t.id; A.faceId = t.id;
+  if (A.gapT > 0) { // the token is held: press in and posture between swings
+    A.intent = 'pressure';
+    if (dist(e, t) > approachM) e.goal = { x: t.x, z: t.z, stopAt: approachM, speed: 0.8 * speedMult };
+    return;
+  }
+  // Swing at the focus if it reaches; otherwise at anyone in reach (no chasing hit-and-run cats forever).
+  const reachable = [t, ...opp.filter(x => x !== t).sort((p, q) => dist(e, p) - dist(e, q))];
+  for (const x of reachable) {
+    const mv = pick(x, dist(e, x));
+    if (!mv) continue;
+    A.intent = 'attack'; A.engageOn = x.id;
+    enc._face(e, x); enc._enemyWindup(e, mv, x);
+    A.gapT = rng.range(...(swarmed ? L.swarm_gap_s : gap));
+    return;
+  }
+  A.intent = 'dash_in';
+  e.goal = { x: t.x, z: t.z, stopAt: Math.max(0.3, approachM - 0.4), speed: L.approach_speed_mult * speedMult };
+}
+
 export function enemyThink(enc, e) {
   const k = enc.k, D = enc.D, rng = e.aiStream, A = e.ai;
   if (enc.mode !== 'fight' || e.act || e.splatT > 0 || e.frazzledT > 0 || e.flinchT > 0) return;
@@ -374,6 +423,15 @@ export function enemyThink(enc, e) {
   // Self-heal when low (a support Move), outside the engagement loop.
   const heal = e.moves.map(id => D.moves[id]).find(m => m?.ai_use === 'support' && e.enemyPaws >= m.cost * k.paw_points && e.nerve / e.nerveMax < k.purr_ally_pct && e.healed < k.enemy_heal_cap * e.nerveMax - 1);
   if (heal && !ENGAGED.has(A.intent)) { enc._enemyWindup(e, heal.Name, e); return; }
+  if (e.rankRow.leader) { // a Captain: basic string between Moves on a steady cadence
+    const L = k.leader_ai;
+    leaderThink(enc, e, (x, d) => {
+      const plan = rng.chance(L.move_p) ? planAttack(enc, e, x) : 'enemy_swipe';
+      for (const m of [plan, 'enemy_swipe']) if (d - x.radius <= D.moves[m].range - 0.1) return m;
+      return null;
+    }, L.basic_gap_s, 1.4, 1);
+    return;
+  }
   const t = focusTarget(enc, e);
   if (!t) return;
   if (corneredThink(enc, e)) return;
@@ -405,35 +463,27 @@ export function enemyThink(enc, e) {
  * only positions, its own Nerve and its data (G4: never who is in the Posse).
  */
 export function bossThink(enc, b) {
-  const k = enc.k, B = b.boss, kit = enc.D.bosses[b.row.boss_kit], rng = b.aiStream, A = b.ai;
+  const B = b.boss, kit = enc.D.bosses[b.row.boss_kit], rng = b.aiStream;
+  if (enc.mode === 'fight') B.sigCd -= b.edt; // the signature's cooldown runs while he swings, too
   if (enc.mode !== 'fight' || b.act || b.frazzledT > 0 || b.flinchT > 0 || b.splatT > 0) return;
   const ph = kit.phases[B.phase - 1];
   if (!ph || !ph.attacks.length) return;
   b.goal = null;
-  // Rage thresholds: crossing one speeds the pattern up (and the signature comes round sooner).
+  // Rage thresholds: crossing one shortens the gaps and brings the signature round sooner.
   const pct = b.nerve / b.nerveMax;
   const rages = (ph.rage || []).filter(r => pct <= r.at);
   if (rages.length > B.rage) { B.rage = rages.length; enc._emit({ type: 'BossRage', cat: b.id, level: B.rage, phase: B.phase }); }
   const rage = rages[rages.length - 1];
-  B.swingCd -= b.edt; B.sigCd -= b.edt; A.retarget -= b.edt;
-  const opp = enc.opponentsOf(b).filter(x => x.present && x.y < 0.5);
-  if (!opp.length) return;
-  let t = enc.byId.get(A.tokenOn);
-  if (!t || !enc.standing(t) || A.retarget <= 0) { t = opp.slice().sort((p, q) => dist(b, p) - dist(b, q) || (p.id < q.id ? -1 : 1))[0]; A.tokenOn = t.id; A.retarget = 2.5; }
-  A.faceId = t.id;
-  const d = dist(b, t);
-  if (B.swingCd > 0) { // between swings he stalks in and postures
-    A.intent = d > kit.approach_m + 1 ? 'stalk' : 'posture';
-    if (d > kit.approach_m) b.goal = { x: t.x, z: t.z, stopAt: kit.approach_m, speed: 0.8 };
-    return;
-  }
-  const ok = ph.attacks.filter(a => d >= (a.min_m ?? 0) && d <= a.max_m + t.radius && (a.move !== kit.signature || B.sigCd <= 0));
-  if (!ok.length) { A.intent = 'stalk'; b.goal = { x: t.x, z: t.z, stopAt: kit.approach_m, speed: 1.0 }; return; }
-  let r = rng.float() * ok.reduce((s, a) => s + a.weight, 0), pick = ok[0];
-  for (const a of ok) { r -= a.weight; if (r <= 0) { pick = a; break; } }
-  A.intent = 'attack';
-  enc._face(b, t);
-  enc._enemyWindup(b, pick.move, t);
-  B.swingCd = ph.swing_period_s * (rage?.period_mult ?? 1) * rng.range(0.85, 1.15);
-  if (pick.move === kit.signature) B.sigCd = (pick.cooldown_s ?? 6) * (rage?.signature_cd_mult ?? 1);
+  const gm = rage?.gap_mult ?? 1, gap = [ph.basic_gap_s[0] * gm, ph.basic_gap_s[1] * gm];
+  // The signature interleaves on its own cooldown; basics fill every gap between (M1.3: no gating on the skill).
+  leaderThink(enc, b, (x, d) => {
+    const ok = ph.attacks.filter(a => d >= (a.min_m ?? 0) && d <= a.max_m + x.radius && (a.move !== kit.signature || B.sigCd <= 0));
+    if (!ok.length) return null;
+    const sig = ok.find(a => a.move === kit.signature); // when off cooldown the signature is the next attack; basics fill the gaps
+    if (sig) { B.sigCd = (sig.cooldown_s ?? 6) * (rage?.signature_cd_mult ?? 1); return sig.move; }
+    let r = rng.float() * ok.reduce((s, a) => s + a.weight, 0), pick = ok[0];
+    for (const a of ok) { r -= a.weight; if (r <= 0) { pick = a; break; } }
+    if (pick.move === kit.signature) B.sigCd = (pick.cooldown_s ?? 6) * (rage?.signature_cd_mult ?? 1);
+    return pick.move;
+  }, gap, kit.approach_m, kit.move_speed_mult ?? 1);
 }

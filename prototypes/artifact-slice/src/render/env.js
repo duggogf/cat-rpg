@@ -24,12 +24,12 @@ export const U = {
   cloudLight: { value: new THREE.Vector3(1, 1, 1) }, cloudShade: { value: new THREE.Vector3(0.8, 0.85, 0.94) },
   backdropKey: { value: new THREE.Vector3(1, 1, 1) },
   time: { value: 0 }, wind: { value: 1 },
-  windowGlow: { value: 0 }, lamp: { value: new THREE.Vector3(1, 0.85, 0.54) },
+  lampWave: { value: -1 }, windowGlow: { value: 0 }, lamp: { value: new THREE.Vector3(1, 0.85, 0.54) },
   seaGlow: { value: new THREE.Vector3(1, 0.96, 0.84) }, seaGlowK: { value: 0.5 },
 };
 
 export function applyPhase(name) {
-  const p = PHASES[name];
+  const p = typeof name === 'string' ? PHASES[name] : name;
   U.sunDir.value.copy(sunDir(p));
   U.keyColor.value.copy(rgb(p.key));
   const sh = rgb(p.shadowTint || p.shadow);
@@ -156,11 +156,11 @@ export function envMat(o = {}) {
 const BB_VERT = /* glsl */`
 attribute vec3 iPos; attribute vec4 iParam; attribute vec4 iClump;
 uniform float cylindrical, cols, rows, time, wind, sway;
-varying vec2 vUv; varying vec3 vN; varying vec3 vP; varying float vBright; varying vec3 vCtr; varying vec2 vV;
+varying vec2 vUv; varying vec3 vN; varying vec3 vP; varying float vBright; varying vec3 vCtr; varying vec2 vV; varying float vNear;
 void main() {
   // camera-soft: a card the lens is about to pass through is dropped (never a screen-filling blob)
   float dl = distance(iPos, cameraPosition);
-  if (dl < iParam.x * 0.55 + 0.35 || (dl < iParam.x * 1.5 + 0.2 && iPos.y < cameraPosition.y + 0.6)) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); return; }
+  vNear = (dl < iParam.x * 0.55 + 0.35 || (dl < iParam.x * 1.5 + 0.2 && iPos.y < cameraPosition.y + 0.6)) ? 0.3 : 1.0;  // camera-soft: dither to 30%, never hidden
   vec2 corner = position.xy;
   float c = cos(iParam.y), s = sin(iParam.y);
   vec2 off = vec2(c * corner.x - s * corner.y, s * corner.x + c * corner.y) * iParam.x;
@@ -185,11 +185,13 @@ void main() {
 }`;
 const BB_FRAG = /* glsl */`
 uniform sampler2D map; uniform float alphaCut, rampLo, rampHi, receive, keyK; uniform vec3 tint;
-varying vec2 vUv; varying vec3 vN; varying vec3 vP; varying float vBright; varying vec3 vCtr;
+varying vec2 vUv; varying vec3 vN; varying vec3 vP; varying float vBright; varying vec3 vCtr; varying float vNear;
 ${LIGHT_PARS}
+float bayerF(vec2 p){ ivec2 i = ivec2(mod(p, 4.0)); int b[16] = int[16](0,8,2,10,12,4,14,6,3,11,1,9,15,7,13,5); return (float(b[i.y * 4 + i.x]) + 0.5) / 16.0; }
 void main() {
   vec4 t = texture2D(map, vUv);
   if (t.a < alphaCut) discard;
+  if (vNear < 0.99 && bayerF(gl_FragCoord.xy) > vNear) discard;
   vec3 alb = t.rgb / max(t.a, 0.001) * tint * vBright;
   vec3 n = normalize(vN);
   float ndl = dot(n, sunDir);
@@ -200,7 +202,7 @@ void main() {
   gl_FragColor = vec4(hazeIt(c, vP), 1.0);
 }`;
 const BB_DEPTH_FRAG = /* glsl */`
-uniform sampler2D map; uniform float alphaCut, holes, time, wind; varying vec2 vUv; varying vec3 vP; varying vec2 vV;
+uniform sampler2D map; uniform float alphaCut, holes, time, wind; varying vec2 vUv; varying vec3 vP; varying vec2 vV; varying float vNear;
 float h21(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float vn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f); return mix(mix(h21(i), h21(i + vec2(1, 0)), f.x), mix(h21(i + vec2(0, 1)), h21(i + vec2(1, 1)), f.x), f.y); }
 void main() {
@@ -324,9 +326,9 @@ export const CEL = {
   keyDir: { value: new THREE.Vector3(0, 1, 0) }, celTint: { value: new THREE.Vector3(1, 1, 1) }, celShade: { value: new THREE.Vector3(0.85, 0.82, 0.92) },
   rtHeight: { value: 1080 }, rtWidth: { value: 1920 }, lineScale: { value: 1 }, fade: { value: 1 },
 };
-export function celMat() {
+export function celMat(fade) {
   return new THREE.ShaderMaterial({
-    uniforms: { ...CEL, hazeColor: U.hazeColor, hazeNear: U.hazeNear, hazeFar: U.hazeFar, hazeMax: U.hazeMax, debugMode: U.debugMode },
+    uniforms: { ...CEL, ...(fade ? { fade } : {}), hazeColor: U.hazeColor, hazeNear: U.hazeNear, hazeFar: U.hazeFar, hazeMax: U.hazeMax, debugMode: U.debugMode },
     vertexColors: true,
     vertexShader: /* glsl */`attribute vec3 shadeCol; varying vec3 vC; varying vec3 vS; varying vec3 vN; varying vec3 vP;
       void main(){ vC = color; vS = shadeCol; vec4 wp = modelMatrix * vec4(position,1.0); vP = wp.xyz; vN = normalize(mat3(modelMatrix) * normal); gl_Position = projectionMatrix * viewMatrix * wp; }`,
@@ -338,9 +340,9 @@ export function celMat() {
         gl_FragColor = vec4(c, 1.0); }`,
   });
 }
-export function hullMat(widthPx = 2.0) {
+export function hullMat(widthPx = 2.0, fade) {
   return new THREE.ShaderMaterial({
-    uniforms: { ...CEL, width: { value: widthPx } },
+    uniforms: { ...CEL, ...(fade ? { fade } : {}), width: { value: widthPx } },
     vertexShader: /* glsl */`uniform float width, rtHeight, rtWidth, lineScale; attribute vec3 smoothN;
       void main(){
         vec4 wp = modelMatrix * vec4(position, 1.0);

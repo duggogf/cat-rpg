@@ -31,10 +31,10 @@ export class PaintPost {
     this.rt.depthTexture = new THREE.DepthTexture(4, 4, THREE.UnsignedIntType);
     this.mat = new THREE.ShaderMaterial({
       uniforms: { tColor: { value: this.rt.texture }, tDepth: { value: this.rt.depthTexture }, tNoise: { value: noiseTex() }, tGrain: { value: grain },
-        res: { value: new THREE.Vector2(4, 4) }, wob: { value: 1.8 }, kuw: { value: 1 }, grainK: { value: 0.1 }, scale: { value: 1 } },
+        res: { value: new THREE.Vector2(4, 4) }, sense: { value: 0 }, wob: { value: 1.8 }, kuw: { value: 1 }, grainK: { value: 0.1 }, scale: { value: 1 } },
       vertexShader: /* glsl */`varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }`,
       fragmentShader: /* glsl */`
-        uniform sampler2D tColor, tDepth, tNoise, tGrain; uniform vec2 res; uniform float wob, kuw, grainK, scale;
+        uniform sampler2D tColor, tDepth, tNoise, tGrain; uniform vec2 res; uniform float wob, kuw, grainK, scale, sense;
         varying vec2 vUv;
         vec3 S(vec2 uv){ return texture2D(tColor, uv).rgb; }
         void main(){
@@ -58,6 +58,8 @@ export class PaintPost {
             col = m[0]; float best = v[0];
             for (int k = 1; k < 4; k++) if (v[k] < best) { best = v[k]; col = m[k]; }
           } else col = S(uv);
+          // Whisker Sense: the world drops to lavender-grey (hud.md §3.2; art bible mood table); cats draw after, at full colour
+          if (sense > 0.0) { float l = dot(col, vec3(0.3, 0.59, 0.11)); col = mix(col, mix(vec3(0.36, 0.33, 0.46), vec3(0.88, 0.86, 0.94), l), 0.62 * sense); }
           float g = texture2D(tGrain, gl_FragCoord.xy / 512.0).g;
           col *= mix(1.0, g / 0.83, grainK);
           gl_FragColor = vec4(col, 1.0);
