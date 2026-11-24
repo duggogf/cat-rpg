@@ -57,25 +57,25 @@
   "w": 2048,
   "h": 1024,
   "alpha": true,
-  "bytes": 39192
+  "bytes": 39868
  },
  "hillsNear": {
   "w": 4096,
   "h": 1024,
   "alpha": true,
-  "bytes": 71940
+  "bytes": 71792
  },
  "hillsFar": {
   "w": 4096,
   "h": 256,
   "alpha": true,
-  "bytes": 25614
+  "bytes": 35634
  },
  "town": {
   "w": 2048,
   "h": 512,
   "alpha": true,
-  "bytes": 63348
+  "bytes": 82076
  },
  "sea": {
   "w": 2048,

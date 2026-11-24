@@ -1,0 +1,70 @@
+// PROTOTYPE - NOT FOR PRODUCTION
+// Bakes the SDF cats (tools/cats/casts.sdf.js) into skinned meshes: assets/mesh/<cast>.json + .bin.
+// Each shell is polygonised with surface nets; normals are the SDF gradient (smooth, so they double
+// as the outline's smoothed normals); skin weights are a soft-min over each bone's primitives.
+//   node tools/bake-meshes.mjs [cast ...]
+import fs from 'node:fs';
+import path from 'node:path';
+import { CASTS, buildCast, BONES } from './cats/casts.sdf.js';
+import { shellSdf, shellBounds, prim, v3, toFrame } from './cats/sdf.js';
+import { surfaceNets } from './cats/surfacenets.js';
+
+const root = path.dirname(new URL(import.meta.url).pathname) + '/..';
+const out = path.join(root, 'assets/mesh');
+fs.mkdirSync(out, { recursive: true });
+const want = process.argv.slice(2);
+
+for (const [name, opts] of Object.entries(CASTS)) {
+  if (want.length && !want.includes(name)) continue;
+  const t0 = Date.now();
+  const M = buildCast(opts);
+  const P = [], N = [], SI = [], SW = [], PT = [], AX = [], IDX = [];
+  for (const S of M.shells) {
+    const f = shellSdf(S);
+    const { pos, nrm, tris } = surfaceNets(f, shellBounds(S, S.cell * 3), S.cell);
+    const base = P.length / 3;
+    const boneIds = [...new Set(S.prims.filter((p) => !p.cut).map((p) => p.bone))];
+    for (let i = 0; i < pos.length; i++) {
+      const p = pos[i];
+      P.push(...p); N.push(...nrm[i]); PT.push(S.part);
+      // skin weights: soft-min of per-bone distances
+      const d = boneIds.map((b) => Math.min(...S.prims.filter((q) => q.bone === b && !q.cut).map((q) => prim(q, p))));
+      const dmin = Math.min(...d);
+      let w = d.map((x, j) => ({ b: BONES.indexOf(boneIds[j]), w: Math.exp(-(x - dmin) / S.sigma) }));
+      w.sort((a, b) => b.w - a.w); w = w.slice(0, 4);
+      const sum = w.reduce((a, x) => a + x.w, 0);
+      for (let j = 0; j < 4; j++) { SI.push(w[j] ? w[j].b : 0); SW.push(w[j] ? w[j].w / sum : 0); }
+      // aux: part-local coordinates for the shader's pattern functions
+      let ax = [0, 0, 0];
+      if (S.name === 'head') {
+        const e = M.meta.ears[p[0] >= 0 ? 0 : 1];
+        ax = toFrame({ o: e.o, u: e.u, v: e.v, w: e.w }, p);
+      } else if (S.name === 'tail') {
+        const tb = M.bones.filter((b) => b.name.startsWith('tail'));
+        const z0 = tb[0].pos[2], len = M.meta.tailLen;
+        ax = [Math.max(0, Math.min(1.2, (z0 - p[2]) / len)), 0, 0];
+      } else if (S.name === 'bell') {
+        const c = S.prims[0].c; ax = v3.sub(p, c);
+      }
+      AX.push(...ax);
+    }
+    for (const t of tris) IDX.push(t + base);
+    console.log(`  ${name}.${S.name}: ${pos.length} verts, ${tris.length / 3} tris`);
+  }
+  // pack
+  const parts = [
+    ['position', new Float32Array(P), 3], ['normal', new Float32Array(N), 3],
+    ['skinIndex', new Uint16Array(SI), 4], ['skinWeight', new Float32Array(SW), 4],
+    ['part', new Float32Array(PT), 1], ['aux', new Float32Array(AX), 3],
+    ['index', new Uint32Array(IDX), 1],
+  ];
+  const attributes = {}; let off = 0; const bufs = [];
+  for (const [k, arr, size] of parts) {
+    attributes[k] = { offset: off, count: arr.length, itemSize: size, type: arr.constructor.name };
+    bufs.push(Buffer.from(arr.buffer)); off += arr.byteLength;
+  }
+  const json = { cast: name, opts, bones: M.bones, meta: M.meta, vertexCount: P.length / 3, triangleCount: IDX.length / 3, attributes, bin: name + '.bin' };
+  fs.writeFileSync(path.join(out, name + '.bin'), Buffer.concat(bufs));
+  fs.writeFileSync(path.join(out, name + '.json'), JSON.stringify(json));
+  console.log(`baked ${name}: ${json.vertexCount} verts, ${json.triangleCount} tris, ${(off / 1024).toFixed(0)} KB in ${Date.now() - t0} ms`);
+}

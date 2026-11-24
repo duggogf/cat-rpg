@@ -59,7 +59,7 @@ export function buildCast(o) {
     const up = v3.norm([s * 0.36, 1, -0.12]);
     const F = frame(base, up, [s * 0.32, 0, 1]);
     const E = earShape, sc = hs;
-    return { t: 'ear', F, A: [-E.hw * sc, -0.01], B: [E.hw * sc, -0.01], C: [s * E.tip * sc * 0.0 + E.tip * sc * 0.5, E.h * sc],
+    return { t: 'ear', F, A: [-E.hw * sc, -0.01], B: [E.hw * sc, -0.01], C: [s * E.tip * sc, E.h * sc],
       hw: E.hw * sc, th: E.th * sc, rr: o.ears === 'round' ? 0.011 : 0.006, cup: 0.005, bone: s > 0 ? 'earL' : 'earR', k: 0.016, side: s };
   });
 

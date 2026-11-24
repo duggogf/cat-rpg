@@ -112,7 +112,7 @@
 
   /* Cumulus atlas: a towering one (1024 x 1024) and two smaller (1024 x 512). Base line flat. */
   T.clouds = { w: 2048, h: 1024, alpha: true, svg: () => {
-    return svg(2048, 1024, K.cloud({ x: 512, y: 1000, w: 620, h: 560, seed: 3 }) + K.cloud({ x: 1536, y: 500, w: 560, h: 260, seed: 12 }) + K.cloud({ x: 1536, y: 1010, w: 440, h: 230, seed: 21 }));
+    return svg(2048, 1024, K.cloud({ x: 512, y: 1000, w: 500, h: 620, seed: 3 }) + K.cloud({ x: 1536, y: 500, w: 560, h: 260, seed: 12 }) + K.cloud({ x: 1536, y: 1010, w: 440, h: 230, seed: 21 }));
   } };
 
   /* Hill ring panoramas. u = azimuth (0 at the sea, -Z; increasing toward +X). */
@@ -130,8 +130,6 @@
     s += K.hill({ pts: r2, baseY: H + 20, color: '#3F8A5E', seed: 8 });
     // tree crowns along the near shoulder
     for (let i = 0; i < 16; i++) { const a = 95 + i * 10.5, e = 3 + 7 * Math.sin((a - 90) / 172 * Math.PI); s += K.foliage({ x: x(a), y: y(e), w: 190, h: 120, seed: 300 + i, far: true, tones: { dark: '#2F6E50', mid: '#4C8F5E', light: '#7DB87A' } }); }
-    // haze at the foot
-    s += `<rect x="0" y="${y(3)}" width="${W}" height="${H}" fill="${C.skyHorizon}" opacity="0.35" filter="url(#k-soft2)"/>`;
     return svg(W, H, s);
   } };
   // Far headlands: 4096 x 256, elevation band −1°..+5°, hazy blue-green, gap over the open sea.
@@ -143,7 +141,6 @@
     s += K.hill({ pts: [[x(-28), y(-0.6)], [x(-24), y(0.6)], [x(-19), y(1.0)], [x(-14), y(0.8)], [x(-9), y(0.2)], [x(-6), y(-0.6)]].map(([a, b]) => [a + W, b]), baseY: H + 10, color: '#7DBBA6', seed: 9 });
     s += K.hill({ pts: [[x(-28), y(-0.6)], [x(-24), y(0.6)], [x(-19), y(1.0)], [x(-14), y(0.8)], [x(-9), y(0.2)], [x(-6), y(-0.6)]], baseY: H + 10, color: '#7DBBA6', seed: 9 });
     s += K.hill({ pts: [[x(40), y(-1)], [x(60), y(2.5)], [x(90), y(3.5)], [x(150), y(4.2)], [x(210), y(3.8)], [x(260), y(2.8)], [x(300), y(1.4)], [x(318), y(-1)]], baseY: H + 10, color: '#86BFAE', seed: 5 });
-    s += `<rect x="0" y="0" width="${W}" height="${H}" fill="#CDE6F2" opacity="0.25"/>`;
     return svg(W, H, s);
   } };
 
@@ -159,7 +156,6 @@
         if (R() < 0.55) s += K.foliage({ x: x + w * (R() < 0.5 ? 0 : 1), y: y + h + 20, w: 80 + R() * 70, h: 50 + R() * 30, seed: 500 + row * 20 + i, far: true });
       }
     }
-    s += `<rect x="0" y="0" width="${W}" height="${H}" fill="#CDE6F2" opacity="0.3"/>`;
     return svg(W, H, s);
   } };
 
