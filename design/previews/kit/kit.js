@@ -278,11 +278,13 @@
   /* --- back: standing, seen from behind and a little above (the exploration camera) --- */
   POSES.back = function (o) {
     const B = BUILD[o.build], bw = B.bx, hs = B.head, lift = Math.max(0, (B.leg - 1) * 36), T = { sx: bw, sy: B.by, y: -lift };
-    const body = xf([[-30, -6], [-35, -22], [-33, -40], [-25, -54], [-13, -61], [0, -63], [13, -61], [25, -54], [33, -40], [35, -22], [30, -6], [14, -3], [0, -7], [-14, -3]], T);
+    // a pear: narrow shoulders under the head, flaring into round haunches (three-quarter back: head turned a touch to the right)
+    const body = xf([[-30, -8], [-38, -21], [-37, -33], [-28, -44], [-21, -54], [-13, -62], [0, -65], [13, -62], [20, -54], [26, -45], [35, -34], [37, -21], [30, -8], [15, -4], [0, -9], [-15, -4]], T);
     const fx = 18 * bw, hy = -69 * B.by - lift, hb = hy + 18.5 * hs;
     const parts = [{ d: tube([[-fx, -18 - lift], [-fx - 1, -6]], [18, 15]) }, { d: tube([[fx, -18 - lift], [fx + 1, -6]], [18, 15]) }, { d: ell(-fx - 1.5, -4.6, 11, 6) }, { d: ell(fx + 2, -8.2, 9.6, 8.6) }, { d: blob(body) }];
-    const [eL, eR] = headEars(o), H = { s: hs, y: hy };
-    const head = [{ d: blob(xf(eL, H)) }, { d: blob(xf(eR, H)) }, { d: blob(xf(FRONT_HEAD, H)) }];
+    const [eL, eR0] = headEars(o), hxo = 3 * hs, H = { s: hs, x: hxo, y: hy, r: 4 };
+    const eR = eR0.map((p) => [(p[0] - 18) * 0.84 + 19, p[1], p[2]]); // far ear foreshortened
+    const head = [{ d: blob(xf(eL, H)) }, { d: blob(xf(eR, H)) }, { d: blob(xf([[24, 1], [33, 1.5], [38.5, 6.5], [35, 12.5], [25, 14]], H)) }, { d: blob(xf(FRONT_HEAD, H)) }];
     if ((o.scars || []).includes('cowlick')) head.push({ d: blob(xf(COWLICK, H)) });
     const tb = (p) => blob(xf(p, T)), th = (p) => blob(xf(p, H));
     const RB = {
@@ -298,15 +300,19 @@
       stripes: [th([[-12, -30], [-9, -14], [-6, -30, 1]]), th([[-2, -32], [0, -12], [2, -32, 1]]), th([[12, -30], [9, -14], [6, -30, 1]]), th([[-40, -4], [-21, -2, 1], [-40, 3]]), th([[40, -4], [21, -2, 1], [40, 3]])],
       patchA: [th([[2, -6], [14, -28], [44, -24], [44, 20], [8, 22]])], patchB: [th([[-44, -30], [-8, -32], [-4, -12], [-22, -5], [-44, -6]])],
     };
-    const whisk = inkLine(`M${-30 * hs} ${hy + 6 * hs}L${-45 * hs} ${hy + 2 * hs}M${-29 * hs} ${hy + 10 * hs}L${-44 * hs} ${hy + 12 * hs}M${30 * hs} ${hy + 6 * hs}L${45 * hs} ${hy + 2 * hs}M${29 * hs} ${hy + 10 * hs}L${44 * hs} ${hy + 12 * hs}`, 1.25);
-    const tail = o.tail === 'pom' ? tailParts(o, 0, 0, -1, 'back', [[0, -15 - lift * 0.6], [0, -17 - lift * 0.6]]) : tailParts(o, 0, -19 * B.by - lift * 0.6, -1, 'back');
+    const whisk = `<g transform="translate(${r1(hxo)} ${r1(hy)}) rotate(4) scale(${hs})">${inkLine('M-30 6L-43 3M-29 10L-42 12M36 8L52 3M35.5 10.5L52 10M34 12.5L49 17', 1.25)}<path d="M36.6 5.2Q39.6 5.6 39 8.2Q37 8.6 36 7Z" fill="${C.pad}" stroke="${C.ink}" stroke-width="1.1" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></g>`;
+    const tail = o.tail === 'pom' ? tailParts(o, 0, 0, -1, 'back', [[-1, -17 - lift * 0.6], [-1, -19 - lift * 0.6]]) : tailParts(o, 0, -19 * B.by - lift * 0.6, -1, 'back');
+    if (o.tail === 'pom') tail.parts = [{ d: blob(pomPts(-1, -22 - lift * 0.6, 13.5, 8, 0.055, 0.2)) }]; // round, softly scalloped pom at the base of the spine
     // the lifted hind paw shows its pads: the instant "this cat is walking away from you" read
     const pc = o.coat.pads || C.pad, pads = `<path d="${ell(fx + 2, -5.6, 4.8, 3.3)}${ell(fx - 3.2, -10.6, 2.1, 2.3)}${ell(fx + 2, -12.2, 2.1, 2.3)}${ell(fx + 7.2, -10.6, 2.1, 2.3)}" fill="${pc}"/>`;
     return {
       layers: [
-        { parts, R: RB, shade: tb([[17, -60], [27, -47], [29, -30], [25, -13], [12, -4], [44, 0], [44, -64]]) + ell(0, hb + 3, 25 * hs, 6.5), lines: [blob([[-11 * bw, -21 - lift], [-8 * bw, -11], [-10.5 * bw, -5]], false), blob([[11 * bw, -22 - lift], [8.5 * bw, -14], [9.5 * bw, -9]], false)], extra: pads },
-        { collar: 'band', pts: [[-24 * hs, hb - 8], [-12 * hs, hb - 0.5], [0, hb + 1.5], [12 * hs, hb - 0.5], [24 * hs, hb - 8]] },
-        { parts: head, R: RH, shade: headShade(hs, 0, hy), extra: whisk },
+        { parts, R: RB, shade: tb([[13, -64], [18, -53], [23, -44], [30, -33], [31, -21], [25, -11], [13, -5], [46, 0], [46, -66]]) + ell(hxo, hb + 3, 25 * hs, 6.5),
+          lines: [blob([[-11 * bw, -19 - lift], [-8 * bw, -11], [-10.5 * bw, -5]], false), blob([[11 * bw, -20 - lift], [8.5 * bw, -14], [9.5 * bw, -9]], false),
+            blob(xf([[-26, -40], [-18, -33], [-15, -22]], T), false), blob(xf([[25, -41], [18, -34], [15.5, -24]], T), false), // haunch curves
+            blob(xf([[-11, -51], [-7.5, -46], [-8, -41]], T), false), blob(xf([[10, -51], [7.5, -46], [8.5, -41]], T), false)], extra: pads }, // shoulder blades
+        { collar: 'band', pts: [[-22 * hs + hxo, hb - 8], [-11 * hs + hxo, hb - 1], [hxo, hb + 1], [11 * hs + hxo, hb - 0.5], [22 * hs + hxo, hb - 6]] },
+        { parts: head, R: RH, shade: headShade(hs, hxo, hy), extra: whisk },
         { tail }, { cord: [0, -19 * B.by - lift * 0.6] },
       ],
       plaster: [1, hy - 17 * hs], w: 37 * bw,

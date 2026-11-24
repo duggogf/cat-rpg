@@ -1,0 +1,164 @@
+<title>Cat RPG Slice Previews</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=M+PLUS+Rounded+1c:wght@500;700;800&display=swap">
+<style>
+/* Layout: one column of full-width game frames, each with a caption strip in the
+   game's own name-ribbon style; feature groups separated by a lettered heading. */
+:root {
+  --paper: #FFF6E3;      /* Paper Cream  */
+  --ink: #33273B;        /* Aubergine Ink */
+  --cocoa: #6B4A35;      /* Cocoa */
+  --ginger: #F28C28;     /* Mikan Ginger */
+  --gold: #F2B01E;       /* Bell-Gold */
+  --sage: #A8C878;       /* Wall Sitter Sage */
+  --card: #FFFDF6;
+  --muted: #6E6072;
+  --rule: #E6D9BD;
+  --display: "Dela Gothic One", "Arial Black", Impact, sans-serif;
+  --body: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", "Trebuchet MS", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #241B2A; --ink: #FFF6E3; --cocoa: #E3C9A6; --card: #33273B;
+    --muted: #BDAEC2; --rule: #4A3A54; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #241B2A; --ink: #FFF6E3; --cocoa: #E3C9A6; --card: #33273B;
+  --muted: #BDAEC2; --rule: #4A3A54; color-scheme: dark;
+}
+body {
+  background: var(--paper); color: var(--ink);
+  font-family: var(--body); font-weight: 500; font-size: 17px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 40px 72px;
+}
+.wrap { max-width: 1120px; margin-inline: auto; display: flex; flex-direction: column; gap: 56px; }
+header { display: flex; flex-direction: column; gap: 14px; }
+.kicker { font-weight: 800; letter-spacing: .08em; text-transform: uppercase; font-size: 13px; color: var(--cocoa); }
+h1 { font-family: var(--display); font-weight: 400; font-size: clamp(34px, 6vw, 64px); line-height: 1.05; margin: 0; text-wrap: balance; }
+h1 span { color: var(--ginger); }
+.lede { max-width: 62ch; margin: 0; font-size: 19px; }
+.facts { display: flex; flex-wrap: wrap; gap: 10px; margin: 6px 0 0; padding: 0; list-style: none; }
+.facts li { border: 2.5px solid var(--ink); border-radius: 999px; padding: 4px 14px; font-weight: 700; font-size: 14px; background: var(--card); }
+section { display: flex; flex-direction: column; gap: 22px; }
+h2 { font-family: var(--display); font-weight: 400; font-size: clamp(24px, 3.4vw, 34px); margin: 0; line-height: 1.15; text-wrap: balance; }
+.intro { max-width: 65ch; margin: 0; color: var(--muted); }
+figure { margin: 0; display: flex; flex-direction: column; }
+figure img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; border: 3px solid var(--ink); border-radius: 18px 18px 0 0; background: var(--card); }
+figcaption { border: 3px solid var(--ink); border-top: 0; border-radius: 0 0 18px 18px; background: var(--card); padding: 14px 18px 16px; display: flex; flex-direction: column; gap: 4px; }
+figcaption b { font-weight: 800; font-size: 18px; }
+figcaption span { color: var(--muted); max-width: 70ch; }
+.scores { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; min-width: 520px; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 10px 14px; border-bottom: 2px solid var(--rule); }
+th { font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--cocoa); font-weight: 800; }
+td.n { font-weight: 800; }
+.note { border-left: 6px solid var(--gold); padding: 4px 0 4px 16px; max-width: 68ch; margin: 0; }
+footer { color: var(--muted); font-size: 15px; max-width: 70ch; }
+code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .9em; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="kicker">Vertical-slice design · preview mock-ups</div>
+    <h1>Boss outside, <span>pet at home.</span></h1>
+    <p class="lede">Ten mock screenshots of Cat RPG, drawn from the vertical-slice design documents. You play Mikan, a collared house cat who claims a neighbourhood patch by patch while, at home, the owner's life goes by without a single word you can understand.</p>
+    <ul class="facts">
+      <li>Third-person action RPG</li>
+      <li>Leader + 3 crew cats</li>
+      <li>Rivals that remember</li>
+      <li>Territory and food tribute</li>
+      <li>Wordless owner story</li>
+    </ul>
+    <p class="note">These are composed stills, not engine captures. They show the intended look and screen layout: flat inked cats over painted streets, rounded cream UI, and manga-style impact in combat.</p>
+  </header>
+
+  <section>
+    <h2>Roaming the lane</h2>
+    <p class="intro">The camera sits behind the cat. Humans are legs, hands and shopping bags; the street is painted, and anything a cat can act on carries an ink line.</p>
+    <figure>
+      <img src="01-exploration.png" alt="Mikan, a ginger and white cat seen from behind, in a sunny painted lane beside a stone lantern with scent wisps and a Spray prompt; a rival cat watches from a wall top and a person's legs pass on the right." loading="lazy">
+      <figcaption><b>Exploration and scent marking</b><span>Mikan approaches a scent post held by a rival crew. A rival watches from the wall; the gold thread along the wall top is the way home.</span></figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Combat: conduct the brawl</h2>
+    <p class="intro">Real-time fighting with a simple move set. Basic hits fill paw gauges, a slow-motion menu spends them on moves, enemies get ruffled and then frazzled, and switching cats at the right moment chains a relay.</p>
+    <figure>
+      <img src="02-combat-clash.png" alt="Mikan mid-pounce striking a frazzled rival with spiral eyes, slash arc, speed lines and a large lettered sound word; three crew cats fight other rivals behind; party status plates sit at lower left." loading="lazy">
+      <figcaption><b>The clash</b><span>Mikan lands a heavy hit on a frazzled rival while three crew cats hold the other fights. Party plates show nerve and paw gauges.</span></figcaption>
+    </figure>
+    <figure>
+      <img src="03-combat-slow-blink.png" alt="Combat with time nearly frozen and the world tinted cool, a command menu listing moves with paw costs, and a target reticle on a frazzled enemy." loading="lazy">
+      <figcaption><b>Slow Blink, the command moment</b><span>Time nearly stops and the world cools while you choose a move and a target. The controlled cat and the target keep their colour.</span></figcaption>
+    </figure>
+    <figure>
+      <img src="04-combat-pile-on.png" alt="A cartoon brawl dust cloud on a yellow radial burst with paws, tails and faces poking out, a large lettered sound word, and a rival cat flung clear." loading="lazy">
+      <figcaption><b>The Pile-On finisher</b><span>The whole posse dives in. Rivals are routed and sent flying, never hurt.</span></figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Rivals that remember</h2>
+    <p class="intro">Every rival has a personality, a strength, a fear and a memory of what you did to each other. Scars sit on the silhouette so you can recognise a cat at a distance, and one rival at a time is your declared nemesis.</p>
+    <figure>
+      <img src="05-rival-standoff.png" alt="A scarred rival cat with a notched ear confronts Mikan in a lane at golden hour, with a speech bubble recalling an earlier fight and followers behind." loading="lazy">
+      <figcaption><b>The stand-off</b><span>Togemaru, the first rival to come back, opens with a line about the ear you notched last time.</span></figcaption>
+    </figure>
+    <figure>
+      <img src="06-fence-line.png" alt="A sunset panorama of walls and rooftops with rival cats perched by rank, name ribbons under each, a storm mark linking the nemesis to Mikan, and a card showing the selected rival's personality and history." loading="lazy">
+      <figcaption><b>The Fence Line</b><span>The district's hierarchy as a place: boss at the top, captains and toughs below, your own seat on the right. The card tells the selected rival's history in its own words.</span></figcaption>
+    </figure>
+    <figure>
+      <img src="07-verdict.png" alt="A dizzy defeated rival lies before Mikan and the posse, with four choices arranged in four directions: Chase Off, Humble, Recruit and Nose-Touch, each with an icon and a one-line consequence." loading="lazy">
+      <figcaption><b>The Verdict</b><span>After a win you decide: chase off, humble, recruit for a bribe, or touch noses. Each changes what the rival does next and who holds the patch.</span></figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Territory and tribute</h2>
+    <p class="intro">Half the game. You post crew cats to guard patches, and who you post matters: each personality guards differently, and neighbours bond or clash. Cats on your turf pay you in food.</p>
+    <figure>
+      <img src="08-turf-board.png" alt="A painted map of five neighbourhood patches with scent borders, guard posts showing cat portraits and personalities, bond and clash marks, a raid forecast and a tribute forecast, plus a side panel of unposted crew." loading="lazy">
+      <figcaption><b>The Turf Board</b><span>Five patches, their guard posts, tonight's raid forecast and tomorrow's tribute. This one screen is the whole management surface.</span></figcaption>
+    </figure>
+    <figure>
+      <img src="09-tribute-doorstep.png" alt="Crew cats walk in a small procession to a garden gate carrying a fish, a rice ball and a dried sardine to lay before Mikan in the morning light." loading="lazy">
+      <figcaption><b>Tribute at the gate</b><span>Each morning the crew brings the night's take to the garden gate. They never come inside; that half of Mikan's life is not theirs.</span></figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>The other life</h2>
+    <p class="intro">Every day ends at home. The owner's story is told only by what you can see and hear from the floor: who is in the room, what has moved, and whether the piano piece gets past the bar where it always stalls.</p>
+    <figure>
+      <img src="10-home-evening.png" alt="A warm lamplit wooden room at dusk seen from cat height: the owner sits at an upright piano, visible as legs, hands and the hem of a yellow cardigan with her face out of frame, and Mikan is in the foreground on the floorboards." loading="lazy">
+      <figcaption><b>Evening at the piano</b><span>Haru practises; her face stays out of frame. Nothing on screen translates what the humans say, and there is almost no HUD.</span></figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Where the design stands</h2>
+    <p class="intro">The creative director's scores after the third and final review pass, out of ten.</p>
+    <div class="scores">
+      <table>
+        <thead><tr><th>Feature</th><th>Ready to prototype</th><th>Will it stand out</th></tr></thead>
+        <tbody>
+          <tr><td>Dual Story Progression</td><td class="n">8</td><td class="n">9</td></tr>
+          <tr><td>Nemesis (rivals)</td><td class="n">8</td><td class="n">8</td></tr>
+          <tr><td>Combat</td><td class="n">8</td><td class="n">7</td></tr>
+          <tr><td>Crew personality</td><td class="n">7</td><td class="n">7</td></tr>
+          <tr><td>Territory and economy</td><td class="n">7</td><td class="n">5</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">Territory is the weakest on standing out: posting cats is still more a "where" decision than a "who" decision. The proposed next step is to forecast two possible raid targets so that posting becomes a hedge.</p>
+  </section>
+
+  <footer>
+    Full documents are on the <code>design/cat-rpg-gdd</code> branch of the repository: start with <code>design/GDD.md</code>, then <code>design/reviews/final-assessment.md</code>. Frame sources and the shared art kit are in <code>design/previews/</code>.
+  </footer>
+</div>
