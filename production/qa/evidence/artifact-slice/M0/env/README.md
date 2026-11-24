@@ -57,23 +57,23 @@ cracks, a puddle, sandy patches and bricks break up the lane in orbits 1, 2, 5 a
 
 | Check | Measurement | Threshold | |
 |---|---|---|---|
-| Silhouette line width, Day / Dusk, 01 framing (cats) | median 2.34 / 1.55 px | 2.0 ± 0.5 px (L-3) | within |
-| Silhouette line width, Day, 85% render scale | median 2.53 px | 2.0 ± 0.5 px at output | **outside** |
+| Silhouette line width, Day / Dusk, 01 framing (cats) | median 0.04 / 0.04 px | 2.0 ± 0.5 px (L-3) | **outside** |
+| Silhouette line width, Day, 85% render scale | median 2.55 px | 2.0 ± 0.5 px at output | **outside** |
 | Ink ΔE2000 of line-core pixels vs #33273B, Day / Dusk | median 0 / 0 | ≤ 3 (L-2) | within |
-| **E-5 (inked figures)**, day-view01 | ink L* 17.8 vs ring 68.3: Δ 50.5; line ≥ 1.5 px on 97.7% of 222 samples (median 2.45, p10 2.03); excluded: 226 occluded, 3 interior gap, 0 on the blob; blobs yes (414 px), yes (14343 px) | Δ ≥ 35 L*; ≥ 90% ≥ 1.5 px; a blob under every cat | within |
-| **E-5 (inked figures)**, day-orbit0 | ink L* 17.8 vs ring 67.1: Δ 49.3; line ≥ 1.5 px on 99.0% of 289 samples (median 2.49, p10 2); excluded: 110 occluded, 1 interior gap, 4 on the blob; blobs yes (306 px), yes (4747 px) | Δ ≥ 35 L*; ≥ 90% ≥ 1.5 px; a blob under every cat | within |
-| **E-5 (inked figures)**, dusk-view01 | ink L* 17.8 vs ring 58.8: Δ 41; line ≥ 1.5 px on 69.5% of 371 samples (median 2.23, p10 0); excluded: 145 occluded, 2 interior gap, 0 on the blob; blobs yes (414 px), yes (14343 px) | Δ ≥ 35 L*; ≥ 90% ≥ 1.5 px; a blob under every cat | **outside** |
-| **E-5 (inked figures)**, dusk-orbit0 | ink L* 17.8 vs ring 58.5: Δ 40.7; line ≥ 1.5 px on 98.6% of 289 samples (median 2.49, p10 2); excluded: 110 occluded, 1 interior gap, 4 on the blob; blobs yes (306 px), yes (4747 px) | Δ ≥ 35 L*; ≥ 90% ≥ 1.5 px; a blob under every cat | within |
-| **E-5 (inked figures)**, day-view01-85 | ink L* 17.8 vs ring 68: Δ 50.2; line ≥ 1.5 px on 98.4% of 386 samples (median 2.64, p10 2.06); excluded: 145 occluded, 2 interior gap, 0 on the blob; blobs yes (413 px), yes (14352 px) | Δ ≥ 35 L*; ≥ 90% ≥ 1.5 px; a blob under every cat | within |
-| **E-5 (inked figures)**, day-orbit0-85 | ink L* 17.8 vs ring 67: Δ 49.2; line ≥ 1.5 px on 98.2% of 279 samples (median 2.63, p10 2.06); excluded: 111 occluded, 2 interior gap, 7 on the blob; blobs yes (305 px), yes (4751 px) | Δ ≥ 35 L*; ≥ 90% ≥ 1.5 px; a blob under every cat | within |
-| **E-5 (inked figures)**, day-orbit0-390w | ink L* 17.8 vs ring 76.1: Δ 58.3; line ≥ 1.5 px on 96.5% of 114 samples (median 1.96, p10 1.61); excluded: 70 occluded, 3 interior gap, 4 on the blob; blobs yes (2934 px) | Δ ≥ 35 L*; ≥ 90% ≥ 1.5 px; a blob under every cat | within |
-| Lit lane value, day-view01 | median L* 79.4 (p25 76.5; 170226 lit px) | ≥ 79 (carry-over 2) and ≤ 80 walkable band | within |
-| Lit lane value, dusk-view01 | median L* 66.4 (p25 64.3; 101048 lit px) | ≥ 79 (carry-over 2) and ≤ 80 walkable band | **outside** |
-| Lens proximity, all orbit and walk frames | worst: 37.78 of screen height (walk-day-03, low foliage card) | no low foliage card over 0.6 of screen height; no visible prop within 0.8 m of the lens | **outside** |
-| No neutral-grey shadow, day-view=01 | 0% of 384758 shaded px neutral; mean shade multiplier (R,G,B) 0.692, 0.68, 0.869; hue agreement with the phase shadow colour cos 1 | 0% neutral; tint toward the phase shadow (cos > 0.5) | within |
-| No neutral-grey shadow, dusk-view=01 | 0.27% of 280990 shaded px neutral; mean shade multiplier (R,G,B) 0.705, 0.597, 0.715; hue agreement with the phase shadow colour cos 0.98 | 0% neutral; tint toward the phase shadow (cos > 0.5) | within |
-| No neutral-grey shadow, day-orbit=2 | 0% of 320877 shaded px neutral; mean shade multiplier (R,G,B) 0.706, 0.665, 0.828; hue agreement with the phase shadow colour cos 0.98 | 0% neutral; tint toward the phase shadow (cos > 0.5) | within |
-| No neutral-grey shadow, dusk-orbit=5 | 0% of 197736 shaded px neutral; mean shade multiplier (R,G,B) 0.728, 0.6, 0.705; hue agreement with the phase shadow colour cos 0.9 | 0% neutral; tint toward the phase shadow (cos > 0.5) | within |
+| **E-5 (inked figures)**, day-view01 | ink L* 17.8 vs ring 67.9: Δ 50.1; line ≥ 1.5 px on 54.2% of 428 samples (median 1.69, p10 0); excluded: 129 occluded, 2 interior gap, 2 on the blob; blobs yes (414 px), yes (14772 px) | Δ ≥ 35 L*; ≥ 90% ≥ 1.5 px; a blob under every cat | **outside** |
+| **E-5 (inked figures)**, day-orbit0 | ink L* 17.8 vs ring 67.5: Δ 49.7; line ≥ 1.5 px on 98.8% of 324 samples (median 2.48, p10 2); excluded: 105 occluded, 2 interior gap, 4 on the blob; blobs yes (306 px), yes (4747 px) | Δ ≥ 35 L*; ≥ 90% ≥ 1.5 px; a blob under every cat | within |
+| **E-5 (inked figures)**, dusk-view01 | ink L* 17.8 vs ring 58.7: Δ 40.9; line ≥ 1.5 px on 54.4% of 428 samples (median 1.64, p10 0); excluded: 129 occluded, 2 interior gap, 2 on the blob; blobs yes (414 px), yes (14772 px) | Δ ≥ 35 L*; ≥ 90% ≥ 1.5 px; a blob under every cat | **outside** |
+| **E-5 (inked figures)**, dusk-orbit0 | ink L* 17.8 vs ring 58.8: Δ 41; line ≥ 1.5 px on 99.1% of 323 samples (median 2.46, p10 2); excluded: 105 occluded, 2 interior gap, 5 on the blob; blobs yes (306 px), yes (4747 px) | Δ ≥ 35 L*; ≥ 90% ≥ 1.5 px; a blob under every cat | within |
+| **E-5 (inked figures)**, day-view01-85 | ink L* 17.8 vs ring 68.3: Δ 50.6; line ≥ 1.5 px on 97.3% of 438 samples (median 2.67, p10 1.98); excluded: 136 occluded, 3 interior gap, 0 on the blob; blobs yes (413 px), yes (14783 px) | Δ ≥ 35 L*; ≥ 90% ≥ 1.5 px; a blob under every cat | within |
+| **E-5 (inked figures)**, day-orbit0-85 | ink L* 17.8 vs ring 67.4: Δ 49.6; line ≥ 1.5 px on 97.4% of 313 samples (median 2.62, p10 2); excluded: 105 occluded, 5 interior gap, 7 on the blob; blobs yes (305 px), yes (4751 px) | Δ ≥ 35 L*; ≥ 90% ≥ 1.5 px; a blob under every cat | within |
+| **E-5 (inked figures)**, day-orbit0-390w | ink L* 17.8 vs ring 75.8: Δ 58; line ≥ 1.5 px on 95.7% of 141 samples (median 1.95, p10 1.61); excluded: 71 occluded, 2 interior gap, 5 on the blob; blobs yes (2934 px) | Δ ≥ 35 L*; ≥ 90% ≥ 1.5 px; a blob under every cat | within |
+| Lit lane value, day-view01 | median L* 79.6 (p25 76.7; 168442 lit px) | ≥ 79 (carry-over 2; the high-key Day lane) | within |
+| Lit lane value, dusk-view01 | median L* 66.6 (p25 64.3; 100648 lit px) | observation (the Dusk key #FFC27A darkens the lane by design) | — |
+| Lens proximity, all orbit and walk frames | worst: 0.51 of screen height (walk-day-11, low foliage card) | no low foliage card over 0.6 of screen height; no visible prop within 0.8 m of the lens | within |
+| No neutral-grey shadow, day-view=01 | 0% of 383819 shaded px neutral; mean shade multiplier (R,G,B) 0.692, 0.68, 0.868; hue agreement with the phase shadow colour cos 1 | 0% neutral; tint toward the phase shadow (cos > 0.5) | within |
+| No neutral-grey shadow, dusk-view=01 | 0.27% of 279866 shaded px neutral; mean shade multiplier (R,G,B) 0.704, 0.596, 0.715; hue agreement with the phase shadow colour cos 0.98 | 0% neutral; tint toward the phase shadow (cos > 0.5) | within |
+| No neutral-grey shadow, day-orbit=2 | 0.01% of 317177 shaded px neutral; mean shade multiplier (R,G,B) 0.702, 0.665, 0.833; hue agreement with the phase shadow colour cos 0.99 | 0% neutral; tint toward the phase shadow (cos > 0.5) | within |
+| No neutral-grey shadow, dusk-orbit=5 | 0% of 197401 shaded px neutral; mean shade multiplier (R,G,B) 0.725, 0.601, 0.708; hue agreement with the phase shadow colour cos 0.92 | 0% neutral; tint toward the phase shadow (cos > 0.5) | within |
 | "Best on desktop" card, 390 × 844 touch | card shown; scrollWidth 390 / viewport 390 | shown, no horizontal scroll | within |
 | Card at 1920 × 1080, fine pointer | card not shown | not shown | within |
 
@@ -90,7 +90,7 @@ blob. What remains below 1.5 px is reported in the "line ≥ 1.5 px" share. Lit 
 (`?mask=shade`) in the 01 framing. Lens proximity: `__cat.lensCheck()` replays the card shader's lens cull and reports the largest
 remaining low foliage card (as a share of screen height) and any visible prop within 0.8 m. Shadows: `?mask=shade` marks shaded
 environment pixels, `?mask=albedo` gives the unlit albedo with the same haze; the shade multiplier actual / albedo is "neutral" when its
-channel spread is under 6% of its mean (very light shade or heavy haze, multiplier > 0.93, is skipped and counted: 27596 / 57879 / 73296 / 12003).
+channel spread is under 6% of its mean (very light shade or heavy haze, multiplier > 0.93, is skipped and counted: 28535 / 59003 / 76996 / 12338).
 These run on the environment as built; the cat checks measure whatever `src/render/cats/` currently draws.
 
 ## Performance (SwiftShader counts; frame time needs a real laptop, plan §4.8)
@@ -102,7 +102,7 @@ These run on the environment as built; the cat checks measure whatever `src/rend
 | Triangles per frame | 137208 | 137208 | ≤ 500k |
 | Texture memory (GPU estimate incl. mips, shadow map, post target) | 124.9 MB | 124.9 MB | ≤ 160 MB |
 | Baked environment textures (download) | 1.07 MB in 26 WebP files | | ≤ 8 MB |
-| game.js | 136 KB | | ≤ 1.5 MB |
+| game.js | 137 KB | | ≤ 1.5 MB |
 
 ## Run log
 
