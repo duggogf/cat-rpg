@@ -32,8 +32,9 @@ s.push(K.cloud({ x: 960, y: 344, w: 380, h: 170, seed: 21, opacity: 0.95 }));
 
 s.push(K.sea({ x: 560, y: HZ, w: 800, h: 90 }));
 s.push(`<rect x="560" y="${HZ - 5}" width="800" height="12" fill="#DDF1FA" opacity="0.7" filter="url(#k-soft)"/>`);
-s.push(K.hill({ pts: [[1030, 334], [1110, 322], [1210, 296], [1340, 262], [1500, 226], [1700, 204], [1930, 176]], baseY: 430, color: '#6DAE95', seed: 5 }));
-s.push(K.hill({ pts: [[640, 334], [700, 324], [760, 320], [830, 328], [880, 334]], baseY: 340, color: '#8CC0C4', seed: 9 }));
+s.push(K.hill({ pts: [[1030, 334], [1110, 322], [1210, 296], [1340, 262], [1500, 226], [1700, 204], [1930, 176]], baseY: 430, color: '#86BFAE', seed: 5 }));
+s.push(K.hill({ pts: [[560, 300], [640, 288], [720, 296], [800, 314], [880, 328], [960, 334]], baseY: 345, color: '#7DBBA6', seed: 9 }));
+s.push(K.hill({ pts: [[1040, 334], [1120, 318], [1230, 286], [1360, 250], [1520, 212], [1720, 190], [1930, 160]], baseY: 430, color: '#4F9E78', seed: 6 }));
 
 /* ---------- the lower town beyond the crest: roofs stepping down to the sea ---------- */
 const farRoof = (x, y, w, h, c) => K.roof({ quad: [[x + w * 0.12, y], [x + w * 0.88, y], [x + w, y + h], [x, y + h]], rows: 3, cols: 7, color: c || '#7E93A8' }) + `<rect x="${x + w * 0.06}" y="${y + h}" width="${w * 0.88}" height="${h * 0.9}" fill="#EFE3C8"/>`;
@@ -74,20 +75,28 @@ s.push(`<path d="M${P(1.6, 0, 10)[0]} ${P(1.6, 0, 10)[1]}L${P(1.6, 0, 1.6)[0]} $
 
 s.push(`<path d="M790 404L1010 404L1260 760L620 760Z" fill="#FFF4D6" opacity="0.3" filter="url(#k-soft)"/>`);
 
+{ const dc = P(0.42, 0, 1.86), rx = 124, ry = 40; let bars = ''; for (let i = -3; i <= 3; i++) bars += `<path d="M${dc[0] + i * 26 - 8} ${dc[1] - 30}L${dc[0] + i * 30 - 8} ${dc[1] + 30}" stroke="#5E5868" stroke-width="7" stroke-linecap="round"/>`;
+  s.push(`<g filter="url(#k-rough)"><ellipse cx="${dc[0]}" cy="${dc[1] + 4}" rx="${rx + 8}" ry="${ry + 5}" fill="#8C8074"/><ellipse cx="${dc[0]}" cy="${dc[1]}" rx="${rx}" ry="${ry}" fill="#A69C90"/><ellipse cx="${dc[0]}" cy="${dc[1] - 3}" rx="${rx - 10}" ry="${ry - 7}" fill="#B8AFA2"/><clipPath id="dcc"><ellipse cx="${dc[0]}" cy="${dc[1] - 3}" rx="${rx - 16}" ry="${ry - 11}"/></clipPath><g clip-path="url(#dcc)">${bars}</g></g>`); }
+s.push(`<g filter="url(#k-rough)" fill="none" stroke="#8C7C66" stroke-width="3" opacity="0.6"><path d="M560 1080l60 -60l90 -10l50 -46"/><path d="M1340 1040l-50 10l-30 40"/><path d="M1420 700l60 40l20 60"/></g>`);
+s.push(K.grass({ x1: 610, y1: 1024, x2: 700, y2: 1012, n: 5, h: 30, seed: 21 }) + K.grass({ x1: 1300, y1: 1050, x2: 1350, y2: 1040, n: 4, h: 26, seed: 22 }) + K.grass({ x1: 1460, y1: 742, x2: 1500, y2: 790, n: 4, h: 18, seed: 23 }) + K.grass({ x1: 1040, y1: 548, x2: 1070, y2: 580, n: 3, h: 12, seed: 24 }));
+
 /* ---------- left plaster wall (in shade; its lit coping is the High Road ribbon) ---------- */
 const wallQ = [[-200, -13], [770, 289], [770, 411.5], [-200, 1018]];
 const wp = (Y, d) => P(-1.6, Y, d);
 const quadW = (y0, y1, d0, d1) => 'M' + [wp(y1, d0), wp(y1, d1), wp(y0, d1), wp(y0, d0)].map((p) => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join('L') + 'Z';
 let scrib = ''; for (let i = 0; i < 5; i++) { const y = 1.06 - i * 0.085, a = wp(y, 5.42), b = wp(y, 5.42 + 0.5 + (i % 2) * 0.22); scrib += `<path d="M${a[0].toFixed(1)} ${a[1].toFixed(1)}Q${((a[0] + b[0]) / 2).toFixed(1)} ${((a[1] + b[1]) / 2 - 3).toFixed(1)} ${b[0].toFixed(1)} ${b[1].toFixed(1)}" stroke="#7A6E86" stroke-width="2.4" fill="none" stroke-dasharray="${9 + i * 2} 4 ${5 + i} 3" opacity="0.7"/>`; }
 const wallArt = `
-  <path d="${quadW(0.0, 1.5, 2.0, 2.9)}" fill="#F3E2C4" opacity="0.5" filter="url(#k-soft2)"/>
+  <path d="${quadW(0.0, 0.75, 1.4, 16)}" fill="#FFE2A6" opacity="0.5" filter="url(#k-soft2)"/>
+  <path d="${quadW(1.0, 1.5, 1.4, 16)}" fill="#7C79C8" opacity="0.26" filter="url(#k-soft2)" style="mix-blend-mode:multiply"/>
+  ${K.texture(-200, -20, 980, 1060, 'brush-v', 0.3)}
+  <path d="${quadW(0.0, 1.5, 2.0, 2.9)}" fill="#F3E2C4" opacity="0.4" filter="url(#k-soft2)"/>
   <path d="${quadW(0.5, 1.2, 7.4, 9.6)}" fill="#EFE1CC" opacity="0.6" filter="url(#k-soft)"/>
   <path d="${quadW(0.2, 0.9, 3.3, 3.9)}" fill="#C6B8C0" opacity="0.5" filter="url(#k-soft)"/>
   <path d="${quadW(0.55, 1.18, 5.3, 6.35)}" fill="#EFE7D2"/><path d="${quadW(1.08, 1.18, 5.3, 6.35)}" fill="#7E93B6" opacity="0.85"/>${scrib}
   <path d="M${wp(1.42, 4.1)[0]} ${wp(1.42, 4.1)[1]}l14 46l-10 38l16 50" stroke="#9A8C9C" stroke-width="2.5" fill="none" opacity="0.7"/>
   <path d="M${wp(1.4, 11)[0]} ${wp(1.4, 11)[1]}l6 22l-5 18" stroke="#9A8C9C" stroke-width="2" fill="none" opacity="0.7"/>
   <path d="${quadW(0.0, 0.22, 1.5, 16)}" fill="#6F9A5E" opacity="0.28" filter="url(#k-soft)"/>`;
-s.push(K.wall({ quad: wallQ, color: '#E4D6CB', top: '#D5CCDB', bottom: '#F1DDB9', grime: 0.3, copingH: 0.075, inner: wallArt }));
+s.push(K.wall({ quad: wallQ, color: '#DCCCC6', top: '#BFB6D2', bottom: '#F6DFB4', grime: 0.3, copingH: 0.075, inner: wallArt }));
 s.push(K.glow(480, 600, 480, 170, '#FFE9B8', 0.4)); // warm bounce from the lane
 s.push(`<path d="M${P(-1.6, 0, 16)[0]} ${P(-1.6, 0, 16)[1]}L${P(-1.6, 0, 1.4)[0]} ${P(-1.6, 0, 1.4)[1]}L${P(-1.48, 0, 1.4)[0]} ${P(-1.48, 0, 1.4)[1]}L${P(-1.52, 0, 16)[0]} ${P(-1.52, 0, 16)[1]}Z" fill="#8C7F88" opacity="0.55" filter="url(#k-rough)"/>`);
 s.push(K.surface({ pts: [[770, 280], [800, 286], [800, 408], [770, 411.5]], color: '#F6E9CC', grime: 0.1 })); // the wall's sunlit end face
@@ -103,18 +112,22 @@ s.push(K.wires({ pts: [[1190, -10], [600, 150]], sag: 46, width: 2.5 }) + K.wire
 const shEdge = (d) => P(-0.62, 0, d);
 let leaf = ''; const R = K.rng(77);
 for (let i = 0; i < 90; i++) { const d = 1.5 + Math.pow(R(), 1.5) * 13, p = P(-0.66 + (R() - 0.3) * 0.34, 0, d), r = (0.05 + R() * 0.1) * F / d; leaf += `<ellipse cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" rx="${r.toFixed(1)}" ry="${(r * 0.42).toFixed(1)}" transform="rotate(${Math.round(R() * 50 - 25)} ${p[0].toFixed(1)} ${p[1].toFixed(1)})"/>`; }
-s.push(`<g fill="#7F7CCF" opacity="0.46" style="mix-blend-mode:multiply"><path d="M770 411.5L${shEdge(16)[0]} 411.5L${shEdge(5)[0]} ${shEdge(5)[1]}L${shEdge(1.5)[0]} ${shEdge(1.5)[1]}L-200 1200L-200 1018Z"/><g filter="url(#k-dab)">${leaf}</g></g>`);
+s.push(`<path d="M${shEdge(16)[0]} 411.5L${shEdge(16)[0] + 40} 411.5L${shEdge(1.5)[0] + 420} 1100L${shEdge(1.5)[0]} 1100Z" fill="#FFE9A8" opacity="0.5" filter="url(#k-soft2)" style="mix-blend-mode:screen"/>`);
+s.push(`<g fill="#6F6CC4" opacity="0.6" style="mix-blend-mode:multiply"><path d="M770 411.5L${shEdge(16)[0]} 411.5L${shEdge(5)[0]} ${shEdge(5)[1]}L${shEdge(1.5)[0]} ${shEdge(1.5)[1]}L-200 1200L-200 1018Z"/><g filter="url(#k-dab)">${leaf}</g></g>`);
+{ let band = ''; const R2 = K.rng(91); for (let i = 0; i < 70; i++) { const d = 6.2 + R2() * 4.2, p = P(-0.7 + R2() * 2.3, 0, d), r = (0.1 + R2() * 0.22) * F / d; band += `<ellipse cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" rx="${r.toFixed(1)}" ry="${(r * 0.36).toFixed(1)}"/>`; }
+  s.push(`<g fill="#6F6CC4" opacity="0.5" style="mix-blend-mode:multiply" filter="url(#k-dab)">${band}</g>`); }
 // dappled sun inside the shadow
 let dap = ''; for (let i = 0; i < 9; i++) { const d = 2.0 + R() * 6, p = P(-1.4 + R() * 0.55, 0, d), r = (0.05 + R() * 0.07) * F / d; dap += `<ellipse cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" rx="${r.toFixed(1)}" ry="${(r * 0.36).toFixed(1)}"/>`; }
 s.push(`<g fill="#FFF3CF" opacity="0.5" filter="url(#k-leaf-fine)">${dap}</g>`);
-s.push(K.castShadow(`M${P(1.6, 0, 2)[0]} ${P(1.6, 0, 2)[1]}L${P(1.6, 0, 10)[0]} ${P(1.6, 0, 10)[1]}L${P(1.9, 0, 10)[0]} ${P(1.9, 0, 10)[1]}L${P(2.1, 0, 2)[0]} ${P(2.1, 0, 2)[1]}Z`, 0.3));
-const pb = P(1.45, 0, 7.4); s.push(K.castShadow(`M${pb[0] - 20} ${pb[1]}L${pb[0] + 22} ${pb[1]}L${pb[0] + 330} ${pb[1] + 46}L${pb[0] + 300} ${pb[1] + 60}Z`, 0.34));
+s.push(K.castShadow(`M${P(1.6, 0, 2)[0]} ${P(1.6, 0, 2)[1]}L${P(1.6, 0, 10)[0]} ${P(1.6, 0, 10)[1]}L${P(1.9, 0, 10)[0]} ${P(1.9, 0, 10)[1]}L${P(2.1, 0, 2)[0]} ${P(2.1, 0, 2)[1]}Z`, 0.42));
+const pb = P(1.45, 0, 7.4); s.push(K.castShadow(`M${pb[0] - 20} ${pb[1]}L${pb[0] + 22} ${pb[1]}L${pb[0] + 330} ${pb[1] + 46}L${pb[0] + 300} ${pb[1] + 60}Z`, 0.5, 'contact'));
 
 /* ---------- planting: spill-over greenery, hydrangeas, grass ---------- */
 s.push(K.foliage({ x: 130, y: 170, w: 420, h: 220, seed: 57 }));
 s.push(K.foliage({ x: 20, y: 330, w: 260, h: 260, seed: 58, tones: { dark: '#2A6245', mid: '#4C8F4A', light: '#7DB857', hi: '#B5D873' } }));
 s.push(K.foliage({ x: 640, y: 292, w: 150, h: 80, seed: 59 }));
-s.push(K.castShadow('M180 250Q300 330 420 300Q380 400 250 400Q170 360 180 250Z', 0.22));
+s.push(K.castShadow('M150 240Q300 330 450 290Q420 430 260 440Q150 380 150 240Z', 0.3, 'soft2'));
+s.push(K.castShadow('M560 300Q640 350 730 330Q720 400 640 400Q570 370 560 300Z', 0.28, 'soft2'));
 s.push(K.foliage({ x: 300, y: 228, w: 250, h: 150, seed: 60 }));
 s.push(K.flowers({ x: P(1.42, 0, 5.2)[0], y: P(1.42, 0.22, 5.2)[1], w: 210, h: 92, seed: 6 }));
 s.push(K.flowers({ x: P(1.45, 0, 8.6)[0], y: P(1.45, 0.2, 8.6)[1], w: 120, h: 54, seed: 9, n: 5 }));
@@ -135,19 +148,19 @@ s.push(K.cat({ ...K.CAST.braggart, pose: 'front-sit', expr: 'smug', x: rv.x, y: 
 
 /* ---------- the Scent Post: stone lantern, two sage wisps (held by the Wall Sitters, below Strong) ---------- */
 const lp = P(0.6, 0, 4.2);
-s.push(K.castShadow(`M${lp[0] - 30} ${lp[1] - 4}L${lp[0] + 40} ${lp[1] - 6}L${lp[0] + 300} ${lp[1] + 26}L${lp[0] + 250} ${lp[1] + 44}Z`, 0.36));
+s.push(K.castShadow(`M${lp[0] - 30} ${lp[1] - 4}L${lp[0] + 40} ${lp[1] - 6}L${lp[0] + 300} ${lp[1] + 26}L${lp[0] + 250} ${lp[1] + 44}Z`, 0.52, 'contact'));
 s.push(K.stoneLantern({ x: lp[0], y: lp[1], scale: 1.36 }));
 s.push(K.scentWisps({ x: lp[0] + 4, y: lp[1] - 376, count: 2, h: 120, color: C.sage, seed: 4 }));
 
 /* ---------- Mikan, from behind ---------- */
 const mk = { x: 900, y: 936 };
-s.push(K.castShadow(`M${mk.x - 40} ${mk.y - 6}L${mk.x + 40} ${mk.y - 12}L${mk.x + 250} ${mk.y + 14}L${mk.x + 190} ${mk.y + 34}Z`, 0.34));
+s.push(`<path d="${K.blob([[mk.x - 60, mk.y - 2], [mk.x - 10, mk.y - 16], [mk.x + 90, mk.y - 14], [mk.x + 215, mk.y + 4], [mk.x + 262, mk.y + 22], [mk.x + 200, mk.y + 38], [mk.x + 60, mk.y + 26], [mk.x - 30, mk.y + 14]])}" fill="#6F6CC4" opacity="0.55" filter="url(#k-contact)" style="mix-blend-mode:multiply"/>`);
 s.push(K.cat({ ...K.CAST.mikan, pose: 'back', x: mk.x, y: mk.y, scale: 2.15 }));
 s.push(K.ticks({ x: mk.x, y: mk.y - 66, r: 38, n: 2, a0: 200, a1: 165, len: 13 }) + K.ticks({ x: mk.x, y: mk.y - 66, r: 38, n: 2, a0: -20, a1: 15, len: 13 }));
 
 /* ---------- a passer-by, as weather: legs, hem, shopping ---------- */
 const hm = { x: 1640, y: 1010 };
-s.push(K.castShadow(`M${hm.x - 150} ${hm.y - 6}L${hm.x + 110} ${hm.y - 16}L${hm.x + 420} ${hm.y + 40}L${hm.x + 60} ${hm.y + 60}Z`, 0.36));
+s.push(K.castShadow(`M${hm.x - 150} ${hm.y - 6}L${hm.x + 110} ${hm.y - 16}L${hm.x + 420} ${hm.y + 40}L${hm.x + 60} ${hm.y + 60}Z`, 0.55, 'contact'));
 s.push(K.human({ pose: 'walk', palette: 'street', garment: 'skirt', carry: 'bag', x: hm.x, y: hm.y, scale: 2.02, flip: true, shadow: false }));
 
 /* ---------- foreground framing + light ---------- */
