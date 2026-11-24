@@ -56,9 +56,9 @@ export function buildCast(o) {
     round: { hw: 0.044, h: 0.07, tip: 0.0, th: 0.022 },
   }[o.ears || 'standard'];
   const ears = [1, -1].map((s) => {
-    const base = [headC[0] + s * 0.047 * hs, headC[1] + 0.05 * hs, headC[2] - 0.016 * hs];
+    const base = [headC[0] + s * 0.041 * hs, headC[1] + 0.054 * hs, headC[2] - 0.016 * hs];
     pos[s > 0 ? 'earL' : 'earR'] = base;
-    const up = v3.norm([s * 0.62, 1, -0.16]);
+    const up = v3.norm([s * 0.78, 1, -0.16]);
     const F = frame(base, up, [s * 0.62, 0, 1]);
     const E = earShape, sc = hs;
     return { t: 'ear', F, A: [-E.hw * sc, -0.01], B: [E.hw * sc, -0.01], C: [s * E.tip * sc, E.h * sc],
@@ -104,14 +104,14 @@ export function buildCast(o) {
   const head = [];
   const H = (x) => head.push(x);
   const hc = headC;
-  H({ t: 'ell', c: hc, r: [0.094 * hs, 0.082 * hs, 0.09 * hs], bone: 'head', k: 0 }); // round cranium, round from the side too
-  for (const s of [1, -1]) H({ t: 'ell', c: [hc[0] + s * 0.052 * hs, hc[1] - 0.019 * hs, hc[2] + 0.02 * hs], r: [0.062 * hs * (o.build === 'round' ? 1.08 : 1), 0.05 * hs, 0.064 * hs], bone: 'head', k: 0.034 });
+  H({ t: 'ell', c: hc, r: [0.086 * hs, 0.082 * hs, 0.09 * hs], bone: 'head', k: 0 }); // round cranium; narrower than the cheeks (a dome from behind)
+  for (const s of [1, -1]) H({ t: 'ell', c: [hc[0] + s * 0.052 * hs, hc[1] - 0.019 * hs, hc[2] + 0.02 * hs], r: [0.068 * hs * (o.build === 'round' ? 1.08 : 1), 0.052 * hs, 0.064 * hs], bone: 'head', k: 0.034 });
   // lifted muzzle: a small stop under the brow (low blend), the nose tip the most forward point, chin tucked back
-  H({ t: 'ell', c: [hc[0], hc[1] - 0.039 * hs, hc[2] + 0.068 * hs], r: [0.037 * hs, 0.026 * hs, 0.034 * hs], bone: 'head', k: 0.016 });
-  H({ t: 'ell', c: [hc[0], hc[1] - 0.026 * hs, hc[2] + 0.1 * hs], r: [0.014 * hs, 0.01 * hs, 0.011 * hs], bone: 'head', k: 0.012 }); // small upturned nose tip
+  H({ t: 'ell', c: [hc[0], hc[1] - 0.038 * hs, hc[2] + 0.074 * hs], r: [0.037 * hs, 0.026 * hs, 0.034 * hs], bone: 'head', k: 0.016 });
+  H({ t: 'ell', c: [hc[0], hc[1] - 0.025 * hs, hc[2] + 0.107 * hs], r: [0.014 * hs, 0.01 * hs, 0.011 * hs], bone: 'head', k: 0.012 }); // small upturned nose tip
   H({ t: 'ell', c: [hc[0], hc[1] - 0.058 * hs, hc[2] + 0.063 * hs], r: [0.02 * hs, 0.012 * hs, 0.016 * hs], bone: 'head', k: 0.012 });
   // crown dome between the ears (from behind: a soft dome, not a box with ear tabs)
-  H({ t: 'ell', c: [hc[0], hc[1] + 0.046 * hs, hc[2] - 0.008 * hs], r: [0.058 * hs, 0.042 * hs, 0.066 * hs], bone: 'head', k: 0.03 });
+  H({ t: 'ell', c: [hc[0], hc[1] + 0.05 * hs, hc[2] - 0.01 * hs], r: [0.05 * hs, 0.044 * hs, 0.064 * hs], bone: 'head', k: 0.03 });
   for (const e of ears) H(e);
 
   // ---- tail shell

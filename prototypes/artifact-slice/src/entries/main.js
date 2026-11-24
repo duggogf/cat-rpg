@@ -148,24 +148,17 @@ function render() {
   shadowDirty = true; // foliage sways and the dapple drifts: the sun shadow is re-rendered every frame
   if (shadowDirty) { shadow.update(renderer, [envScene, lateScene], world.casters); shadowDirty = false; lastStats.shadowCalls = shadow.calls; renderer.info.reset(); }
   cam.updateMatrixWorld();
-  if (opt.mask === 'catsTop' || opt.mask === 'blobs') {
-    renderer.setClearColor(0x000000, 1); renderer.setRenderTarget(null); renderer.clear();
-    const black = new THREE.MeshBasicMaterial({ color: 0x000000 }); envScene.overrideMaterial = black; renderer.render(envScene, cam); envScene.overrideMaterial = null;
-    if (opt.mask === 'catsTop') renderer.clearDepth();
-    const hidden = []; lateScene.traverse((o) => { if (!o.isMesh) return; const blob = o.material.transparent; const keep = isCat(o) && (opt.mask === 'blobs' ? blob : !blob); if (!keep) { hidden.push(o); o.visible = false; } });
-    const mats = new Map(); lateScene.traverse((o) => { if (o.isMesh && o.visible) { mats.set(o, o.material); o.material = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide, depthTest: opt.mask === 'blobs' }); } });
+  if (opt.mask === 'cats' || opt.mask === 'catsTop' || opt.mask === 'blobs') {
+    // depth from the real environment pass (through the real paint post, whose wobble displaces depth), then colour cleared:
+    // overriding env materials would break the instanced foliage cards, so the frame is drawn as shipped
+    if (opt.post) { renderer.setRenderTarget(post.rt); renderer.clear(); renderer.render(envScene, cam); post.render(renderer); }
+    else { renderer.setRenderTarget(null); renderer.clear(); renderer.render(envScene, cam); }
+    renderer.setClearColor(0x000000, 1); renderer.clear(true, opt.mask === 'catsTop', false);
+    const blobs = opt.mask === 'blobs';
+    const hidden = []; lateScene.traverse((o) => { if (!o.isMesh) return; const keep = isCat(o) && (blobs ? o.material.transparent : !o.material.transparent); if (!keep) { hidden.push(o); o.visible = false; } });
+    const mats = new Map(); lateScene.traverse((o) => { if (o.isMesh && o.visible) { mats.set(o, o.material); o.material = new THREE.MeshBasicMaterial({ color: 0xffffff, side: blobs ? THREE.DoubleSide : THREE.FrontSide, depthTest: opt.mask !== 'catsTop' }); } });
     renderer.autoClear = false; renderer.render(lateScene, cam); renderer.autoClear = true;
     for (const [o, m] of mats) o.material = m; hidden.forEach((o) => { o.visible = true; });
-    return;
-  }
-  if (opt.mask === 'cats') {
-    // environment as black depth, through the same paint post as the real frame (its edge wobble displaces depth too)
-    const black = new THREE.MeshBasicMaterial({ color: 0x000000 }); envScene.overrideMaterial = black; renderer.setClearColor(0x000000, 1);
-    if (opt.post) { renderer.setRenderTarget(post.rt); renderer.clear(); renderer.render(envScene, cam); envScene.overrideMaterial = null; post.render(renderer); }
-    else { renderer.setRenderTarget(null); renderer.clear(); renderer.render(envScene, cam); envScene.overrideMaterial = null; }
-    const hidden = []; lateScene.traverse((o) => { if (o.isMesh && (o.material.transparent || !isCat(o))) { hidden.push(o); o.visible = false; } });
-    lateScene.overrideMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff }); renderer.autoClear = false; renderer.render(lateScene, cam); renderer.autoClear = true;
-    lateScene.overrideMaterial = null; hidden.forEach((o) => { o.visible = true; });
     return;
   }
   U.debugMode.value = opt.mask === 'shade' ? 1 : opt.mask === 'albedo' ? 2 : 0;

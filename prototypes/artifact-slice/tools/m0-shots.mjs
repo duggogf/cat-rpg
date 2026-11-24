@@ -100,7 +100,10 @@ for (const ph of ['day', 'dusk']) {
 }
 
 /* 3. pixel checks */
-async function figureChecks(key, q, img, opts = {}) {
+async function figureChecks(key, q, _img, opts = {}) {
+  // the frame is re-shot back-to-back with its masks: the cat module is being edited in parallel, so a frame from
+  // minutes earlier can disagree with a fresh mask
+  const img = (await shot(q, opts)).img;
   const mk = (m) => shot(`${q}&mask=${m}`, opts);
   const [mc, mt, mb] = [await mk('cats'), await mk('catsTop'), await mk('blobs')];
   if (opts.saveMasks) for (const [n, r] of [['cats', mc], ['catsTop', mt], ['blobs', mb]]) fs.writeFileSync(path.join(OUT, `mask-${n}-${key}.png`), writePNG(r.img));
@@ -224,7 +227,7 @@ artefacts, now classified and excluded with counts shown: (a) *occluded* edges, 
 (the Wall Sitter's base behind the coping; \`?mask=catsTop\` draws the cats over everything to detect it), which correctly carry no line;
 (b) *interior gaps* where the ray re-enters the figure within 16 px (between the back and the pom); (c) ear tips where the fill mask is
 a pixel or two larger than the drawn ear, closed by starting the walk 3 px inside the mask; and (d) downward edges resting on the contact
-blob. What remains below 1.5 px is reported in the "line ≥ 1.5 px" share. Lit lane value: median L* of lit, non-figure lane pixels
+blob. Each frame is shot back-to-back with its three masks. What remains below 1.5 px is reported in the "line ≥ 1.5 px" share. Lit lane value: median L* of lit, non-figure lane pixels
 (\`?mask=shade\`) in the 01 framing. Lens proximity: \`__cat.lensCheck()\` replays the card shader's lens cull and reports the largest
 remaining low foliage card (as a share of screen height) and any visible prop within 0.8 m. Shadows: \`?mask=shade\` marks shaded
 environment pixels, \`?mask=albedo\` gives the unlit albedo with the same haze; the shade multiplier actual / albedo is "neutral" when its

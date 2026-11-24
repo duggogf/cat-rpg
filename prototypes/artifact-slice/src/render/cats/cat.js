@@ -160,13 +160,13 @@ export function createCatInternal({ cast = 'mikan', scale = 1.25, carry, silhoue
     U.uFaceOn.value = silhouette || far ? 0 : 1;
     // eyes: the camera's yaw around the head, in rest (bind) space. The eye on the camera's side turns
     // its projection axis toward the camera (up to 68°) and slides its anchor round the skull (up to
-    // 30°: a sliver of cheek stays ahead of the eye in profile), continuously, so it reads as a round eye side-on; front-on both axes are +Z (the kit face).
+    // 45°: cheek and muzzle stay ahead of the eye in profile), continuously, so it reads as a round eye side-on; front-on both axes are +Z (the kit face).
     camRest.copy(camera.position); invHead.copy(bones.head.matrixWorld).invert(); camRest.applyMatrix4(invHead).add(headRest);
     const psi = Math.atan2(camRest.x - meta.headC[0], camRest.z - meta.headC[2]);
     for (let e = 0; e < 2; e++) {
       const sd = e === 0 ? -1 : 1;
       let gw = Math.min(1, Math.max(0, sd * psi / (Math.PI / 2))); gw = gw * gw * (3 - 2 * gw);
-      const a = sd * gw * 68 * Math.PI / 180, ac = sd * gw * 30 * Math.PI / 180, grow = 1 + 0.12 * gw;
+      const a = sd * gw * 68 * Math.PI / 180, ac = sd * gw * 45 * Math.PI / 180, grow = 1 + 0.12 * gw;
       U.uEyeAx.value[e].set(Math.sin(a), 0, Math.cos(a));
       U.uEyeT.value[e].set(Math.cos(a), 0, -Math.sin(a)).multiplyScalar(1 / grow); // |T| < 1: the eye grows a little side-on
       const c0 = eyeC0[e], dx = c0.x - meta.headC[0], dz = c0.z - meta.headC[2];

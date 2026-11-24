@@ -48,4 +48,10 @@ scale is 1.25.
 - **Front legs:** moved 4.4 cm forward, so they drop from the shoulder at the upper front of the chest, under the neck base, with the chest slightly ahead of them (cf. the anatomy wireframe).
 - **Legs overall:** slightly longer.
 
-Awaiting the art director's anatomy and appeal review before the owner sees it.
+
+**AD anatomy review fixes (`review-art-director-anatomy.md`).**
+1. **Walk ink wedge (blocker).** The swinging foreleg's wrist was folding inside out at an 86° bend, which exposed the hull's back faces as solid ink. Now the leg skin weights blend over twice the distance, lift comes mostly from the shoulder and hip, wrist and hock bends stay under about 55°, and the hull pull on legs is capped at 0.8 cm. All 8 walk frames and `04` are clean.
+2. **Front view.** Forelegs slimmer on the inner face and 4 mm further apart, so there is daylight up to the elbow. A convex bib leads the legs by about 1 cm.
+3. **Head from behind.** The skull is narrower than the cheeks; the ears are set in about 10% of head width and splayed about 10° more; a crown dome sits between them. It reads as a dome, not a box (`07`, `16` at 180°).
+4. **Profile.** The muzzle is about 1 cm further forward with the nose lifted. The near eye's anchor slides 45° round the skull, so cheek and muzzle lead the eye. The reviewer suggested capping the slide at 30°, but a smaller slide moves the eye forward; raising it gives the cheek-ahead-of-eye result the review asked for. Front-on is unaffected (`18`).
+5. **Hind leg.** The hock is raised about 1 cm and given a heel point. The foot is near vertical, and the paw sits about 1.4 cm forward under the back of the rump.
