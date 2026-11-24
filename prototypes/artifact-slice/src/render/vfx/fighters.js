@@ -142,12 +142,12 @@ export class Fighter {
     this.prevPos.copy(this.pos);
     this.root.position.copy(this.pos);
     // AI intent (M1.1 §4): the sim's `intent` when it publishes one, else read from motion vs the nearest opponent
-    const SIM_INTENT = { circle: 'circle', circling: 'circle', posture: 'posture', flank: 'flank', dash_in: 'dash_in', dash: 'dash_in', engage: 'dash_in', retreat: 'retreat', back_off: 'retreat', feint: 'posture', strut: 'posture', hang_back: 'retreat' };
+    const SIM_INTENT = { circle: 'circle', posture: 'posture', flank: 'flank', dash_in: 'dash_in', retreat: 'retreat', feint: 'feint', strut: 'strut', hold: 'hold', sidestep: 'circle', stalk: 'stalk', pace: 'stalk', attack: 'neutral', ground: 'neutral' };
     // the sim's intent when it is specific; its default 'stalk' (or none) is refined from motion
     const intent = this.intent = (e.intent && SIM_INTENT[e.intent]) || deriveIntent(e, this.vel, e._opp);
     // cats square off: while circling, stalking, posturing or backing off, the body faces the opponent
     let wantYaw = Math.atan2(e.facing[0], e.facing[1]);
-    if (e._opp && ['circle', 'stalk', 'posture', 'flank', 'retreat'].includes(intent)) wantYaw = Math.atan2(e._opp.dir[0], e._opp.dir[1]);
+    if (e._opp && ['circle', 'stalk', 'posture', 'flank', 'retreat', 'strut', 'hold', 'feint'].includes(intent)) wantYaw = Math.atan2(e._opp.dir[0], e._opp.dir[1]);
     this.yaw = lerpAngle(this.yaw, wantYaw, Math.min(1, dtReal * 9));
     this.root.rotation.y = this.yaw;
 
@@ -157,9 +157,10 @@ export class Fighter {
     const speed = Math.hypot(this.vel.x, this.vel.z);
     // move-out gradient: after an attack the walk cadence ramps up over ~0.25 s instead of snapping
     const attacking = a === 'string' || a === 'atk' || a === 'charge' || a.startsWith('move_');
-    if (attacking) this.walkRamp = 0; else this.walkRamp = Math.min(1, (this.walkRamp ?? 1) + dtReal * 4);
+    if (e.can_move != null) this.walkRamp = e.can_move;   // the sim's move-out gradient (0 in startup/hit/early recovery, ramps to 1)
+    else if (attacking) this.walkRamp = 0; else this.walkRamp = Math.min(1, (this.walkRamp ?? 1) + dtReal * 4);
     const stalkSlow = ['circle', 'stalk', 'flank', 'retreat'].includes(intent) ? 0.75 : 1;
-    if (speed > 0.25 && !attacking && a !== 'skitter') this.cat.setGait('walk', Math.min(3.2, Math.max(0.9, speed * stalkSlow)) * (0.35 + 0.65 * this.walkRamp));
+    if (speed > 0.25 && (!attacking || this.walkRamp > 0.05) && a !== 'skitter') this.cat.setGait('walk', Math.min(3.2, Math.max(0.9, speed * stalkSlow)) * (0.35 + 0.65 * this.walkRamp));
     else this.cat.setGait('idle', 0);
     const vy = this.vel.y;
     switch (a) {
@@ -189,6 +190,9 @@ export class Fighter {
       else if (intent === 'circle' || intent === 'stalk' || intent === 'flank') { sy *= 0.86; sxz *= 1.05; lean += 0.1; roll += (e._side || 1) * 0.05; }
       else if (intent === 'retreat') { sy *= 0.84; lean -= 0.16; }
       else if (intent === 'dash_in') { sz *= 1.22; sy *= 0.9; lean += 0.22; }
+      else if (intent === 'strut') { const j = Math.floor(tw * 4) % 2; sy *= 1.08; lean -= 0.1; roll += j ? 0.04 : -0.04; }   // Braggart: chest out, swaggering
+      else if (intent === 'hold') { sy *= 0.94; sxz *= 1.05; }                                                              // Stalwart: planted
+      else if (intent === 'feint') { const j = Math.floor(tw * 8) % 2; fwd += j ? 0.08 : -0.02; lean += j ? 0.12 : -0.05; }
     }
     // anticipation: the attack anim's first frames coil back (light: 2 frames; heavy / Moves: longer wind-up)
     if (a.startsWith('move_') && this.lastAnim !== a) this.impulse('coil', tw, { dur: 0.3 });

@@ -37,7 +37,7 @@ export class Cinematics {
   constructor({ renderer, cam, scr, lateScene, fGroup }) {
     this.renderer = renderer; this.cam = cam; this.scr = scr; this.late = lateScene; this.fGroup = fGroup;
     this.cutCam = new THREE.PerspectiveCamera(26, 1, 0.05, 50);
-    this.bgMat = new THREE.ShaderMaterial({ uniforms: { panel: { value: new THREE.Color() }, ink: { value: new THREE.Color('#33273B') }, centre: { value: new THREE.Vector2() },
+    this.bgMat = new THREE.ShaderMaterial({ uniforms: { panel: { value: new THREE.Color() }, ink: { value: new THREE.Color(0x33 / 255, 0x27 / 255, 0x3B / 255) }, centre: { value: new THREE.Vector2() },
       res: { value: new THREE.Vector2(1920, 1080) }, wipe: { value: 3 }, seed: { value: 1 }, inner: { value: 0.3 } }, vertexShader: bgVert, fragmentShader: bgFrag, depthTest: false, depthWrite: false });
     this.bgScene = new THREE.Scene(); const q = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), this.bgMat); q.frustumCulled = false; this.bgScene.add(q);
     this.orth = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
@@ -62,10 +62,15 @@ export class Cinematics {
     const C = this.chain, c = C.cats[C.i];
     c.f.impulse('hiss', t, { dur: C.per * 0.5 }); c.f.impulse('strike', t + C.per * 0.55, { mag: 1.6, dur: C.per * 0.4 });
     // panel: the cat's colour, scaled to the frame's mean luminance (art bible §10.4 panel luminance rule)
-    const col = new THREE.Color(styleOf(c.catId).col); const lin = col.clone().convertSRGBToLinear();
-    const L = 0.2126 * lin.r + 0.7152 * lin.g + 0.0722 * lin.b, k = Math.min(3, (C.mean || 0.4) / Math.max(0.02, L));
-    lin.multiplyScalar(k); lin.r = Math.min(1, lin.r); lin.g = Math.min(1, lin.g); lin.b = Math.min(1, lin.b);
-    this.panel = lin.convertLinearToSRGB();
+    // (raw sRGB maths: THREE.Color would colour-manage the hex once more)
+    const toL = (v) => (v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)), toS = (v) => (v <= 0.0031308 ? v * 12.92 : 1.055 * Math.pow(v, 1 / 2.4) - 0.055);
+    const n = parseInt(styleOf(c.catId).col.slice(1), 16);
+    let lin = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((v) => toL(v / 255));
+    // DR-50: never a saturated-red field (linear R/(R+G+B) >= 0.8): pull red-leaning colours toward Cream until < 0.72
+    for (let i = 0; i < 8 && lin[0] / (lin[0] + lin[1] + lin[2]) >= 0.72; i++) lin = lin.map((v, k) => v + ([1, 0.92, 0.78][k] - v) * 0.15);
+    const L = 0.2126 * lin[0] + 0.7152 * lin[1] + 0.0722 * lin[2], k = Math.min(3, (C.mean || 0.4) / Math.max(0.02, L));
+    lin = lin.map((v) => Math.min(1, v * k));
+    this.panel = new THREE.Color(); this.panel.r = toS(lin[0]); this.panel.g = toS(lin[1]); this.panel.b = toS(lin[2]);
     c.t0 = t;
     this.scr.add({ kind: 'cutin', dur: C.per, name: (c.special || styleOf(c.catId).special), who: c.name, col: styleOf(c.catId).col, idx: C.i, of: C.cats.length, fid: c.id });
   }
@@ -95,7 +100,7 @@ export class Cinematics {
     const drawn = Math.floor(u / TWO);
     const out = C.per - u < 2 * TWO;             // wipe out over 2 drawings
     const size = R.getDrawingBufferSize(new THREE.Vector2());
-    const B = this.bgMat.uniforms; B.res.value.copy(size); B.panel.value.copy(this.panel);
+    const B = this.bgMat.uniforms; B.res.value.copy(size); B.panel.value.setRGB(this.panel.r, this.panel.g, this.panel.b);
     B.centre.value.set(size.x * 0.42, size.y * 0.5); B.seed.value = C.seed;
     B.wipe.value = (C.external ? C.first : C.i === 0) ? Math.min(3, drawn) : 3;
     if (out && C.i === C.cats.length - 1 && !C.external) B.wipe.value = Math.max(0, Math.floor((C.per - u) / TWO));

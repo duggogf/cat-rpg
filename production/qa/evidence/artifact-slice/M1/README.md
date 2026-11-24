@@ -121,6 +121,10 @@ and lights in the caster's colour when that cat uses a Move. A lock-on reticle m
 SPECIAL prompt appears over a staggered enemy when Mikan's meter is ready. The key strip reads Tab Lock · R Skills ·
 P Pause.
 
+**M1.1 numbers:** flash screening on the 10 s Special-chain capture (stagger, four cut-ins, Team finisher): 0 flashes/s, 2 per 5 s, red-change area 0.7% — all pass. The first M1.1 capture FAILED the red rule: the ginger cut-in panel was double colour-managed and showed as a saturated orange-red field (76% of the screen); the panel is now raw-sRGB and red-leaning colours are pulled toward Cream. Latency: a light's first active frame lands 2 ticks after the press (≤ 3 required); clicks 2 and 3 (4 ticks apart) were dropped by the one-slot buffer. 10-cat brawl: 0.23–0.49 M triangles (median 0.36 M).
+
+**M1.1 weak spots:** the staggered cat can still sit behind Mikan in the zoom (the ≈ 30° swing helps but does not always clear her); forced crew skills need the target in range, so `skillbar-cast.png` may show the queued pom rather than the cast; gamepad untested; no audio.
+
 ## Known gaps / deviations (for the art + creative directors)
 
 - **Combat poses are procedural** (lunge, recoil, squash, arch, puff, splat) on a wrapper: the cat rig has only

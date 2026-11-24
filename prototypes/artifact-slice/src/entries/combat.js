@@ -171,7 +171,7 @@ function onEvent(ev) {
     case 'Hit': {
       const fa = F(ev.attacker), ft = F(ev.target); if (!ft) break;
       const ea = ent(ev.attacker), cp = contactPoint(fa, ft), ht = ev.hit_type || hitTypeOf(ea);
-      if (fa) fa.impulse('strike', tw, { mag: ev.kind === 'finisher' || (ev.feel && ev.feel.tier >= 3) ? 1.4 : 1 });
+      if (fa && !ev.attack) fa.impulse('strike', tw, { mag: ev.kind === 'finisher' || (ev.feel && ev.feel.tier >= 3) ? 1.4 : 1 });
       ft.impulse('hurt', tw, { mag: ev.blocked ? 0.4 : Math.min(1.6, 0.6 + (ev.feel?.tier || 0) * 0.25) });
       if (!ev.blocked && (ev.feel?.tier ?? 0) >= 1) ft.flash(tw, 2);
       const facingRot = Math.atan2(cp.dir[1], cp.dir[0]) * 0.5;
@@ -268,6 +268,7 @@ function onEvent(ev) {
       scr.letter({ cls: 'dust_cloud', ms: 340, tier: 4, hitType: ev.style === 'Bruiser' ? 'thump' : ev.style === 'Yowler' ? 'yowl' : 'claw', text: W[ev.beat % W.length], seed: ev.beat });
       if (ev.feel?.shake) ccam.addShake(ev.feel.shake, realT, [0, 1]);
     } break;
+    case 'SkillBarOpen': case 'SkillBarClose': ccam.blend(COMBAT_CAM.sbBlend); break;
     case 'SpecialChainStart': chainMean = measureMean(); hud.showChrome(false); break;
     case 'SpecialCutIn': {
       const e = ent(ev.cat), f = F(ev.cat); if (!e || !f) break;
@@ -284,7 +285,8 @@ function onEvent(ev) {
     case 'Dash': { const f = F(ev.cat); if (f) { fx.dust('3-puff ring', f.pos); scr.add({ kind: 'streak', from: f.pos.clone().add(new THREE.Vector3(0, 0.3, 0)), to: f.pos.clone().add(new THREE.Vector3(Math.sin(f.yaw), 0.3, Math.cos(f.yaw))), dur: 0.2, seed: 1, len: 140 }); } break; }
     case 'AttackStart': { const f = F(ev.cat); if (f) { const heavy = /^(H|HC|FIN|LAUNCH)$/.test(ev.attack); f.impulse('coil', tw, { dur: heavy ? 0.14 : 0.05 }); } break; }
     case 'InputBuffered': case 'InputDropped': latencyLog.push({ type: ev.type, tick: ev.tick, attack: ev.attack }); break;
-    case 'AttackActive': latencyLog.push({ type: ev.type, tick: ev.tick, attack: ev.attack, latency_ticks: ev.latency_ticks }); break;
+    case 'AttackActive': { const f = F(ev.cat); if (f) { const heavy = /^(H|HC|FIN|LAUNCH)$/.test(ev.attack); f.impulse('strike', tw, { mag: heavy ? 1.5 : 1.05, dur: heavy ? 0.42 : 0.3 }); } }
+      latencyLog.push({ type: ev.type, tick: ev.tick, attack: ev.attack, latency_ticks: ev.latency_ticks }); break;
     case 'PileOnEnd': {
       if (pile) { pile.phase = 'out'; pile.outT = 0; pile.screen = pile.anchor || project(pile.centerW.clone().add(new THREE.Vector3(0, 0.35, 0))); }
       const at = pile ? pile.centerW.clone().add(new THREE.Vector3(0, 0.4, 0)) : new THREE.Vector3();
@@ -449,7 +451,7 @@ function present(dt, alpha, menu = [], cut = null) {
     }
     f.update(le, cut && cut.id === e.id ? dt : frozen ? 0 : dt * (s.slow_blink ? 0.05 : 1), realT, tw, dt);
     // posturing cats hiss and lash (a hiss glyph every ~1.6 s, staggered per cat); dash-ins leave a streak
-    if (!skipDraw && f.root.visible && f.intent === 'posture' && e.side === 'enemy' && (!f.hissT || realT - f.hissT > 1.6 + (e.id.length % 3) * 0.4)) {
+    if (!skipDraw && f.root.visible && (f.intent === 'posture' || f.intent === 'strut') && e.side === 'enemy' && (!f.hissT || realT - f.hissT > 1.6 + (e.id.length % 3) * 0.4)) {
       f.hissT = realT; fx.spawn('hiss', f.head.clone().add(new THREE.Vector3(le._opp.dir[0] * 0.3, -0.04, le._opp.dir[1] * 0.3)), { size: 0.32, drawings: 4, breakAt: 0.7 });
       fx.spawn('claws', f.pos.clone().add(new THREE.Vector3(-le._opp.dir[0] * 0.45, 0.35, -le._opp.dir[1] * 0.45)), { size: 0.22, drawings: 3, rot: 1.2 });
     }
