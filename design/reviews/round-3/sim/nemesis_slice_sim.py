@@ -230,7 +230,8 @@ class World:
         elif d == 4:
             if s.raid_req and rng.random() < 0.6 and (s.raid_req.state in ("Seated", "Roaming") or (FIX2 and s.raid_req.state == "Humbled")):
                 s.fight(s.raid_req)
-            elif not s.arc: s.lead_placement()
+                if FIX3 and s.raid_req is not (s.declared or s.lead): s.lead_placement()   # §3.7: the raid counts as the placement only if the lead leads it
+            elif not s.arc or FIX3: s.lead_placement()
             s.tracked_wave([]); s.tracked_wave([])
             r = [c for c in s.cats if c.state == "Roaming"]
             if r and rng.random() < 0.6: s.fight(rng.choice(r))
