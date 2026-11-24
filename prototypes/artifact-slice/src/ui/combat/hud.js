@@ -98,7 +98,7 @@ const CSS = `
 .ch-sb .ft { display:flex; align-items:center; justify-content:space-between; padding:10px 18px; font:700 28px/1 var(--font); color:var(--cocoa); }
 .ch-sb .ft .k { display:flex; align-items:center; gap:6px; }
 .ch-sb .tstep { padding:8px 18px; font:700 26px/1.2 var(--font); color:var(--cocoa); background:var(--recessed); }
-.ch-bracket { width:150px; height:150px; transform:translate(-50%,-70%) !important; }
+.ch-bracket { width:150px; height:150px; }
 .ch-card { position:absolute; left:50%; top:30%; transform:translate(-50%,-50%); }
 .ch-kc { display:inline-flex; align-items:center; justify-content:center; min-width:40px; height:40px; padding:0 8px; border-radius:10px 12px 11px 13px; background:var(--cream); border:3px solid var(--cocoa); box-shadow:0 3px 0 var(--cocoa); font:800 24px/1 var(--font); color:var(--cocoa); box-sizing:border-box; }
 .ch-kc.big { min-width:52px; height:52px; font-size:30px; border-radius:14px 16px 15px 17px; }
@@ -130,7 +130,7 @@ const svgIcon = {
   steam: (n) => `<svg viewBox="0 0 ${n * 26 + 4} 26" width="${n * 26 + 4}" height="26">${Array.from({ length: n }, (_, i) => `<path d="${Kit.blob(Kit.pomPts(15 + i * 26, 13, 10, 6, 0.18, i))}" fill="${C.cream}" stroke="${C.ink}" stroke-width="2.5"/>`).join('')}</svg>`,
 };
 /** Bark pictograms by personality (icon-only in fights). */
-const BARK_ICON = {
+export const BARK_ICON = {
   Mikan: svgIcon.bell, Stalwart: `<svg viewBox="-20 -20 40 40" width="36" height="36"><path d="M0 -16L14 -10V2Q14 12 0 17Q-14 12 -14 2V-10Z" fill="${C.gold}" stroke="${C.ink}" stroke-width="3" stroke-linejoin="round"/></svg>`,
   Goofball: `<svg viewBox="-20 -20 40 40" width="36" height="36"><circle r="15" fill="${C.cream}" stroke="${C.ink}" stroke-width="3"/><path d="M-7 -3l3 -3l3 3M2 -3l3 -3l3 3" fill="none" stroke="${C.ink}" stroke-width="2.5" stroke-linecap="round"/><path d="M-6 5Q0 11 6 5" fill="${C.pad}" stroke="${C.ink}" stroke-width="2.5"/></svg>`,
   Fraidy: `<svg viewBox="-20 -20 40 40" width="36" height="36"><path d="M0 -15Q12 2 9 9Q5 15 0 15Q-5 15 -9 9Q-12 2 0 -15Z" fill="${C.claw}" stroke="${C.ink}" stroke-width="3" stroke-linejoin="round"/></svg>`,
@@ -255,6 +255,7 @@ export class CombatHUD {
         const a = e.status.left_s > 0 ? Math.round(360 * Math.min(1, e.status.left_s / tot)) : 360;
         poms += `<div class="ch-pom"><div class="ring" style="--a:${a}deg"></div>${ic}${cowedNerves ? `<div class="badge">${svgIcon.nickCrown}</div>` : ''}</div>`;
       }
+      const mt = this.moveTag && this.moveTag.get(id); if (mt && t < mt.until) poms += `<div class="ch-pom gold" style="width:46px;height:46px">${mt.icon}</div>`;
       if (e.orders && e.orders.length) poms += `<div class="ch-pom gold">${svgIcon.queued}</div>`;
       if (!ctl && !e.routed && e.paws - (e.paws_reserved || 0) >= 1) poms += `<div class="ch-pom gold" style="width:34px;height:34px">${svgIcon.bell.replace('width="34" height="36"', 'width="24" height="26"')}</div>`;
       const pe = p.querySelector('.poms'); if (pe._h !== poms) { pe.innerHTML = poms; pe._h = poms; }
@@ -355,7 +356,9 @@ export class CombatHUD {
     if (this.sb.open && this.sb.step === 'target' && this.sb.targets && this.sb.targets[this.sb.target]) {
       const f = fighters.get(this.sb.targets[this.sb.target]);
       if (f) { const el = this.wEl('bracket', 'ch-bracket', `<svg viewBox="0 0 150 150" width="150" height="150"><g fill="none" stroke="${C.ink}" stroke-width="12" stroke-linecap="round"><path d="M10 50V10H50M100 10H140V50M140 100V140H100M50 140H10V100"/></g><g fill="none" stroke="${C.gold}" stroke-width="6" stroke-linecap="round"><path d="M10 50V10H50M100 10H140V50M140 100V140H100M50 140H10V100"/></g></svg>`);
-        el.style.transform = `translate(-50%,-70%) scale(${sc})`; this.place(el, ctx.project(f.head), 40 * sc); }
+        // bracket the cat's BODY: centred between feet and head, sized to its projected height
+        const feet = ctx.project(f.pos), head = ctx.project(f.head), hpx = Math.max(40, feet.y - head.y) * 1.5;
+        el.style.transform = `translate(-50%,-50%) scale(${(hpx / 150).toFixed(3)})`; this.place(el, { x: (feet.x + head.x) / 2, y: (feet.y + head.y) / 2, on: feet.on }, 0); }
     }
     for (const [k, el] of this.wEls) if (!el._seen) { el.remove(); this.wEls.delete(k); }
   }
@@ -428,8 +431,15 @@ export class CombatHUD {
     if (this.sbEl._h !== html) { this.sbEl.innerHTML = html; this.sbEl._h = html; }
   }
 
+  /** A cat (AI or commanded) just used a Move: its plate shows the Move's pom for 1.4 s, so the player sees who did what. */
+  moveUsed(id, move, t) {
+    const mv = this.D.moves[move] || {}; this.moveTag = this.moveTag || new Map();
+    const icon = svgIcon[mv.creates ? STATE_ICON[mv.creates] : mv.type === 'thump' ? 'splat' : mv.type === 'yowl' ? 'cowed' : 'ruffled'] || svgIcon.ruffled;
+    this.moveTag.set(id, { icon: mv.target === 'ally' ? BARK_ICON.heart : icon, until: t + 1.4 }); this.flash.set(id, t + 0.12);
+  }
+
   /** Icon-only fight bark (DR-44): one balloon at a time over a cat, ~0.9 s. */
-  bark(id, icon, t) { if (this.barkMsg && t < this.barkMsg.until - 0.3) return; this.barkMsg = { id, icon, until: t + 0.9 }; }
+  bark(id, icon, t, force = false) { if (!force && this.barkMsg && t < this.barkMsg.until - 0.3) return; this.barkMsg = { id, icon, until: t + 0.9 }; }
 
   /** Centre card (Standoff name-card / outcome): a wedge-ended band slamming into the upper third. */
   card(text, sub, ms, t, clowder = 'ink', y = 0.3) {

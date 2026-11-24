@@ -21,7 +21,8 @@ import { WorldFX } from '../render/vfx/fx.js';
 import { ScreenFX } from '../render/vfx/screen.js';
 import { CombatCamera, COMBAT_CAM } from '../camera/combat.js';
 import { CombatInput } from '../input/combat-input.js';
-import { CombatHUD } from '../ui/combat/hud.js';
+import { CombatHUD, BARK_ICON } from '../ui/combat/hud.js';
+import { chapterPill } from '../ui/combat/chapters.js';
 
 const Q = new URLSearchParams(location.search);
 // a 10-cat brawl for the triangle budget check (inline encounter row; same arena as the sandbox)
@@ -67,7 +68,7 @@ const cam = new THREE.PerspectiveCamera(COMBAT_CAM.fov, 1, 0.1, 1500);
 const fGroup = new THREE.Group(); lateScene.add(fGroup);
 let world, shadow, post, enc, snap, prevSnap, fighters = new Map(), fx, scr, ccam, input, hud, sprites, keyLight, fillLight;
 let realT = 0, acc = 0, paused = false, script = null, cmdQueue = [], injectQ = [], pile = null, impact = null, dip = null, midTone = new THREE.Color('#8C88B8');
-const DT = 1 / 60, evLog = [], counts = {};
+const DT = 1 / 60, TWO = 1 / 30, evLog = [], counts = {};
 let lastTagWindow = null, routedTrail = new Map(), crackedUntil = new Map(), standoffFocus = null, fightStartT = null, endShown = false, lastStats = {};
 let hudBackAt = null, pendingCard = null, seedCounter = 1, skipDraw = false; const pendingMenu = [];
 
@@ -160,7 +161,7 @@ function onEvent(ev) {
       const boss = foes.find((e) => e.rank === 'boss' || e.rank === 'captain');
       hud.card(boss ? boss.name.toUpperCase() : 'WALL SITTERS', boss ? (boss.rank === 'boss' ? ' Boss of the Wall' : ' Captain') : ` ×${foes.length}`, ev.duration_s * 1000 - 300, realT, 'sage');
       scr.add({ kind: 'bands', ats: foes.map((e) => v3(e.pos).add(new THREE.Vector3(0, 0.35, 0))), dur: ev.duration_s - 0.2, color: Kit.C.sage });
-      scr.add({ kind: 'bands', ats: snap.entities.filter((e) => e.side === 'posse').slice(0, 1).map((e) => v3(e.pos).add(new THREE.Vector3(0, 0.35, 0))), dur: ev.duration_s - 0.2, color: Kit.C.gold });
+      scr.add({ kind: 'bands', ats: snap.entities.filter((e) => e.side === 'posse').slice(0, 1).map((e) => v3(e.pos).add(new THREE.Vector3(0, 1.05, 0))), dur: ev.duration_s - 0.2, color: Kit.C.gold });
       for (const e of snap.entities) { const f = F(e.id); if (f) f.impulse('hiss', tw, { dur: 0.6 }); }
       break;
     }
@@ -182,7 +183,7 @@ function onEvent(ev) {
     case 'Skitter': { const f = F(ev.cat); if (f) { fx.dust('2 puffs', f.pos); scr.add({ kind: 'streak', from: f.pos.clone().add(new THREE.Vector3(0, 0.3, 0)), to: f.pos.clone().add(new THREE.Vector3(f.vel.x, 0.3, f.vel.z).multiplyScalar(0.3)), dur: 0.2, seed: 1, len: 120 }); } break; }
     case 'Hop': case 'Mantle': case 'HopDown': { const f = F(ev.cat); if (f) fx.dust('2 puffs', f.pos); break; }
     case 'Pounce': { const f = F(ev.cat); if (f) scr.add({ kind: 'streak', from: f.pos.clone().add(new THREE.Vector3(0, 0.3, 0)), to: f.pos.clone().add(new THREE.Vector3(0, 0, 0)), dur: 0.2, seed: 2 }); break; }
-    case 'Frazzled': { const f = F(ev.cat); if (f) { f.impulse('take', tw, { dur: 0.25 }); fx.spawn('burstMagenta', f.head.clone(), { size: 0.9, drawings: 4, cycle: false }); } break; }
+    case 'Frazzled': { { const by = ent(ev.by); if (by && by.side !== 'enemy') hud.bark(ev.by, 'bang', realT); } const f = F(ev.cat); if (f) { f.impulse('take', tw, { dur: 0.25 }); fx.spawn('burstMagenta', f.head.clone(), { size: 0.9, drawings: 4, cycle: false }); } break; }
     case 'FrazzleEnded': { const f = F(ev.cat); if (f) for (let i = 0; i < 3; i++) fx.spawn('wedge', f.head.clone().add(new THREE.Vector3((i - 1) * 0.2, 0, 0)), { size: 0.22, drawings: 4, vel: new THREE.Vector3((i - 1) * 0.8, 0.6, 0) }); break; }
     case 'Ruffled': { const f = F(ev.cat); if (f) { f.impulse('take', tw); fx.spawn('sweat', null, { size: 0.26, drawings: 30, cycle: true, follow: () => f.head.clone().add(new THREE.Vector3(0.22 * f.scaleK, 0.08, 0)), breakAt: 0.85 }); } break; }
     case 'Hiss': { const f = F(ev.cat), e = ent(ev.cat); if (f && e) { f.impulse('hiss', tw); fx.spawn('hiss', f.head.clone().add(new THREE.Vector3(e.facing[0] * 0.35, -0.05, e.facing[1] * 0.35)), { size: 0.7, drawings: 5, rot: Math.atan2(-e.facing[1], e.facing[0]) * 0.3, cycle: true, breakAt: 0.7 }); } break; }
@@ -196,7 +197,20 @@ function onEvent(ev) {
     case 'PawFilled': { const f = F(ev.cat); if (f) fx.groundMark('pawDisc', f.pos, 0.8 * f.scaleK, 0.33); break; }
     case 'Switch': ccam.blend(COMBAT_CAM.tagBlend); break;
     case 'SlowBlinkOpen': case 'SlowBlinkClose': ccam.blend(COMBAT_CAM.sbBlend); break;
+    case 'MoveUsed': {
+      // who did what: the user's lunge, a personality flourish (bark + a burst of its pictogram), its plate pom
+      const fu = F(ev.user), eu = ent(ev.user); if (!fu || !eu) break;
+      fu.impulse('strike', tw, { mag: 1.5, dur: 0.28 });
+      hud.moveUsed(ev.user, ev.move, realT);
+      if (eu.side !== 'enemy') hud.bark(ev.user, eu.personality, realT, true);
+      fx.tagRing(fu.pos);
+      const mv = DATA.moves[ev.move] || {};
+      if (mv.target === 'ally' || mv.target === 'self') for (const id of (ev.targets_hit && ev.targets_hit.length ? ev.targets_hit : [ev.user])) { const f = F(id); if (f) for (let i = 0; i < 3; i++) fx.spawn('heart', f.head.clone().add(new THREE.Vector3((i - 1) * 0.18, 0.1, 0)), { size: 0.18, drawings: 10, vel: new THREE.Vector3((i - 1) * 0.2, 0.7, 0), delay: i * TWO, breakAt: 0.7 }); }
+      break;
+    }
+    case 'Healed': { const f = F(ev.cat); if (f) for (let i = 0; i < 2; i++) fx.spawn('heart', f.head.clone(), { size: 0.16, drawings: 10, vel: new THREE.Vector3((i ? 1 : -1) * 0.25, 0.6, 0), delay: i * TWO * 2, breakAt: 0.7 }); break; }
     case 'TagIn': {
+      { const e2 = ent(ev.to); if (e2) hud.bark(ev.to, e2.personality, realT, true); }
       ccam.blend(COMBAT_CAM.tagBlend); ccam.relayHold = realT + 3;
       const fi = F(ev.to), ftg = F(ev.target);
       if (fi && ftg) {
@@ -212,6 +226,7 @@ function onEvent(ev) {
       f.impulse('take', tw, { dur: 0.18 });
       fx.spawn('sparkle', f.head.clone(), { size: 0.3, drawings: 10, spin: 6, cycle: false });
       routedTrail.set(ev.cat, realT);
+      { const by = ent(ev.by); if (by && by.side !== 'enemy' && ev.how !== 'by_pile_on') hud.bark(ev.by, by.personality, realT); }
       const last = snap.entities.filter((e) => e.side === ev.side && !e.routed && e.present).length === 0;
       if (ev.feel && ev.how !== 'by_pile_on') applyFeel(ev.feel, f.head, { dir: [0, 1], finalRout: last, hitType: 'claw' });
       else if (ev.feel && ev.feel.word && !pile) scr.letter({ cls: ev.feel.word.cls, ms: ev.feel.word.ms, tier: ev.feel.tier, at: f.head.clone(), seed: seedCounter++ });
@@ -227,7 +242,14 @@ function onEvent(ev) {
       applyFeel(ev.feel, pile.centerW.clone().add(new THREE.Vector3(0, 0.4, 0)), { noFull: true, text: 'BAP-BAP-BAP!' });
       break;
     }
-    case 'PileOnBeat': if (pile) { pile.beat = ev.beat; pile.beatT = 0; pile.beatDx = ((ev.beat * 37) % 7 - 3) / 6; if (ev.feel?.shake) ccam.addShake(ev.feel.shake, realT, [0, 1]); } break;
+    case 'PileOnBeat': if (pile) {
+      // each beat belongs to one cat: its face pops out of the cloud with its personality flourish and its Style word
+      pile.beat = ev.beat; pile.beatT = 0; pile.beatDx = ((ev.beat * 37) % 7 - 3) / 6;
+      const e = ent(ev.cat); pile.beatFace = e ? hud.portrait(e.cat, 150, e.id) : null; pile.beatIcon = BARK_ICON[ev.flourish] || BARK_ICON.bang;
+      const W = { Scrapper: ['SKRITCH!', 'SHNK!', 'SWISH!'], Bruiser: ['WHAM!', 'BOFF!', 'THOOM!'], Yowler: ['YOWWL!', 'MRRAOW!'] }[ev.style] || ['POW!'];
+      scr.letter({ cls: 'dust_cloud', ms: 340, tier: 4, hitType: ev.style === 'Bruiser' ? 'thump' : ev.style === 'Yowler' ? 'yowl' : 'claw', text: W[ev.beat % W.length], seed: ev.beat });
+      if (ev.feel?.shake) ccam.addShake(ev.feel.shake, realT, [0, 1]);
+    } break;
     case 'PileOnEnd': {
       if (pile) { pile.phase = 'out'; pile.outT = 0; pile.screen = pile.anchor || project(pile.centerW.clone().add(new THREE.Vector3(0, 0.35, 0))); }
       const at = pile ? pile.centerW.clone().add(new THREE.Vector3(0, 0.4, 0)) : new THREE.Vector3();
@@ -299,6 +321,9 @@ function frame(dt) {
 function present(dt, alpha, menu = []) {
   const s = snap, tw = Math.floor(realT * 30 + 1e-6) / 30;
   const globalStop = s.time_scale === 0;
+  // triangle budget (0.5 M): besides the controlled cat (full), at most the 2 nearest cats may take the full mesh
+  { const others = [...fighters.values()].filter((f) => f.id !== s.controlled && f.root.visible).sort((a, b) => a.pos.distanceToSquared(cam.position) - b.pos.distanceToSquared(cam.position));
+    others.forEach((f, i) => { f.lodCap = i < 2 ? 'auto' : 'low'; }); }
   // fighters
   const Cf = F(s.controlled), C0d = Cf ? Math.hypot(Cf.pos.x - cam.position.x, Cf.pos.z - cam.position.z) : null;
   for (const e of s.entities) {
@@ -308,7 +333,10 @@ function present(dt, alpha, menu = []) {
     const hidden = (pile && pile.phase === 'main' && pile.cats.concat([pile.target]).includes(e.id));
     // camera-soft cats: an AI cat crowding the lens (closer than 1.5 m, nearer than the controlled cat) is hidden
     const dc = Math.hypot(f.pos.x - cam.position.x, f.pos.z - cam.position.z);
-    const crowd = !e.controlled && C0d != null && dc < 2.8 && dc < C0d - 0.3;
+    // hysteresis + a 0.6 s hold, so a cat at the lens edge never blinks in and out (a large-area flash, DR-50)
+    const want = !e.controlled && C0d != null && (f.crowd ? dc < 3.3 && dc < C0d : dc < 2.8 && dc < C0d - 0.3);
+    if (want !== !!f.crowd && realT - (f.crowdT || -9) > 0.6) { f.crowd = want; f.crowdT = realT; }
+    const crowd = !!f.crowd && !e.controlled;
     f.hidden = hidden || crowd;
     f.update(lerpEnt(e, alpha), frozen ? 0 : dt * (s.slow_blink ? 0.05 : 1), realT, tw, dt);
     // routed bolt: a three-puff trail of shrinking clouds
@@ -391,7 +419,7 @@ function present(dt, alpha, menu = []) {
   // HUD
   if (skipDraw) pendingMenu.push(...menu);
   else if (opt.hud) {
-    hud.update({ s, t: realT, project, fighters, menuEvents: pendingMenu.splice(0).concat(menu), send: (c) => cmdQueue.push(c) });
+    hud.update({ device: input.lastDevice, s, t: realT, project, fighters, menuEvents: pendingMenu.splice(0).concat(menu), send: (c) => cmdQueue.push(c) });
     if (pendingCard && realT >= pendingCard.at) { hud.card(pendingCard.text, pendingCard.sub, 1e6, realT, pendingCard.clowder); pendingCard = null; }
     hud.tickCard(realT);
   }
@@ -443,11 +471,15 @@ function draw(impactMode, s) {
     renderer.render(fxScene, cam);
     renderer.render(decalScene, cam);
     // the controlled cat is never covered by effects: draw it again on top (art bible §10.1 rule 5)
+    // (only when an effect is actually near it, and only its fill + ink: the keyline shells stay underneath)
     const cf = F(s.controlled);
-    if (cf && cf.root.visible) {
+    const near = cf && cf.root.visible && fx.items.some((it) => !it.ground && it.mesh.visible && it.mesh.position.distanceTo(cf.pos) < 1.6);
+    if (near) {
       const vis = []; for (const c of lateScene.children) { vis.push(c.visible); c.visible = false; }
       fGroup.visible = true; const fv = []; for (const c of fGroup.children) { fv.push(c.visible); c.visible = c === cf.root; }
+      const shells = []; cf.root.traverse((o) => { if (o.name && o.name.startsWith('keyline-')) { shells.push([o, o.visible]); o.visible = false; } });
       renderer.render(lateScene, cam);
+      shells.forEach(([o, v]) => { o.visible = v; });
       lateScene.children.forEach((c, i) => { c.visible = vis[i]; }); fGroup.children.forEach((c, i) => { c.visible = fv[i]; });
     }
     renderer.autoClear = true;
@@ -486,7 +518,7 @@ async function boot() {
     state: () => ({ fight: opt.fight, seed: opt.seed, tick: enc.tick, realT: +realT.toFixed(4), mode: snap.mode, outcome: snap.outcome, slow_blink: snap.slow_blink, controlled: snap.controlled,
       counts: { ...counts }, pile: !!pile, impact: !!impact, camera: cam.position.toArray().map((v) => +v.toFixed(3)), yaw: +ccam.pose.yaw.toFixed(2), stats: { ...lastStats } }),
     hash: () => enc.hash(),
-    debug: () => ({ screen: scr.fx.map((f) => ({ kind: f.kind, t: +f.t.toFixed(3), dur: f.dur, from: f.from && project(f.from), to: f.to && project(f.to) })), word: scr.word && scr.word.text, world: fx.items.length }),
+    debug: () => ({ screen: scr.fx.map((f) => ({ kind: f.kind, t: +f.t.toFixed(3), dur: f.dur, from: f.from && project(f.from), to: f.to && project(f.to) })), word: scr.word && scr.word.text, world: fx.items.length, cats: [...fighters.values()].map((f) => ({ id: f.id, vis: f.root.visible, lod: f.cat.lod, tri: f.cat.triangles, d: +f.pos.distanceTo(cam.position).toFixed(2) })) }),
     snapshot: () => snap,
     /** Advance n rendered frames of 1/60 s (deterministic), drawing only the last unless every = true. */
     frames: (n = 1, every = false) => { for (let i = 0; i < n; i++) { skipDraw = !every && i < n - 1; frame(DT); } skipDraw = false; return window.__cat.state(); },
@@ -508,6 +540,7 @@ async function boot() {
     return;
   }
   input.bind();
+  chapterPill();
   hud.setHint(script ? 'Demo: a bot is playing · reload without ?script to fight yourself' : 'WASD move · LMB attack · Space hop · Shift skitter · RMB brace · F hiss / Pile-On · Tab Slow Blink · 1-4 Moves · Z X C V switch · wheel lock · P pause');
   let last = performance.now(), first = true;
   const loop = (now) => {

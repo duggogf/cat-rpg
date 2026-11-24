@@ -185,7 +185,7 @@ export class Fighter {
       this.kl.key.mesh.userData.w = e.controlled ? 1.25 : 1.0;
     }
     if (this.look !== 'ink') this.setLook(t < this.flashUntil ? 'flash' : 'normal');
-    const want = e.controlled ? 'full' : 'auto';
+    const want = e.controlled ? 'full' : (this.lodCap || 'auto');
     if (want !== this.lodMode && this.cat.setLod) { this.cat.setLod(want); this.lodMode = want; }
     this.cat.update(dtAnim);
     // head point for overhead marks (world)

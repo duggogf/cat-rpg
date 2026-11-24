@@ -176,7 +176,7 @@ export class ScreenFX {
     }
     const sizeU = W.size || size;
     const est = W.svg.w * 1.05, ht = sizeU * 1.3;
-    const anchor = W.screen || ctx.project(W.at);
+    const anchor = W.screen || (W.at ? ctx.project(W.at) : { x: ctx.w / 2, y: ctx.h * 0.3 });
     if (!W.place && ctx.pile) { W.place = { x: Math.max(est / 2 + 30, ctx.w * 0.06 + est / 2), y: ctx.h * 0.17 }; W.rot = -9; }
     if (!W.place) {
       const cb = ctx.controlledBox, hud = ctx.hudRects || [];
@@ -252,6 +252,12 @@ export class ScreenFX {
       s += '</g>';
       // beat flash: a burst pops on each beat (a T3 local beat)
       if (P.beatT != null && P.beatT < 0.14) s += Kit.impactBurst({ x: cx + P.beatDx * R0, y: cy - R0 * 0.3, r: R0 * 0.32, points: 10, seed: P.beat + 1, color: C.gold });
+      // the beat's cat: its face pops out of the cloud's edge (one drawing at 115%) with its flourish pictogram
+      if (P.beatFace && P.beatT != null && P.beatT < 0.32) {
+        const fx = cx + P.beatDx * R0 * 1.3, fy = cy - R0 * 0.35, k = (P.beatT < TWO ? 1.15 : 1) * R0 / 260;
+        s += `<g transform="translate(${r1(fx)} ${r1(fy)}) scale(${r1(k * 1.5)})">${P.beatFace.replace(/^<svg/, '<svg x="-75" y="-75"')}</g>`;
+        s += `<g transform="translate(${r1(fx + R0 * 0.32)} ${r1(fy - R0 * 0.3)}) scale(${r1(k * 2.2)})">${Kit.blob ? `<path d="${Kit.blob(Kit.pomPts(0, 0, 24, 8, 0.12, 1))}" fill="${C.cream}" stroke="${C.ink}" stroke-width="3"/>` : ''}${P.beatIcon.replace(/^<svg/, '<svg x="-18" y="-18"')}</g>`;
+      }
       // the routed target bolts off (a stretched smear with a three-puff trail)
       if (P.bolter && P.t > P.dur * 0.55) {
         const u = (P.t - P.dur * 0.55) / (P.dur * 0.45), bx = cx + R0 * (0.9 + u * 2.4), by = cy - R0 * (0.3 + u * 0.8);

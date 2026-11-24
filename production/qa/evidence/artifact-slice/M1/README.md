@@ -51,12 +51,12 @@ covers > 20% of the screen (art bible §10.9); a flash is a pair of opposing tra
 
 | Check | Cap | Result |
 |---|---|---|
-| Flashes in any 1 s | WCAG 3 · design 2 | **1** — pass |
+| Flashes in any 1 s | WCAG 3 · design 2 | **2** — pass (round 2; was 3 before crowd-hide hysteresis) |
 | Flashes in any 5 s | design 6 | **2** — pass |
 | Saturated-red change area | ≤ 5% | **0.01%** — pass |
-| Transitions in 7 s | — | 5: a full-screen impact frame in/out (ticks 1327/1329), the Pile-On's opening impact frame + panel wipe (1440/1442), the panel leaving (1527) |
+| Transitions in 7 s | — | 6 (round 2): close-camera hit/swing repaint, the Pile-On's opening impact frame + panel wipe, the panel leaving |
 
-**Found and fixed in this pass:** the first capture FAILED (7 flashes/s): the full-field Ink lines on the gold
+**Round 2 finding:** at the new 3.8 m camera, an AI cat hidden and re-shown at the lens edge blinked a large area (3 flashes/s); fixed with hysteresis and a 0.6 s hold. **Found and fixed in round 1:** the first capture FAILED (7 flashes/s): the full-field Ink lines on the gold
 panel were re-randomised every drawing (≈ 22% of the screen repainting at 15 Hz). The line set is now fixed per
 effect and successive drawings only nudge the tips (±2.5%), and radial lines no longer ride the camera shake.
 
@@ -69,16 +69,38 @@ controlled cat above the VFX. `?rim=0` drops the rim shell (−27 k triangles pe
 update ≈ 0.7 ms per frame; a full frame including the DOM HUD, the SVG screen layer and WebGL submission ≈ 4.6 ms of
 main-thread time under SwiftShader. Real-time FPS on a GPU is unmeasured.
 
+
+## Round 2 (directors FIX / designer GO WITH FIXES) — presentation changes
+
+- **Camera (owner direction, FF7R third person):** the rig sits behind the controlled cat at 3.8 m, +12°, with a 0.45 m
+  shoulder offset and a 20% lead toward the lock target. It pulls out to ≤ 6 m only while the target is > 4.5 m away,
+  pulls in before camera-solid geometry, and hides AI cats that crowd the lens. Slow Blink pushes in low (4.6 m, +20°),
+  and the target bracket now frames the cat's body. `design/gdd/camera-system.md` §3.2, §4.1, §7 and §8 are amended,
+  with the change logged as "Owner direction: third-person behind the cat (2026-11-24)".
+- **Casts:** `CAST_MAP` in `src/render/vfx/fighters.js` now uses the real casts. Toughs and Strays are `tough` variants,
+  and no gang coat repeats a Posse coat. HUD portraits read the same table. The controlled cat is drawn at
+  `setLod('full')`; at most the 2 nearest other cats may take the full mesh, and the rest stay low. **10-cat brawl
+  (`brawl10.png`, `results.json.brawl`): 0.28–0.48 M triangles, median 0.38 M (budget 0.5 M).**
+- **Hits:** each player hit adds a head-sized starburst, a larger slash arc, a ground crack, pebble debris and a T1
+  smear. Lunges stretch 1.42× and recoils squash. Local Cream shapes are capped at about 40% of screen height so
+  DR-50's flash area holds.
+- **Arena:** dressing comes from the sim's exported bounds, and walls sit on the ring edge. A close fence encloses
+  three sides. Inside the ring are a tarp, planks, tyres, a crate and box, pots, pebbles and grass at the fence bases.
+- **HUD and feel:** glyphs follow the input device. On keyboard + mouse: Z X C V on the plates, Q/E, Space, Esc, Tab,
+  A/D and F in Slow Blink and on prompts, plus a P / Tab key strip. Fight barks are icon-only, one balloon at a time,
+  with a personality pictogram. A Move cast shows its pom on the user's plate, a bark, a ring, a lunge and hearts for
+  heals. Each Pile-On beat pops that cat's face with its flourish and its Style word (SKRITCH / WHAM / YOWWL).
+- **Publishing:** `src/entries/main.js` now accepts `?chapter=combat&fight=toughs3|captain|daifuku`, which hands the
+  page to `combat.js` (now in the publish set). Both scenes show a kit-styled chapter pill. `node tools/publish-check.mjs`
+  is green for the default and for both `?chapter=combat` fights.
+- **Clip:** `fight-clip.webm` is 7 s at 60 fps around a Tough Rout, for judging shake and hit-stop in motion.
+- Run `node tools/m1-shots.mjs --only brawl,clip` for those two sections.
+
 ## Known gaps / deviations (for the art + creative directors)
 
-- **Cast stand-ins:** only `mikan` and `wallSitter` casts exist, so every other cat is a grey tabby (scale varies;
-  Daifuku 1.7×). Identity comes from the keyline colour, ticks and plates. One mapping table
-  (`src/render/vfx/fighters.js` `CAST_MAP`) switches them when the cast lands. HUD portraits use the kit's
-  designed coats, so plates and 3D do not match yet.
 - **Combat poses are procedural** (lunge, recoil, squash, arch, puff, splat) on a wrapper: the cat rig has only
   idle/walk. No spiral-eye decal: two spiral glyphs float over the face when it turns to camera.
-- **Free-standing High Road wall:** the sim's ring runs 0.6 m past the sandbox wall, so fights happen behind it;
-  the camera turns (≤ 90°) to keep both cats visible, which gives some along-the-wall views (`tagin.png`).
+- **Along-the-wall views:** when a fight hugs the sandbox's High Road wall, the occlusion turn can still give a side-on view with a smaller cat (about 3 of 10 random pauses).
 - Lettering uses Dela Gothic One (the kit's stand-in), not hand-lettered SDF assets; English set only.
 - No Zoomies pom (Zoomies not in M1 scope), no damage numerals (default Off), no audio.
 - Hit-stop / time-dip are honoured from the arbiter (`feel`); the time dip slows the sim stepping.

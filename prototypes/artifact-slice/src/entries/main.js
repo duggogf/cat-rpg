@@ -13,6 +13,7 @@ import { PaintPost } from '../render/post.js';
 import { OrbitRig, collideCircle, EXPLORE } from '../camera/rig.js';
 import { loadCatAssets, createCat } from '../render/cats/index.js';
 import { desktopCard, isSmallOrTouch } from '../ui/desktopcard.js';
+import { chapterPill } from '../ui/combat/chapters.js';
 
 const Q = new URLSearchParams(location.search);
 const opt = {
@@ -278,5 +279,11 @@ function failCard(e) {
   el.querySelector('button').addEventListener('click', () => location.reload());
   document.body.appendChild(el);
 }
-if (!opt.test) loading(true);
-boot().catch((e) => { console.error('scene failed to start:', e); failCard(e); });
+// ?chapter=combat: hand the page to the combat sandbox bundle (combat.js, same folder) instead of the Lane scene
+if (Q.get('chapter') === 'combat') {
+  renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove();
+  const sc = document.createElement('script'); sc.src = 'combat.js'; sc.onerror = (e) => failCard(new Error('combat.js failed to load')); document.body.appendChild(sc);
+} else {
+  if (!opt.test) loading(true);
+  boot().then(() => chapterPill()).catch((e) => { console.error('scene failed to start:', e); failCard(e); });
+}

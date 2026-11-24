@@ -39,8 +39,8 @@ One third-person camera rig, behind and above Mikan like FF7 Remake, runs everyw
 | **Explore · High Road** | Mikan | 3.4 m | — | +16° | 45° | Yes |
 | **Explore · Low Ceiling** | Mikan | 1.4 m | clearance − 0.10 m | 0° | 50° | Yaw only |
 | **Whisker** (Whisker Sense held) | Mikan | +0.5 m over current | — | +8° over current | unchanged | Yes |
-| **Combat** | framing point (§4.2) | **6.0–7.2 m** (solved from frame width) | ≈ 2.5–3.4 m | **+25°**; range +15° to +40° | 45° | Yes, inside soft-lock limits |
-| **Slow Blink** | controlled cat | **8.5 m** | ≈ 6.5 m | **+50°** (lifted three-quarter) | 45° | No (stick drives the cursor) |
+| **Combat** | behind the controlled cat (§4.2) | **3.8 m** (3.5–4.5 m; pulls out to ≤ 6 m only while the target is far) | ≈ 1.2–1.6 m | **+12°**; range +10° to +16° (+20° for High Road pairs) | 45° | Yes, inside soft-lock limits |
+| **Slow Blink** | controlled cat, 30% toward the target | **4.6 m** | ≈ 1.5 m | **+20°** (pushed in low behind the cat, preview 03) | 45° | No (stick drives the cursor) |
 | **Cinematic** | authored | authored | authored | +35° to +45° over the scene; lower and tilted only behind a full graphic panel | free | No |
 | **Home** | Mikan | **1.8 m** (≈ 3.2 BL); 0.6–2.2 m | **0.30–0.60 m** | **−5° to 0°** free; up-tilt only authored | 45°, max 50° | Yes |
 | **Vignette** | authored shots | — | cat height unless authored | authored | authored | Only if the shot says so |
@@ -183,11 +183,11 @@ Combat distance is solved from frame width (§4.2), so changing FOV does not shr
 |---|---|---|---|---|---|
 | Explore, 1.25× cat from behind | ≈ 0.45 m (ears + foreshortened back) | 3.0 m | 45° | **18%** | 10–20% (DR-48) |
 | Explore, max FOV | 0.45 m | 3.0 m | 60° | 13% | ≥ 10% at every option |
-| Combat, at distance_max | 0.40 m | 7.2 m | 45° | **6.7%** (72 px at 1080p, 48 px at 720p) | controlled cat and lock target **≥ 6.7%** (≥ 48 px at 720p) |
+| Combat, behind the cat | ≈ 0.62 m (1.25× cat, ears to feet, side-on from behind) | ≈ 3.5 m | 45° | **≈ 21%** | controlled cat **≥ 20%**, lock target ≥ 12% |
 | Home | 0.375 m (1.25× cat) | 1.8 m | 45° | 25% | 15–30% |
 | Standoff push-in | Rival face ≈ 0.12 m | ≈ 0.3 m | 30° | ≈ 25% | ≥ 25% |
 
-**Size floors (acceptance):** Explore ≥ 10% of screen height; Combat controlled cat and lock target ≥ 6.7%, other on-screen Posse ≥ 5%; Home Mikan ≥ 15%; Standoff Rival face ≥ 25%.
+**Size floors (acceptance):** Explore ≥ 10% of screen height; Combat controlled cat ≥ 20% and lock target ≥ 12% (other on-screen Posse ≥ 5%); Home Mikan ≥ 15%; Standoff Rival face ≥ 25%.
 
 ### 4.2 Combat framing
 
@@ -254,12 +254,13 @@ Combat distance is solved from frame width (§4.2), so changing FOV does not shr
 | recentre delay / rate | 1.5 s / 90°/s | 0.8–4 s / 30–180°/s | auto-centre |
 | vertical lag release (down / up) | 1.0 m / 1.5 m | 0.5–2 m | High Road bob |
 | collision radius / return half-life | 0.15 m / 0.4 s | 0.1–0.25 / 0.2–0.8 | clipping vs pops |
-| combat W_min / W_max / k / m | 8.8 / 10.6 / 1.4 / 3.0 | 7–10 / 10–10.6 at 1.25× (higher breaks the 6.7% floor) / 1–2 / 2–4 | brawl framing |
-| combat pitch | +25° | +15–+40° | depth read |
-| P lerp toward target | 0.35 | 0.2–0.5 | look-past framing |
+| combat distance / far distance / far-from separation | 3.8 m / 6.0 m / 4.5 m | 3.5–4.5 / 5–7 / 3.5–6 | cat size vs target framing |
+| combat pitch (near / far / High Road) | +12° / +16° / +20° | +10–+16° / to +20° / to +28° | depth read, third-person feel |
+| shoulder offset / pivot lead toward target | 0.45 m / 0.2 | 0.3–0.7 / 0.1–0.35 | cat left of centre, target ahead |
+| soft-lock follow / re-aim rate | 60°/s / 120°/s | 30–90 / 90–180 | recentre behind the cat |
 | safe frame | 80% × 75% | 70–90% | HUD clearance |
 | Tag-In blend / Relay hold | 0.3 s / 3 s | 0.15–0.5 s / tied to Combat | switch readability |
-| Slow Blink distance / pitch / blend | 8.5 m / +50° / 0.2 s | 7–10 / 40–60° / 0.1–0.4 | tactical view |
+| Slow Blink distance / pitch / shoulder / blend | 4.6 m / +20° / −1.15 m / 0.2 s | 4–5.5 / 15–25° / −0.6 to −1.4 / 0.1–0.4 | low view behind the cat, menu clear |
 | shake amplitudes, steps, decay; punch-in T2–T5 | **Combat-owned** (`combat-system.md` §3.17, `assets/data/combat/*`) | per Combat | not a camera knob |
 | home distance / height | 1.8 m / 0.45 m | 0.6–2.2 / 0.30–0.60 | cat-height feel |
 | H_face / D_near | 1.45 m / 2.5 m | 1.3–1.6 / 1.5–3.5 | face-out rule |
@@ -277,8 +278,8 @@ Combat distance is solved from frame width (§4.2), so changing FOV does not shr
 
 **Pass conditions.**
 1. Explore: Mikan's on-screen height is 10–20% at default and ≥ 10% at every FOV option (automated capture, T2).
-2. Combat: controlled cat inside the safe frame ≥ 98% of combat frames outside cinematics; lock target ≥ 90%; both ≥ 6.7% of screen height when on screen (T1).
-3. Combat distance stays in 6.0–7.2 m at default FOV in ≥ 95% of combat frames not under collision constraint (T1).
+2. Combat: controlled cat inside the safe frame ≥ 98% of combat frames outside cinematics; lock target ≥ 90%; controlled cat ≥ 20% and lock target ≥ 12% of screen height when on screen (T1); ≥ 8 of 10 random pauses show the cat from behind at ≥ 18%.
+3. Combat distance stays in 3.5–4.5 m at default FOV in ≥ 80% of combat frames not under collision constraint or a far-target pull-out (T1).
 4. A four-cat Relay produces no frame where the incoming cat is off-screen for > 0.15 s (T1).
 5. No camera clipping into camera-solid geometry in T2's scripted path; ≤ 1 visible collision pop (distance jump > 0.5 m in one frame on ease-out) per minute of free roam.
 6. Hint volume count ≤ 15 for Hidamari Lane, ≤ 5 for the House (asset audit).
@@ -313,6 +314,8 @@ Combat distance is solved from frame width (§4.2), so changing FOV does not shr
 - Combat shake model: if Combat keeps both its stepped ×0.6 decay and the trauma accumulator, re-run T5 on the combined output; the camera plays whichever Combat keeps (round-2 "Shake values" ruling).
 
 ## Revision Log
+
+- **2026-11-24 · Owner direction: third-person behind the cat (2026-11-24).** The owner asked for "a third-person POV like FF7 Remake"; the M1 directors' review (FIX, camera 3/10) found the 6.0–7.2 m / +25° tactical rig put the controlled cat at 5–14% of screen height. Combat row (§3.2), the combat size row and floors (§4.1), §7 knobs and acceptance 2–3 amended: the rig sits behind the controlled cat at 3.8 m (3.5–4.5 m), +12°, with a 0.45 m shoulder offset and a 20% lead toward the lock target; it pulls out to ≤ 6 m only while the target is far; controlled cat ≥ 20%, lock target ≥ 12%. Slow Blink now pushes in low behind the cat (4.6 m, +20°) instead of lifting to 8.5 m / +50° (preview 03). §4.2's frame-width formula is superseded by these values for the slice; §3.5's soft-lock now recentres behind the cat (60°/s, 120°/s when the target leaves the frame). Built in `prototypes/artifact-slice/src/camera/combat.js`.
 
 - **2026-11-24 · Iteration 3 (round-2 presentation review, final pass).** Shake and punch-in values deleted from §3.6, §4.5 and §7; all now cite `combat-system.md` §3.17 (Combat owns the tier table, DR-07); camera keeps playback rules only (screen-space, no roll, ≥ 2-frame holds, deterministic pattern, motion budget). Edge Case 8 rewritten per R4 (crow on the lane-side wall top, normal Explore → Combat blend). Scale set to Art's 1.25× (≈ 0.56 m): BL values, §4.1 size table restated; W_max lowered 11.8 → 10.6 m (D 6.0–7.2 m) so the combat 6.7% floor holds at 1.25×. T3 confirms the scale. Canon reference bumped to brief v1.3.
 - **2026-11-24 · Iteration 3b (user decisions).** Header engine note updated: Unreal Engine 5.8 (brief v1.4). Checked against the user's 3C ruling ("walk around and rotate our camera freely"): Explore already gives free 360° yaw orbit and −10° to +55° pitch (§3.3), auto-recentre only after 1.5 s without input and switchable Off (§3.11); no rule change needed.

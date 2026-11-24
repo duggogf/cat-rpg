@@ -61,7 +61,9 @@ function baseLot() {
  * exports it: {x:[min,max], z:[min,max]}) wins over the ring estimate. */
 function dressFor(L, arena) {
   const fenceH = 1.3, wallH = 1.5, cx = arena.ring_center[0], cz = arena.ring_center[1], R = arena.ring_radius;
-  const b = arena.bounds && arena.bounds.x ? arena.bounds : { x: [cx - R, cx + R], z: [cz - R, cz + R] };
+  // the sim exports bounds as {center, radius, half_planes}; dressing goes outside the circle (walls sit on its cut edge)
+  const B = arena.bounds || {}; const bc = B.center || [cx, cz], br = B.radius || R;
+  const b = { x: [bc[0] - br, bc[0] + br], z: [bc[1] - br, bc[1] + br] };
   const X0 = b.x[0] - 0.9, X1 = b.x[1] + 0.9, Z0 = b.z[0] - 0.9, Z1 = b.z[1] + 0.9;
   L.lane = { x0: X0 - 1.5, x1: X1 + 1.5, z0: -14, z1: 26 };
   if (arena.id === 'wash_tub_kit') {
@@ -101,22 +103,23 @@ function ringProps(arena) {
     const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.rotation.set(rx, ry, rz); g.add(m); return m;
   };
   const at = (a, r) => [cx + Math.sin(a) * R * r, cz + Math.cos(a) * R * r];
-  const hr = (arena.high_roads[0] || {}).a || [-99, 0];
-  const ok = ([x]) => Math.abs(x - hr[0]) > 0.9;   // keep the High Road foot clear for mantles
+  // inside the playable half-planes, clear of each wall foot (mantles) by 0.9 m
+  const planes = (arena.bounds && arena.bounds.half_planes) || [];
+  const ok = ([x, z]) => planes.every((h) => (x - h.point[0]) * h.normal[0] + (z - h.point[1]) * h.normal[1] >= 0.9);
   // tarp: a low blue mound with folds
-  { const [x, z] = at(2.2, 0.85); if (ok([x])) { const t = new THREE.SphereGeometry(1, 18, 8, 0, Math.PI * 2, 0, Math.PI / 2); t.scale(0.75, 0.16, 0.55);
+  { const [x, z] = at(2.2, 0.85); if (ok([x, z])) { const t = new THREE.SphereGeometry(1, 18, 8, 0, Math.PI * 2, 0, Math.PI / 2); t.scale(0.75, 0.16, 0.55);
     const p = t.attributes.position; for (let i = 0; i < p.count; i++) p.setY(i, p.getY(i) * (1 + 0.25 * Math.sin(p.getX(i) * 7) * Math.cos(p.getZ(i) * 5)));
     add(t, '#7393C8', x, 0, z, 0.6); } }
   // planks: three boards, one propped
-  { const [x, z] = at(-2.5, 0.88); if (ok([x])) for (let i = 0; i < 3; i++) add(new THREE.BoxGeometry(1.3, 0.05, 0.22), i % 2 ? '#C9965E' : '#B98550', x + i * 0.05, 0.03 + i * 0.05, z + (i - 1) * 0.24, 0.4 + i * 0.12, 0, i === 2 ? 0.25 : 0); }
+  { const [x, z] = at(-2.5, 0.88); if (ok([x, z])) for (let i = 0; i < 3; i++) add(new THREE.BoxGeometry(1.3, 0.05, 0.22), i % 2 ? '#C9965E' : '#B98550', x + i * 0.05, 0.03 + i * 0.05, z + (i - 1) * 0.24, 0.4 + i * 0.12, 0, i === 2 ? 0.25 : 0); }
   // tyres: two flat, one leaning
-  { const [x, z] = at(0.95, 0.9); if (ok([x])) { for (let i = 0; i < 2; i++) add(new THREE.TorusGeometry(0.2, 0.075, 8, 20), '#5A5563', x, 0.075 + i * 0.15, z, 0, Math.PI / 2);
+  { const [x, z] = at(0.95, 0.9); if (ok([x, z])) { for (let i = 0; i < 2; i++) add(new THREE.TorusGeometry(0.2, 0.075, 8, 20), '#5A5563', x, 0.075 + i * 0.15, z, 0, Math.PI / 2);
     add(new THREE.TorusGeometry(0.2, 0.075, 8, 20), '#625C6C', x + 0.42, 0.27, z + 0.2, 0.9, 0.25); } }
   // crate and a cardboard box
-  { const [x, z] = at(-0.9, 0.9); if (ok([x])) { add(new THREE.BoxGeometry(0.5, 0.42, 0.5), '#B07A48', x, 0.21, z, 0.35); add(new THREE.BoxGeometry(0.4, 0.3, 0.32), '#C8A472', x + 0.45, 0.15, z + 0.45, -0.3); } }
-  { const [x, z] = at(3.6, 0.82); if (ok([x])) { add(new THREE.BoxGeometry(0.55, 0.32, 0.42), '#CBA877', x, 0.16, z, 0.8); add(new THREE.BoxGeometry(0.56, 0.02, 0.43), '#D9BA88', x - 0.08, 0.33, z + 0.05, 1.1, 0.1); } }
+  { const [x, z] = at(-0.9, 0.9); if (ok([x, z])) { add(new THREE.BoxGeometry(0.5, 0.42, 0.5), '#B07A48', x, 0.21, z, 0.35); add(new THREE.BoxGeometry(0.4, 0.3, 0.32), '#C8A472', x + 0.45, 0.15, z + 0.45, -0.3); } }
+  { const [x, z] = at(3.6, 0.82); if (ok([x, z])) { add(new THREE.BoxGeometry(0.55, 0.32, 0.42), '#CBA877', x, 0.16, z, 0.8); add(new THREE.BoxGeometry(0.56, 0.02, 0.43), '#D9BA88', x - 0.08, 0.33, z + 0.05, 1.1, 0.1); } }
   // a bucket cluster's painted cousins: two flower pots, and pebbles
-  { const [x, z] = at(-1.7, 0.92); if (ok([x])) for (let i = 0; i < 2; i++) add(new THREE.CylinderGeometry(0.13, 0.1, 0.22, 14), '#C9764A', x + i * 0.3, 0.11, z - i * 0.12); }
+  { const [x, z] = at(-1.7, 0.92); if (ok([x, z])) for (let i = 0; i < 2; i++) add(new THREE.CylinderGeometry(0.13, 0.1, 0.22, 14), '#C9764A', x + i * 0.3, 0.11, z - i * 0.12); }
   for (let i = 0; i < 18; i++) { const a = i * 2.39, r = 0.55 + (i * 0.37) % 0.4; const [x, z] = at(a, r); add(new THREE.DodecahedronGeometry(0.035 + (i % 3) * 0.015, 0), '#9A8E7E', x, 0.02, z, i); }
   return g;
 }

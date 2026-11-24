@@ -40,7 +40,7 @@ if (!args.includes('--no-build')) {
 /* ---------------------------------------------------------------- browser */
 const srv = await serve(0), port = srv.address().port;
 const browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
-const log = [], R = { shots: [], flash: null, perf: [] };
+const log = [], R = { shots: [], flash: null, perf: [], brawl: null };
 async function open(query, { w = 1920, h = 1080 } = {}) {
   const ctx = await browser.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: 1 });
   const p = await ctx.newPage(); const errors = [];
@@ -152,6 +152,35 @@ if (want('daifuku')) {
   await p.ctx.close();
 }
 
+/* ---------------------------------------------------------------- 4b. 10-cat brawl triangle budget (0.5 M) */
+if (want('brawl')) {
+  const p = await open('fight=brawl10&seed=5&script=bot');
+  const samples = [];
+  for (let i = 0; i < 8; i++) { const st = await ev(p, '__cat.frames(150)'); if (st.mode === 'fight') samples.push({ tick: st.tick, calls: st.stats.calls, triangles: st.stats.triangles }); }
+  await shot(p, 'brawl10.png', '10-cat brawl (Mikan + 3 vs 6) for the triangle budget');
+  await p.ctx.close();
+  const t = samples.map((x) => x.triangles).sort((a, b) => a - b);
+  R.brawl = { samples, triangles: { min: t[0], median: t[t.length >> 1], max: t[t.length - 1] }, budget: 500000 };
+  console.log('brawl', JSON.stringify(R.brawl.triangles));
+}
+
+/* ---------------------------------------------------------------- 4c. a short WebM of a fight (shake and hit-stop judged in motion) */
+if (want('clip')) {
+  const W = 960, H = 540, dir = path.join(OUT, '.clip'); fs.mkdirSync(dir, { recursive: true });
+  for (const f of fs.readdirSync(dir)) fs.unlinkSync(path.join(dir, f));
+  const p = await open('fight=toughs3&seed=7&script=bot', { w: W, h: H });
+  // ~7 s around the first Tough Rout (impact frame, word, shake), at a fixed 60 fps
+  const st = await ev(p, `__cat.until('CatRouted')`); await p.ctx.close();
+  const q = await open('fight=toughs3&seed=7&script=bot', { w: W, h: H });
+  await ev(q, `__cat.frames(${Math.max(1, st.tick - 300)})`);
+  for (let i = 0; i < 420; i++) { await ev(q, '__cat.frames(1)'); fs.writeFileSync(path.join(dir, `f${String(i).padStart(4, '0')}.png`), await q.screenshot()); }
+  await q.ctx.close();
+  const { execFileSync } = await import('node:child_process');
+  execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-framerate', '60', '-i', path.join(dir, 'f%04d.png'), '-c:v', 'libvpx-vp9', '-b:v', '2M', '-pix_fmt', 'yuv420p', path.join(OUT, 'fight-clip.webm')]);
+  for (const f of fs.readdirSync(dir)) fs.unlinkSync(path.join(dir, f)); fs.rmdirSync(dir);
+  console.log('clip fight-clip.webm (420 frames @ 60 fps)');
+}
+
 /* ---------------------------------------------------------------- 5. flash screening on a Pile-On capture */
 if (want('flash')) {
   const W = 480, H = 270;
@@ -210,6 +239,7 @@ const prev = fs.existsSync(path.join(OUT, 'results.json')) ? JSON.parse(fs.readF
 const merged = { ...prev, date: new Date().toISOString().slice(0, 10) };
 if (R.shots.length) { const keep = (prev.shots || []).filter((s) => !R.shots.some((x) => x.name === s.name)); merged.shots = keep.concat(R.shots).sort((a, b) => a.name.localeCompare(b.name)); }
 if (R.flash) merged.flash = R.flash;
+if (R.brawl) merged.brawl = R.brawl;
 fs.writeFileSync(path.join(OUT, 'results.json'), JSON.stringify(merged, null, 1));
 const errs = (merged.shots || []).flatMap((s) => s.errors || []);
 console.log('wrote', OUT, errs.length ? `ERRORS: ${errs.length}` : 'no page errors');
