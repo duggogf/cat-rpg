@@ -591,6 +591,16 @@ Cowed on a recruit:  D_out = D × cowed_dmg ; AI target set excludes old_boss_id
 22. **Wipe during a Pile-On:** impossible (participants are invulnerable). A wipe in the frames after it resolves normally (`loss`).
 23. **Fed Up during a Frazzle window:** the window is unaffected. Ruffled applies after it ends.
 24. **Ambush by player on a group:** only the first target is Ruffled and takes ×1.5. The rest start neutral.
+25. **Degenerate strategies checked:**
+    - **Stun-lock:** poise rules cap a leader's lost action time to ≤ 4 s outside Frazzled, Splat or Fear.
+    - **Turtle:** red attacks and Fed Up.
+    - **Mantle-pounce loop:** the 1.5 s penalty.
+    - **Heal loop:** the 60% cap.
+    - **Paw farming:** no self-refunds, and AI never spends its last Paw.
+    - **Hiss loop on leaders:** the interrupt spends the enemy's Paw, puts the Move on cooldown, and the re-Ruffle cooldown applies.
+    - **Control one cat all fight:** Tag-Ins are worth both damage and Paws (F3, F6). The sim checks that the switch rate is > 0 in the best policies.
+    - **Lose on purpose to end the day** (owner feedback): a wipe is dominated by Settle In in every currency (Day Loop §3.6, Territory §4.13); Combat adds nothing that rewards it.
+    - **Scram-reset anger:** closed, Scram does not spend it (edge 32).
 26. **Wipe with a join-in ally standing:** the guest is not Posse, so all four Posse cats Routed is a `loss` even if the guest still stands. It slips away at the Gloat; it gains no Regard and nothing is recorded on it.
 27. **Wipe while a recruit is still Cowed:** a normal `loss`. The flinch writes nothing anywhere; next time it sees its Old Boss it flinches again unless Sworn by then.
 28. **Cowed recruit when the Old Boss is the only opponent** (Daifuku's phase 1): its AI has no target, so it postures at 4–6 m, Braces, and still Hisses yellows aimed at itself. It still fills Paws (passive only). The player's Tag-In is the answer.
@@ -604,15 +614,6 @@ Cowed on a recruit:  D_out = D × cowed_dmg ; AI target set excludes old_boss_id
 36. **A Kin opponent is the last enemy standing:** the Kin AI cat postures and Braces; the others finish it. A player-triggered Quick Pile-On includes the Kin cat (player-authored).
 37. **Togemaru on Life 1 day 1 Frazzled or Splatted at 25%:** he still bolts (the day-1 exception overrides both). On every later day the normal flight rule applies.
 38. **Loss in a `raid_defence` brawl (the Caterwaul):** a normal `loss` for the day (Day Loop §5). The raid result is Territory's formula with the presence term; the brawl's outcome moves no Scent.
-
-25. **Degenerate strategies checked:**
-    - **Stun-lock:** poise rules cap a leader's lost action time to ≤ 4 s outside Frazzled, Splat or Fear.
-    - **Turtle:** red attacks and Fed Up.
-    - **Mantle-pounce loop:** the 1.5 s penalty.
-    - **Heal loop:** the 60% cap.
-    - **Paw farming:** no self-refunds, and AI never spends its last Paw.
-    - **Hiss loop on leaders:** the interrupt spends the enemy's Paw, puts the Move on cooldown, and the re-Ruffle cooldown applies.
-    - **Control one cat all fight:** Tag-Ins are worth both damage and Paws (F3, F6). The sim checks that the switch rate is > 0 in the best policies.
 
 ## 6. Dependencies
 
