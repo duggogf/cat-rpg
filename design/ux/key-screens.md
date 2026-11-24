@@ -18,7 +18,7 @@
 3. **Unavailable actions stay in place, focusable, halftoned, and say why** (one line, cat-voiced where a cat refuses, system text where a rule blocks). Positions never move.
 4. **Numbers policy (R3).** Grudge, Regard and Scent are **never numbers outside the Turf Board**. Loyalty is shown as its **tier word** (Shifty / Aloof / Steady / True / Sworn) and the gate it opens, never a numeral. **Boss anger is 0–3 steam puffs and a stage word, never a number** (OR-07). **District influence shows its % only in the Turf Board header** (OR-08); the street shows wisps only. The Turf Board is the only screen with territory numbers. Currency counts (Morsels, Shinies) appear where they are spent; levels appear on Crew cards.
 5. **Language veto.** No screen renders human speech or writing. Cat speech is readable text (≤ 60 characters per balloon). System UI is normal localised text.
-6. **Own-history rule (patent, v2 G1/G8; OR-02, OR-19).** No screen states or implies that a cat changed **because of what Mikan did to a different cat**. Captions, tags, lines, stamps and replays describe what a cat is and what it remembers of *its own* dealings with Mikan. Changes may be shown on the cat Mikan dealt with, on territory and objects, on the calendar ("a newcomer arrived"), and on newly generated cats. A caption never gives a cause in terms of another cat ("took the Thorn's old post", "angry because you recruited Hige" are both forbidden). Every new string on §2–§5 passes this audit (§2.10).
+6. **Own-history rule (patent, v2 G1/G8; OR-02, OR-19).** No screen states or implies that a cat changed **because of what Mikan did to a different cat**. Captions, tags, lines, stamps and replays describe what a cat is and what it remembers of *its own* dealings with Mikan. Changes may be shown on the cat Mikan dealt with, on territory and objects, on the calendar ("a newcomer arrived"), and on newly generated cats. A caption never gives a cause in terms of another cat ("took the Thorn's old post", "angry because you recruited Hige" are both forbidden). Every new string on §2–§5 passes this audit (§2.11).
 
 ### 1.2 Screen map (slice)
 
@@ -80,89 +80,159 @@ The owner's note on the old Turf Board ("the UI are all over the place") applies
 
 ---
 
-## 2. The Rivals board (showpiece; replaces the Fence Line)
+## 2. The Rivals board (showpiece; replaces the Fence Line; staged scenes per owner C6)
 
 ### 2.1 Purpose and access
 
-**Every unique cat in Yunagi on one painted wall** (OR-03): the Lane's Boss and gang, the uphill districts' authored cats in haze, the outsiders who came to take Mikan's ground, and Mikan's own Crew. Cats you have not met are **silhouettes**. Hovering one cat shows, as small tags on the others, **how it is tied to the cats you have met** (OR-04). It is the Rivals system's face and the slice's most important still: it must read as *a town full of cats who know each other*, with your place in it, at a glance.
+**Every unique cat in Yunagi, one gang at a time, each gang staged as a scene** (OR-03, owner C1 and C6). The owner asked for a roster of every unique cat (C1), and then for it to be shown "similarly to this instead of a line from left to right. This shows more dynamic" (C6, `design/reviews/refs/rivals-board-layout-ref.webp`). So each gang is shown **in its own place, in deep perspective**: its Boss on a raised perch at the far end, its cats down the steps and the path toward the camera, each with a name ribbon and a short **role tag**, and dashed arrows showing who they answer to. Cats you have not met are **silhouettes** in the shade. Hovering one cat hangs **relationship tags** on the other discovered cats it is tied to (OR-04). It must read as *a gang with a pecking order and a place of its own, who know each other and know you*, at a glance.
 
 The UI name is **"Rivals"**. "Nemesis" is never shown (G12); the arc lead's face is *Sworn Enemy* or *Sworn Rival*.
 
-**Access (OR-03, unchanged from the Fence Line, plus the pause menu):**
+**Access (OR-03, plus the pause menu):**
 - **View / J** anywhere on the street, at the Lot and on the walk home after a loss (read-only).
 - **Pause ▸ Rivals** tab on the street and at the Lot (pause tabs there: **Mikan · Rivals · Options**).
-- **North on a Sniff card** at the Doorstep (opens focused on that card's cat).
-- **The Rivals chip** after a key event (§2.8).
+- **North on a Sniff card** at the Doorstep (opens on that card's scene, focused on that cat).
+- **The Rivals chip** after a key event (§2.9).
 - **Never inside Haru's wall** (the home pause is Mikan · Options only; View is inert at home).
 - **Unlocks on Life 2 day 1.** In Life 1 the binding and the pause tab show a closed-gate pictogram.
 - The clock is paused while it is open. It is **read-only**: nothing on it changes the game.
 
-### 2.2 Composition (one 1080p frame, no scrolling)
+### 2.2 The town roster as scenes (how C1's "every unique cat" fits C6's staging)
 
-A single painted panorama in the current phase light (morning cream, day blue, Dusk gold, Night moon-blue), drawn as the town climbing from left to right. The former Fence Line's wall art is its backdrop. **There is no rank ladder: height no longer means rank.**
+**One scene per gang, plus Outsiders and your own Crew: six scenes, cycled with L1/R1 (Q/E, or a click on the scene strip).** The **scene strip** in the header is the whole-town roster at a glance: one tab per scene, and under each tab a row of tiny chestnut dots, one per cat in that scene, **filled in its colours when met, a flat silhouette dot when not**. No counts or numbers.
 
-| Region | Where | What sits there |
+| # | Scene (tab) | Staged in | Perch (far end) | Down the steps and path | In the slice |
+|---|---|---|---|---|---|
+| 1 | **Hidamari Lane** (Wall Sitters) | The narrow alley up to the Den corner stone, laundry poles, garden walls, Dusk light | **Daifuku** on the raised porch over the corner stone | Captains on the stone steps; Toughs on the path; Roamers up on a wall or wire at the side | Fully populated and discoverable (≤ 10 tracked). **The default scene** |
+| 2 | **Akane Arcade** (Awning Gang) | The covered arcade rising to the shrine steps and torii | Madam Sabi on the shrine step landing (crown outline) | Oboro and the gang as silhouettes | **Silhouette scene**: painted in haze, authored silhouettes only, not discoverable in the slice |
+| 3 | **Shiosai** (Salt Paws) | The harbour stone stairs, nets, tetrapods | Ikari on the net-shed roof (crown outline) | Silhouettes | Silhouette scene |
+| 4 | **The Lighthouse Summit** (Steam Court) | The lighthouse stair from below | Botan on the lantern rail (crown outline) | Silhouettes (Narrative authors any) | Silhouette scene |
+| 5 | **Outsiders** | The bus stop at the edge of town, a torn timetable poster (Scribble), the coast road | **No perch** (nobody answers to anyone) | Challengers, newcomers and turncoats, each beside a small stamp of the Patch it stakes or keeps | Populated as they arrive (challenger on L2D4) |
+| 6 | **The Bell** (your Crew) | The Lot: the kei truck, crates, the back fence | **Mikan** on the kei truck roof | Crew on the truck bed and crates (Posse nearest the camera), Sentries by the fence gate | Always discovered |
+
+**Locked scenes in Life 2:** tabs 2–4 are visible and openable, painted in haze with an unlit perch, so the climb ahead is part of the roster; their focus text is "Further up the hill." The scene strip's order is the town climbing: Lane → Arcade → Shiosai → Summit, then Outsiders, then the Bell.
+
+**Opening scene:** the scene of the cat it was opened for; otherwise the district Mikan is in (the Lane in the slice).
+
+**Cross-scene ties:** a tie to a discovered cat in **another** scene hangs its tag on that scene's tab in the strip (with the cat's mini chip), and is listed on the card's Ties line; West / R ("Go to") or a click on the tag jumps to that scene focused on that cat. Example: focusing Hige in the Bell scene hangs **Old Boss** with Daifuku's chip on the Hidamari Lane tab.
+
+### 2.3 How a scene is staged
+
+**Depth = fixed role, never earned.** The Boss is on the perch at the vanishing point; **Captains** stand on the steps just below it; **Toughs** stand on the path toward the camera. **Roles are fixed at generation and never change** (OR-19): no seats, no promotions, no demotions, so a cat's place in its scene never moves because of anything Mikan does to any cat. **Within a tier, cats stand in order of discovery** (the first met nearest the centre line). When a cat leaves (Recruit, Gone, a Boss's truce), its spot keeps a mark (§2.5) and **nobody steps up into it**.
+
+**Undiscovered cats wait in the shade.** An unmet cat is a flat Ink silhouette standing **in the shadow along the alley walls**, not on its role spot, so its position gives nothing away (OR-03: no name, tags, pose or traits). A Boss silhouette sits on its perch with a crown outline. On discovery the cat **steps out of the shade onto its spot** (the pin beat, §2.9).
+
+**Dashed arrows = who answers to whom.** One dashed cream arrow (Ink-edged) runs from each discovered gang member **up the path to its Boss's perch**: the Gang/Boss relation of OR-04 and nothing more. There is **no Tough-to-Captain chain**: no such relation exists in the rules, and drawing one would invent a hierarchy that G11 tells us to keep flat. Arrows from cats on the same side merge into one line up the steps, so the picture stays a few strong lines, not a web. Outsiders have no arrows. In the Bell scene, Crew arrows run to Mikan. Roamers have an arrow only if they belong to that gang.
+
+**Arrows to an empty perch:** if the Boss is Gone, in the Crew or in truce, the arrows still point to the perch (membership is a fixed fact), drawn dotted, and the perch shows his mark (§2.5). No gang cat is ever drawn on it (G6).
+
+**The arc lead** (Togemaru) carries his storm mark aimed **out of the picture at the camera**, i.e. at the player, wherever his scene is.
+
+### 2.4 Role tags (one short label per cat, fixed for life)
+
+Under each discovered cat's **name ribbon** (in its Clowder colour) hangs a **role tag**: a short word that says the cat's own job in its gang, plus a **Style icon** for the combat hint. The word comes from the cat's **personality** (how it fights, brief §3.5); the icon from its **Style**; the prefix from its **fixed role**. All three are set at generation and never change, so **the tag can never change because of what Mikan did to another cat**.
+
+| Personality | Tag word | Why (its own "fights like" and "on guard") |
 |---|---|---|
-| **The Lane** (Hidamari Lane, Wall Sitters) | Left ≈ 55%, foreground, full light | **Daifuku on the Lane's gatepost** at the section's left end (a role mark: the gatepost, a crown notch carved in it; big enough to break the skyline). Then **the gang in one row along the wall top, in order of discovery** (≤ 9 in the slice), then undiscovered silhouettes at the row's end. A painted district sign on the gatepost: "Hidamari Lane" |
-| **Up the hill** (the Arcade, Shiosai, the Summit) | Upper middle-right, background haze | Three short wall stretches climbing to the lighthouse, each with its own gatepost and sign. Only **authored** cats, as silhouettes in haze: Madam Sabi (crown outline), Oboro, Ikari (crown outline), Botan (crown outline, on the lighthouse rail), plus one Narrative authors. Unlit, out of focus, not discoverable in the slice: the climb ahead |
-| **Outsiders** | Lower right-centre, foreground | A broken gate with a torn poster: **challengers, newcomers and turncoats**, each with the Patch it stakes or keeps on a small Patch stamp beside it. Silhouette until met |
-| **The Bell fence** | Far right, foreground | The Lot's fence and the kei truck: **Mikan on the gatepost** (no Clout height) and every Crew cat on the fence and the truck bed. Wavering Crew sit turned away |
-| **Legends** | In place, in their own row | A cat that is **Gone** (Chased Off) stays where it sat as a faded paper card with paw prints leading off the bottom edge. Its place is never filled by another cat sliding over |
+| Braggart | **Brawler** | Charges the biggest enemy |
+| Brooder | **Enforcer** | Hangs back, avenges its allies, never leaves |
+| Schemer | **Sneak** | Flanks; hunts the Ruffled and Frazzled; ambushes |
+| Fraidy | **Lookout** | Keeps its distance; raises the alarm early |
+| Stalwart | **Shield** | Guards the others; braces |
+| Goofball | **Prankster** | Plays; goes for props |
 
-**Text on the frame:** the four section signs, and name pills on **only** the arc lead (Sworn Enemy / Sworn Rival, or the lead before the Declaration) and the focused cat. No header bar, no rank labels, no footer text except the control footer.
+| Role (fixed) | Tag format | Example |
+|---|---|---|
+| Boss | "Boss of *district*" + crown (Style icon on the card only) | "Boss of Hidamari Lane" |
+| Captain | "Captain · *word*" + Style icon | "Captain · Sneak (Yowler arc)" |
+| Tough | "*word*" + Style icon | "Brawler (Scrapper claw)" |
+| Great Boss | "Great Boss" | Botan (full game) |
+| Outsider | Its situation: **Challenger** / **Newcomer** / **Turncoat** / **Roamer**, + the Patch stamp it stakes or keeps | "Challenger · Laundry Pole Yard" |
+| Crew (Bell scene) | The same personality word + Style icon; its assignment (Posse, a post, Lounging) is on its card, not the tag | "Shield (Bruiser fist)" for Hige |
+| Mikan | The Clout word | "Known Face" |
 
-**Parallax:** three layers (sky and hill, walls, foreground weeds and the gate); 2–4 px drift on focus change (off under Reduce Motion).
+Style icons: Bruiser fist · Scrapper claw · Prowler fang · Yowler sound arc · Trickster tumbling die. An Outsider's situation word changes only by that cat's own story (a challenger that takes a post becomes "Keeper"; one that leaves becomes a legend), never because of another cat.
 
-### 2.3 Wireframe: default framing (1080p, Life 2 day 2, Dusk; before the Boss window opens)
+Words are a vocabulary for Narrative to polish; "Sentry", "Warden" and "Keeper" are reserved for the posting system and are **not** role tags.
 
-```
-+------------------------------------------------------------------------------------------+
-|  ~ Dusk gold sky, cumulus ~                 . haze . awnings . harbour .        /\       |
-|                                                            SUMMIT ____[(^)]   /  \ light-|
-|                                           SHIOSAI ____[(^)]______|  Botan?  /____\ house |
-|      ( ) ( ) ( )  <- 2 steam puffs: Riled  ARCADE ___[(^)](?)__|   Ikari?                 |
-|     .-------.                    ______|  Sabi? Oboro?   (all silhouettes in haze)       |
-|     |DAIFUKU|                                                                             |
-|     | loaf, |   KAGI    GOMA   TOGEMARU   SASA    (?)    (?)   [faded   |  OUTSIDERS  BELL FENCE
-|     |blocks |  side-eye glare  "Sworn    *new   (?)    (?)    legend   |   _||_      _[MIKAN]_
-|     |the sky|  sprig   hackles  Enemy"                         card]    |  | ?? |    (Hige)(Pon)
-|     |=crown=|   ___________~~storm~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~> (Kinako)
-|  [Hidamari Lane]  painted wall top, one row, order of discovery  ..:paw prints | stake: LPY |truck|
-|__________________________________________________________________________________________|
-|  (name-card slides up here, bottom-left 40%, on focus)       (N) Last night  (S) Card  (E) Back |
-+------------------------------------------------------------------------------------------+
- pills shown: only the arc lead ("Sworn Enemy") until something is focused
- (?) = undiscovered silhouette   (^) = crown outline (an undiscovered Boss)   *new = tape star
-```
+### 2.5 Cats and marks
 
-### 2.4 Cats and marks
-
-**Undiscovered** (OR-03): one flat Ink silhouette shape for every cat (the same seated shape, so the pose gives nothing away), placed in its section. A Boss's silhouette is larger and carries a **crown outline**. No name, tags, pose or traits. A challenger or newcomer you have not met is the same silhouette at the Outsiders gate, with the Patch stamp it stakes beside it.
-
-**Discovered** (any encounter, a 1.0 s Whisker Sense sniff within 10 m, or Crew; `CatDiscovered`): the cat in its colours, in **one disposition pose** (Nemesis owns the mapping), with these marks. Each mark has a shape twin, never colour alone.
+Every discovered cat stands in **one disposition pose** (Nemesis owns the mapping) with its name ribbon, role tag, and these marks. Each mark has a shape twin, never colour alone.
 
 | Mark | Meaning | Who can carry it |
 |---|---|---|
 | Disposition pose (glare · side-eye · yawn · upright nod · nose to the sky) | How it feels about Mikan (Grudge and Regard as a pose) | Any discovered non-Crew cat |
-| **Storm mark** aimed at Mikan's gatepost | The arc lead / Sworn Enemy or Sworn Rival | Togemaru only, in Lives 1–2 |
+| **Storm mark** aimed at the camera | The arc lead / *Sworn Enemy* or *Sworn Rival* | Togemaru only, in Lives 1–2 |
 | Grumble cloud | Bitter (Grudge ≥ 75, not the lead) | Any |
 | **Truce sprig** | Nose-Touched: in truce, or a Friend (sprig in flower) | Any |
-| **Steam puffs** (0–3) | Boss anger stage (§2.6) | District Bosses only |
-| Name, Title, silhouette Scars | Its history worn on the model | Any |
-| Known Fear / Strength stamps | Small stamps under the name pill when focused | Any |
+| **Steam puffs** (0–3) over the perch | Boss anger stage (§2.7) | District Bosses only |
+| Title, silhouette Scars | Its history worn on the model | Any |
 | **Tape star** | New since last night (discovered, arrived, changed state) | Any; cleared on next open |
 | Head plaster (2 days) | Lost a feud scuffle (a town event) | Any |
-| **Bell-cord knot** on an empty perch | This cat joined your Crew (it now sits on the Bell fence) | Its old place in its row |
-| Faded legend card + paw prints | **Gone** for good (Chased Off) | Its old place in its row |
-| Turned away | Wavering (Crew only) | Bell fence |
+| **Bell-cord knot** on its empty spot | It joined your Crew (it now stands in the Bell scene) | Its old spot |
+| Faded legend card + paw prints off the frame edge | **Gone** for good (Chased Off) | Its old spot |
+| Turned away + two-pip morning mark | Wavering (Crew only) | Bell scene |
 
-**No re-ordering, ever.** A row is in order of discovery; when a cat leaves it (Recruit, Gone), its place keeps a knot or a legend card and nobody slides over. A Boss who is Recruited, Chased Off or Nose-Touched leaves his gatepost empty (crown notch, plus his legend card or sprig); no gang cat ever takes it (G6).
+**Roaming Boss** (window open, OR-09): the perch is **empty** (cushion still dented, crown notch), Daifuku is drawn **halfway down the steps, walking out of the scene** with a short line of crown paw-marks, and the fact column says where he is now. The empty perch is the picture of the owner's "the boss will now start to roam the streets". A Boss who is Recruited, Chased Off or Nose-Touched leaves the perch empty with his knot, legend card or sprig; no gang cat ever takes it (G6).
 
-**Roaming Boss** (window open, OR-09): Daifuku is drawn **down off his gatepost**, standing at the wall foot with a short line of crown paw-marks, and his name-card reads "Roaming · now at Tofu Shop's back wall" (the current phase's stop). The empty gatepost is the picture: the owner's "the boss will now start to roam the streets".
+### 2.6 Layout and wireframe (1080p, Hidamari Lane scene, Life 2 day 3, Dusk)
 
-### 2.5 Relationship tags (hover or focus)
+Five regions, the same Z reading order as every screen (§1.5): **header → scene → card → buttons**, with the fact column as the scene's caption.
 
-The owner's rule (C1, OR-04): **hover one discovered cat (mouse) or focus it (pad / keys), and a small tag appears on every other discovered cat it relates to**, worded from the hovered cat's point of view. If either cat is undiscovered, nothing shows. Tags are words with an icon, never numbers.
+| Region | Where | Content |
+|---|---|---|
+| **Header bar** (one line) | Top, full width | Place name · the district's **influence bar** (Bell Gold vs. the gang's colour, crown at the full end; **no %**, which stays in the Turf Board header, OR-08) · the **scene strip** (L1 · Lane · Arcade · Shiosai · Summit · Outsiders · Bell · R1, each with its dot row) |
+| **Fact column** | Left ≈ 18%, under the header | Up to four facts, each a small label + one chip, **no numbers** (§2.6.1) |
+| **Scene** | Centre, full bleed behind everything | The staged gang (§2.3), ≤ 10 discovered cats plus silhouettes, every focusable cat ≥ 64 px tall |
+| **Card** | Bottom-left ≈ 36% × 22% | The focused cat's name-card (§2.8); slides up on focus; on open with nothing focused it shows the Boss |
+| **Buttons** | Bottom-right | (N) Last night · (S) Card · (W) Go to tie · (E) Back, as pom buttons with binding glyphs |
+
+```
++------------------------------------------------------------------------------------------+
+| HIDAMARI LANE  [BELL ██████████████░░░|·|▓▓ sage ▓]( crown )  L1 [LANE] Arcade Shiosai Summit Outsiders Bell R1 |
+|                                                  ●●●●○○○○○   ○○○    ○○○     ○      ◌      ●●●●●● |
++--------------+---------------------------------------------------------------------------+
+| TONIGHT      |            ( ) ( )   <- 2 steam puffs: Seething                            |
+| [moon] Raid  |          .-----------------.                                               |
+| [Togemaru]   |          |  DAIFUKU  (zz)  |  porch perch over the corner stone            |
+| on Persimmon |          | [Boss of Hidamari Lane]                                         |
+| Alley        |          '--------^--------'                                               |
+|              |         /    ^ dashed  ^    \        (shade, left wall: silhouette (?))    |
+| YOUR POSTS   |  [KAGI]        |        [CAPT2]  <- stone steps: Captains                   |
+| [#][#][#][ ] | [Captain·Sneak]|       [Captain·Shield]                                    |
+| 3 gold stamps|      ^ . . . . + . . . . ^                                                 |
+|              |  [GOMA]              [TOGEMARU] ~~storm~~> (at the camera)                  |
+| DAIFUKU      | [Enforcer]           [Brawler] "Sworn Enemy"                               |
+| Seething     |        ^                    ^                     (shade, right wall: (?)) |
+|              |   [SASA] *new           [ (?) ]  <- unmet: in the shade, not on a spot     |
+| OBJECTIVE    |   [Lookout]                                                                 |
+| Fill the bar:| [faded legend card]  ..paw prints..>  (path toward the camera)              |
+| he comes down|                                                                             |
++--------------+                                                                             |
+| [DAIFUKU] Boss of Hidamari Lane  Brooder (anchor tail)   ( )( ) Seething   |  (N) Last night |
+| Ties: Gang: Kagi, Goma, Togemaru, Sasa +1     "Come back when the Lane     |  (S) Card       |
+|       smells of you, Collar."  (his own line)                              |  (W) Go to  (E) Back |
++------------------------------------------------------------------------------------------+
+ ● met  ○ silhouette  ◌ empty (no outsider yet)   arrows: each member -> its Boss only
+```
+
+#### 2.6.1 The fact column (the scene's caption)
+
+Facts are territory, calendar and objective. They never say a cat changed because of another cat, and they never show a number (R3: territory numbers live on the Turf Board).
+
+| Fact | Shows | When |
+|---|---|---|
+| **Tonight** | Moon (raid) or stake flag (challenge) + the raiders' chips (silhouette if unmet) + the target Patch name | When a raid or challenge is forecast in this district |
+| **Your posts** | The district's outer posts as four small Patch stamps: Bell Gold = yours and Strong, gold with a cracked wisp = yours and fading, gang colour = theirs, blank = open | Gang scenes of districts Mikan has posts in |
+| **The Boss** | Anger stage word with puffs; or "Roaming: Tofu Shop's back wall" with a crown paw-mark; or "Gone" / "In your Crew" / "In truce" | Gang scenes |
+| **Objective** | One line from the turf goal: "Fill the bar: he comes down off the walls." → "He roams: find him." → "Spray the Den corner stone." → "The Lane is yours." | Gang scenes |
+| Outsiders scene | **Staking**: each challenger's target post; **Repelled**: two pips per challenger ("leaves after two") | Outsiders |
+| Bell scene | **Posse**: three chips · **On guard**: Sentry chips with their posts · **Wavering**: chip with the two-pip mark | Bell |
+| Silhouette scenes | "Further up the hill." | Arcade, Shiosai, Summit |
+
+### 2.7 Relationship tags (hover or focus)
+
+The owner's rule (C1, OR-04): **hover one discovered cat (mouse) or focus it (pad / keys), and a small tag appears on every other discovered cat it relates to**, worded from the hovered cat's point of view. If either cat is undiscovered, nothing shows. Tags are words with an icon, never numbers. They are a **different object from the role tag**: a paper tag clipped to the cat's ribbon, in cream with an Ink border, that appears only while hovering.
 
 | Hovered cat | Tag on the other cat | Icon |
 |---|---|---|
@@ -174,101 +244,89 @@ The owner's rule (C1, OR-04): **hover one discovered cat (mouse) or focus it (pa
 | That Boss | **Old Gang** on that Crew cat (read from the recruit's own data) | Paw row with a bell |
 
 **How it looks:**
-1. On hover/focus (after 120 ms with the mouse, at once with pad/keys), every **unrelated** cat drops to a 40% halftone; related cats keep full colour.
-2. Each related cat gets a **paper tag** hung from its perch (icon + word, 28 px floor), and a **chalk thread** draws from the hovered cat to it over 150 ms (instant under Reduce Motion).
-3. The same ties are listed on the name-card's **Ties** line (§2.7), so nothing depends on hover or on seeing the threads.
-4. A cat with no ties among discovered cats: no threads; the Ties line reads "No ties to cats you've met."
+1. On hover/focus (after 120 ms with the mouse, at once with pad/keys), every **unrelated** cat and every arrow not touching the hovered cat drop to a 40% halftone; related cats keep full colour and the hovered cat's own arrow brightens.
+2. Each related cat in the scene gets its **paper tag** (icon + word, 28 px floor), popping in over 3 drawings (instant under Reduce Motion).
+3. Related cats **in other scenes** hang their tag on that scene's tab in the strip, with a mini chip (§2.2).
+4. The same ties are listed on the card's **Ties** line, so nothing depends on hover.
+5. A cat with no ties among discovered cats: the Ties line reads "No ties to cats you've met."
 
 **Not tags:** Mikan's own relationship with a cat (Grudge, Regard, truce, Sworn) stays the pose, sprig and storm mark. Tags never change because of what Mikan did to another cat; they are generation facts or the recruit's own memory (OR-04), and showing them changes nothing.
 
-**Slice seeds you can see** (Narrative confirms names): every Wall Sitter → Daifuku **Boss**; Togemaru ↔ Goma **Rival**; Kagi ↔ the second Captain **Rival**; Kinako ↔ Sasa **Kin** (cousins); Hige → Daifuku **Old Boss** (authored, from the start).
+**Slice seeds you can see** (Narrative confirms names): every Wall Sitter → Daifuku **Boss**; Togemaru ↔ Goma **Rival**; Kagi ↔ the second Captain **Rival**; Kinako ↔ Sasa **Kin** (cousins, across the Bell and Lane scenes); Hige → Daifuku **Old Boss** (authored, from the start; across scenes).
 
-```
- Focus on HIGE (Bell fence), Daifuku discovered:
- +------------------------------------------------------------------------------+
- |  DAIFUKU                                                                     |
- |  [crown-nick OLD BOSS]  <- paper tag on his gatepost                          |
- |      \                                                                       |
- |       \. . . . . . chalk thread . . . . . . . . . . . . . . . . . .         |
- |  (Kagi, Goma, Togemaru, Sasa: 40% halftone)                     \            |
- |                                                                (HIGE) lifted |
- |  name-card:  HIGE  the old wall cat   Stalwart                               |
- |              Ties: Old Boss: Daifuku    Steady at the sight of him           |
- +------------------------------------------------------------------------------+
-```
+### 2.8 The card, and the Boss anger readout
 
-### 2.6 The Boss anger readout
+The **name-card** (bottom-left) is the focused cat's short card; South opens the full Rival card (§3). It holds: Clowder ribbon, chestnut portrait, name and Title, **role tag**, personality icon and word, Grudge and Regard moods, **Ties** line, anger (Bosses), and its **latest own-history line** (from its own Memory only). Undiscovered: the silhouette and "Not met yet. Sniff it out: hold Whisker Sense near it." Outsider silhouette: "A stranger's scent. Staking Laundry Pole Yard."
 
-The owner asked to see "how angry they are every time you do something bad on its territory" (C1, OR-07).
+**Boss anger** (C1, OR-07): what the owner asked to see "every time you do something bad on its territory".
+- **In the scene:** 0–3 **steam puffs** rising over the perch: none = Calm, 1 = Riled, 2 = Seething, 3 = Furious. At Furious the puffs are bigger and the perch's crown notch glows Collar Crimson (zigzag edge as its shape twin). The fact column repeats the stage word.
+- **On the card and Rival card:** the puffs, the **stage word**, and two fixed lines of system text: "Rises when you over-mark or counter-spray in the Lane. Cools each night." and "Next fight with him: Fired Up for a while / for a long while / all fight. Spent after his next fight."
+- **Never shown:** a number, a cause that is a fight, or any effect on another cat (G2).
+- **On the street** the act gets a one-beat answer (a steam puff on the Patch tag; `hud.md` §3.1) and the Sniff gets a card at Seething or Furious (`hud.md` §5.3).
 
-- **On the board:** 0–3 **steam puffs** rising from the Boss: none = Calm, 1 = Riled, 2 = Seething, 3 = Furious. At Furious the puffs are bigger and the gatepost's crown notch glows Collar Crimson (with a zigzag edge as its shape twin).
-- **On the name-card and Rival card:** the puffs, the **stage word** (Calm · Riled · Seething · Furious), and two fixed lines of system text:
-  - "Rises when you over-mark or counter-spray in the Lane. Cools each night."
-  - "Next fight with him: Fired Up for a while / for a long while / all fight." (Riled / Seething / Furious; "Spent after his next fight." always follows.)
-- **Never shown:** a number, a cause that is a fight, or any effect on another cat. Anger touches the Boss alone (G2).
-- **On the street** the act itself gets a one-beat answer (a steam puff on the Patch tag; `hud.md` §3.1), and the Sniff gets a card at Seething or Furious ("The big wall is seething."; `hud.md` §5.3).
-
-### 2.7 Focus and interaction
+### 2.9 Focus, input, and opening after key events
 
 | Input (gamepad / keys / mouse) | Result |
 |---|---|
-| Stick, D-pad / arrows, WASD / hover | Spatial focus between cats, silhouettes, legend cards and knots. Uphill silhouettes are focusable |
-| L1 / R1 · Q / E · click a section sign · wheel | Jump focus to the next section: Lane → Up the hill → Outsiders → Bell fence |
-| Focus | The cat lifts 4 px, gets a Bell-Gold rim and a name pill; **tags and threads appear** (§2.5); the **name-card slides up** in the bottom-left 40%: Clowder ribbon, chestnut portrait, name and Title, role mark (Boss crown / Captain / Tough claw), personality icon, Grudge and Regard moods, **Ties** line, anger (Bosses), and its **3 latest own-history lines** (from its own Memory only) |
-| Focus an undiscovered cat | Name-card shows the silhouette and its section: "Not met yet. Sniff it out: hold Whisker Sense near it." Up the hill: "Further up the hill." Outsiders: "A stranger's scent. Staking Laundry Pole Yard." |
-| South / Enter / LMB | Opens the full **Rival card** (§3); on a Crew cat, the **Crew card** (§6.2, read-only); on a legend card, its frozen card with the "Run out of town" stamp; on a silhouette, nothing (the press gives a soft bump) |
-| North / F | The **Last night** replay (§2.9), when there is one |
-| View hold / Tab hold / "?" pom | Legend: pose meanings, marks (§2.4), tag words (§2.5), anger puffs |
-| East / Esc / RMB | Close; back to where it was opened (the pause menu, the Sniff card, or play) |
+| Stick, D-pad / arrows, WASD / hover | Spatial focus between cats in the scene, including silhouettes, legend cards, knots and the perch. Up the stick walks focus toward the perch, down toward the camera |
+| L1 / R1 · Q / E · click a tab · wheel | Previous / next scene. The scene slides sideways like turning a corner (a cut under Reduce Motion) |
+| Focus | The cat lifts 4 px with a Bell-Gold rim; relationship tags appear (§2.7); the card updates |
+| South / Enter / LMB | Full Rival card (§3); Crew card for a Crew cat (§6.2, read-only); legend card for a Gone cat; nothing on a silhouette (a soft bump) |
+| West / R / click a tag | **Go to tie**: jump to the related cat's scene and focus it |
+| North / F | The **Last night** replay (§2.10), when there is one |
+| View hold / Tab hold / "?" pom | Legend: role tag words, pose meanings, marks, tag words, anger puffs, the arrows |
+| East / Esc / RMB | Close; back to where it was opened |
 
-**Initial focus:** the cat it was opened for (a Sniff card, the Rivals chip); otherwise none, so the first frame is the clean screenshot (§2.11), and the first stick press focuses the arc lead.
+**Initial focus:** the cat it was opened for; otherwise none (the card shows the Boss), so the first frame is the clean screenshot (§2.12).
 
-### 2.8 Opening it after key events (the Rivals chip)
+**The Rivals chip.** The board never opens itself during play. After a key event, a small chip sits under the phase dial for 4 s (`hud.md` §3.1); pressing View opens the board on that cat's scene and its change plays once as a ≤ 1.5 s pin beat:
 
-The board never opens by itself during play. After a key event, a small **Rivals chip** (the board's icon + the cat's chip + View glyph) sits under the phase dial for 4 s (`hud.md` §3.1). Pressing View within those 4 s opens the board **focused on that cat**, and its change plays once as a ≤ 1.5 s "pin" beat:
+| Event | Pin beat |
+|---|---|
+| `CatDiscovered` | The silhouette steps out of the shade onto its spot and inks in from the feet up; its ribbon and role tag drop in; tape star |
+| `VerdictApplied` · Recruit | The cat walks down the path past the camera, leaving a bell-cord knot; the Bell scene tab's dot fills |
+| `VerdictApplied` · Chase Off | Its figure fades to a legend card; paw prints run off the frame edge |
+| `VerdictApplied` · Nose-Touch | A sprig is pinned on it (a Boss: he steps down off the perch and sits beside it) |
+| Declaration (Sniff card) | The storm mark draws toward the camera; the ribbon reads *Sworn Enemy* or *Sworn Rival* |
+| `ChallengerArrived` (Sniff card) | Outsiders scene: a silhouette steps off the bus beside a stake-flag Patch stamp |
+| `BossWindowChanged(open)` | Daifuku climbs down off the perch and walks out of the scene |
+| `AllyJoined`, first time per cat | The sprig on that cat flowers once |
+| `BetrayalTriggered` (Sniff card) | The cat leaves the Bell scene; it appears in the Outsiders scene as "Turncoat" beside the Patch it now keeps |
 
-| Event (emitter) | Chip appears | Pin beat on the board |
-|---|---|---|
-| `CatDiscovered` (Nemesis) | After the sniff confirmation or at the encounter's end | The silhouette inks in from the feet up; tape star |
-| `VerdictApplied` (Nemesis) | After the payoff animation and the Claim Spray prompt | **Recruit:** the cat hops from its row to the Bell fence, leaving a bell-cord knot. **Chase Off:** its card fades to a legend; paw prints run off the bottom edge. **Nose-Touch:** a sprig is pinned on it |
-| Declaration (Nemesis, a Sniff card) | North on the card | The storm mark draws toward Mikan; the pill reads *Sworn Enemy* or *Sworn Rival* |
-| `ChallengerArrived` (Nemesis, a Sniff card) | North on the card | A silhouette drops in at the Outsiders gate with a stake-flag Patch stamp |
-| `BossWindowChanged(open)` (Territory) | After Daifuku's yowl on the street | Daifuku climbs down off his gatepost (§2.4) |
-| `AllyJoined` (Nemesis), first time per cat | At the encounter's end | The sprig on that cat flowers once |
-| `BetrayalTriggered` (Nemesis), a Sniff card | North on the card | The cat leaves the Bell fence for the Outsiders gate with the Patch it now keeps |
+Each beat moves **only the cat Mikan dealt with** (or a newly generated cat). At the **end-of-Life card** the board plays a 5 s non-interactive pan through the Lane scene with the session's tape stars. After a **loss** no chip appears; the board stays openable on the walk home, where the victor carries a tape star and its new `WON` line.
 
-**Elsewhere:** at the **end-of-Life card** the board plays as a 5 s non-interactive pan ("the Lane, this Life") with the session's tape stars. After a **loss** the chip does not appear; the board stays openable (read-only) on the walk home, where the victor carries a tape star and its new `WON` history line.
+### 2.10 The Last night replay
 
-### 2.9 The Last night replay
-
-After a night with **town events** (OR-19: one per district every 2–3 nights), the first opening that day plays them: **≤ 5 beats**, each ≤ 1.5 s, with a one-line caption in a slim paper strip at the bottom. Skippable with any button; Reduce Motion shows a static list instead. Only events the Sniff admits are replayed (cats with history with Mikan, or touching Mikan's Patches or Crew); others simply appear with a tape star.
+After a night with **town events** (OR-19), the first opening that day plays them: **≤ 5 beats**, each ≤ 1.5 s, in the scene where each happens, with a one-line caption in a slim paper strip at the bottom. Skippable with any button; Reduce Motion shows a static list. Only events the Sniff admits are replayed (cats with history with Mikan, or touching Mikan's Patches or Crew); others simply appear with a tape star.
 
 | Town event | Beat | Caption (system text; Narrative words it) |
 |---|---|---|
-| **Newcomer** into a keeperless Patch | A new silhouette drops in at the Outsiders gate, then its Patch stamp flips to its ring | "New face at Persimmon Alley." |
-| **Feud scuffle** (a Rival-tagged pair) | A dust pom between the two; the loser comes out wearing a head plaster | "Goma and Sasa scuffled." |
-| Challenger arrival / leaving | Drops in / walks off the edge | "A stranger is staking Laundry Pole Yard." / "The stranger left town." |
-| Truce ended | Sprig falls (Friend: the sprig flowers instead) | "Togemaru's truce is over." |
+| **Newcomer** into a keeperless Patch | A new silhouette steps off the bus in the Outsiders scene; its Patch stamp flips to its ring | "New face at Persimmon Alley." |
+| **Feud scuffle** (a Rival-tagged pair) | A dust pom between the two on the path; the loser comes out wearing a head plaster; both return to their own spots | "Goma and Sasa scuffled." |
+| Challenger arrival / leaving | Steps off the bus / walks off down the coast road | "A stranger is staking Laundry Pole Yard." / "The stranger left town." |
+| Truce ended | Sprig falls (a Friend: the sprig flowers instead) | "Togemaru's truce is over." |
 
 Captions state **what** happened, never **why** in terms of another cat (§1.1 rule 6).
 
-### 2.10 Own-history audit (patent display rule)
+### 2.11 Own-history audit (patent display rule)
 
 The board would serve as '179's output element for any second-cat change it displayed; the design keeps there being none (OR-03). UX's part is to never draw one:
-- No caption, tag, line, stamp or animation says or implies that cat Y changed because of Mikan's dealings with cat X.
-- Ties are shown as facts ("Rival"), never as consequences ("now hates you because…").
-- Name-card and Rival card history lines come from **that cat's own Memory** of its dealings with Mikan (G8).
-- The pin beats in §2.8 move **only the cat Mikan dealt with**.
-- String audit before any build that is shown outside the team, and before counsel review (which still blocks scope lock and any public showing).
+- No caption, tag, role tag, arrow, line, stamp or animation says or implies that cat Y changed because of Mikan's dealings with cat X.
+- **Staging by role is a display of fixed facts.** Roles, personality and Style never change (OR-19), so no cat's spot, tag or arrow ever moves because of an outcome; an empty spot or perch stays empty. This display keeps '908 A3's "hierarchy" present as a picture (G11 partial, as before); v2 §6 places display-only rosters outside the independent claims. Counsel to confirm with the rest of the design.
+- Ties are shown as facts ("Rival"), never as consequences.
+- Card and Rival card history lines come from **that cat's own Memory** of its dealings with Mikan (G8).
+- String audit before any build shown outside the team, and before counsel review (which still blocks scope lock and any public showing).
 
-### 2.11 Acceptance
+### 2.12 Acceptance
 
-1. **Fit:** all slice cats (≤ 12 tracked + Crew + 5 uphill silhouettes) fit the 1080p default framing without scrolling, every focusable cat ≥ 64 px tall, every tag ≥ 28 px text.
-2. **Screenshot test (OR-03):** a 1080p capture with only the arc lead's pill lets 4 of 5 unbriefed viewers say who the Lane's Boss is, who hates the player, and which cats they have not met.
-3. **Tag test:** asked "who is Togemaru's rival?" and "who was Hige's old boss?", ≥ 80% of testers answer in ≤ 10 s, with the mouse and with the pad.
-4. **Anger test:** shown the board with Daifuku Seething, ≥ 80% of testers can say what made him angry (marking in his Lane) and that it will be spent in his next fight.
-5. Opening from the street takes ≤ 300 ms to the first interactive frame; the clock is paused while it is open.
-6. The §2.10 audit passes with zero findings.
+1. **Fit:** each scene fits its gang (Lane: ≤ 10 tracked + silhouettes) at the 1080p default framing without scrolling; every focusable cat ≥ 64 px tall; every ribbon, role tag and relationship tag ≥ 28 px text.
+2. **Screenshot test (OR-03):** a 1080p capture of the Lane scene lets 4 of 5 unbriefed viewers say who the Lane's Boss is, who hates the player, and which cats they have not met.
+3. **Roster test (C1):** asked "how many gangs are there, and which have you not met?", ≥ 80% of testers answer from the scene strip within 10 s.
+4. **Tag test:** asked "who is Togemaru's rival?" and "who was Hige's old boss?", ≥ 80% of testers answer in ≤ 10 s, with the mouse and with the pad (the second needs Go to tie or the tab tag).
+5. **Role test:** ≥ 70% of testers, shown a role tag, can guess how that cat fights (e.g. "Shield: protects the others").
+6. **Anger test:** shown the Lane scene with Daifuku Seething, ≥ 80% of testers can say what made him angry (marking in his Lane) and that it will be spent in his next fight.
+7. Opening from the street takes ≤ 300 ms to the first interactive frame; changing scene ≤ 200 ms; the clock is paused while it is open.
+8. The §2.11 audit passes with zero findings.
 
 ---
 
@@ -284,12 +342,12 @@ Everything the player knows about one discovered Rival, presented as a cat with 
 |---|---|---|
 | Name, Title, Clowder | Slanted banner, emblem | Nemesis |
 | **Personality** | The cat's animated idle in its personality set, large; icon + name; one line "As a Rival" (e.g. "Loud; comes back fast for revenge") | Nemesis (brief §3.5 shape) |
-| Role | Crown (Boss), two claw marks (Captain), one claw mark (Tough). Fixed for life; there is no "former rank" | Nemesis |
+| Role and **role tag** | Crown (Boss), two claw marks (Captain), one claw mark (Tough), and the role tag of §2.4 ("Captain · Sneak" + Style icon) under the banner. Fixed for life; there is no "former rank" | Nemesis (role, personality, Style); UX (the tag words) |
 | **History (Memory)** | Stamp strip of up to 6 pinned entries, then the rest (≤ 10): each a pictogram stamp (Routed by you, Routed you, Ambushed, Fled, Nose-Touched, truce, Lick In, Spray over its mark, Old Score) + one line in its own voice ≤ 60 characters + the day. **Only its own dealings with Mikan** (G8) | Nemesis |
 | **Grudge** and **Regard** | Two 4-step moods as pictograms: Grudge = hackles (smooth → bristled → arched → storm); Regard = ears (back → level → forward → nose-out). **No numbers, no bars** | Nemesis |
 | Sworn / Bitter | Storm mark around the portrait with *Sworn Enemy* or *Sworn Rival* / grumble cloud | Nemesis |
 | **Ties** (OR-04) | One row of paper tags for discovered cats only: "Boss: Daifuku · Rival: Goma · Kin: Sasa". Each tag's portrait is focusable and jumps the board's focus to that cat | Nemesis |
-| **Anger** (Bosses only, OR-07) | Steam puffs, stage word and the two system lines of §2.6 | Nemesis |
+| **Anger** (Bosses only, OR-07) | Steam puffs, stage word and the two system lines of §2.8 | Nemesis |
 | **Truce** (Nose-Touched) | Sprig + "Truce: 6 days left" (days are calendar counts, not feelings) or "Friend" | Nemesis |
 | **Strengths** | Known Strengths as stamps; unknown as "?". Line: "If recruited: always-on perk" under the Strength | Nemesis chooses, Combat values |
 | **Fears** | Known Fears as stamps (Water, Loud Noise, Cucumbers in the slice); unknown "?" | Nemesis chooses, Combat values |
@@ -309,7 +367,7 @@ Never shown: Grudge, Regard or anger numerals, recruit thresholds, the join-in o
 ```
 +--------------------------------------------------------------------------+
 | /=[ (sage) TOGEMARU  the First Thorn  "the Soggy" / ]=\   claw: /        |
-|                                                                          |
+|      [Brawler (Scrapper claw)]  <- role tag                              |
 |  +------------------------+   PERSONALITY                                |
 |  |                        |   [Braggart icon]  BRAGGART                   |
 |  |    (animated idle:     |   "Loud. Comes back fast for revenge."       |
@@ -703,7 +761,7 @@ A single button on its tab: the cost (Σ Crew levels), the Stash, and a preview 
 | 0:26–0:27 | The Lot (Crew tab only) | **Crew card**: personality front and centre for Hige |
 | ≈ 0:28–0:31 | **The Thorn at the Laundry Pole Yard gatepost**: memory-citing Standoff line ("I ran yesterday. Not off my own post, Collar."), unskippable for 1 s; the contest | **Tag-In** (spark ring + plate glyph pop; hint on the first two windows) |
 | 0:31–0:32 | Togemaru Routed | **First Verdict**: three cards; hint line "Choose what they become. Chasing off is for good." Then the **Claim Spray** of the gatepost (the prompt appears at once) |
-| 0:32–0:33 | From the yard, Daifuku is on his wall; Hige: "That's Daifuku up there." | **Sniff to discover** (hold Whisker Sense on him for 1 s within 10 m): the scent-outline confirmation (`hud.md` §3.2). In Life 1 there is no Rivals chip: the payoff is on Life 2 day 1, when he is the only coloured cat on his gatepost |
+| 0:32–0:33 | From the yard, Daifuku is on his wall; Hige: "That's Daifuku up there." | **Sniff to discover** (hold Whisker Sense on him for 1 s within 10 m): the scent-outline confirmation (`hud.md` §3.2). In Life 1 there is no Rivals chip: the payoff is on Life 2 day 1, when he is the only coloured cat on his perch in the Lane scene |
 | 0:33–0:40 | **Pon** joins (story recruit 2); free roaming, 1–2 fights | Posse of three; **Relay** happens if it happens (not taught by card) |
 | 0:40–0:45 | Dusk, home, **K1.4** (Life 1 Closing); sleep | Life 1 ends |
 | 0:45–0:47 | Montage 1→2; **Life 2 day 1** Doorstep: the 3-item Sniff | **Rivals board** reveal: "(N) See the Rivals" on a Sniff card (§7.4) |
@@ -732,7 +790,7 @@ A single button on its tab: the cost (Σ Crew levels), the Stash, and a preview 
 | **The first loss** | The nightfall plays itself; on the walk home one hint "Day's over. Head home." (Head Home glyph). No loss is scripted in the slice (consistency pass F5) |
 | **A Nose-Touch card closed by a loud take** (from Life 2) | The halftoned card names the reason (§4.2); the first time only, one hint under the cards: "Spray quietly to make peace." |
 | **First discovery by encounter** | The Rivals chip after the fight (from L2D1) |
-| **First Gone cat** | The legend card's pin beat on the board (§2.8) |
+| **First Gone cat** | The legend card's pin beat on the board (§2.9) |
 | **First Wavering morning** | The Sniff card, then the Turf Board fix line |
 
 ### 7.5 First-hour and Life 2 acceptance
@@ -749,7 +807,7 @@ A single button on its tab: the cost (Σ Crew levels), the Stash, and a preview 
 |---|---|
 | Togemaru on day 1 | His flee at 25% cannot be interrupted (OR-14), so there is never a day-1 Verdict; his day-2 gatepost line cites the day-1 flee |
 | Togemaru is Chased Off on day 2 | Gone, with his farewell line; a closing Sniff card "Run out of town" next morning; the legend card on the board. His arc closes as a complete ending (Nemesis §3.7, F11). Life 2 pressure comes from Daifuku's anger and window and the challenger. The < 60 min memory-line test was already met at 0:32 |
-| Togemaru is Recruited / Nose-Touched on day 2 | Recruit: "Wears the bell now" card; his storm mark becomes a bell on the Bell fence. Nose-Touch: a truce greeting at the gatepost each day; declared a Sworn Rival in the L2D2 Sniff; he may join a fight against Goma |
+| Togemaru is Recruited / Nose-Touched on day 2 | Recruit: "Wears the bell now" card; his storm mark becomes a bell in the Bell scene. Nose-Touch: a truce greeting at the gatepost each day; declared a Sworn Rival in the L2D2 Sniff; he may join a fight against Goma |
 | The player loses a Life 1 fight | Tutorial fights cannot be lost. Any other Life 1 loss plays §4.6 (staged nightfall), with no haul lost; Haru's plaster |
 | The player never sniffs Daifuku | He stays a crowned silhouette until met; the name-card says how to discover him |
 | The player skips Hige's trail | Hige walks to Mikan after 60 s; the recruit is not optional |
@@ -764,17 +822,19 @@ A single button on its tab: the cost (Σ Crew levels), the Stash, and a preview 
 - **A-1 Numbers. CONFIRMED (round-2 R3, brief v1.3).** Numbers count what the cat owns or pays; they never measure a feeling, a relationship or a human. v1.5 adds: anger as puffs and a stage word; influence % only in the Turf Board header; truce days and challenger Repelled pips are calendar counts.
 - **A-2 One assignment per cat** (Posse, Posted or Lounging); posting a Posse cat removes it from the Posse. Territory and Crew to confirm.
 - **A-3** The slice's Patch names follow Territory (Low Wall Corner, Laundry Pole Yard, Persimmon Alley, Tofu Shop Step, the Den).
-- **A-4** The disposition pose set (§2.4) is an example; Nemesis owns the mapping from Grudge/Regard to pose.
+- **A-4** The disposition pose set (§2.5) is an example; Nemesis owns the mapping from Grudge/Regard to pose.
 - **A-5 (new) Pause ▸ Rivals. CONFIRMED (consistency pass F6).** The owner asked for the board from the pause menu; the rulings list View / J, the Doorstep and the Lot. The pause tab is added on the street (the closed street included) and at the Lot only (never at home), with the same read-only board.
 - **A-6 (new) L2D1 Turf Board look. CONFIRMED (consistency pass F6).** The rulings want the influence bar from L2D1; Day Loop and Territory want posting on L2D2. The tab opens on L2D1 for an unprompted ≤ 15 s look with no Sentry pegs, inside L2D1's Lot time (Day Loop §3.9).
 - **A-7 (new, not built) A post strip on the street.** A tiny 4-post strip on the Patch tag (gold = held Strong) would let the player track influence on the street without a number. OR-08 says the street shows wisps only, so it is **not** in this spec; offered for the owner's "ease to use" if the L2D4 window proves hard to read in playtest.
 - **A-8 (new) The Rivals chip** rather than auto-opening the board after key events: it never interrupts a fight or a walk.
+- **A-9 (owner C6) Staged scenes.** Depth by **fixed role** (Boss perch, Captains on the steps, Toughs on the path), discovery order within a tier, arrows only from each member to its Boss, unmet cats in the shade. This reintroduces a visible pecking order that OR-03 had flattened into one row; it is a display of fixed roles that never move (OR-19), and is flagged for counsel with the rest of the Rivals scope (§2.11).
+- **A-10 (owner C6) Role tag words** (Brawler, Enforcer, Sneak, Lookout, Shield, Prankster) are UX's proposal from the brief §3.5 "fights like" column; Narrative may re-word them, keeping them short and keeping Sentry, Warden and Keeper out.
 
 ---
 
 ## Backlog (post-slice)
 
-- Full-game Rivals board: the Arcade, Shiosai and the Summit populated and discoverable; one board for 20+ tracked cats (zoom per district, or a second page per district); Botan on the lighthouse rail.
+- Full-game Rivals board: the Arcade, Shiosai and Summit scenes populated and discoverable (7-Patch districts need a deeper path or a second landing for their Toughs); Botan on the lighthouse rail.
 - Full-game Turf Board: one header bar per district (tabs per district), more Sentry slots, Roof Run hooks.
 - Watching (Lesson route), Knacks slots, Home Moves, Repertoire view beyond the slice.
 - Botan's Verdict (Nose-Touch only; the hand-bell).
@@ -782,7 +842,7 @@ A single button on its tab: the cost (Σ Crew levels), the Stash, and a preview 
 - Per-screen split of this doc after the slice build.
 - One-handed presets.
 - Kits, Wall Watch, the Usurper newcomer on the Rivals board.
-- Rivals board "Last night" replay: one held hero frame (a newcomer landing at the Outsiders gate) for trailer capture; re-run the flash test on the replay beats.
+- Rivals board "Last night" replay: one held hero frame (a newcomer stepping off the bus in the Outsiders scene) for trailer capture; re-run the flash test on the replay beats.
 - First-hour clock: §7.3 now follows `day-loop.md` §3.9 (K1.4 at ≈ 0:40–0:45). Re-time both together against the first playable.
 - Rival card history lines in §3.3 are illustrative; re-cut them once Nemesis's day-1 flee / day-2 gatepost schedule is in the prototype.
 - If counsel clears a line-only boss bark at a defector (OR-06), it plays in the Standoff with no UI change.
@@ -800,6 +860,8 @@ A single button on its tab: the cost (Σ Crew levels), the Stash, and a preview 
 | F12 · Nose-Touch gate | §4.2: the halftoned card names its reason (Grudge, a loud take, a steaming Boss); §7.4: a one-time hint "Spray quietly to make peace." |
 | F5 · the loss | §7.4: no loss is scripted; the first loss teaches itself |
 | First-hour clock | §7.3 re-timed to `day-loop.md` §3.9 (memory line ≈ 0:28, K1.4 ≈ 0:40–0:45) |
+
+**Owner C6 (2026-11-24): Rivals board as staged scenes.** §2 reworked to the owner's layout reference (`design/reviews/refs/rivals-board-layout-ref.webp`): one scene per gang in deep perspective (Boss on a raised perch at the vanishing point, Captains on the steps, Toughs on the path, by fixed role, discovery order within a tier), unmet cats as silhouettes in the shade, a name ribbon and a fixed **role tag** per cat (personality word Brawler / Enforcer / Sneak / Lookout / Shield / Prankster + Style icon; "Boss of …", "Captain · …"; Outsiders: Challenger / Newcomer / Turncoat / Roamer), dashed arrows from each member to its Boss only. Header with place name, influence bar (no %) and a **scene strip** (Lane · Arcade · Shiosai · Summit · Outsiders · Bell, cycled with L1/R1, dots per cat as the town-wide roster); left fact column (Tonight, Your posts, the Boss, Objective; no numbers); card bottom-left; buttons bottom-right; cross-scene ties hang on the strip's tabs with Go to tie (West / R). Relationship tags, anger, own-history lines and the patent audit kept (§2.7, §2.8, §2.11). §3.2/§3.3 gain the role tag. A-9, A-10 added; Backlog line updated.
 
 **2026-11-24, Owner feedback pass (2026-11-24): C1, C3, C4, C5 through `owner-feedback-rulings.md` OR-01…OR-21 and patent note v2 §5.**
 

@@ -42,8 +42,8 @@
     daifuku: Object.assign({}, K.CAST.daifuku),
     // Toughs (procedural look; Wall Sitters lean white / cream / silver).
     goma: { coat: { base: '#514D60', white: '#FFF8EC' }, pattern: 'bicolour', tail: 'ringed', ears: 'round', build: 'round', eye: 'copper', carry: 'anchor', expr: 'angry' },        // Brooder, Bitter
-    sasa: { coat: { base: '#FFF8EC', patch: '#C98A4A', patch2: '#514D60' }, pattern: 'patched', tail: 'plume', ears: 'round', build: 'standard', eye: 'green', carry: 'spring', expr: 'happy' }, // Goofball
-    kuri: { coat: { base: '#F4DDAA', patch: '#C99A5E' }, pattern: 'tabby', tail: 'whip', ears: 'tall', build: 'long', eye: 'green', carry: 'comma', expr: 'shock' },               // Fraidy (cream tabby; the pointed fawn look is Kinako's)
+    sasa: { coat: { base: '#EBC08E', patch: '#B9784A' }, pattern: 'tabby', tail: 'plume', ears: 'round', build: 'round', eye: 'green', carry: 'spring', expr: 'happy' }, // Goofball (peach tabby; calico is Pon's)
+    kuri: { coat: { base: '#8A6248', patch: '#4E3526' }, pattern: 'tabby', tail: 'whip', ears: 'tall', build: 'long', eye: 'green', carry: 'comma', expr: 'shock' },               // Fraidy (cream tabby; the pointed fawn look is Kinako's)
     hanpen: { coat: { base: '#FFF8EC', patch: '#CDD1DC' }, pattern: 'saddle', tail: 'stub', ears: 'standard', build: 'standard', eye: 'blue', carry: 'level', expr: 'sleepy' },       // Indifferent
     // A Roamer on the wire.
     nori: { coat: { base: '#37323F', white: '#FFF8EC' }, pattern: 'bicolour', tail: 'whip', ears: 'tall', build: 'long', eye: 'yellowgreen', carry: 'blade', expr: 'smug' },
