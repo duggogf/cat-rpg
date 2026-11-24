@@ -15,6 +15,8 @@
 //                                           keyDir: THREE.Vector3 (world, towards light);
 //                                           colours: THREE.Color. Called on phase change.
 //   Cat.setOutlineScale(k)                  1 = art-bible line weight; for tests
+//   Cat.lookAt(worldPos | null)             (M0 fix pass ADDITION) head turns toward a THREE.Vector3 in world
+//                                           space, clamped ±70°; null = back to idle glances
 //   Cat.dispose()
 //
 // Characters receive NO shadow map; the cat draws its own soft contact blob.
@@ -33,6 +35,7 @@ export function createCat({ cast = 'mikan', scale = 1.25 } = {}) {
     setGait: (name, speed = 0) => c.setGait(name, speed),
     setLighting: (l) => c.setLighting(l),
     setOutlineScale: (k) => c.setOutlineScale(k),
+    lookAt: (p) => c.lookAt(p),
     dispose: () => c.dispose(),
   };
 }

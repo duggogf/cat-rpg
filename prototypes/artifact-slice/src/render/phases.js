@@ -15,7 +15,7 @@ export const PHASES = {
     haze: '#D6ECF6', hazeMax: 0.62, hazeNear: 22, hazeFar: 260,
     cloudLight: '#FFFFFF', cloudShade: '#C9D8F0', backdropKey: '#FFFFFF',
     sunGlow: '#FFF6D8', sunGlowK: 0.55,
-    catKey: '#FFFBEF', catShade: '#6E6AA8', catRim: '#FFF6E3', catDir: [-0.35, 0.906, 0.24], vertLift: 0.5,
+    catKey: '#FFFBEF', catShade: '#6E6AA8', catRim: '#FFF6E3', windowGlow: 0, seaGlow: '#FFF6DE', seaGlowK: 0.55, catDir: [-0.35, 0.906, 0.24], vertLift: 0.5,
   },
   dusk: {
     zenith: '#8E6FB0', horizon: '#F7A45A', key: '#FFC27A', shadow: '#7A4E8C', cel: '#FFDDB5',
@@ -26,7 +26,7 @@ export const PHASES = {
     haze: '#F4B98C', hazeMax: 0.7, hazeNear: 18, hazeFar: 220,
     cloudLight: '#FFD9A6', cloudShade: '#B88FBE', backdropKey: '#FFD2A0',
     sunGlow: '#FFE0A0', sunGlowK: 0.9,
-    catKey: '#FFC27A', catShade: '#7A4E8C', catRim: '#FFD9A0', catDir: [0.45, 0.8, 0.3], vertLift: 0.35,
+    catKey: '#FFC27A', catShade: '#7A4E8C', catRim: '#FFD9A0', windowGlow: 0.9, seaGlow: '#FFD79A', seaGlowK: 0.7, catDir: [0.45, 0.8, 0.3], vertLift: 0.35,
   },
 };
 

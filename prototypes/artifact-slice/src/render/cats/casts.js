@@ -1,7 +1,7 @@
 // PROTOTYPE - NOT FOR PRODUCTION
 // Runtime cast styles: coat colours (kit.js COATS), eye colour, face expression, coat-pattern GLSL.
 // Pattern functions run per fragment in REST (bind-pose) object space, so marks ride the skin and
-// their edges stay hard and borderless (L-7). Inputs: vRest, vPart, vAux, h = vRest - uHeadC.
+// their edges stay hard and borderless (L-7). Inputs: vRest, vP, vAux, h = vRest - uHeadC.
 export const INK = '#33273B';
 export const PINK_EAR = '#F7A3B7';
 export const PAD = '#F6809A';
@@ -31,14 +31,14 @@ export const CASTS = {
     glsl: EAR_INNER + /* glsl */`
   vec3 coat() {
     vec3 h = vRest - uHeadC;
-    if (vPart < 0.5) {
+    if (vP < 0.5) {
       // collar band painted on the neck surface along the torus plane: carries the collar line
       // wherever the neck shows below the big head (the from-behind read, art bible §5.1)
       vec3 dc = vRest - uCollarC;
       if (abs(dot(dc, uCollarAx)) < 0.0105 && length(dc) < 0.085) return c_collar;
       return c_white;
     }
-    if (vPart < 1.5) {
+    if (vP < 1.5) {
       float side = h.x >= 0.0 ? 1.0 : -1.0;
       if (onEar(vAux, uEar.y) > 0.5) return earInner(vAux, side, uEar.x, uEar.y, uEar.z) > 0.5 ? c_ear : c_ginger;
       // the ginger cap: low at the back and sides, rising to the brow at the front, wavy edge,
@@ -52,8 +52,8 @@ export const CASTS = {
       if (dot(q, q) < 1.0 && h.z > 0.0) return c_ginger;
       return c_white;
     }
-    if (vPart < 2.5) return c_ginger;
-    if (vPart < 3.5) return c_collar;
+    if (vP < 2.5) return c_ginger;
+    if (vP < 3.5) return c_collar;
     // bell: gold, ink slit, cream highlight
     if (abs(vAux.y + 0.004) < 0.0018 && vAux.z > 0.0) return c_ink;
     if (length(vAux - vec3(-0.006, 0.008, 0.012)) < 0.0055) return c_cream;
@@ -69,7 +69,7 @@ export const CASTS = {
     glsl: EAR_INNER + /* glsl */`
   vec3 coat() {
     vec3 h = vRest - uHeadC;
-    if (vPart < 0.5) {
+    if (vP < 0.5) {
       // dorsal tabby chevrons: 4 bold bands, meeting at the spine, fading out down the flanks
       float z = vRest.z, x = abs(vRest.x), y = vRest.y;
       float band = fract((z + 0.13) / 0.064 - x * 7.0);
@@ -78,7 +78,7 @@ export const CASTS = {
       // socks of stripes on the outside of the haunches
       return c_base;
     }
-    if (vPart < 1.5) {
+    if (vP < 1.5) {
       float side = h.x >= 0.0 ? 1.0 : -1.0;
       if (onEar(vAux, uEar.y) > 0.5) return earInner(vAux, side, uEar.x, uEar.y, uEar.z) > 0.5 ? c_ear : c_base;
       // forehead M: three tapering stripes from the crown toward the brow
@@ -91,7 +91,7 @@ export const CASTS = {
       }
       // cheek stripes
       float ch = abs(h.x);
-      if (ch > 0.07 && abs(h.y + 0.012 - (ch - 0.07) * 0.2) < 0.0055 && h.z > -0.02) return c_stripe;
+      if (ch > 0.06 && abs(h.y + 0.04 - (ch - 0.06) * 0.25) < 0.005 && h.z > -0.035 && h.z < 0.012) return c_stripe;
       if (h.z > 0.04 && h.y < -0.02 && abs(h.x) < 0.045) return c_muzzle;
       return c_base;
     }

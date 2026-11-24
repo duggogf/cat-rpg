@@ -11,7 +11,7 @@ const q = new URLSearchParams(location.search);
 const num = (k, d) => (q.has(k) ? parseFloat(q.get(k)) : d);
 const app = document.getElementById('app');
 const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setPixelRatio(1);
+renderer.setPixelRatio(q.has('res') ? parseFloat(q.get('res')) : 1); // res=0.85: dynamic-resolution check (canvas upscaled)
 renderer.setSize(app.clientWidth || innerWidth, app.clientHeight || innerHeight);
 renderer.toneMapping = THREE.NoToneMapping;
 app.appendChild(renderer.domElement);
@@ -58,8 +58,8 @@ if (strip) {
   order.forEach((carry, i) => {
     const c = createCatInternal({ cast: q.get('cast') || 'wallSitter', scale: 1.25, carry, silhouette: q.get('sil') !== '0', seed: i + 3 });
     if (q.get('sil') === '0') c.setLighting(PH.light);
-    c.object3D.position.set((i - 2.5) * 0.86, 0, 0);
-    c.object3D.rotation.y = Math.atan2(c.object3D.position.x, -num('dist', 3.0)); // each seen square from behind
+    c.object3D.position.set((i - 2.5) * 0.88, 0, 0);
+    c.object3D.rotation.y = Math.atan2(c.object3D.position.x, -num('dist', 4.6)); // each seen square from behind
     scene.add(c.object3D); cats.push(c);
   });
 } else {
@@ -74,10 +74,12 @@ if (strip) {
   });
 }
 for (const c of cats) { c.setGait(gait, speed); c.setOutlineScale(num('ol', 1)); }
+  // look=cam: heads turn to the camera; look=x,y,z: to a world point (e.g. a point of interest)
+  if (q.has('look')) { const L = q.get('look'); const tgt = L === 'cam' ? null : new THREE.Vector3(...L.split(',').map(Number)); for (const c of cats) c.lookAt(tgt || new THREE.Vector3(0, 0.95, 2.2)); }
 
 // ---- camera: third-person height by default
 const cam = new THREE.PerspectiveCamera(num('fov', 40), W / H, 0.05, 200);
-if (strip) { cam.position.set(0, num('h', 0.85), num('dist', 3.0)); cam.lookAt(0, 0.3, 0); }
+if (strip) { cam.fov = num('fov', 37); cam.updateProjectionMatrix(); cam.position.set(0, num('h', 1.0), num('dist', 4.6)); cam.lookAt(0, 0.3, 0); }
 else if (q.get('cam') === 'close') { cam.position.set(0, num('h', 0.55), num('dist', 1.5)); cam.lookAt(0, 0.28, 0); }
 else { cam.position.set(0, num('h', 0.95), num('dist', 2.2)); cam.lookAt(0, 0.26, 0); }
 

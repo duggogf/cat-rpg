@@ -3,7 +3,7 @@
   "w": 1024,
   "h": 512,
   "alpha": false,
-  "bytes": 25554
+  "bytes": 28218
  },
  "fence": {
   "w": 1024,
@@ -63,7 +63,7 @@
   "w": 4096,
   "h": 1024,
   "alpha": true,
-  "bytes": 101230
+  "bytes": 122268
  },
  "hillsFar": {
   "w": 4096,
@@ -73,9 +73,9 @@
  },
  "town": {
   "w": 4096,
-  "h": 160,
+  "h": 192,
   "alpha": true,
-  "bytes": 192464
+  "bytes": 121766
  },
  "sea": {
   "w": 2048,
@@ -106,5 +106,47 @@
   "h": 320,
   "alpha": true,
   "bytes": 3438
+ },
+ "townFar": {
+  "w": 4096,
+  "h": 128,
+  "alpha": true,
+  "bytes": 152556
+ },
+ "stains": {
+  "w": 768,
+  "h": 512,
+  "alpha": true,
+  "bytes": 23900
+ },
+ "poster": {
+  "w": 256,
+  "h": 340,
+  "alpha": true,
+  "bytes": 4606
+ },
+ "manhole": {
+  "w": 512,
+  "h": 512,
+  "alpha": true,
+  "bytes": 100412
+ },
+ "vending": {
+  "w": 512,
+  "h": 1024,
+  "alpha": false,
+  "bytes": 33686
+ },
+ "aircon": {
+  "w": 256,
+  "h": 192,
+  "alpha": false,
+  "bytes": 6780
+ },
+ "legs": {
+  "w": 512,
+  "h": 1024,
+  "alpha": true,
+  "bytes": 23540
  }
 }

@@ -16,7 +16,7 @@ const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..')
 const repo = path.resolve(root, '../..');
 const OUT = path.join(repo, 'production/qa/evidence/artifact-slice/M0/env');
 fs.mkdirSync(OUT, { recursive: true });
-const quick = process.argv.includes('--quick');
+const quick = process.argv.includes('--quick'), motionOnly = process.argv.includes('--motion');
 
 const srv = await serve(0), port = srv.address().port;
 const browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
@@ -41,7 +41,31 @@ async function shot(query, { w = 1920, h = 1080, touch = false, save, evalFn } =
   return { img: readPNG(buf), state, extra, errors };
 }
 
-const R = { compare: {}, orbit: {}, line: {}, sep: {}, shadow: {}, perf: {}, card: {} };
+const R = { compare: {}, orbit: {}, line: {}, sep: {}, shadow: {}, perf: {}, card: {}, motion: {} };
+
+/* 0. orbit-and-walk capture: Mikan walks down the lane toward the sea while the camera swings round */
+async function motion(ph) {
+  const dir = path.join(OUT, 'motion'); fs.mkdirSync(dir, { recursive: true });
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 1, recordVideo: { dir, size: { width: 1280, height: 720 } } });
+  const p = await ctx.newPage(); const errors = []; p.on('pageerror', (e) => errors.push(String(e))); p.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
+  await p.goto(`http://localhost:${port}/dist/dev.html?test=1&phase=${ph}`);
+  await p.waitForFunction('window.__ready === true', null, { timeout: 180000 });
+  const sheet = blank(320 * 4 + 50, 180 * 3 + 40), frames = 12;
+  for (let i = 0; i < frames; i++) {
+    if (i) await p.evaluate(() => window.__cat.drive({ x: 0, z: -1, frames: 15, yaw: 13 }));
+    await p.waitForTimeout(150);
+    const buf = await p.screenshot(); fs.writeFileSync(path.join(dir, `walk-${ph}-${String(i).padStart(2, '0')}.png`), buf);
+    blit(sheet, shrink(readPNG(buf), 4), 10 + (i % 4) * 330, 10 + Math.floor(i / 4) * 190);
+  }
+  for (let i = 0; i < 24; i++) { await p.evaluate(() => window.__cat.drive({ x: 0.3, z: -1, frames: 4, yaw: 3 })); await p.waitForTimeout(60); }
+  const vid = p.video(); await ctx.close();
+  const vpath = await vid.path(), dst = path.join(dir, `orbit-walk-${ph}.webm`); fs.renameSync(vpath, dst);
+  fs.writeFileSync(path.join(dir, `walk-${ph}-sheet.png`), writePNG(sheet));
+  R.motion[ph] = { frames, webm: path.basename(dst), bytes: fs.statSync(dst).size, errors };
+  console.log('motion', ph, errors.length ? errors : 'ok');
+}
+for (const ph of ['day', 'dusk']) await motion(ph);
+if (motionOnly) { await browser.close(); srv.close(); process.exit(0); }
 
 /* 1. comparison at the 01 framing */
 const target = readPNG(fs.readFileSync(path.join(repo, 'design/previews/01-exploration.png')));

@@ -31,7 +31,7 @@ export class PaintPost {
     this.rt.depthTexture = new THREE.DepthTexture(4, 4, THREE.UnsignedIntType);
     this.mat = new THREE.ShaderMaterial({
       uniforms: { tColor: { value: this.rt.texture }, tDepth: { value: this.rt.depthTexture }, tNoise: { value: noiseTex() }, tGrain: { value: grain },
-        res: { value: new THREE.Vector2(4, 4) }, wob: { value: 2.4 }, kuw: { value: 1 }, grainK: { value: 0.1 }, scale: { value: 1 } },
+        res: { value: new THREE.Vector2(4, 4) }, wob: { value: 1.8 }, kuw: { value: 1 }, grainK: { value: 0.1 }, scale: { value: 1 } },
       vertexShader: /* glsl */`varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }`,
       fragmentShader: /* glsl */`
         uniform sampler2D tColor, tDepth, tNoise, tGrain; uniform vec2 res; uniform float wob, kuw, grainK, scale;
@@ -46,13 +46,13 @@ export class PaintPost {
           if (kuw > 0.5) {
             vec3 m[4]; float v[4];
             for (int k = 0; k < 4; k++) {
-              vec2 o = vec2(k == 1 || k == 3 ? 0.0 : -2.0, k >= 2 ? 0.0 : -2.0);
+              vec2 o = vec2(k == 1 || k == 3 ? 0.0 : -1.0, k >= 2 ? 0.0 : -1.0);
               vec3 sum = vec3(0.0), sq = vec3(0.0);
-              for (int j = 0; j < 3; j++) for (int i = 0; i < 3; i++) {
+              for (int j = 0; j < 2; j++) for (int i = 0; i < 2; i++) {
                 vec3 c = S(uv + (o + vec2(float(i), float(j))) * px * scale);
                 sum += c; sq += c * c;
               }
-              m[k] = sum / 9.0; vec3 var = sq / 9.0 - m[k] * m[k]; v[k] = var.r + var.g + var.b;
+              m[k] = sum / 4.0; vec3 var = sq / 4.0 - m[k] * m[k]; v[k] = var.r + var.g + var.b;
             }
             col = m[0]; float best = v[0];
             for (int k = 1; k < 4; k++) if (v[k] < best) { best = v[k]; col = m[k]; }

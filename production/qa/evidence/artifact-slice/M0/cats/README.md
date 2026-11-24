@@ -1,21 +1,27 @@
-# M0 cats: look-dev evidence (character half)
+# M0 cats: look-dev evidence (character half), fix pass 2
 
-Captured 2026-11-24 with `node tools/shot.mjs` (headless Chromium + SwiftShader, 1920×1080, DPR 1) from
-`prototypes/artifact-slice/dist/catlab.html`. All frames are deterministic (`t=` steps the sim at 1/60 s).
-Day key unless noted (art bible §4.4: key `#FFFBEF`, shade `#6E6AA8`, sun ≈ 65°). Cat scale 1.25.
+Re-captured 2026-11-24 after the art-director and creative-director reviews (GO WITH FIXES), with
+`node tools/shot.mjs` (headless Chromium + SwiftShader, 1920×1080, DPR 1) from
+`prototypes/artifact-slice/dist/catlab.html` (build it with `node tools/cats/build-lab.mjs`). Every
+frame is deterministic: `t=` steps the sim at 1/60 s. Day key unless noted (art bible §4.4). Cat
+scale is 1.25.
 
 | File | What it shows | Lab URL query |
 |---|---|---|
-| `01-front34-day.png` | Mikan + Wall Sitter, front 3/4, third-person camera height (0.95 m, 2.0 m) | `view=front34&dist=2.0&h=0.95` |
-| `02-side-day.png` | Side profile, idle | `view=side&dist=2.0&h=0.95` |
-| `03-back34-day.png` | Back 3/4: the gameplay read (cap, collar, back, tail) | `view=back34&dist=2.0&h=0.95` |
-| `04-walk-midstride-side.png` | Walk mid-stride at 0.6 m/s, side | `view=side&gait=walk&speed=0.6&dist=2.0&h=0.75` |
-| `05-tail-carriages-silhouette.png` | M0 test (4): six personality tail carriages on one generated cat, flat black, from behind at exploration-camera height. Left to right: flag (Braggart), post (Stalwart), spring (Goofball), blade (Schemer), anchor (Brooder), comma (Fraidy) | `strip=1` |
-| `06-tail-carriages-colour.png` | Same six, in colour | `strip=1&sil=0` |
-| `07-explore-distance-back-day.png` | Mikan from behind at the Explore camera (3.0 m), cf. `design/previews/01-exploration.png` | `view=back&cast=mikan&dist=3.0&h=1.05` |
-| `08-back34-dusk.png` | Same as 03 under the Dusk key (`setLighting` phase change) | `view=back34&phase=dusk&dist=2.0&h=0.95` |
-| `09-closeup-faces.png` | Close-up: face decals (kit `faceFront` eyes, nose, mouth; Wall Sitter smug lids) | `view=front34&cam=close` |
-| `10-walk-back34.png` | Walk from behind 3/4 | `view=back34&gait=walk&speed=0.6&t=1.3` |
+| `01-front34-day.png` | Mikan + Wall Sitter, front 3/4, third-person camera height | `view=front34&dist=2.0&h=0.95` |
+| `02-side-day.png` | Side profile: muzzle and nose bump, profile face decal, bean torso, thick neck, seated collar, interior lines | `view=side&dist=2.0&h=0.95` |
+| `03-back34-day.png` | Back 3/4, the gameplay read: cap, collar line, back, tail | `view=back34&dist=2.0&h=0.95` |
+| `04-walk-midstride-side.png` | Walk at 0.6 m/s, passing pose | `view=side&gait=walk&t=2.0556` |
+| `05-tail-carriages-silhouette.png` | M0 test (4): the six carriages, all in frame. Left to right: flag, post, spring, blade, anchor, comma | `strip=1` |
+| `06-tail-carriages-colour.png` | The same six, in colour | `strip=1&sil=0` |
+| `07-explore-distance-back-day.png` | Mikan from behind at the Explore camera (3.0 m) | `view=back&cast=mikan&dist=3.0&h=1.05` |
+| `08-back34-dusk.png` | As 03, under the Dusk key | `view=back34&phase=dusk` |
+| `09-closeup-faces.png` | Close-up faces | `view=front34&cam=close` |
+| `10-walk-back34.png` | Walk from behind 3/4, passing pose | `view=back34&gait=walk&t=2.0556` |
+| `11-walk-seq-1..8.png` + `11-walk-seq-sheet.png` | One full walk cycle (0.444 s at 0.6 m/s) in 8 frames: stride, body bounce with a settle at contact, head bob a beat late, pom bouncing behind | `view=side&gait=walk&cast=mikan&t=2.0…2.389` |
+| `12-lookat-camera-back34.png` | The new `Cat.lookAt(worldPos)`: both cats turn their heads to the camera from behind (profile face) | `view=back34&look=cam&t=1.2` |
+| `13-side-day-res85.png` | As 02 at 85% render scale (canvas upscaled), for the line check | `view=side&res=0.85` |
 
-Measured: silhouette ink runs on `02` are mostly 2 px wide at 1080p (L-3 target 2.0 ± 0.5). The 1 px runs are antialiased edge pixels. This is a quick scanline count, not the §5.2 harness check.
-Cost: 2 cats = 8 draw calls, ≈ 43.5k triangles drawn (fill + hull); about 11k triangles per cat mesh.
+**Line (L-3 as revised):** the nominal width is 2.5 px against the OUTPUT height, with a top-up when the render target is smaller than the output. Horizontal ink-run medians are 3 px on `02` and 3 px on `13`; the same count on the previous `02` gave 2 px. So the line is heavier, and it no longer thins at 85%. Interior overlap lines (leg over body, haunch, head over neck, tail over rump) come from a separate legs shell, plus a hull pulled toward the eye by a share of the baked local thickness. Thin parts (ears) are never pulled.
+
+**Cost:** 2 cats = 8 draw calls (fill, hull, whiskers, blob each); about 28k triangles per cat mesh, drawn twice.

@@ -23,7 +23,9 @@ export const U = {
   sunGlow: { value: new THREE.Vector3() }, sunGlowK: { value: 0.5 },
   cloudLight: { value: new THREE.Vector3(1, 1, 1) }, cloudShade: { value: new THREE.Vector3(0.8, 0.85, 0.94) },
   backdropKey: { value: new THREE.Vector3(1, 1, 1) },
-  time: { value: 0 },
+  time: { value: 0 }, wind: { value: 1 },
+  windowGlow: { value: 0 }, lamp: { value: new THREE.Vector3(1, 0.85, 0.54) },
+  seaGlow: { value: new THREE.Vector3(1, 0.96, 0.84) }, seaGlowK: { value: 0.5 },
 };
 
 export function applyPhase(name) {
@@ -38,6 +40,7 @@ export function applyPhase(name) {
   U.sunGlow.value.copy(rgb(p.sunGlow)); U.sunGlowK.value = p.sunGlowK;
   U.cloudLight.value.copy(rgb(p.cloudLight)); U.cloudShade.value.copy(rgb(p.cloudShade));
   U.backdropKey.value.copy(rgb(p.backdropKey)); U.vertLift.value = p.vertLift;
+  U.windowGlow.value = p.windowGlow || 0; U.seaGlow.value.copy(rgb(p.seaGlow)); U.seaGlowK.value = p.seaGlowK;
   return p;
 }
 
@@ -46,6 +49,9 @@ uniform vec3 sunDir, keyColor, shadeMul, bounce, hazeColor;
 uniform float hazeNear, hazeFar, hazeMax, shadowTexel, shadowOn, debugMode, vertLift;
 uniform sampler2D shadowMap, grainMap;
 uniform mat4 shadowMatrix;
+uniform vec3 seaGlow, lamp; uniform float seaGlowK, windowGlow, time, wind;
+// the bright sea gap at the end of the lane (azimuth 0 = -Z): a warm haze that makes it glow
+float seaGap(vec3 d) { float az = atan(d.x, -d.z); float e = asin(clamp(d.y, -1.0, 1.0)) * 57.2958; return exp(-pow(az / 0.42, 2.0)) * exp(-abs(e - 1.0) / 5.0); }
 const vec2 PD[12] = vec2[12](vec2(-0.326,-0.406), vec2(-0.840,-0.074), vec2(-0.696,0.457), vec2(-0.203,0.621), vec2(0.962,-0.195), vec2(0.473,-0.480),
   vec2(0.519,0.767), vec2(0.185,-0.893), vec2(0.507,0.064), vec2(0.896,0.412), vec2(-0.322,-0.933), vec2(-0.792,-0.598));
 float sunShadow(vec3 p, vec3 n, float soft) {
@@ -69,14 +75,17 @@ float grainAt(vec3 p, vec3 n) {
   return texture2D(grainMap, g * 0.31).g;
 }
 vec3 hazeIt(vec3 c, vec3 p) {
-  float h = hazeMax * smoothstep(hazeNear, hazeFar, length(p - cameraPosition));
-  return mix(c, hazeColor, h);
+  vec3 d = p - cameraPosition; float L = length(d);
+  float h = hazeMax * smoothstep(hazeNear, hazeFar, L);
+  vec3 hc = mix(hazeColor, seaGlow, seaGlowK * seaGap(d / L));
+  return mix(c, hc, h);
 }
 vec3 envShade(vec3 alb, vec3 n, vec3 p, float shadowSoft, float twoSided) {
   float ndl = dot(n, sunDir);
   if (twoSided > 0.5) ndl = abs(ndl) * 0.8 + 0.1;   // cloth: the sun glows through
   float ramp = smoothstep(-0.04, 0.16, ndl);          // E-1: soft terminator, ~12% of the ramp
-  float lit = ramp * (ramp > 0.0 ? sunShadow(p, n, shadowSoft) : 1.0);
+  float vert0 = 1.0 - abs(n.y);
+  float lit = ramp * (ramp > 0.0 ? sunShadow(p, n, shadowSoft * mix(1.0, 0.4, vert0)) : 1.0);  // crisper cast light on upright planes
   float vert = 1.0 - abs(n.y);
   vec3 b = bounce * vert * (1.0 - smoothstep(0.0, 1.7, p.y));
   // the painter lifts shaded upright planes (sky fill), warmest at the foot (lane bounce)
@@ -91,8 +100,10 @@ vec3 envShade(vec3 alb, vec3 n, vec3 p, float shadowSoft, float twoSided) {
 
 const STD_VERT = /* glsl */`
 varying vec2 vUv; varying vec3 vN; varying vec3 vP; varying vec3 vC;
+uniform float flutter, hangY, time, wind;
 void main() {
   vec4 wp = modelMatrix * vec4(position, 1.0);
+  if (flutter > 0.0) { float k = clamp(hangY - wp.y, 0.0, 1.0); wp.z += sin(time * 2.6 + wp.x * 5.0) * 0.06 * k * flutter * wind; wp.x += sin(time * 1.9 + wp.y * 3.0) * 0.015 * k * flutter * wind; }
   vP = wp.xyz; vN = normalize(mat3(modelMatrix) * normal); vUv = uv;
 #ifdef USE_COLOR
   vC = color;
@@ -103,7 +114,7 @@ void main() {
 }`;
 
 const STD_FRAG = /* glsl */`
-uniform sampler2D map; uniform float hasMap, alphaCut, grainK, premul, shadowSoft, twoSided; uniform vec3 tint;
+uniform sampler2D map; uniform float hasMap, alphaCut, grainK, premul, shadowSoft, twoSided, glass, emit, blend; uniform vec3 tint;
 varying vec2 vUv; varying vec3 vN; varying vec3 vP; varying vec3 vC;
 ${LIGHT_PARS}
 void main() {
@@ -117,17 +128,23 @@ void main() {
   // world-scale paint variation: breaks the trim-sheet repeat over tens of metres (stains, sun-fade)
   float macro = texture2D(grainMap, vec2(vP.x + vP.z, vP.y * 2.0 + vP.z * 0.3) * 0.021).g * 0.6 + texture2D(grainMap, (vP.xz + vP.y) * 0.0071 + 0.31).g * 0.4;
   alb *= mix(vec3(1.0), vec3(macro / 0.83) * vec3(1.0, 0.985, 1.02), 0.35);
-  gl_FragColor = vec4(envShade(alb, n, vP, shadowSoft, twoSided), 1.0);
+  vec3 col = envShade(alb, n, vP, shadowSoft, twoSided);
+  if (glass > 0.0 && debugMode < 0.5) { float g = smoothstep(0.04, 0.12, t.b - t.r) * step(dot(t.rgb, vec3(0.333)), 0.6); col = mix(col, lamp, g * windowGlow * glass); }
+  if (emit > 0.0 && debugMode < 0.5) { float g = step(0.8, dot(t.rgb, vec3(0.333))); col = mix(col, t.rgb * vec3(1.0, 0.97, 0.9), g * emit * max(windowGlow, 0.25)); }
+  gl_FragColor = vec4(col, blend > 0.5 ? t.a : 1.0);
 }`;
 
 /** Standard painted environment material. o: {map, tint, grain, alphaCut, side, vertexColors, shadowSoft} */
 export function envMat(o = {}) {
   const m = new THREE.ShaderMaterial({
-    uniforms: { ...U, map: { value: o.map || null }, hasMap: { value: o.map ? 1 : 0 }, tint: { value: rgb(o.tint || '#FFFFFF') },
+    uniforms: { ...U, map: { value: o.map || null }, hasMap: { value: o.map ? 1 : 0 }, tint: { value: rgb(o.tint || '#FFFFFF').multiplyScalar(o.tintScale || 1) }, blend: { value: o.blend ? 1 : 0 },
       alphaCut: { value: o.alphaCut || 0 }, grainK: { value: o.grain == null ? (o.map ? 0.15 : 0.6) : o.grain },
-      premul: { value: o.map && o.map.premultiplyAlpha ? 1 : 0 }, shadowSoft: { value: o.shadowSoft || 2.6 }, twoSided: { value: o.twoSided ? 1 : 0 } },
+      premul: { value: o.map && o.map.premultiplyAlpha ? 1 : 0 }, shadowSoft: { value: o.shadowSoft || 2.6 }, twoSided: { value: o.twoSided ? 1 : 0 },
+      glass: { value: o.glass || 0 }, emit: { value: o.emit || 0 }, flutter: { value: o.flutter || 0 }, hangY: { value: o.hangY || 0 } },
     vertexShader: STD_VERT, fragmentShader: STD_FRAG, side: o.side || THREE.FrontSide, vertexColors: !!o.vertexColors,
+    transparent: !!o.blend, depthWrite: !o.blend,
   });
+  if (o.blend) { m.polygonOffset = true; m.polygonOffsetFactor = -2; m.polygonOffsetUnits = -2; }
   m.userData.alphaCut = o.alphaCut || 0;
   return m;
 }
@@ -135,8 +152,8 @@ export function envMat(o = {}) {
 /* ---------------------------------------------------------------- billboard clumps */
 const BB_VERT = /* glsl */`
 attribute vec3 iPos; attribute vec4 iParam; attribute vec4 iClump;
-uniform float cylindrical, cols, rows;
-varying vec2 vUv; varying vec3 vN; varying vec3 vP; varying float vBright; varying vec3 vCtr;
+uniform float cylindrical, cols, rows, time, wind, sway;
+varying vec2 vUv; varying vec3 vN; varying vec3 vP; varying float vBright; varying vec3 vCtr; varying vec2 vV;
 void main() {
   vec2 corner = position.xy;
   float c = cos(iParam.y), s = sin(iParam.y);
@@ -144,7 +161,10 @@ void main() {
   vec3 right = vec3(viewMatrix[0][0], viewMatrix[1][0], viewMatrix[2][0]);
   vec3 up = vec3(viewMatrix[0][1], viewMatrix[1][1], viewMatrix[2][1]);
   if (cylindrical > 0.5) { right = normalize(vec3(right.x, 0.0, right.z)); up = vec3(0.0, 1.0, 0.0); off.y += 0.5 * iParam.x; }
+  float ph = iClump.x * 0.7 + iClump.z * 0.53;
+  if (cylindrical > 0.5) off.x += sin(time * 2.1 + iPos.x * 3.0 + iPos.z * 2.0) * 0.12 * iParam.x * (position.y + 0.5) * wind * sway;
   vec3 wp = iPos + right * off.x + up * off.y;
+  if (cylindrical < 0.5) { float h = max(0.0, iPos.y - iClump.y + iClump.w); wp += (vec3(1.0, 0.0, 0.6) * sin(time * 1.5 + ph) + vec3(-0.5, 0.0, 1.0) * sin(time * 2.3 + ph * 1.7 + iPos.y) * 0.5) * 0.022 * h * wind * sway; }
   vP = wp;
   vec3 fwd = normalize(cross(up, right));
   // sphere-projected normal: the clump shades as one painted mass from any angle
@@ -154,6 +174,7 @@ void main() {
   vec2 cuv = vec2(mod(cell, cols), rows - 1.0 - floor(cell / cols));
   vUv = (cuv + position.xy + 0.5) / vec2(cols, rows);
   vBright = iParam.w;
+  vV = (viewMatrix * vec4(wp, 1.0)).xy;  // in the shadow pass: sun-view coords, so flecks line up through stacked cards
   gl_Position = projectionMatrix * viewMatrix * vec4(wp, 1.0);
 }`;
 const BB_FRAG = /* glsl */`
@@ -173,8 +194,18 @@ void main() {
   gl_FragColor = vec4(hazeIt(c, vP), 1.0);
 }`;
 const BB_DEPTH_FRAG = /* glsl */`
-uniform sampler2D map; uniform float alphaCut; varying vec2 vUv;
-void main() { if (texture2D(map, vUv).a < alphaCut) discard; gl_FragColor = vec4(1.0); }`;
+uniform sampler2D map; uniform float alphaCut, holes, time, wind; varying vec2 vUv; varying vec3 vP; varying vec2 vV;
+float h21(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float vn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f); return mix(mix(h21(i), h21(i + vec2(1, 0)), f.x), mix(h21(i + vec2(0, 1)), h21(i + vec2(1, 1)), f.x), f.y); }
+void main() {
+  if (texture2D(map, vUv).a < alphaCut) discard;
+  if (holes > 0.0) {
+    vec2 q = vV * 2.6 + vec2(sin(time * 0.9), cos(time * 0.7)) * 0.3 * wind;
+    float n = vn(q) * 0.65 + vn(q * 2.3 + 7.1) * 0.35;
+    if (n > 1.0 - holes) discard;
+  }
+  gl_FragColor = vec4(1.0);
+}`;
 
 /**
  * Instanced camera-facing cards. items: [{pos:[x,y,z], size, rot, cell, bright, clump:[x,y,z,r]}].
@@ -194,7 +225,7 @@ export function billboards(items, map, o = {}) {
   g.setAttribute('iClump', new THREE.InstancedBufferAttribute(K, 4));
   g.instanceCount = n;
   g.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 1e5);
-  const common = { cylindrical: { value: o.cylindrical ? 1 : 0 }, cols: { value: o.cols || 4 }, rows: { value: o.rows || 2 }, map: { value: map }, alphaCut: { value: o.alphaCut || 0.5 } };
+  const common = { time: U.time, wind: U.wind, sway: { value: o.sway ?? 1 }, holes: { value: o.holes || 0 }, cylindrical: { value: o.cylindrical ? 1 : 0 }, cols: { value: o.cols || 4 }, rows: { value: o.rows || 2 }, map: { value: map }, alphaCut: { value: o.alphaCut || 0.5 } };
   const m = new THREE.ShaderMaterial({
     uniforms: { ...U, ...common, tint: { value: rgb(o.tint || '#FFFFFF') }, rampLo: { value: o.rampLo ?? -0.35 }, rampHi: { value: o.rampHi ?? 0.45 }, receive: { value: o.receive ? 1 : 0 }, keyK: { value: o.keyK ?? 1 } },
     vertexShader: BB_VERT, fragmentShader: BB_FRAG, side: THREE.DoubleSide,
@@ -212,7 +243,7 @@ export function skyDome(brush) {
     uniforms: { ...U, brush: { value: brush } },
     vertexShader: /* glsl */`varying vec3 vD; void main(){ vD = normalize(position); gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0); }`,
     fragmentShader: /* glsl */`
-      uniform vec3 zenith, horizon, sunDir, sunGlow; uniform float sunGlowK; uniform sampler2D brush; varying vec3 vD;
+      uniform vec3 zenith, horizon, sunDir, sunGlow, seaGlow; uniform float sunGlowK, seaGlowK; uniform sampler2D brush; varying vec3 vD;
       void main(){
         vec3 d = normalize(vD);
         float e = asin(clamp(d.y, -1.0, 1.0)) * 57.2958;
@@ -225,6 +256,8 @@ export function skyDome(brush) {
         float az = atan(d.x, -d.z);
         float b = texture2D(brush, vec2(az * 0.6, e / 40.0)).g;
         c *= mix(1.0, b / 0.9, 0.18);
+        float az0 = atan(d.x, -d.z); float sg = exp(-pow(az0 / 0.42, 2.0)) * exp(-max(e, 0.0) / 4.0);
+        c = mix(c, seaGlow, seaGlowK * sg);
         float g = max(dot(d, normalize(sunDir)), 0.0);
         c = mix(c, sunGlow, sunGlowK * (pow(g, 6.0) * 0.6 + pow(g, 40.0) * 0.4));
         gl_FragColor = vec4(c, 1.0);
@@ -238,8 +271,9 @@ export function skyDome(brush) {
 
 /* ---------------------------------------------------------------- backdrop cards and rings */
 const BACK_FRAG = /* glsl */`
-uniform sampler2D map; uniform float haze, cloud, keyK; uniform vec3 horizon, backdropKey, cloudLight, cloudShade, hazeColor;
+uniform sampler2D map; uniform float haze, cloud, keyK, glass, windowGlow, seaGlowK; uniform vec3 horizon, backdropKey, cloudLight, cloudShade, hazeColor, lamp, seaGlow;
 varying vec2 vUv; varying vec3 vP;
+float seaGap(vec3 d) { float az = atan(d.x, -d.z); float e = asin(clamp(d.y, -1.0, 1.0)) * 57.2958; return exp(-pow(az / 0.42, 2.0)) * exp(-abs(e - 1.0) / 5.0); }
 void main(){
   vec4 t = texture2D(map, vUv);
   if (t.a < 0.02) discard;
@@ -251,12 +285,15 @@ void main(){
   } else {
     c *= mix(vec3(1.0), backdropKey, keyK);
   }
+  if (glass > 0.0) { vec3 r = t.rgb / max(t.a, 0.001); float g = smoothstep(0.04, 0.12, r.b - r.r) * step(dot(r, vec3(0.333)), 0.6); c = mix(c, lamp, g * windowGlow); }
+  vec3 dd = normalize(vP - cameraPosition);
   c = mix(c, mix(hazeColor, horizon, 0.5), haze);
+  c = mix(c, seaGlow, seaGlowK * 0.45 * seaGap(dd));
   gl_FragColor = vec4(c, t.a);
 }`;
 export function backdropMat(map, o = {}) {
   return new THREE.ShaderMaterial({
-    uniforms: { ...U, map: { value: map }, haze: { value: o.haze || 0 }, cloud: { value: o.cloud ? 1 : 0 }, keyK: { value: o.keyK ?? 1 } },
+    uniforms: { ...U, map: { value: map }, haze: { value: o.haze || 0 }, cloud: { value: o.cloud ? 1 : 0 }, keyK: { value: o.keyK ?? 1 }, glass: { value: o.glass || 0 } },
     vertexShader: /* glsl */`varying vec2 vUv; varying vec3 vP; void main(){ vUv = uv; vec4 wp = modelMatrix * vec4(position,1.0); vP = wp.xyz; gl_Position = projectionMatrix * viewMatrix * wp; }`,
     fragmentShader: BACK_FRAG, transparent: true, depthWrite: false, side: THREE.DoubleSide,
   });
@@ -289,7 +326,7 @@ export function celMat() {
       void main(){ vC = color; vS = shadeCol; vec4 wp = modelMatrix * vec4(position,1.0); vP = wp.xyz; vN = normalize(mat3(modelMatrix) * normal); gl_Position = projectionMatrix * viewMatrix * wp; }`,
     fragmentShader: /* glsl */`uniform vec3 keyDir, celTint, hazeColor; uniform float hazeNear, hazeFar, hazeMax, debugMode, fade; varying vec3 vC; varying vec3 vS; varying vec3 vN; varying vec3 vP;
       float bayer4(vec2 p){ ivec2 i = ivec2(mod(p, 4.0)); int b[16] = int[16](0,8,2,10,12,4,14,6,3,11,1,9,15,7,13,5); return (float(b[i.y * 4 + i.x]) + 0.5) / 16.0; }
-      void main(){ if (fade < 0.999 && bayer4(gl_FragCoord.xy) > fade) discard; float l = step(0.12, dot(normalize(vN), keyDir)); vec3 c = mix(vS, vC, l) * celTint;
+      void main(){ if (fade < 0.999 && bayer4(gl_FragCoord.xy) > fade) discard; float l = smoothstep(0.06, 0.2, dot(normalize(vN), keyDir)); vec3 c = mix(vS, vC, l) * celTint;
         if (debugMode > 1.5) c = vC; else if (debugMode > 0.5) c = vec3(0.0);
         c = mix(c, hazeColor, hazeMax * smoothstep(hazeNear, hazeFar, length(vP - cameraPosition)));
         gl_FragColor = vec4(c, 1.0); }`,

@@ -17,7 +17,7 @@ const PARENT = { hips: 'root', chest: 'hips', neck: 'chest', head: 'neck', earL:
   fUL: 'chest', fLL: 'fUL', fUR: 'chest', fLR: 'fUR', hUL: 'hips', hLL: 'hUL', hUR: 'hips', hLR: 'hUR' };
 
 /** Part ids (the shader's coat functions switch on these). */
-export const PART = { body: 0, head: 1, tail: 2, collar: 3, bell: 4 };
+export const PART = { body: 0, head: 1, tail: 2, collar: 3, bell: 4, legs: 5 };
 
 /**
  * @param {object} o build, tail ('pom'|'whip'|'ringed'|'plume'|'stub'), ears ('standard'|'tall'|'round'), collar (bool)
@@ -36,7 +36,7 @@ export function buildCast(o) {
   pos.hips = [0, spineY, -0.04 * ln];
   pos.chest = [0, spineY + 0.008, 0.035 * ln];
   pos.neck = [0, spineY + 0.035, zF + 0.012];
-  const headC = [0, spineY + 0.138 * hs + 0.006, zF + 0.056 * hs]; // chestnut centre
+  const headC = [0, spineY + 0.136 * hs + 0.006, zF + 0.066 * hs]; // chestnut centre
   pos.head = [0, headC[1] - 0.06 * hs, headC[2] - 0.025 * hs];   // pivot low and behind: nods read well
   const rump = [0, spineY + 0.014, -0.128 * ln * (0.85 + 0.15 * bx)];
   const tailLen = { pom: 0.06, stub: 0.1, whip: 0.34, ringed: 0.31, plume: 0.33 }[o.tail || 'whip'];
@@ -60,41 +60,44 @@ export function buildCast(o) {
     const F = frame(base, up, [s * 0.5, 0, 1]);
     const E = earShape, sc = hs;
     return { t: 'ear', F, A: [-E.hw * sc, -0.01], B: [E.hw * sc, -0.01], C: [s * E.tip * sc, E.h * sc],
-      hw: E.hw * sc, th: E.th * sc, rr: o.ears === 'round' ? 0.011 : 0.006, cup: 0.005, bone: s > 0 ? 'earL' : 'earR', k: 0.016, side: s };
+      hw: E.hw * sc, th: E.th * sc, rr: o.ears === 'round' ? 0.011 : 0.0085, cup: 0.005, bone: s > 0 ? 'earL' : 'earR', k: 0.016, side: s };
   });
 
-  // ---- body shell: bean torso, haunches, chest, legs, paws
+  // ---- torso shell: a bean (round rump, deep chest), thick neck. Legs are a SEPARATE shell so
+  // their hull draws the drawn-cel overlap line where a leg crosses the body (AD fix 4).
   const body = [];
   const P = (x) => body.push(x);
-  const tr = 0.073 * by;                       // torso radius
-  P({ t: 'cap', a: [0, spineY + 0.004, rump[2] + 0.06], b: [0, spineY + 0.006, 0.0], ra: tr * 1.02, rb: tr * 0.96, bone: 'hips', k: 0 });
-  P({ t: 'cap', a: [0, spineY + 0.006, 0.0], b: [0, spineY + 0.016, zF + 0.004], ra: tr * 0.96, rb: tr * 0.95, bone: 'chest', k: 0.03 });
-  // wide round haunches (the pear from behind)
-  for (const s of [1, -1]) P({ t: 'ell', c: [s * (xH + 0.006) * 1.0, legTop + 0.004, zH + 0.005], r: [0.046 * bx, 0.06 * by, 0.062 * by], bone: s > 0 ? 'hUL' : 'hUR', k: 0.035 });
-  // chest / bib
-  P({ t: 'ell', c: [0, spineY + 0.006, zF + 0.012], r: [0.066 * bx, 0.078 * by, 0.062], bone: 'chest', k: 0.03 });
-  // neck into the head
-  P({ t: 'cap', a: [0, spineY + 0.02, zF + 0.005], b: [0, headC[1] - 0.05 * hs, headC[2] - 0.02], ra: 0.048 * bx, rb: 0.042 * bx, bone: 'neck', k: 0.03 });
-  // legs: column legs, slightly tapered, rounded paws
+  const tr = 0.066 * by;
+  P({ t: 'ell', c: [0, spineY + 0.006, rump[2] + 0.058], r: [0.07 * bx, 0.07 * by, 0.068], bone: 'hips', k: 0 });
+  P({ t: 'cap', a: [0, spineY + 0.004, rump[2] + 0.06], b: [0, spineY + 0.01, zF - 0.01], ra: tr, rb: tr * 1.02, bone: 'hips', k: 0.03 });
+  P({ t: 'ell', c: [0, spineY + 0.014, zF + 0.004], r: [0.068 * bx, 0.082 * by, 0.066], bone: 'chest', k: 0.035 });
+  const nA = [0, spineY + 0.03, zF + 0.008], nB = [0, headC[1] - 0.042 * hs, headC[2] - 0.03 * hs];
+  P({ t: 'cap', a: nA, b: nB, ra: 0.056 * bx, rb: 0.05 * bx, bone: 'neck', k: 0.03 });
+
+  // ---- legs shell: column legs with rounded paws; hind legs carry the round haunch (thigh)
+  const legsP = [];
   const leg = (s, front) => {
     const U = front ? (s > 0 ? 'fUL' : 'fUR') : (s > 0 ? 'hUL' : 'hUR');
     const L = front ? (s > 0 ? 'fLL' : 'fLR') : (s > 0 ? 'hLL' : 'hLR');
     const top = pos[U], kn = pos[L];
-    const r0 = (front ? 0.028 : 0.031) * Math.sqrt(bx), r1 = (front ? 0.025 : 0.026) * Math.sqrt(bx);
+    const r0 = (front ? 0.029 : 0.031) * Math.sqrt(bx), r1 = (front ? 0.026 : 0.027) * Math.sqrt(bx);
     const pawZ = kn[2] + 0.008;
-    P({ t: 'cap', a: [top[0], top[1] - 0.01, top[2]], b: kn, ra: r0, rb: r1, bone: U, k: 0.022 });
-    P({ t: 'cap', a: kn, b: [kn[0], 0.026, pawZ - 0.004], ra: r1, rb: r1 * 0.96, bone: L, k: 0.008 });
-    P({ t: 'ell', c: [kn[0] * 1.02, 0.017, pawZ + 0.006], r: [r1 * 1.12, 0.0175, r1 * 1.38], bone: L, k: 0.014 });
+    legsP.push({ t: 'cap', a: [top[0], top[1] + 0.012, top[2]], b: kn, ra: r0, rb: r1, bone: U, k: 0.02 });
+    if (!front) legsP.push({ t: 'ell', c: [s * (xH + 0.008), legTop + 0.008, zH + 0.008], r: [0.042 * bx, 0.058 * by, 0.062 * by], bone: U, k: 0.03 });
+    legsP.push({ t: 'cap', a: kn, b: [kn[0], 0.026, pawZ - 0.004], ra: r1, rb: r1 * 0.96, bone: L, k: 0.008 });
+    legsP.push({ t: 'ell', c: [kn[0] * 1.02, 0.018, pawZ + 0.006], r: [r1 * 1.12, 0.018, r1 * 1.38], bone: L, k: 0.014 });
   };
   for (const s of [1, -1]) { leg(s, true); leg(s, false); }
 
-  // ---- head shell: chestnut (wider at the bottom), cheek ruffs, small muzzle, ears
+  // ---- head shell: chestnut, cheek ruffs, a real muzzle + nose bump + chin (the side profile)
   const head = [];
   const H = (x) => head.push(x);
   const hc = headC;
-  H({ t: 'ell', c: hc, r: [0.094 * hs, 0.074 * hs, 0.077 * hs], bone: 'head', k: 0 });
-  for (const s of [1, -1]) H({ t: 'ell', c: [hc[0] + s * 0.052 * hs, hc[1] - 0.024 * hs, hc[2] + 0.002], r: [0.06 * hs * (o.build === 'round' ? 1.08 : 1), 0.047 * hs, 0.058 * hs], bone: 'head', k: 0.03 });
-  H({ t: 'ell', c: [hc[0], hc[1] - 0.033 * hs, hc[2] + 0.052 * hs], r: [0.034 * hs, 0.024 * hs, 0.026 * hs], bone: 'head', k: 0.02 });
+  H({ t: 'ell', c: hc, r: [0.094 * hs, 0.074 * hs, 0.075 * hs], bone: 'head', k: 0 });
+  for (const s of [1, -1]) H({ t: 'ell', c: [hc[0] + s * 0.052 * hs, hc[1] - 0.024 * hs, hc[2] + 0.004], r: [0.06 * hs * (o.build === 'round' ? 1.08 : 1), 0.047 * hs, 0.058 * hs], bone: 'head', k: 0.03 });
+  H({ t: 'ell', c: [hc[0], hc[1] - 0.029 * hs, hc[2] + 0.06 * hs], r: [0.04 * hs, 0.028 * hs, 0.036 * hs], bone: 'head', k: 0.02 });
+  H({ t: 'sph', c: [hc[0], hc[1] - 0.017 * hs, hc[2] + 0.09 * hs], r: 0.011 * hs, bone: 'head', k: 0.012 });
+  H({ t: 'ell', c: [hc[0], hc[1] - 0.052 * hs, hc[2] + 0.042 * hs], r: [0.024 * hs, 0.015 * hs, 0.02 * hs], bone: 'head', k: 0.016 });
   for (const e of ears) H(e);
 
   // ---- tail shell
@@ -102,16 +105,14 @@ export function buildCast(o) {
   const T = (x) => tail.push(x);
   const tp = (i) => pos['tail' + Math.min(6, i + 1)];
   if (o.tail === 'pom') {
-    const c = [0, rump[1] + 0.008, rump[2] - 0.028];
-    T({ t: 'sph', c, r: 0.036, bone: 'tail1', k: 0 });
-    // scallops all round: a cauliflower of small spheres (pom = imperfect circle from every angle)
-    const n = 18, ga = Math.PI * (3 - Math.sqrt(5));
-    for (let i = 0; i < n; i++) {
-      const y = 1 - (i / (n - 1)) * 2, r = Math.sqrt(1 - y * y), th = ga * i;
-      const d = [Math.cos(th) * r, y, Math.sin(th) * r];
-      if (d[2] > 0.55) continue; // the side buried in the rump
-      T({ t: 'sph', c: v3.add(c, v3.mul(d, 0.03)), r: 0.019 + 0.003 * ((i * 7) % 3) / 2, bone: 'tail1', k: 0.008 });
+    // a clean scalloped tuft: one core and a ring of soft lobes facing the camera behind (kit pomPts)
+    const c = [0, rump[1] + 0.01, rump[2] - 0.03];
+    T({ t: 'sph', c, r: 0.037, bone: 'tail1', k: 0 });
+    for (let i = 0; i < 8; i++) {
+      const a = (i / 8) * Math.PI * 2 + 0.2;
+      T({ t: 'sph', c: v3.add(c, [Math.cos(a) * 0.03, Math.sin(a) * 0.03, -0.004]), r: 0.02, bone: 'tail1', k: 0.012 });
     }
+    T({ t: 'sph', c: v3.add(c, [0, 0, -0.022]), r: 0.03, bone: 'tail1', k: 0.014 });
   } else {
     const rad = { whip: [0.017, 0.012], ringed: [0.024, 0.02], plume: [0.024, 0.022], stub: [0.026, 0.022] }[o.tail];
     const pts = [[0, rump[1], rump[2] + 0.03], ...[1, 2, 3, 4, 5].map((i) => tp(i)), v3.add(tp(5), [0, 0, -seg])];
@@ -124,18 +125,21 @@ export function buildCast(o) {
   }
 
   const shells = [
-    { name: 'body', part: PART.body, cell: 0.005, sigma: 0.012, prims: body },
-    { name: 'head', part: PART.head, cell: 0.0036, sigma: 0.006, prims: head },
-    { name: 'tail', part: PART.tail, cell: o.tail === 'pom' ? 0.0028 : 0.0035, sigma: 0.006, prims: tail },
+    { name: 'body', part: PART.body, cell: 0.0045, sigma: 0.012, prims: body },
+    { name: 'legs', part: PART.legs, cell: 0.0036, sigma: 0.008, prims: legsP },
+    { name: 'head', part: PART.head, cell: 0.003, sigma: 0.006, prims: head },
+    { name: 'tail', part: PART.tail, cell: o.tail === 'pom' ? 0.0026 : 0.0035, sigma: 0.006, prims: tail },
   ];
-  // ---- collar + bell (Mikan only; collars mean pets)
+  // ---- collar + bell (Mikan only; collars mean pets): seated ON the neck, square to its axis
   let collar = null;
   if (o.collar) {
-    const axis = v3.norm([0, 0.97, 0.24]);
-    const cc = [0, headC[1] - 0.1 * hs, headC[2] - 0.036];
+    const axis = v3.norm(v3.sub(nB, nA));
+    const cc = v3.add(nA, v3.mul(v3.sub(nB, nA), 0.5));
+    const R = 0.053 * bx + 0.002;
     collar = { c: cc, axis };
-    shells.push({ name: 'collar', part: PART.collar, cell: 0.0024, sigma: 0.01, prims: [{ t: 'tor', c: cc, axis, R: 0.058 * bx, r: 0.011, bone: 'neck', k: 0 }] });
-    const front = v3.add(cc, [0, -0.026, 0.05 * bx + 0.01]);
+    shells.push({ name: 'collar', part: PART.collar, cell: 0.0022, sigma: 0.01, prims: [{ t: 'tor', c: cc, axis, R, r: 0.0095, bone: 'neck', k: 0 }] });
+    const f = v3.norm(v3.sub([0, 0, 1], v3.mul(axis, axis[2])));
+    const front = v3.add(v3.add(cc, v3.mul(f, R + 0.013)), [0, -0.012, 0]);
     shells.push({ name: 'bell', part: PART.bell, cell: 0.0018, sigma: 0.01, prims: [{ t: 'sph', c: front, r: 0.0165, bone: 'neck', k: 0 }] });
   }
   return {

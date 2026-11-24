@@ -7,11 +7,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { CASTS, buildCast, BONES } from './cats/casts.sdf.js';
 import { shellSdf, shellBounds, prim, v3, toFrame } from './cats/sdf.js';
-import { surfaceNets } from './cats/surfacenets.js';
+import { surfaceNets, gradient } from './cats/surfacenets.js';
 import { MeshoptSimplifier } from 'meshoptimizer';
 await MeshoptSimplifier.ready;
-// triangle budget per shell (≈ 11–13k per cat; the plan's 4–6k is the Unreal target, this is a browser spike)
-const BUDGET = { body: 4200, head: 4800, tail: 1400, collar: 700, bell: 260 };
+// triangle budget per shell (≈ 20k per cat; the plan's 4–6k is the Unreal target, this is a browser spike)
+const BUDGET = { body: 8000, legs: 7000, head: 9000, tail: 2400, collar: 1200, bell: 300 };
 
 const root = path.dirname(new URL(import.meta.url).pathname) + '/..';
 const out = path.join(root, 'assets/mesh');
@@ -22,7 +22,7 @@ for (const [name, opts] of Object.entries(CASTS)) {
   if (want.length && !want.includes(name)) continue;
   const t0 = Date.now();
   const M = buildCast(opts);
-  const P = [], N = [], SI = [], SW = [], PT = [], AX = [], IDX = [];
+  const P = [], N = [], SN = [], SI = [], SW = [], PT = [], AX = [], TH = [], IDX = [];
   for (const S of M.shells) {
     const f = shellSdf(S);
     let { pos, nrm, tris } = surfaceNets(f, shellBounds(S, S.cell * 3), S.cell);
@@ -38,6 +38,14 @@ for (const [name, opts] of Object.entries(CASTS)) {
     for (let i = 0; i < pos.length; i++) {
       const p = pos[i];
       P.push(...p); N.push(...nrm[i]); PT.push(S.part);
+      // thickness along -normal (to the far surface): the hull may be pulled toward the camera by a
+      // share of it, which draws interior overlap lines without inking thin parts (ears) solid
+      let th = 0.002; const n = nrm[i];
+      while (th < 0.12 && f([p[0] - n[0] * th, p[1] - n[1] * th, p[2] - n[2] * th]) < 0) th += 0.002;
+      TH.push(th);
+      // form normal: the SDF gradient at a coarse scale, for shading only, so the terminator is a
+      // simple designed shape (no stair-steps from the decimated mesh, no kinks at junctions)
+      SN.push(...gradient(f, p, 0.014));
       // skin weights: soft-min of per-bone distances
       const d = boneIds.map((b) => Math.min(...S.prims.filter((q) => q.bone === b && !q.cut).map((q) => prim(q, p))));
       const dmin = Math.min(...d);
@@ -64,9 +72,9 @@ for (const [name, opts] of Object.entries(CASTS)) {
   }
   // pack
   const parts = [
-    ['position', new Float32Array(P), 3], ['normal', new Float32Array(N), 3],
+    ['position', new Float32Array(P), 3], ['normal', new Float32Array(N), 3], ['snormal', new Float32Array(SN), 3],
     ['skinIndex', new Uint16Array(SI), 4], ['skinWeight', new Float32Array(SW), 4],
-    ['part', new Float32Array(PT), 1], ['aux', new Float32Array(AX), 3],
+    ['part', new Float32Array(PT), 1], ['aux', new Float32Array(AX), 3], ['thick', new Float32Array(TH), 1],
     ['index', new Uint32Array(IDX), 1],
   ];
   const attributes = {}; let off = 0; const bufs = [];

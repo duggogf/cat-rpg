@@ -33,6 +33,7 @@ const TEX = {
   skybrush: { wrap: 'repeat' }, foliage: { alpha: true }, flowers: { alpha: true }, grass: { alpha: true }, clouds: { alpha: true },
   hillsNear: { alpha: true, wrapS: 'repeat' }, hillsFar: { alpha: true, wrapS: 'repeat' }, town: { alpha: true }, sea: { wrapS: 'repeat' },
   roof: { wrap: 'mirror' }, house: { wrap: 'mirror' }, window: {}, notice: { alpha: true },
+  stains: { alpha: true }, poster: { alpha: true }, manhole: { alpha: true }, vending: {}, aircon: {}, legs: { alpha: true }, townFar: { alpha: true },
 };
 const W = { mirror: THREE.MirroredRepeatWrapping, repeat: THREE.RepeatWrapping };
 async function loadTextures() {
@@ -50,7 +51,7 @@ async function loadTextures() {
 const envScene = new THREE.Scene(), lateScene = new THREE.Scene();
 const cam = new THREE.PerspectiveCamera(EXPLORE.fov, 1, 0.1, 1500);
 let world, shadow, post, rig, mikan, sitter, keyLight, fillLight, phaseName, shadowDirty = true;
-const mikanPos = new THREE.Vector3(), move = { f: 0, r: 0, run: false };
+const mikanPos = new THREE.Vector3(), move = { f: 0, r: 0, run: false }, drive = { x: 0, z: 0 };
 let simTime = 0, lastStats = {};
 
 function setPhase(name) {
@@ -114,9 +115,9 @@ function step(dt) {
   // walk Mikan relative to the camera yaw
   const f = (keys.has('KeyW') || keys.has('ArrowUp') ? 1 : 0) - (keys.has('KeyS') || keys.has('ArrowDown') ? 1 : 0);
   const r = (keys.has('KeyD') || keys.has('ArrowRight') ? 1 : 0) - (keys.has('KeyA') || keys.has('ArrowLeft') ? 1 : 0);
-  if (f || r) {
+  if (f || r || drive.x || drive.z) {
     const y = rig.yaw * Math.PI / 180, fw = new THREE.Vector3(-Math.sin(y), 0, -Math.cos(y)), rt = new THREE.Vector3(Math.cos(y), 0, -Math.sin(y));
-    const d = fw.multiplyScalar(f).add(rt.multiplyScalar(r)).normalize(), speed = keys.has('ShiftLeft') ? 1.6 : 0.9;
+    const d = (drive.x || drive.z) ? new THREE.Vector3(drive.x, 0, drive.z).normalize() : fw.multiplyScalar(f).add(rt.multiplyScalar(r)).normalize(), speed = keys.has('ShiftLeft') ? 1.6 : 0.9;
     mikanPos.addScaledVector(d, speed * dt); collideCircle(mikanPos, 0.2, world.colliders);
     const want = Math.atan2(d.x, d.z), o = mikan.object3D; let dy = want - o.rotation.y; dy = Math.atan2(Math.sin(dy), Math.cos(dy));
     o.rotation.y += dy * Math.min(1, dt * 10);
@@ -125,22 +126,26 @@ function step(dt) {
   mikan.object3D.position.copy(mikanPos);
   mikan.update(dt); sitter.update(dt);
   if (opt.view !== '01') rig.update(dt, mikanPos);
-  // camera-soft (camera-system.md §3.4): the Scent Post dithers to 30% when it crowds the lens or hides Mikan
-  { const lp = new THREE.Vector3(L.lantern.at[0], 0.6, L.lantern.at[1]), c = cam.position, pv = rig.pivot;
-    const near = Math.hypot(c.x - lp.x, c.z - lp.z) < 1.1;
-    const seg = new THREE.Line3(c.clone(), pv.clone()), cp = new THREE.Vector3(); seg.closestPointToPoint(lp, true, cp);
-    const blocks = Math.hypot(cp.x - lp.x, cp.z - lp.z) < 0.3 && cp.y < 1.2 && cp.distanceTo(pv) > 0.3;
-    const inside = Math.hypot(c.x - lp.x, c.z - lp.z) < 0.55; const want = inside ? 0 : near || blocks ? 0.3 : 1, k = want < CEL.fade.value ? 0.1 : 0.3;
-    CEL.fade.value = dt <= 0 ? want : CEL.fade.value + (want - CEL.fade.value) * (1 - Math.pow(2, -dt / k)); }
+  // camera-soft (camera-system.md §3.4): props that crowd the lens or hide Mikan are hidden outright
+  // (art direction: never a half-transparent set piece)
+  { const c = cam.position, pv = rig.pivot, seg = new THREE.Line3(c.clone(), pv.clone()), cp = new THREE.Vector3();
+    for (const sft of world.soft) {
+      const p = new THREE.Vector3(sft.x, 0.5, sft.z); seg.closestPointToPoint(p, true, cp);
+      const near = Math.hypot(c.x - sft.x, c.z - sft.z) < sft.r + 0.5;
+      const blocks = Math.hypot(cp.x - sft.x, cp.z - sft.z) < sft.r * 0.6 && cp.y < 1.3 && cp.distanceTo(pv) > 0.35;
+      const fwdZ = pv.z - c.z, fwdL = Math.hypot(pv.x - c.x, fwdZ) || 1;
+      sft.obj.visible = !(near || blocks) && (!sft.downLaneOnly || fwdZ / fwdL < -0.75);  // the card has one valid side
+    } }
   // painted backdrops sit at "infinity": they follow the camera (the near hill ring with a little parallax)
   const R = world.rings;
   R.sky.position.copy(cam.position); R.ringFar.position.copy(cam.position); R.sea.position.copy(cam.position); R.clouds.position.copy(cam.position);
   R.ringNear.position.set(cam.position.x * 0.85, cam.position.y, cam.position.z * 0.85);
-  if (!opt.test) R.clouds.rotation.y = -simTime * 0.0015;
+  R.clouds.rotation.y = -simTime * 0.004;  // drift (sim time, so test runs stay deterministic)
 }
 
 function render() {
   renderer.info.reset();
+  shadowDirty = true; // foliage sways and the dapple drifts: the sun shadow is re-rendered every frame
   if (shadowDirty) { shadow.update(renderer, [envScene, lateScene], world.casters); shadowDirty = false; lastStats.shadowCalls = shadow.calls; renderer.info.reset(); }
   cam.updateMatrixWorld();
   if (opt.mask === 'cats') {
@@ -194,6 +199,12 @@ async function boot() {
     state: () => ({ phase: phaseName, camera: cam.position.toArray().map((v) => +v.toFixed(3)), yaw: rig.yaw, pitch: rig.pitch, dist: +rig.dist.toFixed(3), mikan: mikanPos.toArray(), stats: { ...lastStats, texMB: texMB() } }),
     step: (n = 1) => { for (let i = 0; i < n; i++) step(1 / 60); render(); },
     setPhase: (p) => { setPhase(p); render(); },
+    // scripted motion for captures: walk in a world direction while the camera orbits (deterministic sim steps)
+    drive: ({ x = 0, z = -1, frames = 15, yaw = 0, dt = 1 / 30 } = {}) => {
+      drive.x = x; drive.z = z;
+      for (let i = 0; i < frames; i++) { rig.yaw += yaw / frames; step(dt); }
+      drive.x = drive.z = 0; render();
+    },
   };
   if (opt.test) {
     for (let i = 0; i < 6; i++) step(1 / 60); // settle cat idle deterministically

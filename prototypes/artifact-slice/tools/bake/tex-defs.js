@@ -23,7 +23,12 @@
     inner += `<path d="M120 60h220v180h-220z" fill="#EFE1CC" opacity="0.5" filter="url(#k-soft2)"/>`;
     inner += `<path d="M640 230h260v210h-260z" fill="#E2CDB4" opacity="0.4" filter="url(#k-soft2)"/>`;
     inner += `<path d="M420 120h120v300h-120z" fill="#C6B8C0" opacity="0.28" filter="url(#k-soft)"/>`;
-    inner += K.texture(-40, -10, W + 80, H + 20, 'brush-v', 0.12) + K.texture(-40, -10, W + 80, H + 20, 'mottle', 0.18);
+    inner += K.texture(-40, -10, W + 80, H + 20, 'brush-v', 0.08) + K.texture(-40, -10, W + 80, H + 20, 'mottle', 0.18);
+    { const R = K.rng(77); let st = ''; // rain streaks running down from the coping
+      for (let i = 0; i < 16; i++) { const x = R() * W, w = 6 + R() * 22, h = 60 + R() * 170; st += `<path d="M${x.toFixed(0)} -4h${w.toFixed(0)}l-${(w * 0.3).toFixed(0)} ${h.toFixed(0)}h-${(w * 0.5).toFixed(0)}z" fill="#A89AA6" opacity="${(0.12 + R() * 0.16).toFixed(2)}"/>`; }
+      inner += `<g filter="url(#k-soft)">${st}</g>`;
+      let mo = ''; for (let i = 0; i < 70; i++) { const x = R() * W, y = H * (0.8 + R() * 0.1), r = 6 + R() * 16; mo += `<ellipse cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" rx="${(r * 1.6).toFixed(0)}" ry="${r.toFixed(0)}" fill="${R() < 0.5 ? '#8FAE6A' : '#6F9A5A'}" opacity="${(0.35 + R() * 0.3).toFixed(2)}"/>`; }
+      inner += `<g filter="url(#k-leaf-fine)">${mo}</g>`; }
     inner += `<g fill="none" stroke="#9A8C9C" stroke-width="2.5" opacity="0.6" filter="url(#k-rough)"><path d="M300 0l10 46l-8 38l14 50"/><path d="M820 20l6 22l-5 18l9 30"/></g>`;
     let s = K.surface({ pts: q, color: C.plaster, top: K.mix(C.plaster, '#FFFFFF', 0.18), bottom: K.mix(C.plaster, '#D9BF98', 0.35), grime: 0.32, inner });
     // base course (kit wall: lower ~10%)
@@ -145,9 +150,11 @@
     // back range (bluer, higher) then the near shoulder (greener); open window over the sea at az -28..6
     const back = [[-40, 2.6], [-30, 0.4], [-27, -5], [4, -5], [8, 0.5], [24, 2.6], [50, 4.6], [85, 5.6], [120, 6.4], [160, 7.0], [190, 7.2], [225, 6.4], [260, 5.2], [290, 4.2], [320, 3.4], [330, 2.6]];
     const near = [[60, -5], [80, 1.6], [105, 3.0], [140, 4.2], [175, 4.6], [205, 4.1], [240, 3.0], [270, 1.6], [295, -5]];
+    const peaks = [[-40, 3.6], [-30, -5], [8, -5], [20, 2.6], [36, 6.2], [48, 4.6], [70, 8.4], [92, 5.8], [118, 7.6], [150, 9.4], [172, 7.2], [205, 10.2], [232, 7.0], [262, 8.2], [290, 5.4], [312, 6.6], [330, 3.6]];
     let s = '';
     for (const off of [0, 360]) {
       const sx = (a) => x(a + off);
+      s += paintHill(peaks, sx, y, W, H, '#8FB8C8', 4, false);
       s += paintHill(back, sx, y, W, H, '#6FAE98', 5, false);
       s += paintHill(near, sx, y, W, H, '#4F9E6E', 6, true);
     }
@@ -166,19 +173,33 @@
   } };
 
   /* The lower town beyond the crest: roofs and trees stepping down to the sea. 2048 x 512, ring strip. */
-  T.town = { w: 4096, h: 160, alpha: true, svg: () => {
-    const W = 4096, H = 160, R = K.rng(17);
-    let s = '';
-    const farRoof = (x, y, w, h, c) => K.roof({ quad: [[x + w * 0.14, y], [x + w * 0.86, y], [x + w, y + h], [x, y + h]], rows: 2, cols: 5, color: c }) + `<rect x="${x + w * 0.06}" y="${y + h}" width="${w * 0.88}" height="${h * 1.3}" fill="#EFE3C8"/><rect x="${x + w * 0.06}" y="${y + h}" width="${w * 0.88}" height="${h * 0.35}" fill="${C.wisteria}" opacity="0.35" style="mix-blend-mode:multiply"/>`;
-    for (let row = 0; row < 4; row++) {
-      for (let i = 0; i < 62; i++) {
-        const w = 40 + R() * 34, x = i * 66 + R() * 20 - 10 + (row % 2) * 33, y = 6 + row * 34 + R() * 8, h = 12 + R() * 6;
-        if (R() < 0.18) { s += K.foliage({ x: x + w / 2, y: y + 16, w: 46 + R() * 30, h: 26 + R() * 12, seed: 700 + row * 70 + i, far: true }); continue; }
-        s += farRoof(x, y, w, h, ['#7E93A8', '#8799AC', '#74889E', '#6F8296'][Math.floor(R() * 4)]);
+  const townStrip = (W, H, seed, scale, rows) => {
+    const R = K.rng(seed); let s = '';
+    const roofCols = ['#7E93A8', '#8799AC', '#6F8296', '#5F7088', '#93A3B4', '#8A7A70', '#6E7F92'];
+    const wallCols = ['#EFE3C8', '#F3E9D6', '#E7D7BA', '#F0DCC0', '#E2D8C8'];
+    const house = (x, y, w, h) => {
+      const rc = roofCols[Math.floor(R() * roofCols.length)], wc = wallCols[Math.floor(R() * wallCols.length)], hip = R() < 0.5;
+      let g = `<rect x="${x + w * 0.05}" y="${y + h}" width="${w * 0.9}" height="${h * 1.25}" fill="${wc}"/><rect x="${x + w * 0.05}" y="${y + h}" width="${w * 0.9}" height="${h * 0.3}" fill="${C.wisteria}" opacity="0.32"/>`;
+      const nw = Math.max(1, Math.floor(w / (24 * scale)));
+      for (let k = 0; k < nw; k++) if (R() < 0.75) g += `<rect x="${x + w * 0.12 + k * (w * 0.76 / nw)}" y="${y + h * 1.45}" width="${w * 0.76 / nw * 0.55}" height="${h * 0.5}" fill="#5E7F9A"/>`;
+      g += hip ? `<path d="M${x + w * 0.16} ${y}L${x + w * 0.84} ${y}L${x + w} ${y + h}L${x} ${y + h}Z" fill="${rc}"/>` : `<path d="M${x + w * 0.5} ${y - h * 0.35}L${x + w} ${y + h}L${x} ${y + h}Z" fill="${rc}"/>`;
+      g += `<path d="M${x} ${y + h - 3 * scale}L${x + w} ${y + h - 3 * scale}L${x + w} ${y + h}L${x} ${y + h}Z" fill="${K.mix(rc, '#33273B', 0.35)}"/>`;
+      for (let t = 1; t < 4; t++) g += `<path d="M${x + w * (0.08 * t)} ${y + h * t / 4}H${x + w * (1 - 0.08 * t)}" stroke="#C9D5E0" stroke-width="${1.4 * scale}" opacity="0.45"/>`;
+      return g;
+    };
+    for (let row = 0; row < rows; row++) {
+      let x = -20 + R() * 30;
+      while (x < W) {
+        const w = (46 + R() * 50) * scale, h = (13 + R() * 8) * scale, y = (8 + row * 30 + R() * 8) * scale;
+        if (R() < 0.16) s += K.foliage({ x: x + w / 2, y: y + h, w: w * 0.9, h: h * 2.2, seed: seed * 100 + Math.floor(x), tones: { dark: '#3F7A55', mid: '#5E9A60', light: '#8CC070', hi: '#B8DA86' }, dabs: false });
+        else s += house(x, y, w, h);
+        x += w * (0.82 + R() * 0.3);
       }
     }
-    return svg(W, H, s);
-  } };
+    return `<g filter="url(#k-rough)">${s}</g>`;
+  };
+  T.town = { w: 4096, h: 192, alpha: true, svg: () => svg(4096, 192, townStrip(4096, 192, 17, 1.6, 3)) };
+  T.townFar = { w: 4096, h: 128, alpha: true, svg: () => svg(4096, 128, townStrip(4096, 128, 23, 0.9, 4)) };
 
   /* Sea band, 2048 x 256 (top = horizon). */
   T.sea = { w: 2048, h: 256, svg: () => svg(2048, 256, K.sea({ x: 0, y: 0, w: 2048, h: 256, seed: 3 }) + `<rect x="0" y="0" width="2048" height="22" fill="#DDF1FA" opacity="0.7" filter="url(#k-soft)"/>`) };
@@ -203,6 +224,39 @@
     let sc = ''; for (let i = 0; i < 7; i++) sc += `<path d="M40 ${70 + i * 32}Q120 ${66 + i * 32} ${150 + (i % 3) * 25} ${70 + i * 32}" stroke="#7A6E86" stroke-width="5" fill="none" stroke-dasharray="${18 + i * 3} 8 ${10 + i} 6" opacity="0.75"/>`;
     return svg(256, 320, `<g filter="url(#k-rough)"><rect x="20" y="20" width="216" height="280" fill="#EFE7D2"/><rect x="20" y="20" width="216" height="34" fill="#7E93B6" opacity="0.85"/>${sc}</g>`);
   } };
+
+
+  /* Stain decals (alpha): 0 rain streak + moss patch, 1 water stain, 2 a patched repair. 3 cells of 256 x 512. */
+  T.stains = { w: 768, h: 512, alpha: true, svg: () => {
+    const R = K.rng(5); let s = '';
+    let a = ''; for (let i = 0; i < 7; i++) { const x = 70 + R() * 110, w = 8 + R() * 20; a += `<path d="M${x} 0h${w}l-4 ${260 + R() * 200}h-${w * 0.6}z" fill="#9C8E9E" opacity="${0.2 + R() * 0.2}"/>`; }
+    s += `<g filter="url(#k-soft)">${a}</g>`;
+    let m = ''; for (let i = 0; i < 26; i++) { const x = 60 + R() * 140, y = 420 + R() * 80, r = 8 + R() * 18; m += `<ellipse cx="${x}" cy="${y}" rx="${r * 1.5}" ry="${r}" fill="${R() < 0.5 ? '#8FAE6A' : '#6A955A'}" opacity="0.7"/>`; }
+    s += `<g filter="url(#k-leaf-fine)">${m}</g>`;
+    s += `<g filter="url(#k-rough)"><path d="M300 120q90 -30 160 30q40 90 -20 170q-90 60 -150 -20q-40 -100 10 -180z" fill="#B9A890" opacity="0.35"/><path d="M330 160q60 -10 100 30q20 60 -20 110q-60 30 -90 -20q-20 -70 10 -120z" fill="#A8977E" opacity="0.25"/></g>`;
+    s += `<g filter="url(#k-rough)"><rect x="560" y="150" width="150" height="110" fill="#F7EEDC"/><rect x="560" y="150" width="150" height="110" fill="none" stroke="#C9B89C" stroke-width="5" opacity="0.6"/><path d="M590 300l40 60l-20 40" stroke="#9A8C9C" stroke-width="3" fill="none"/></g>`;
+    return svg(768, 512, s);
+  } };
+  /* A second poster (lost-cat flyer look, Scribble only). */
+  T.poster = { w: 256, h: 340, alpha: true, svg: () => {
+    let sc = ''; for (let i = 0; i < 4; i++) sc += `<path d="M44 ${232 + i * 22}Q120 ${228 + i * 22} ${170 + (i % 2) * 30} ${232 + i * 22}" stroke="#6E6476" stroke-width="5" fill="none" stroke-dasharray="${14 + i * 4} 7 ${8 + i} 5" opacity="0.8"/>`;
+    return svg(256, 340, `<g filter="url(#k-rough)"><rect x="22" y="18" width="212" height="304" fill="#F6E7C9"/><rect x="44" y="40" width="168" height="160" fill="#E9B98E"/><ellipse cx="128" cy="140" rx="52" ry="40" fill="#FFF6E3"/><path d="M92 106l14 -30l18 26M150 102l20 -26l10 32" fill="#FFF6E3"/>${sc}<rect x="22" y="18" width="212" height="304" fill="none" stroke="#D9C5A0" stroke-width="4"/></g>`);
+  } };
+  /* Drain / manhole cover, top-down, alpha. */
+  T.manhole = { w: 512, h: 512, alpha: true, svg: () => {
+    let bars = ''; for (let i = -4; i <= 4; i++) bars += `<rect x="${246 + i * 34}" y="130" width="16" height="252" rx="8" fill="#5E5868"/>`;
+    return svg(512, 512, `<g filter="url(#k-rough)"><circle cx="256" cy="256" r="238" fill="#8C8074"/><circle cx="256" cy="256" r="212" fill="#A69C90"/><circle cx="256" cy="256" r="188" fill="#B8AFA2"/><clipPath id="mh"><circle cx="256" cy="256" r="172"/></clipPath><g clip-path="url(#mh)">${bars}</g></g>` + K.texture(0, 0, 512, 512, 'grain', 0.25));
+  } };
+  /* Vending machine front (painted, not interactive): body, drink rows, lit panel. */
+  T.vending = { w: 512, h: 1024, svg: () => {
+    const R = K.rng(9); let cans = '';
+    for (let r = 0; r < 3; r++) for (let c = 0; c < 6; c++) { const x = 70 + c * 64, y = 140 + r * 150; cans += `<rect x="${x}" y="${y}" width="40" height="78" rx="12" fill="${['#E86A5A', '#F2C14E', '#6FB0E0', '#7CC27A', '#F3EEE4', '#9C7CC0'][Math.floor(R() * 6)]}"/><rect x="${x + 6}" y="${y + 10}" width="8" height="56" rx="4" fill="#FFFFFF" opacity="0.5"/><rect x="${x - 6}" y="${y + 96}" width="52" height="18" rx="5" fill="#2F3E58"/>`; }
+    return svg(512, 1024, `<g filter="url(#k-rough)"><rect x="0" y="0" width="512" height="1024" fill="#3F78B8"/><rect x="28" y="40" width="456" height="540" rx="18" fill="#F7FAFF"/>${cans}<rect x="28" y="620" width="300" height="70" rx="10" fill="#2B3448"/><path d="M50 640h220M50 664h160" stroke="#9FD6FF" stroke-width="6" stroke-dasharray="20 8"/><rect x="370" y="620" width="96" height="190" rx="12" fill="#DDE4EE"/><rect x="60" y="820" width="392" height="140" rx="14" fill="#25304A"/><rect x="0" y="980" width="512" height="44" fill="#2E5C91"/></g>` + K.texture(0, 0, 512, 1024, 'grain', 0.15));
+  } };
+  /* Air-con outdoor unit face. */
+  T.aircon = { w: 256, h: 192, svg: () => svg(256, 192, `<g filter="url(#k-rough)"><rect x="0" y="0" width="256" height="192" fill="#E9E5DA"/><circle cx="96" cy="96" r="70" fill="#8E96A6"/><circle cx="96" cy="96" r="58" fill="#5F6778"/><path d="M38 96h116M96 38v116M55 55l82 82M137 55l-82 82" stroke="#A9B0BE" stroke-width="5"/><rect x="184" y="30" width="52" height="132" fill="#D6D1C4"/></g>` + K.texture(0, 0, 256, 192, 'grain', 0.2)) };
+  /* The passer-by, as a cat sees them: legs, hem, shoes, shopping (inked; M0 stand-in card). */
+  T.legs = { w: 512, h: 1024, alpha: true, svg: () => svg(512, 1024, K.human({ pose: 'walk', palette: 'street', garment: 'skirt', carry: 'bag', x: 250, y: 1010, scale: 1.9, flip: true, shadow: false, lw: 4 })) };
 
   window.TEX = T;
 })();
