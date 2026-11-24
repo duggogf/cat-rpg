@@ -33,7 +33,8 @@ gameplay and the art direction.
 | Owner feedback on the gallery (6 comments) | **Done** — rulings, patent check, five doc revisions, consistency pass, redrawn previews |
 | Showcase-slice plan v2 (owner feedback + desktop only) | **Done** |
 | Prototype scaffold (`prototypes/artifact-slice/`) | **Done** — build, dev server, headless WebGL screenshots verified |
-| Building the showcase slice | **Not started.** Next step is milestone M0 (look-dev spike) |
+| Showcase M0 look-dev | **Done on the studio side** — GO WITH FIXES after 3 iterations; published at https://claude.ai/artifact/MBsJLyudNiAdVyUu9BhpD6 ; **awaiting the owner's go/no-go** |
+| Showcase M1–M7 | Not started. M1 (combat grey box) starts after the owner's go, carrying the M0 fix list in `production/qa/evidence/artifact-slice/M0/review-final.md` |
 
 Nothing has been played or built. Every balance number is a paper value checked
 by small Python simulations, not by a prototype.

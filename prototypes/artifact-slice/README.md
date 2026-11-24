@@ -33,8 +33,10 @@ three from jsDelivr) plus `dist/game.js`, `dist/mesh/*.json`, `dist/tex/*`.
 
 ## Status
 
-- **M0 look-dev:** in progress — two review iterations done (art + creative director: GO WITH FIXES, fixes
-  applied); awaiting the final director check and the owner's go/no-go.
+- **M0 look-dev:** concluded on the studio side — three review iterations (art + creative director): final
+  verdict **GO WITH FIXES (carried into M1)**; overall 7/10 vs the style reference, 7.5/10 vs preview 01
+  (`production/qa/evidence/artifact-slice/M0/review-final.md`). Published as the Cat RPG Showcase artifact
+  (https://claude.ai/artifact/MBsJLyudNiAdVyUu9BhpD6). **Awaiting the owner's go/no-go before M1.**
 
 ## Findings
 
