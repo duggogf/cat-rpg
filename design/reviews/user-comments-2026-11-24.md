@@ -95,3 +95,27 @@ References: `design/reviews/refs/mikan-snout-bridge-feedback.webp` (left: refere
 (red) and visible nose bridge (orange); right: our flat profile, marked), `mikan-tail-ref.png` (tail target: thick,
 moderately long, rising in a soft S-curve, orange with a white tip). Between C8 ("too long like a dog") and C9: a
 SMALL snout and a visible nose bridge — not flat, not a dog muzzle.
+
+## C10 — combat after playing M1 (chat)
+
+> * About the combat, I feel like the combat is too fast. Everything from movement and action is way too fast right now.
+> * Despite having everything fast, the action is not responsive at all. When clicking to attack, it has a brief delay before the attack is performed and land. When I click 3 times in sequence, instead of just landing out that 1st or 2nd attack due to the timing, it queues up 3 attack
+> * Let's extend the combat combo a bit. Right now it's too straightforward. Let's add light attack and heavy attack, and some basic combos for when pressing these buttons in sequence, like 3 light attacks then 1 heavy attack, etc.
+> * The movement is not so fluid. While attacking, you are locked in place, even after finishing an attack there's brief delay before it lets me move.
+> * Remove the option to control other cats. Other cats are purely controlled by AI, but you can still force them to use skills.
+> * On staggered, zoom into the character that staggered, time slow briefly, and make a shattered blinking effects like in FF7 remake.
+> * When an enemy is staggered, pressing "F" will have you do a special attack (on used, the camera zoom-in to you briefly, time stop, only render you above something that is like an impact frame background, creating some shonen ultimate move kind of feeling). If the other crews are nearby and they all use special attack once, the team KA-BLAM (whatever you call it) will be triggered. So, this is similar design to Grandblue Fantasy Relink's Full Burst system.
+> * Right now, abilities are barely visible when I use it or someone is using it.
+
+Follow-up:
+
+> * Camera lock is now not locked by default. Pressing Tab will lock the nearest enemy, pressing it again, if the nearest enemy is the new one it will lock on the new one. Otherwise, it will unlock, allowing players to move their camera freely like in third person camera.
+> * F is now the button to activate skill bar instead.
+> * Player doesn't need to wait until the attack animation is fully completed to move. There's the gradients towards the end that already allow player to move a bit before the animation ends, to make it feels more responsive.
+> * For finisher, do light, light, light, heavy
+> * When I say the combat has to be slower, that means all the AI will not just run towards the nearest enemies and start attacking. Be like cats. They roam and look at each other, find the opportunity to dash in and start doing combos. You can imagine a fight in Assassin's Creed, not every enemies coming to you all at once, although it's not the strict rule we have to follow like that game, I just want AI to think a tiny bit before charging in and attacks, getting some flank, circle around, etc.
+>
+> Decision: Crew specials in the chain: Automatic. Zoomies: fold it into the special.
+
+Ruled into `design/reviews/owner-feedback/combat-m1.1-spec.md` (Special on **R** as a stagger prompt, since F is now
+the skill bar — orchestrator's default).
