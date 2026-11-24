@@ -423,7 +423,7 @@ The camera is at cat height at home and low on the street, so humans are mostly 
 | E-2 | Painted textures carry brush direction and soft gradients; no photo sources, no PBR roughness or metal look | Art review against the reference board |
 | E-3 | **Characters are lit separately**: a decoupled character key light with hard two-tone terminator; environment shadow on a character is a **zone tint** sampled at the cat's root (the whole cat steps into shade together, no shadow-map stripes on cels) | A cat walking through a fence-slat shadow changes tone as a whole cel, ≤ 2 tone changes per slat |
 | E-4 | **Contact shadow:** a soft-edged blob under every character and inked prop (2–4 px feather at 1080p, Shadow Wisteria at 45%), matching the reference | Visual check in all four keys |
-| E-5 | **Separation test:** the cat reads off the painted ground | Greyscale capture, Gaussian blur σ = 4 px at 1080p: the cat's mean L* differs from a ring of surrounding ground by ≥ 20, in all four phase keys |
+| E-5 | **Separation test:** the cat reads off the painted ground (rewritten 2026-11-24 for inked figures, owner-approved) | The **ink line carries separation**, not the coat: in a 1080p capture, the ink line differs from a ring of surrounding ground by ≥ 35 L*; ≥ 90% of silhouette samples have a visible line ≥ 1.5 px; every cat has its contact blob. Checked in all four phase keys. White and pale coats on the lit lane are allowed (the reference-matched ground is light) |
 | E-6 | Painted skydome + 2–3 parallax backdrop cards (hills, sea horizon, far town) per phase; clouds drift | Sky is visible in ≥ 30% of exploration frames when the camera is level; no tiling seams visible |
 | E-7 | Texel density: the **ground band** (0–1.2 m) at 512 px/m, walls above at 256 px/m, roofs at 128 px/m | Measured in the alley build |
 | E-8 | All visible writing is **Scribble** (§6.5) | Language-rule review of every capture |
@@ -828,3 +828,10 @@ Fresh rewrite under DR-01 and DR-48. The first draft is archived; kept from it: 
 | DR-49 | FIXED | Lettering look, readability test, English and Japanese sets, localisation brief (§10.7) |
 | DR-54 | FIXED | Bell glint, Call glyph, Dusk lamp wave carriers (§5.1, §7.3, §10.8) |
 | Split §10–13 into companions | REJECTED | At ≈ 40 KB the slice bible is within the read limit; a split is Backlog if it grows |
+
+- **Owner decisions (2026-11-24, after M0):** the art target is approved — environment and shader as built in M0
+  (`prototypes/artifact-slice/`, published look-dev). Mikan's 3D shape is to follow the owner's turnaround
+  (`design/reviews/refs/mikan-turnaround-ref.webp`): a clearly lifted nose/muzzle, clearer ear shapes, defined back
+  leg and haunch, a seated chest; the face stays the M0 face (`design/reviews/refs/mikan-face-keep.png`). No
+  side-profile face swap. E-5 rewritten for inked figures (ink line vs ground ≥ 35 L*), as above.
+

@@ -33,7 +33,7 @@ gameplay and the art direction.
 | Owner feedback on the gallery (6 comments) | **Done** — rulings, patent check, five doc revisions, consistency pass, redrawn previews |
 | Showcase-slice plan v2 (owner feedback + desktop only) | **Done** |
 | Prototype scaffold (`prototypes/artifact-slice/`) | **Done** — build, dev server, headless WebGL screenshots verified |
-| Showcase M0 look-dev | **Done on the studio side** — GO WITH FIXES after 3 iterations; published at https://claude.ai/artifact/MBsJLyudNiAdVyUu9BhpD6 ; **awaiting the owner's go/no-go** |
+| Showcase M0 look-dev | **Done on the studio side** — GO WITH FIXES after 3 iterations; published at https://claude.ai/artifact/MBsJLyudNiAdVyUu9BhpD6 ; **owner: GO** (2026-11-24) |
 | Showcase M1–M7 | Not started. M1 (combat grey box) starts after the owner's go, carrying the M0 fix list in `production/qa/evidence/artifact-slice/M0/review-final.md` |
 
 Nothing has been played or built. Every balance number is a paper value checked
@@ -189,7 +189,9 @@ The plan is `production/artifact-slice/IMPLEMENTATION-PLAN.md`. In brief:
   and environments can hit the reference look under a free camera — before any
   gameplay work. Show the user the M0 result and get their go before M1.
 
-**Open with the owner:** the plan v2 budget (45–53 sessions) needs re-confirming.
+**Owner decisions after M0 (2026-11-24):** art target approved (environment and shader as built); reshape Mikan to the
+turnaround `design/reviews/refs/mikan-turnaround-ref.webp` while keeping the M0 face (`mikan-face-keep.png`); no
+side-profile face swap; E-5 contrast rewritten for inked figures; budget 45–53 sessions accepted. **M1 is go.**
 
 ## 8. Open items to carry forward
 

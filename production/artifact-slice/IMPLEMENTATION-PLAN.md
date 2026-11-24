@@ -459,7 +459,7 @@ An **agent-session** is one focused session by one specialist agent (≈ 2–4 h
 |---|---|---|
 | Q1 | ~~Reference closeness~~ | **Settled by the user (2026-11-24): reference-close.** 3D cel-shaded characters over painted-2D-looking environments, free third-person camera, §3.5 originality rules apply |
 | Q2 | ~~Phone support~~ | **Settled by the user (2026-11-24): not needed.** Desktop only (keyboard + mouse, gamepad); a "best on desktop" card on small or touch screens. Touch controls, the phone tier and phone tests are removed; M7 is 2–3 sessions |
-| Q3 | **Budget (re-confirm)** | The accepted budget was 42–50 sessions minus the phone work (≈ 40–47). The owner's direction brings it to **45–53**. **Default: accept 45–53.** Alternative: take cut-order items 1–4 to land near 42–48, keeping every "never cut" beat |
+| Q3 | ~~Budget~~ | **Settled by the owner (2026-11-24): 45–53 agent-sessions accepted** (plan v2) |
 | Q4 | ~~Audience~~ | **Settled (2026-11-24): private link only** |
 | Q5 | ~~Name on the page~~ | **Settled by the user (2026-11-24): "Cat RPG"** |
 | Q6 | ~~Code location~~ | **Settled (2026-11-24):** `prototypes/artifact-slice/` |
