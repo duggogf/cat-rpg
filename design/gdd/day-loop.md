@@ -313,7 +313,7 @@ Combat and territory alternate inside every day, because each Patch take is roam
 
 **F3. Real day length.**
 `T_day = T_wake + T_door + T_lot + (C_open − N_nap·n_nap − C_skip)/60 + T_enc + T_home + T_eve`, in minutes.
-`C_skip` is clock skipped by a loss jump or by Settle In.
+`C_skip` is clock skipped by a loss jump or by Settle In. *On a loss day* `T_enc` includes the lost fight, `T_home` is the walk home (≤ 1.0) and `T_eve` is the Routed Evening (≤ 2.0).
 *Example (L2D3):* 0.25 + 0.5 + 1.5 (first-use Lot) + (960 − 120)/60 + 5.5 + 0.5 + 1.5 (Late coda + K2.2) = **23.75** (the table adds the nap's 15 real seconds and rounds to 24).
 
 **F4. Activity shares.** `share_X = Σ tagged seconds_X / T_day`. Each second carries exactly one tag:
@@ -324,10 +324,15 @@ Combat and territory alternate inside every day, because each Patch take is roam
 
 Targets: T 0.50 ± 0.05, C 0.35 ± 0.05, H + S 0.15 ± 0.05.
 
-**F5. Loss.** `haul_lost = floor(f_loss · field_haul)`, with `f_loss = 0.2` (0 in Life 1). If `clock < 480`, `clock ← 480`.
+**F5. Loss (OR-01, OR-02).** At `EncounterEnded(outcome = loss)`:
+`clock ← max(clock, C_night)`, with `C_night = 720`; `street_closed ← true`; `t_autopilot = 60` s real.
+`haul_lost = floor(f_loss · field_haul)`, with `f_loss = 0.2` (0 in Life 1). Stash, Tribute, Scent and influence unchanged.
+*Example (L2D4):* a wipe at clock 270 → clock 720, `C_skip` = 450 clock seconds (7.5 roaming minutes not played); field haul 23 Morsels → 4 lost. *Example (Night):* a wipe at clock 780 → the clock stays at 780.
 
 **F6. Slice length.** `T_slice = Σ T_day(d)`. Target 120–150 min.
-*Reference:* 7 days × 21.3 avg = 149. *Fast path:* 6 days ≈ 132.
+*Reference:* 7 days × 20.5 avg = **143.5** (was 149). *Fast path:* 6 days ≈ 128 (was 132). Each extra Boss wipe: + one rematch day ≈ 16.
+
+**F7. Boss patrol stop (OR-09).** While `window_open(d)`: `stop = {Morning: S_M, Day: S_D, Dusk: S_N, Night: S_N}[phase(clock)]`; otherwise Daifuku is at the Den and offers no Standoff. `window_open` is set when `I(Mikan, d) = 100` (any Scent change by day, or step 2) and cleared only at step 2 when `I < 75`. *Example:* influence reaches 100 at clock 180 (Morning) → he climbs down to `S_M`; at clock 240 → `S_D`.
 
 ## 5. Edge Cases
 
