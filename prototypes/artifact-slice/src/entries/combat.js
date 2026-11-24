@@ -122,7 +122,7 @@ function applyFeel(feel, at, o = {}) {
   if (feel.lines === 'local_streak' && o.from) scr.add({ kind: 'streak', from: o.from.clone(), to: at.clone(), dur: feel.lines_ms / 1000, seed: seedCounter++ % 3, delay: feel.delay_ms / 1000 });
   else if (feel.lines === 'radial_20' || feel.lines === 'radial_40') scr.add({ kind: 'radial', share: feel.lines === 'radial_20' ? 0.2 : 0.4, at: at.clone(), dur: feel.lines_ms / 1000, seed: seedCounter++ % 3, delay: feel.delay_ms / 1000 });
   else if (feel.lines === 'full_field' && !o.noFull) scr.add({ kind: 'radial', share: 0.62, at: at.clone(), dur: feel.lines_ms / 1000, seed: seedCounter++ % 3, color: Kit.C.ink });
-  if (feel.word) scr.letter({ cls: feel.word.cls, ms: feel.word.ms, tier: feel.tier, hitType: o.hitType, at: at.clone(), seed: seedCounter++, dir: o.dir, text: o.text });
+  if (feel.word && !(cin && cin.holding)) scr.letter({ cls: feel.word.cls, ms: feel.word.ms, tier: feel.tier, hitType: o.hitType, at: at.clone(), seed: seedCounter++, dir: o.dir, text: o.text });
   if (feel.edge_pulse) scr.add({ kind: 'edge', dur: Math.max(2 / 60, feel.edge_pulse.ms / 1000) });
   if (feel.time_dip && (!feel.time_dip.final_rout_only || o.finalRout)) dip = { from: start + hs + impactDur, to: start + hs + impactDur + feel.time_dip.ms / 1000, scale: feel.time_dip.scale };
 }

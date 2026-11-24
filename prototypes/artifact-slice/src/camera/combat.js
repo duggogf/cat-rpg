@@ -132,6 +132,8 @@ export class CombatCamera {
     if (this.focus && t < this.focus.until) {
       const F = this.focus, u = (t - F.from) / (F.until - F.from), kk = u < 0.2 ? ss(u / 0.2) : 1 - ss((u - 0.2) / 0.8);
       pivot.lerp(F.pt, 0.6 * kk); dist *= 1 - F.k * kk;
+      // swing ~30° off the cat->target line so Mikan does not hide the staggered cat
+      dir.applyAxisAngle(new THREE.Vector3(0, 1, 0), 0.52 * kk * (F.side || 1));
     } else this.focus = null;
     cam.position.copy(pivot).addScaledVector(dir, dist);
     cam.up.set(0, 1, 0); cam.lookAt(pivot);

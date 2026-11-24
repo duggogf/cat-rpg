@@ -342,43 +342,123 @@
    "errors": []
   },
   {
+   "name": "special-cutin-1a.png",
+   "note": "Special cut-in 1: halftone wipe / band sliding in",
+   "tick": 1465,
+   "mode": "special",
+   "controlled": "mikan",
+   "calls": 114,
+   "triangles": 413026,
+   "errors": []
+  },
+  {
+   "name": "special-cutin-1b.png",
+   "note": "Special cut-in 1: held (time stopped; only this cat over the impact-frame panel, its colour value-matched to the frame)",
+   "tick": 1481,
+   "mode": "special",
+   "controlled": "mikan",
+   "calls": 94,
+   "triangles": 477852,
+   "errors": []
+  },
+  {
+   "name": "special-cutin-2a.png",
+   "note": "Special cut-in 2: halftone wipe / band sliding in",
+   "tick": 1523,
+   "mode": "special",
+   "controlled": "mikan",
+   "calls": 133,
+   "triangles": 277530,
+   "errors": []
+  },
+  {
+   "name": "special-cutin-2b.png",
+   "note": "Special cut-in 2: held (time stopped; only this cat over the impact-frame panel, its colour value-matched to the frame)",
+   "tick": 1535,
+   "mode": "special",
+   "controlled": "mikan",
+   "calls": 99,
+   "triangles": 277462,
+   "errors": []
+  },
+  {
+   "name": "special-cutin-3a.png",
+   "note": "Special cut-in 3: halftone wipe / band sliding in",
+   "tick": 1584,
+   "mode": "special",
+   "controlled": "mikan",
+   "calls": 91,
+   "triangles": 277446,
+   "errors": []
+  },
+  {
+   "name": "special-cutin-3b.png",
+   "note": "Special cut-in 3: held (time stopped; only this cat over the impact-frame panel, its colour value-matched to the frame)",
+   "tick": 1600,
+   "mode": "special",
+   "controlled": "mikan",
+   "calls": 91,
+   "triangles": 407046,
+   "errors": []
+  },
+  {
+   "name": "special-cutin-4a.png",
+   "note": "Special cut-in 4: halftone wipe / band sliding in",
+   "tick": 1644,
+   "mode": "special",
+   "controlled": "mikan",
+   "calls": 95,
+   "triangles": 342254,
+   "errors": []
+  },
+  {
+   "name": "special-cutin-4b.png",
+   "note": "Special cut-in 4: held (time stopped; only this cat over the impact-frame panel, its colour value-matched to the frame)",
+   "tick": 1660,
+   "mode": "special",
+   "controlled": "mikan",
+   "calls": 99,
+   "triangles": 342262,
+   "errors": []
+  },
+  {
    "name": "stagger-01.png",
    "note": "stagger cinematic +1 frames: zoom-in + shattered-glass blink, drawing 1 (Cream shard tints <= 0.16 alpha)",
-   "tick": 768,
+   "tick": 533,
    "mode": "fight",
    "controlled": "mikan",
-   "calls": 31,
-   "triangles": 154642,
+   "calls": 46,
+   "triangles": 103464,
    "errors": []
   },
   {
    "name": "stagger-02.png",
    "note": "stagger cinematic +3 frames: blink off (cracks only)",
-   "tick": 770,
+   "tick": 535,
    "mode": "fight",
    "controlled": "mikan",
-   "calls": 98,
-   "triangles": 312924,
+   "calls": 114,
+   "triangles": 275344,
    "errors": []
   },
   {
    "name": "stagger-03.png",
    "note": "stagger cinematic +6 frames: shards drift apart, time slowed",
-   "tick": 773,
+   "tick": 538,
    "mode": "fight",
    "controlled": "mikan",
-   "calls": 103,
-   "triangles": 366952,
+   "calls": 111,
+   "triangles": 366996,
    "errors": []
   },
   {
    "name": "stagger-04.png",
    "note": "stagger cinematic +24 frames: back to play: the F Special prompt over the staggered cat",
-   "tick": 784,
+   "tick": 549,
    "mode": "fight",
    "controlled": "mikan",
-   "calls": 96,
-   "triangles": 433458,
+   "calls": 103,
+   "triangles": 433484,
    "errors": []
   },
   {
@@ -432,13 +512,33 @@
    "errors": []
   },
   {
+   "name": "team-finisher-1.png",
+   "note": "Team finisher (all four landed): the Pile-On cloud, each cat one beat with its face and word",
+   "tick": 1716,
+   "mode": "special",
+   "controlled": "mikan",
+   "calls": 53,
+   "triangles": 21594,
+   "errors": []
+  },
+  {
+   "name": "team-finisher-2.png",
+   "note": "Team finisher: a later beat",
+   "tick": 1746,
+   "mode": "special",
+   "controlled": "mikan",
+   "calls": 55,
+   "triangles": 21630,
+   "errors": []
+  },
+  {
    "name": "team-finisher-3.png",
    "note": "chain end: KA-BLAM, the cloud blows apart",
-   "tick": 1477,
+   "tick": 1799,
    "mode": "ended",
    "controlled": "mikan",
-   "calls": 82,
-   "triangles": 312704,
+   "calls": 84,
+   "triangles": 250242,
    "errors": []
   }
  ],
@@ -5134,8 +5234,16 @@
   "budget": 500000
  },
  "chain": {
-  "start": [],
-  "teamFinisher": false
+  "start": [
+   {
+    "type": "SpecialChainStart",
+    "tick": 1462,
+    "t": 24.366667,
+    "tier": null,
+    "impact": null
+   }
+  ],
+  "teamFinisher": true
  },
  "latency": {
   "pressTicks": [
