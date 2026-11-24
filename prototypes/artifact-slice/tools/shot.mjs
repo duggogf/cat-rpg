@@ -1,3 +1,4 @@
+// PROTOTYPE - NOT FOR PRODUCTION (Cat RPG artifact showcase slice; throwaway, see README.md)
 // Screenshot a page in headless Chromium with software WebGL.
 // node tools/shot.mjs <path-under-root, e.g. dist/dev.html?view=01> <out.png> [width height]
 // The page sets window.__ready = true once the frame is drawn (and may expose window.__cat for tests).

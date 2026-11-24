@@ -1,3 +1,4 @@
+// PROTOTYPE - NOT FOR PRODUCTION (Cat RPG artifact showcase slice; throwaway, see README.md)
 // Tiny static server for local dev and tests. Root = prototype folder.
 import http from 'node:http'; import fs from 'node:fs'; import path from 'node:path';
 const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');

@@ -17,7 +17,11 @@ export async function loadCatAssets(baseUrl = '') {
   await Promise.all(names.map(async (n) => {
     if (assets[n]) return;
     const json = await (await fetch(`${baseUrl}mesh/${n}.json`)).json();
-    const bin = await (await fetch(`${baseUrl}mesh/${json.bin}`)).arrayBuffer();
+    // The Artifact host does not serve .bin files: the build packs the binary into the
+    // JSON as base64 (`binB64`). Dev builds may still point at the .bin.
+    const bin = json.binB64
+      ? Uint8Array.from(atob(json.binB64), c => c.charCodeAt(0)).buffer
+      : await (await fetch(`${baseUrl}mesh/${json.bin}`)).arrayBuffer();
     const g = new THREE.BufferGeometry();
     const A = json.attributes, T = { Float32Array, Uint16Array, Uint32Array };
     const arr = (k) => new T[A[k].type](bin, A[k].offset, A[k].count);
