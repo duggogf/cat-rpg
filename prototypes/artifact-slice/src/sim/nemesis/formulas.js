@@ -105,3 +105,9 @@ export function drift(k, { grudge, personality, quiet, lead }) {
 export function arcScore({ enc, marks, grudge, regard, beatMikan, daysUnseen }) {
   return 12 * enc + 10 * marks + 0.3 * Math.max(grudge, regard) + 15 * (beatMikan ? 1 : 0) - 3 * Math.min(daysUnseen, 10);
 }
+
+/** Day label for history lines and cards: day 1 → "L1 D1", day 3 → "L2 D1" (F12 night numbering). */
+export function dayLabel(k, day) {
+  const l1 = k.life.life1_last_day;
+  return day <= l1 ? `L1 D${day}` : `L2 D${day - l1}`;
+}

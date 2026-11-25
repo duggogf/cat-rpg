@@ -22,12 +22,14 @@ import { loadCatAssets, createCat } from '../render/cats/index.js';
 import { desktopCard, isSmallOrTouch } from '../ui/desktopcard.js';
 import { StreetHUD } from '../ui/street-hud.js';
 import { chapterPill } from '../ui/combat/chapters.js';
+import { M3 } from '../ui/m3.js';
 
 const Q = new URLSearchParams(location.search);
 const opt = {
   phase: PHASES[Q.get('phase')] ? Q.get('phase') : 'day', view: Q.get('view'), orbit: Q.has('orbit') ? (+Q.get('orbit') | 0) % 8 : null,
   vantage: Q.has('vantage') ? (+Q.get('vantage') | 0) : null,
   test: Q.get('test') === '1', mask: Q.get('mask'), post: Q.get('post') !== '0' && !['shade', 'albedo'].includes(Q.get('mask')), res: +(Q.get('res') || 1),
+  board: Q.get('board'), focus: Q.get('focus'), branch: Q.get('branch'), m3: Q.get('m3'), day: Q.get('day'),
   sense: Q.get('sense') === '1', fps: Q.get('fps') === '1', start: Q.get('start') === 'l1d1' ? 'l1d1' : 'showcase_l2d2', seed: +(Q.get('seed') || 42),
 };
 opt.m0 = opt.view === '01' || opt.orbit != null;            // the approved M0 evidence framings
@@ -77,6 +79,7 @@ async function loadTextures() {
 /* ---------------------------------------------------------------- scene state */
 const envScene = new THREE.Scene(), lateScene = new THREE.Scene();
 const cam = new THREE.PerspectiveCamera(EXPLORE.fov, 1, 0.1, 1500);
+let m3 = null;
 let world, shadow, post, rig, mikan, sitter, daifuku, challenger, keyLight, fillLight, terr, scent, hud, sb;
 let simTime = 0, lastStats = {};
 const mikanPos = new THREE.Vector3(), drive = { x: 0, z: 0 }, bot = { on: false, f: 0, r: 0, look: [0, 0], space: false, e: false, tab: false };
@@ -136,12 +139,13 @@ function bindInput() {
   el.addEventListener('contextmenu', (e) => e.preventDefault());
   addEventListener('keydown', (e) => {
     if (e.code === 'Tab') e.preventDefault();
+    if (m3 && m3.key(e)) { keys.clear(); e.preventDefault(); return; }
     if (e.repeat) return; keys.add(e.code);
     if (e.code === 'Digit1') setPhase('day'); if (e.code === 'Digit2') setPhase('dusk'); if (e.code === 'KeyN') startDusk(20);
     if (e.code === 'KeyO') { opt.post = !opt.post; }
     if (e.code === 'Space') hop();
   });
-  addEventListener('keyup', (e) => keys.delete(e.code));
+  addEventListener('keyup', (e) => { keys.delete(e.code); if (m3) m3.keyUp(e); });
   addEventListener('blur', () => keys.clear());
   addEventListener('resize', layoutCamera);
 }
@@ -510,6 +514,10 @@ async function boot() {
   scent = new ScentLayer(lateScene, L, terr, sTex, (z) => gAt(0, z));
   if (daifuku) scent.bossMarker(daifuku.object3D, 0.95);
   hud = opt.hud ? new StreetHUD() : null;
+  m3 = new M3({ renderer, tex, post, opt, hud, project, cam, get mikan() { return mikan; }, lane: L, terr, get mikanPos() { return mikanPos; }, get phase() { return ph.name; }, lateScene, catRoots, gAt, createCat, keysClear: () => keys.clear(),
+    saveGlobals: () => ({ map: U.shadowMap.value, texel: U.shadowTexel.value }),
+    restoreGlobals: (g) => { if (g) { U.shadowMap.value = g.map; U.shadowTexel.value = g.texel; } setPhaseKey(ph.to ? mixPhase(ph.from, ph.to, ss(ph.k)) : PHASES[ph.name]); U.lampWave.value = ph.lampT >= 0 ? ph.lampT : -1; layoutCamera(); },
+    renderStreet: () => render(), stepStreet: (dt) => step(dt) });
   rig = opt.m0 ? new OrbitRig(cam, world.colliders) : new ExploreRig(cam, world.colliders, gAt);
   if (opt.orbit != null) rig.yaw = opt.orbit * 45;
   layoutCamera();
@@ -529,6 +537,7 @@ async function boot() {
     input: (o = {}) => { bot.on = true; Object.assign(bot, { f: 0, r: 0, look: [0, 0], e: false, tab: false, home: false }, o); if (o.space) hop(); for (let i = 0; i < (o.frames || 1); i++) step(o.dt || 1 / 30); bot.on = false; render(); return window.__cat.state(); },
     teleport: (x, z, yaw) => { mikanPos.set(x, gAt(x, z), z); collideCircle(mikanPos, 0.2, world.colliders); mikanPos.y = gAt(mikanPos.x, mikanPos.z); mv.mode = 'ground'; if (yaw != null) rig.yaw = yaw; rig.update(0, mikanPos, true); step(0); render(); },
     botWalk: (s, seed) => botWalk(s, seed),
+    m3: () => m3,
     verdict: (patch, v = 'chase') => { terr.verdict(patch, v); render(); return window.__cat.state(); },   // M3 owns the Verdict; test scripts only
     hold: (secs = 1.3, o = {}) => window.__cat.input({ e: true, frames: Math.ceil(secs * 30), ...o }),
     lensCheck: () => {
@@ -552,16 +561,18 @@ async function boot() {
   if (opt.test) {
     for (let i = 0; i < 6; i++) step(1 / 60); // settle cat idle deterministically
     render(); render();
+    if (m3) m3.boot();
     window.__ready = true;
     return;
   }
   bindInput();
+  if (m3) m3.boot();
   if (!isSmallOrTouch()) hint();
   if (opt.fps) fpsOverlay();
   let last = performance.now(), first = true;
   const loop = (now) => {
     const dt = Math.min(0.05, (now - last) / 1000); last = now; frameLog(dt);
-    try { step(dt); render(); } catch (e) { console.error('frame failed:', e); failCard(e); return; }
+    try { if (m3 && m3.modal()) m3.frame(dt); else { step(dt); render(); if (m3) m3.frame(dt); } } catch (e) { console.error('frame failed:', e); failCard(e); return; }
     if (first) { first = false; window.__ready = true; loading(false); }
     requestAnimationFrame(loop);
   };
@@ -569,7 +580,7 @@ async function boot() {
 }
 function hint() {
   const d = document.createElement('div');
-  d.textContent = 'WASD walk (Shift run) · drag or double-click to look · Space hop onto walls · E spray / rub / nap · Tab Whisker Sense · H Head Home · N nap to Dusk · 1 Day / 2 Dusk';
+  d.textContent = 'WASD walk (Shift run) · drag or double-click to look · Space hop onto walls · E spray / rub / nap · Tab Whisker Sense · H Head Home · N nap to Dusk · J Rivals · Esc Pause';
   d.style.cssText = 'position:fixed;left:16px;bottom:14px;max-width:calc(100% - 32px);padding:8px 14px;border-radius:999px;background:rgba(255,246,227,.88);color:#33273B;font:600 13px/1.3 ui-rounded,system-ui,sans-serif;pointer-events:none;z-index:31';
   document.body.appendChild(d);
 }

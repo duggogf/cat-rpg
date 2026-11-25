@@ -58,7 +58,7 @@ export function fallbackModel(o = {}) {
   const anger = o.anger ?? 3;
   const cats = {};
   for (const [id, b] of Object.entries(BASE)) {
-    cats[id] = { id, ...b, discovered: !!disc[id], cast: castOf(id), kit: kitOf(id), state: 'present', marks: {}, history: null, context: null, tapeStar: false, scars: [] };
+    cats[id] = { id, ...b, homeScene: b.scene, discovered: !!disc[id], cast: castOf(id), kit: kitOf(id), state: 'present', marks: {}, history: null, context: null, tapeStar: false, scars: [] };
   }
   const c = cats;
   // own-history lines (each cat's own Memory of its dealings with Mikan; G8)
@@ -72,7 +72,7 @@ export function fallbackModel(o = {}) {
   c.togemaru.scars = ['notch'];
   if (branch === 'A') {
     c.togemaru.marks.storm = 'Sworn Rival'; c.togemaru.marks.sprig = true;
-    c.togemaru.history = { day: 'L1 D2', line: '"Noses, then. Don’t think it makes us friends."' };
+    c.togemaru.history = { day: 'L1 D2', line: '"We touched noses. Ten days."' };
     c.togemaru.context = { kind: 'truce', line: 'Truce: 7 days left' };
     c.challenger.rivalOf = 'togemaru';
   } else if (branch === 'B') {
@@ -89,6 +89,9 @@ export function fallbackModel(o = {}) {
   }
   c.challenger.context = { kind: 'stake', line: 'Staking Laundry Pole Yard · leaves after 2 repels', pips: [0, 2] };
   c.hige.history = { day: 'L1 D1', line: '"Use your whiskers, Collar."' };
+  c.hige.context = { kind: 'assign', line: 'Posse' }; c.pon.context = { kind: 'assign', line: 'Posse' }; c.kinako.context = { kind: 'assign', line: 'Lounging at the Lot' };
+  if (branch === 'B') c.togemaru.context = { kind: 'assign', line: 'Lounging · new to the bell' };
+  c.mikan.context = null;
   c.pon.history = { day: 'L1 D2', line: '"Ha! Did you hear him yowl?"' };
   c.kinako.history = { day: 'L1 D2', line: '"I’m only here for the fish."' };
   c.mikan.history = null;
@@ -144,3 +147,11 @@ export function fromNemesis(nem, o = {}) {
     return m;
   } catch (e) { console.warn('nemesis board view unreadable; using the fixed seeds', e); return fallbackModel(o); }
 }
+
+/* ------------------------------------------------------------------ the thin adapter the screens call */
+let NEM = null;
+/** Hand the board a nemesis town (src/sim/nemesis/, once its API lands); null keeps the fixed seeds. */
+export function setNemesis(town) { NEM = town; }
+export function nemesisTown() { return NEM; }
+/** The board's model: the sim's view when present, else the slice seeds. */
+export function boardModel(o = {}) { return fromNemesis(NEM, o); }

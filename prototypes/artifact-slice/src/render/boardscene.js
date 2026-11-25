@@ -8,11 +8,13 @@
 import * as THREE from 'three';
 import B from '../world/board_lane.json';
 import { U, CEL, envMat, billboards, skyDome, backdropMat, ringGeometry, applyPhase, SunShadow } from './env.js';
-import { PHASES, rgb, sunDir } from './phases.js';
+import { PHASES, rgb, sunDir, mixPhase } from './phases.js';
 import { createCat } from './cats/index.js';
 
 const INK = '#33273B', GOLD = '#F2B01E', CREAM = '#FFF6E3', WIST = '#6E6AA8';
 const hexV = (h) => rgb(h);
+// the diorama stages cats a little under street size so the gang fits the 1080p wedge (key-screens §2.6 zones)
+const CAT_K = B.catScale || 0.78;
 
 /* ---------------------------------------------------------------- a tiny painted-geometry accumulator */
 class Geo {
@@ -163,9 +165,9 @@ function buildOutsiders(tex, X, out) {
   roof.quad([X - 3.05, 2.25, -6.75], [X - 0.45, 2.25, -6.75], [X - 0.45, 2.35, -8.1], [X - 3.05, 2.35, -8.1], (P) => [P.x / 2, P.z / 2], { color: '#9AA4AE' });
   poster.quad([X - 2.5, 0.85, -7.83], [X - 1.7, 0.85, -7.83], [X - 1.7, 1.85, -7.83], [X - 2.5, 1.85, -7.83], (P) => [(P.x - X + 2.5) / 0.8, (P.y - 0.85) / 1.0]);
   // the bus-stop sign: pole and round plate (painted; nothing a cat acts on)
-  sign.add(new THREE.CylinderGeometry(0.035, 0.04, 2.3, 8).translate(X + 1.55, 1.15, -6.6), '#9AA4AE');
-  sign.add(new THREE.CylinderGeometry(0.3, 0.3, 0.04, 20).rotateX(Math.PI / 2).translate(X + 1.55, 2.25, -6.6), '#F3E9D6');
-  sign.add(new THREE.CylinderGeometry(0.2, 0.2, 0.045, 20).rotateX(Math.PI / 2).translate(X + 1.55, 2.25, -6.6), '#4E9DA6');
+  sign.add(new THREE.CylinderGeometry(0.035, 0.04, 1.95, 8).translate(X + 1.55, 0.975, -6.6), '#9AA4AE');
+  sign.add(new THREE.CylinderGeometry(0.3, 0.3, 0.04, 20).rotateX(Math.PI / 2).translate(X + 1.55, 1.85, -6.6), '#F3E9D6');
+  sign.add(new THREE.CylinderGeometry(0.2, 0.2, 0.045, 20).rotateX(Math.PI / 2).translate(X + 1.55, 1.85, -6.58), '#4E9DA6');
   // a guardrail along the coast road and the low sea wall beyond
   for (let x = -6; x <= 6; x += 1.5) rail.box([X + x - 0.04, 0, -9.05, X + x + 0.04, 0.7, -8.95], { color: '#E8E4DA' });
   rail.box([X - 6.2, 0.5, -9.05, X + 6.2, 0.7, -8.98], { color: '#F2EEE4' });
@@ -195,12 +197,20 @@ function buildBell(tex, X, out) {
   const lot = new Geo(), truck = new Geo(), dark = new Geo(), crates = new Geo(), fence = new Geo(), glass = new Geo();
   for (let z = 2; z > -11; z -= 0.8) lot.quad([X - 3.4, 0, z], [X + 3.4, 0, z], [X + 3.4, 0, z - 0.8], [X - 3.4, 0, z - 0.8], (P) => [P.x / 3.4, -P.z / 3.4], { nu: 8, color: '#E6DCCB' });
   // the kei truck, side-on across the back of the Lot: cab on the right (Mikan's perch is its roof), open bed on the left
-  truck.box([X + 0.35, 0.35, -8.75, X + 1.45, 1.42, -7.65], { faceColor: { pz: '#F4F1EA', py: '#FFFFFF', nx: '#E6E2DA', px: '#E6E2DA' }, faces: 'pznxpxpy' });
-  glass.quad([X + 0.55, 0.95, -7.64], [X + 1.25, 0.95, -7.64], [X + 1.25, 1.32, -7.64], [X + 0.55, 1.32, -7.64], () => [0.5, 0.5], { color: '#7FA2C8' });
-  truck.box([X - 1.95, 0.35, -8.75, X + 0.33, 0.6, -7.65], { faceColor: { pz: '#EDE9E0', py: '#C8C2B8' }, faces: 'pzpy' });
-  truck.box([X - 1.95, 0.6, -7.72, X + 0.33, 0.9, -7.65], { color: '#F4F1EA', faces: 'pzpy' });
-  truck.box([X - 1.95, 0.6, -8.75, X - 1.9, 0.9, -7.65], { color: '#E6E2DA', faces: 'nxpy' });
-  for (const wx of [-1.35, 0.9]) dark.add(new THREE.CylinderGeometry(0.24, 0.24, 0.16, 16).rotateX(Math.PI / 2).translate(X + wx, 0.24, -7.6), '#4A4560');
+  truck.box([X + 0.35, 0.45, -8.75, X + 1.45, 1.42, -7.65], { faceColor: { pz: '#E4EAF0', py: '#F4F6F8', nx: '#B9C2CC', px: '#C8D0D8' }, faces: 'pznxpxpy' });
+  glass.quad([X + 0.5, 0.98, -7.64], [X + 1.3, 0.98, -7.64], [X + 1.3, 1.34, -7.64], [X + 0.5, 1.34, -7.64], () => [0.5, 0.5], { color: '#6F8FB8' });
+  glass.quad([X + 0.52, 1.24, -7.635], [X + 0.86, 1.32, -7.635], [X + 0.86, 1.33, -7.635], [X + 0.52, 1.25, -7.635], () => [0.5, 0.5], { color: '#D8E8F4' });
+  dark.box([X + 0.35, 0.3, -8.75, X + 1.5, 0.45, -7.6], { faceColor: { pz: '#5E6270', py: '#7A7E8C', px: '#4E5260' }, faces: 'pzpypx' });            // cab skirt + bumper
+  truck.box([X - 1.95, 0.35, -8.75, X + 0.33, 0.6, -7.65], { faceColor: { pz: '#D9E0E6', py: '#AEB6BE' }, faces: 'pzpy' });                 // bed floor
+  truck.box([X - 1.95, 0.6, -7.72, X + 0.33, 0.92, -7.65], { faceColor: { pz: '#E4EAF0', py: '#F4F6F8' }, faces: 'pzpy' });                 // bed side gate
+  dark.box([X - 1.95, 0.6, -7.645, X + 0.33, 0.625, -7.64], { color: '#8C94A0', faces: 'pz' });
+  for (const gx of [-1.4, -0.8, -0.2]) dark.box([X + gx, 0.62, -7.645, X + gx + 0.025, 0.9, -7.64], { color: '#A0A8B4', faces: 'pz' });
+  truck.box([X - 1.95, 0.6, -8.75, X - 1.9, 0.92, -7.65], { color: '#C8D0D8', faces: 'nxpy' });
+  dark.box([X - 1.95, 0.25, -8.75, X + 0.33, 0.35, -7.62], { faceColor: { pz: '#5E6270', py: '#7A7E8C' }, faces: 'pzpy' });
+  for (const wx of [-1.35, 0.9]) {
+    dark.add(new THREE.CylinderGeometry(0.25, 0.25, 0.16, 18).rotateX(Math.PI / 2).translate(X + wx, 0.25, -7.6), '#3E3A50');
+    dark.add(new THREE.CylinderGeometry(0.11, 0.11, 0.02, 14).rotateX(Math.PI / 2).translate(X + wx, 0.25, -7.51), '#C8CCD6');
+  }
   // crates (Pon sits on one), the back fence with its gate
   for (const [x, y, z, s, c] of [[-1.05, 0, -5.6, 0.5, '#C99A6A'], [-1.65, 0, -5.9, 0.5, '#B88A5A'], [-1.35, 0.5, -6.1, 0.45, '#D8B07E'], [2.1, 0, -6.2, 0.55, '#C99A6A']]) crates.box([X + x - s / 2, y, z - s / 2, X + x + s / 2, y + s, z + s / 2], { color: c });
   fence.box([X - 4.0, 0, -10.2, X + 4.0, 2.0, -10.05], { faces: 'pz', tu: 2.6, tv: 2.0 });
@@ -271,8 +281,8 @@ export class BoardScene {
         const cast = r.cast || { cast: 'tough' };
         let cat;
         // a silhouette gives nothing away: one generic body, flat Ink at 70% over the wall shade (no coat, Scars or pose)
-        try { cat = sil ? createCat({ cast: 'tough', build: 'standard', ears: 'standard', tail: 'whip', carry: 'level', scale: 1.25 * (r.role === 'boss' ? 1.6 : 1), silhouette: true, silColor: '#4A3657', seed: 5 })
-          : createCat({ ...(cast.opts || {}), cast: cast.cast, scale: 1.25 * (cast.extra || 1) }); }
+        try { cat = sil ? createCat({ cast: 'tough', build: 'standard', ears: 'standard', tail: 'whip', carry: 'level', scale: 1.25 * CAT_K * (r.role === 'boss' ? 1.6 : 1), silhouette: true, silColor: '#4A3657', seed: 5 })
+          : createCat({ ...(cast.opts || {}), cast: cast.cast, scale: 1.25 * CAT_K * (cast.extra || 1), lod: 'full' }); }
         catch (e) { console.warn('board cat skipped', r.id, e); continue; }
         const sk = cat.object3D.getObjectByProperty('isSkinnedMesh', true), mats = sk ? sk.material : [];
         for (const mm of mats) patchDim(mm, WIST);
@@ -281,6 +291,8 @@ export class BoardScene {
       }
       const a = r.at || (def.anchors[r.id] && def.anchors[r.id].at) || [0, 0, -5];
       c.base = new THREE.Vector3(def.x + a[0], a[1], a[2]); c.role = r.role;
+      // staging scale per spot (near spots read a little small, like a painted set; key-screens §2.6 zones)
+      const an = def.anchors[r.id]; if (!c.s0) c.s0 = c.cat.object3D.scale.x; c.cat.object3D.scale.setScalar(c.s0 * (!r.at && an && an.scale ? an.scale : 1));
       c.cat.object3D.position.copy(c.base);
       const face = r.face ?? (def.anchors[r.id] ? def.anchors[r.id].face : 0) ?? 0;
       c.cat.object3D.rotation.y = face;
@@ -319,9 +331,9 @@ export class BoardScene {
   }
   /** Phase lighting: Dusk gold by default (the board's own key, applied while it is open). */
   applyLight(phaseName = B.phase) {
-    const p = PHASES[phaseName] || PHASES.dusk; applyPhase(p);
+    const p = typeof phaseName === 'object' ? phaseName : phaseName === 'dusk' ? boardDusk() : (PHASES[phaseName] || boardDusk()); applyPhase(p);
     CEL.keyDir.value.copy(sunDir(p)).normalize(); CEL.celTint.value.set(...hexArr(p.cel));
-    U.lampWave.value = phaseName === 'dusk' ? 99 : -1;
+    U.lampWave.value = phaseName === 'day' ? -1 : 99;
     const light = { keyDir: new THREE.Vector3(...p.catDir).normalize(), keyColor: new THREE.Color(p.catKey), shadeColor: new THREE.Color(p.catShade), rimColor: new THREE.Color(p.catRim) };
     for (const c of this.cats.values()) if (!c.sil) c.cat.setLighting(light);
     this.keyLight.position.copy(sunDir(p)).multiplyScalar(10); this.keyLight.color.set(p.catKey); this.fill.color.set(p.shadow);
@@ -379,5 +391,8 @@ export class BoardScene {
   }
   /** Scene-switch helper for evidence: total triangles in the visible set. */
 }
+/** The board's own Dusk key: late-afternoon gold poured down the alley from high over the porch (the street's Dusk
+ *  sun sits behind the porch at 16°, which would leave the whole set in shade). */
+function boardDusk() { const p = mixPhase('day', 'dusk', 0.62); p.sunEl = 50; p.sunAz = -14; p.catDir = [-0.2, 0.85, 0.5]; p.hazeMax = 0.35; return p; }
 function hexArr(h) { const n = parseInt(h.slice(1), 16); return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255]; }
 export { INK, GOLD, CREAM };

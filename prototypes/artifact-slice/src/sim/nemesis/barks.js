@@ -23,8 +23,8 @@ export const familyOf = name => (FAMILY.memory.has(name) ? 'memory' : FAMILY.rel
 
 /**
  * The speaker's facts. `ctx`: {patch, posse, opponents, encounterOther} for the current scene.
- * Reads only cat (the speaker), the town's day/life/clout/nemesis slot (which names only Togemaru, and is read
- * only when the speaker IS the slot holder) and the scene context.
+ * Reads only cat (the speaker; its own slot fields), the town's day/life/clout/phase, Mikan's plaster day
+ * (read only through the speaker's own WON entry) and the scene context.
  */
 export function speakerFacts(town, cat, ctx = {}) {
   const k = town.D.k, s = town.s;
@@ -48,11 +48,11 @@ export function speakerFacts(town, cat, ctx = {}) {
   for (const sc of cat.scars) set.add(`scar_from_mikan:${sc.type}`);
   nums.count_routs = cat.routs_by_player;
   const won = last('WON');
-  if (won && won.plaster_day === s.day) set.add('mikan_plastered');
+  if (won && s.mikan_plaster_day === s.day && won.day === s.day - 1) set.add('mikan_plastered');
   // relationship
-  const N = s.nemesis;
-  if (N.cat === cat.id && N.declared && !N.closed) { set.add('nemesis'); if (N.face === 'sworn_rival') set.add('sworn_rival'); }
-  if (cat.grudge >= k.bitter && N.cat !== cat.id) set.add('bitter');
+  const holdsSlot = cat.nemesis && cat.arc_role === 'lead';
+  if (holdsSlot) { set.add('nemesis'); if (cat.face === 'sworn_rival') set.add('sworn_rival'); }
+  if (cat.grudge >= k.bitter && !holdsSlot) set.add('bitter');
   if (cat.state === 'Friend') set.add('friend');
   if (cat.state === 'Truce') set.add('truce');
   nums.grudge = cat.grudge; nums.regard = cat.regard;
@@ -138,7 +138,10 @@ export function selectLine(town, catId, trigger, ctx = {}, { record = true } = {
   if (!cands.length) return null;
   const scored = cands.map(t => ({ t, ...scoreOf(town, cat, t, facts) }));
   const top = Math.max(...scored.map(x => x.S));
-  const best = scored.filter(x => x.S === top).sort((a, b) => (a.t.Name < b.t.Name ? -1 : 1));
+  // Ties at the top S: a line written for the speaker's personality beats an 'any' floor (ASSUMPTION: F8 is silent;
+  // this keeps the GDD's per-personality lines, e.g. Togemaru's farewell, from losing a coin flip to a floor).
+  let best = scored.filter(x => x.S === top).sort((a, b) => (a.t.Name < b.t.Name ? -1 : 1));
+  if (best.some(x => x.t.personality !== 'any')) best = best.filter(x => x.t.personality !== 'any');
   const r = new Stream(town.seed, `bark:${town.s.serial}:${day}:${catId}:${trigger}`);
   const pick = best.length === 1 ? best[0] : r.pick(best);
   const other = bindOther(town, cat, pick.t, ctx);
