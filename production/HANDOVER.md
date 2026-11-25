@@ -38,8 +38,9 @@ gameplay and the art direction.
 | Showcase M1.1 combat rework (owner C10) | **Done, awaiting the owner's play test** — Mikan-only control, one-slot buffer, move-out gradient, L/H strings (L-L-L-H finisher), cat-like AI with attack tokens, stagger cinematic, F Special + auto crew chain + team finisher, R skill bar, Tab lock-on cycle. Spec: `design/reviews/owner-feedback/combat-m1.1-spec.md`; published as version 6 of the showcase |
 | Showcase M1.2 combat feel (owner C11) | **Done, awaiting the owner's play test** — NieR-style evade cancel with cooldown (Space), move-out at 60%, instant light / wind-up heavy, slow steering while attacking, Lane-fast-walk speed, damage numbers, longer hit flash, yellow allies / red enemies, 1:1 mouse look + interpolated follow (ghosting fix), dither fade, Tab lock + flick switch, F Special anytime with sequential chain, cornered-cat AI, FinalKO cinematic, Daifuku as a ground boss (belly-flop shockwave) on a universal Boss pattern. Spec: `design/reviews/owner-feedback/combat-m1.2-spec.md`; showcase version 7 |
 | Showcase M1.3 combat fixes (owner C12) | **Done** — boss/captain attack cadence, steerable evade, KO background + launched flight, red damage-taken numbers, world-space popups; showcase version 8 |
-| Showcase M2 lane and territory | **In review (round 1)** — territory sim (43 tests, reproduces Territory §4.11) + ~120 m Hidamari Lane with posts, High Road, Whisker Sense, marking, Day→Dusk, Head Home thread, street HUD; first pass in showcase version 8. Pending: real-laptop frame log (`?fps=1`, `__frameLog()`) |
-| Showcase M3–M7 | Not started |
+| Showcase M2 lane and territory | **Done** — 3 review rounds, final GO WITH FIXES (overall 5.5 → 7); showcase version 9. Carry-overs in `production/qa/evidence/artifact-slice/M2/review-final.md` (incl. the real-laptop frame log: `?fps=1`, `__frameLog()`) |
+| Showcase M3 rivals, Verdict, Rivals board | **In progress** |
+| Showcase M4–M7 | Not started |
 
 Nothing has been played or built. Every balance number is a paper value checked
 by small Python simulations, not by a prototype.
