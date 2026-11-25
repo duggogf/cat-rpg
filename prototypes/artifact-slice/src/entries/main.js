@@ -514,7 +514,7 @@ async function boot() {
   scent = new ScentLayer(lateScene, L, terr, sTex, (z) => gAt(0, z));
   if (daifuku) scent.bossMarker(daifuku.object3D, 0.95);
   hud = opt.hud ? new StreetHUD() : null;
-  m3 = new M3({ renderer, tex, post, opt, hud, project, cam, get mikan() { return mikan; }, lane: L, terr, get mikanPos() { return mikanPos; }, get phase() { return ph.name; }, lateScene, catRoots, gAt, createCat, keysClear: () => keys.clear(),
+  m3 = new M3({ renderer, tex, post, opt, hud, project, cam, get mikan() { return mikan; }, get sitter() { return sitter; }, lane: L, terr, get mikanPos() { return mikanPos; }, get phase() { return ph.name; }, lateScene, catRoots, gAt, createCat, keysClear: () => keys.clear(),
     saveGlobals: () => ({ map: U.shadowMap.value, texel: U.shadowTexel.value }),
     restoreGlobals: (g) => { if (g) { U.shadowMap.value = g.map; U.shadowTexel.value = g.texel; } setPhaseKey(ph.to ? mixPhase(ph.from, ph.to, ss(ph.k)) : PHASES[ph.name]); U.lampWave.value = ph.lampT >= 0 ? ph.lampT : -1; layoutCamera(); },
     renderStreet: () => render(), stepStreet: (dt) => step(dt) });

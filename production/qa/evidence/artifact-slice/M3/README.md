@@ -10,7 +10,7 @@ Facts come from the nemesis simulation (`src/sim/nemesis/`, `createTown({start: 
 | `board-lane-focus-togemaru.png` | Focus Togemaru (keys): lift + gold rim, his arrow bright, Goma Rival tag, others dim, card (59 calls, 147k tris, 14 text items) |
 | `board-lane-focus-daifuku.png` | Focus the Boss: every member arrow bright, "Old Gang: Hige · the Bell" line in the card, anger card (59 calls, 147k tris, 14 text items) |
 | `board-lane-focus-silhouette.png` | Focus a silhouette: "?" pom, "Not met yet" card, no tags (58 calls, 140k tris, 9 text items) |
-| `board-lane-full-card.png` | South: the full Rival card, every history entry pinned first (first sniff, notch, fled, routed, nose) (59 calls, 147k tris, 7 text items) |
+| `board-lane-full-card.png` | South: the full Rival card, every history entry, pinned first with a pin glyph (first sniff, notch), then fled, routed, nose (59 calls, 147k tris, 7 text items) |
 | `board-outsiders.png` | Outsiders: the challenger silhouette beside its stake stamp (20 calls, 17k tris, 5 text items) |
 | `board-bell-focus-hige.png` | Bell: Crew arrows to Mikan; Hige focused: "Before you" history, "Old Boss: Daifuku · the Lane" line in the card (32 calls, 65k tris, 14 text items) |
 | `board-bell-focus-kinako.png` | Bell: Kinako shows no tag while Sasa is unmet (32 calls, 65k tris, 11 text items) |
@@ -18,23 +18,23 @@ Facts come from the nemesis simulation (`src/sim/nemesis/`, `createTown({start: 
 | `board-bell-B.png` | Branch B: Togemaru in the Bell scene (36 calls, 127k tris, 16 text items) |
 | `board-lane-C.png` | Branch C: Togemaru Chased Off, a legend card on his spot (54 calls, 126k tris, 6 text items) |
 | `standoff-memory.png` | L1D2 Standoff: the sim’s memory line; the Fight prompt locked 1 s (ring) |
-| `verdict-l1-none.png` | L1D2 Verdict on Togemaru: three cards, no focus, first-Verdict hint bubble (5 words); Togemaru low, ears back, fresh notch on his ear |
+| `verdict-l1-none.png` | L1D2 Verdict on Togemaru: three cards, no focus, the first-Verdict hint and the strip as one line; Togemaru low, ears back, a fresh notch cut in his lens-side ear |
 | `verdict-l1-up.png` | Nose-Touch raised: tell "Tail still." (Grudge 43 < 45) |
-| `verdict-l1-left.png` | Chase Off raised: ears drop, Mikan turns away |
+| `verdict-l1-left.png` | Chase Off raised: ears drop, Mikan turns away; the tell bubble stays clear of the Recruit card |
 | `verdict-l1-right.png` | Recruit raised: Life 1 "Free" step, starts Aloof |
 | `verdict-l2-right.png` | Life 2 Verdict on Goma from the sim: Recruit greyed in place; the bubble agrees ("Turns its tail to the bell.") and Goma turns his back. Goma is not slice-recruitable (Nemesis §3.1 DR-01) |
-| `verdict-l2-bribe.png` | The Bribe row from a real sim offer on Kagi (test start test_l2_kagi_rout): Fair 96 open, Feast 192 short (Stash 150), Crew 4/6, eyes on the fish |
+| `verdict-l2-bribe.png` | The Bribe row from a real sim offer on Kagi (test start test_l2_kagi_rout): Fair 96 open, Feast 192 short (Stash 150), Crew 4/6, eyes on the fish; the wall sitter (Kagi) is out of view, so one Kagi on screen |
 | `verdict-l2-up.png` | Life 2 Verdict on Goma: Nose-Touch tell from the sim |
 | `declaration-A.png` | L2D2 Sniff, branch A: the Declaration card (Sworn Rival) |
 | `closing-B.png` | L2D2 Sniff, branch B: "Wears the bell now" |
-| `closing-C.png` | L2D2 Sniff, branch C: "Run out of town" |
+| `closing-C.png` | L2D2 Sniff, branch C: "Run out of town" (the stamp is the Chase Off glyph, not the headline again) |
 | `pause-rivals.png` | Pause: Mikan · Rivals · Options, the Rivals tab |
 | `board-lane-hover-togemaru.png` | Mouse hover (ray against the cat capsules) focuses Togemaru after 120 ms |
 
 ## Timing and budget
 
-- First open (builds the three sets and the cats): **210.3 ms** (SwiftShader); re-open: **9.3 ms** (budget 300 ms).
-- Per scene (calls / triangles / switch ms): lane 58 / 139766 / 4.9 · outsiders 20 / 17054 / 6.5 · bell 31 / 58346 / 40.8 (budget 200 calls, 250k tris).
+- First open (builds the three sets and the cats): **215.8 ms** (SwiftShader); re-open: **10.1 ms** (budget 300 ms).
+- Per scene (calls / triangles / switch ms): lane 58 / 139766 / 4.6 · outsiders 20 / 17054 / 6.8 · bell 31 / 58346 / 49.5 (budget 200 calls, 250k tris).
 - Hover: before 120 ms `null`, after `togemaru`, tags ["rival:goma"].
 - Keys from rest (Up x3): {"first":"tsubu","second":"kagi","third":"kuri"}.
 
@@ -59,3 +59,20 @@ Fixes from `review-round1.md` (2026-11-25). Sim first, then presentation. Nemesi
 | 6 | Memory is shown. Sim: an authored pre-game entry is labelled "Before you" instead of "L1 D0". The full card lists every `history[]` entry with pinned entries first; for Togemaru that is first sniff, notch, fled, routed, nose. The closing cards' subtitles come from the cat's own record and do not repeat the headline: B "Aloof. Notched. On the Posse bench.", C "Notched. Left Laundry Pole Yard behind." | `board-lane-full-card.png`, `board-bell-focus-hige.png`, `closing-B.png`, `closing-C.png` |
 
 Notes: I looked at every re-shot PNG before keeping it. Some PNGs re-rendered byte-identical (`declaration-A`, `standoff-memory`, `pause-rivals`, `board-outsiders`). The combat sandbox town is in-memory only and writes no discovery to a save. The Scar mark is an inked sprite on the head bone, not a texture edit, and it stays visible when the cat turns its back.
+
+## Round 2 fixes
+
+Fixes from `review-round2.md` (2026-11-25). Presentation only: no sim, data or test change. Unit tests 173/173; `nemesis-run --branch all`
+gives the same end states (A Truce G 0 R 38 · B Crew G 22 R 23 · C Gone G 25 R 10); build OK; both publish checks OK (65 files). Patent §5 stays green:
+the stage still only reads the sim's Scar list, and hiding the wall Kagi is camera dressing. Mikan's meshes are untouched.
+
+| # | Fix | Evidence |
+|---|---|---|
+| 1 | Combat Verdict pose. Two causes, both fixed in `src/entries/combat.js`. (a) The sim was still playing Goma's routed bolt, so each frame the Fighter walked him in place and aimed his look from his sim position, not his mark; the two staged cats now update on their marks, standing, facing each other. (b) The look target was a ground point; Goma now looks at Mikan's head height, so the routed head dip (0.34) is the only pitch. The light seams were the Fighter's cream rim shell poking through the crouched flank and paws (checked with `?rim=0`); the judged cat's rim shell is off at the Verdict and its red enemy keyline becomes Ink. The `routed` posture crouches less (0.75 to 0.5) so the hocks never fold; its ears are a little less flat (-0.95/0.85 to -0.8/0.72). The root squash stays on the street, not in combat | `verdict-combat.png`: Goma at 3/4, eyes above the muzzle, no seams |
+| 2 | The Scar is a notch in the ear. The head-bone sprite is gone. The cat fill shader takes a notch (`uNick`, off by default) and cuts a V into the outer edge of one ear, in the ear's own coordinates from the bake (`aux`), sized to that ear: the fill is cut away, so the ear's inked back shows as a dark wedge, with a crimson fresh-cut rim on the ear's own colour around it. It is depth-tested and lit with the ear. The ear is the one nearer the scene camera on the first frame (then fixed, so it never swaps ears when the cat turns its back) | `verdict-combat.png`, `verdict-l1-none.png`, `verdict-l2-up.png`, `verdict-l2-right.png` |
+| 3 | Verdict tidy. The Lane's wall sitter is Kagi, so it steps out of view while Kagi is the staged cat. A centred tell bubble keeps its right edge 24 px clear of the Recruit card. On the first Verdict the hint and the strip are one line: "Chasing off is for good. Every choice clears the post. Then spray it." | `verdict-l2-bribe.png`, `verdict-l1-left.png`, `verdict-l1-none.png` |
+| 4 | Memory polish. Pinned history entries on the full card carry a small crimson push pin, and the others an equal gap. The closing-C stamp is the Chase Off glyph in stamp red, moved off the face, so the headline is not said twice | `board-lane-full-card.png`, `closing-C.png` |
+
+Notes: I looked at every re-shot PNG, and zoomed on Goma's face and ear in `verdict-combat.png` and on the judged cat's ear in each street Verdict. On
+Togemaru's black coat the dark wedge is close to the fur, so the crimson rim carries the notch; it lands on his left ear, the ear his mesh notch is on.
+`board-bell-focus-hige.png` and `board-lane-focus-daifuku.png` re-rendered with the focus card a pixel or two along its slide-in; the content is the same.

@@ -30,11 +30,21 @@ export function fillFrag(coatGlsl, colorNames) {
   uniform sampler2D uEyes; uniform vec3 uEyeC[2]; uniform vec3 uEyeAx[2]; uniform vec3 uEyeT[2]; uniform float uEyeHalf;
   float vP; // part with legs (5) folded into body (0) for the coat functions
   uniform float uSil; uniform vec3 uSilCol; uniform vec4 uPaws; uniform vec3 uInkF;
+  uniform vec4 uNick; uniform vec4 uNickS; // M3 Verdict: a fresh notch cut in one ear (x: ear side ±1, 0 = none; y,z: the
+                                            // mouth on the outer edge in ear-local u,v; w: outward sign of u. uNickS: depth, half-width, rim, -)
   ${colorNames.map((n) => `uniform vec3 c_${n};`).join('\n')}
   ${coatGlsl}
   void main() {
     if (uSil > 0.5) { gl_FragColor = vec4(uSilCol, 1.0); return; }
     vP = vPart > 4.5 ? 0.0 : vPart;
+    // the notch (review round 2, fix 2): a V bitten into the ear's outer edge; the fill is cut away, so the ear's inked
+    // back (the hull) shows through as a dark wedge, with a crimson fresh-cut rim on the ear around it
+    bool nickRim = false;
+    if (uNick.x != 0.0 && vPart > 0.5 && vPart < 1.5 && vRest.x * uNick.x > 0.0 && vAux.y > 0.004 && abs(vAux.z) < 0.03) {
+      float along = (uNick.y - vAux.x) * uNick.w + 0.004, across = abs(vAux.y - uNick.z);
+      if (along > 0.0 && across < uNickS.y * (1.0 - along / uNickS.x)) discard;
+      nickRim = along > -0.004 && across < (uNickS.y + uNickS.z) * (1.0 - along / (uNickS.x + uNickS.z * 1.6));
+    }
     vec3 base = coat();
     // two tones, hard terminator (antialiased over one pixel)
     float ndl = dot(normalize(vWN), uKeyDir);
@@ -73,6 +83,7 @@ export function fillFrag(coatGlsl, colorNames) {
         }
       }
     }
+    if (nickRim) col = vec3(0.784, 0.271, 0.369);   // Crimson #C8455E (raw sRGB, like every kit colour here)
     gl_FragColor = vec4(col, 1.0);
   }`;
 }

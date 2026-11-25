@@ -49,7 +49,6 @@ const CSS = `
 .vd-meta { display:flex; justify-content:space-between; margin-top:12px; font:700 30px/1 var(--font); }
 .vd-meta .warn { color:#B0607A; font-size:26px; display:block; text-align:right; margin-top:10px; }
 .vd-strip { position:absolute; left:50%; top:900px; transform:translateX(-50%); white-space:nowrap; max-width:none; padding:14px 34px; font:800 36px/1 var(--font); }
-.vd-hint { position:absolute; left:50%; top:812px; transform:translateX(-50%); white-space:nowrap; max-width:none; padding:10px 26px; font:800 30px/1 var(--font); }
 .vd-foot { position:absolute; left:40px; right:40px; top:976px; display:flex; justify-content:space-between; align-items:center; }
 .vd-foot .k-prompt { white-space:nowrap; cursor:pointer; }
 .vd-tell { position:absolute; left:var(--tx,1120px); top:var(--ty,520px); max-width:none; white-space:nowrap; transform:translate(-50%,-100%); padding:14px 22px; font:800 28px/1.15 var(--font); text-align:center; }
@@ -169,12 +168,14 @@ export class Verdict {
       ${card('left', 'left', 'Chase Off', ICON.chase, '', 'Gone from town for good.')}
       ${card('right', 'right', 'Recruit', ICON.recruit, chipR, 'Joins your Crew with everything it remembers.', steps)}
       ${tell}
-      ${f.firstEver ? `<div class="k-bubble k-bubble--notail vd-hint">${f.hint || 'Chasing off is for good.'}</div>` : ''}
-      <div class="k-bubble k-bubble--notail vd-strip">${f.strip || 'Every choice clears the post. Then spray it.'}</div>
+      <div class="k-bubble k-bubble--notail vd-strip">${f.firstEver ? `${f.hint || NDATA.k.verdict.first_hint} ` : ''}${f.strip || 'Every choice clears the post. Then spray it.'}</div>
       <div class="vd-foot"><span class="k-prompt">${K.ui.faceButtons({ size: 42, lit: 'n' })}Their card</span>
         ${r.open && r.steps.length > 1 && R === 'right' ? `<span class="k-prompt"><span class="k-btn k-key" style="height:44px;min-width:56px;font-size:24px">Q</span><span class="k-btn k-key" style="height:44px;min-width:56px;font-size:24px">E</span>Bribe</span>` : '<span></span>'}
         <span class="k-prompt vd-hold">${K.ui.faceButtons({ size: 42, lit: 's' })}${this.armed ? 'Press again to decide' : 'Hold to decide'}<span class="ring">${ring(this.holding ? Math.min(1, this.hold / 0.6) : this.armed ? 1 : 0)}</span></span></div>
       ${pay ? `<div class="vd-pay">${pay}</div>` : ''}</div>`;
+    // a centred tell bubble never runs under the Recruit card (review round 2, fix 3): keep its right edge 24 px clear
+    const tb = this.el.querySelector('.vd-tell:not(.vd-tell--r)');
+    if (tb) { const rc = this.el.querySelector('.vd-card.right'), w = tb.offsetWidth, lim = (rc ? rc.offsetLeft : 1350) - 24 - w / 2; if (tx > lim) tb.style.left = `${Math.max(540 + w / 2, lim)}px`; }
     this.el.querySelectorAll('.vd-card').forEach((e) => {
       e.onmouseenter = () => this.raise(e.dataset.d);
       e.onmousedown = (ev) => { if (ev.button === 0) { this.raise(e.dataset.d); this.press(); } };

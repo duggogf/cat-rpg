@@ -541,12 +541,13 @@ function stageVerdict(id, o = {}) {
   // the judged cat sits 1.7 m in front of Mikan, toward the middle of the ring (never into a wall)
   const d = new THREE.Vector3(-M.x, 0, -M.z); if (d.lengthSq() < 1) { const e = ent(snap.controlled); d.set(e.facing[0], 0, e.facing[1]); } d.normalize();
   const S = M.clone().addScaledVector(d, 1.7); S.y = M.y;
-  vstage = { id, M, S, d, undo: o.stageSubject ? o.stageSubject(T.cat) : null };
+  vstage = { id, M, S, d, undo: null };
   verdictCam();
+  if (o.stageSubject) vstage.undo = o.stageSubject(T.cat, { camera: cam });   // the Scar goes on the lens-side ear
   const p = project(T.head.clone().set(S.x, S.y + 0.6 * T.scaleK, S.z)), w = app.clientWidth, h = app.clientHeight, k = Math.min(w / 1920, h / 1080);
   return { x: 960 + (p.x - w / 2) / k, y: 540 + (p.y - h / 2) / k };
 }
-function unstageVerdict() { if (vstage && vstage.undo) vstage.undo(); vstage = null; if (hud) { hud.el.style.visibility = ''; hud.showChrome(true); } if (scr) scr.el.style.visibility = ''; }
+function unstageVerdict() { if (vstage && vstage.undo) vstage.undo(); { const T = vstage && F(vstage.id); if (T && T.kl) { T.kl.rim.mesh.visible = true; T.clowder = null; } } vstage = null; if (hud) { hud.el.style.visibility = ''; hud.showChrome(true); } if (scr) scr.el.style.visibility = ''; }
 /** The low two-shot: Mikan left and near, the judged cat right of centre and farther; the camera stays off the walls. */
 function verdictCam() {
   const { M, S, d } = vstage, mid = M.clone().lerp(S, 0.45);
@@ -560,6 +561,7 @@ function verdictCam() {
   if (room < want) { cam.position.copy(pivot).addScaledVector(dir, Math.max(1.6, room)); cam.lookAt(mid.x, mid.y + 0.52, mid.z); cam.updateMatrixWorld(); }
 }
 /** Per frame while staged: only Mikan and the judged cat on stage, posed; HUD, rings and screen marks hidden. */
+const VERDICT_KEY = new THREE.Vector3(0x33 / 255, 0x27 / 255, 0x3B / 255);   // Ink: the judged cat's keyline at its Verdict (no side colour)
 function verdictFrame() {
   const { id, M, S } = vstage, C = F(snap.controlled), T = F(id);
   for (const f of fighters.values()) if (f !== C && f !== T) f.root.visible = false;
@@ -567,7 +569,11 @@ function verdictFrame() {
     T.root.visible = true; T.root.position.copy(S); T.root.rotation.set(0, Math.atan2(M.x - S.x, M.z - S.z), 0);
     T.pose.position.set(0, 0, 0); T.pose.rotation.set(0, 0, 0); T.pose.scale.set(1, 1, 1);
     T.fadeTarget = 1; T.fade = 1; T.stepFade(0); T.setLook('normal'); T.cat.setGait('idle', 0);
-    T.cat.lookAt(M.clone().lerp(S, 0.6)); T.head.set(S.x, S.y + 0.6 * T.scaleK, S.z);
+    // eyes up at Mikan's head (review round 2, fix 1): the routed posture already dips the head, so a ground target
+    // pitched the face into the chest. The side colour (red = enemy) goes too, the fight is over,
+    T.cat.lookAt(new THREE.Vector3(M.x, M.y + 0.6 * (C ? C.scaleK : 1), M.z)); T.head.set(S.x, S.y + 0.6 * T.scaleK, S.z);
+    // and its cream rim shell, which pokes through the crouched flank and paws as light seams
+    if (T.kl) { T.kl.key.mat.uniforms.uInk.value.copy(VERDICT_KEY); T.clowder = 'verdict'; T.kl.rim.mesh.visible = false; }
   }
   if (C) { C.root.visible = true; C.root.position.copy(M); C.root.rotation.y = Math.atan2(S.x - M.x, S.z - M.z); C.pose.rotation.set(0, 0, 0); C.fadeTarget = 1; C.fade = 1; C.stepFade(0); C.cat.lookAt(T ? T.head : null); }
   verdictCam();
@@ -613,7 +619,12 @@ function present(dt, alpha, menu = [], cut = null) {
       if (bo && bd > 1e-3) { le._opp = { dir: [(bo.pos[0] - e.pos[0]) / bd, (bo.pos[2] - e.pos[2]) / bd], dist: bd }; le._side = (e.id.charCodeAt(0) + e.id.length) % 2 ? 1 : -1; }
     }
     const koFreeze = ko && realT - ko.t0 < ko.freeze;
-    f.update(le, cut && cut.id === e.id ? dt : (frozen || koFreeze) ? 0 : dt * (s.slow_blink ? 0.05 : 1) * (ko ? 0.25 : 1), realT, tw, dt);
+    // at the Verdict vantage the two staged cats stand still on their marks: the sim may still be playing the routed
+    // bolt, which would walk the judged cat in place and aim its look from the wrong spot (review round 2, fix 1)
+    const vs = vstage && (e.id === vstage.id || e.id === s.controlled) ? vstage : null;
+    if (vs) { const [a, b] = e.id === vs.id ? [vs.S, vs.M] : [vs.M, vs.S], d = Math.hypot(b.x - a.x, b.z - a.z) || 1;
+      f.update({ ...le, pos: [a.x, a.y, a.z], facing: [(b.x - a.x) / d, (b.z - a.z) / d], anim: 'idle', anim_t: 0, intent: null, _opp: null, can_move: 1, attack: null }, dt, realT, tw, dt); }
+    else f.update(le, cut && cut.id === e.id ? dt : (frozen || koFreeze) ? 0 : dt * (s.slow_blink ? 0.05 : 1) * (ko ? 0.25 : 1), realT, tw, dt);
     if (ko && ko.f === f && realT - ko.t0 < ko.freeze + ko.slowS) {
       f.root.visible = true;
       // the defeated cat FLIES (C12): launched away from its attacker on a high arc, spinning, a dust trail behind

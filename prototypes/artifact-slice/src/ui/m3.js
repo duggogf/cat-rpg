@@ -138,6 +138,9 @@ export class M3 {
       this.rival3d.setLighting({ keyDir: new THREE.Vector3(...p.catDir).normalize(), keyColor: new THREE.Color(p.catKey), shadeColor: new THREE.Color(p.shadow ? p.catShade : p.catShade), rimColor: new THREE.Color(p.catRim) });
     }
     Standoff.stage(ctx, this.rival3d, 2.1);
+    // the Lane's wall sitter is Kagi: while Kagi is the cat staged in front of Mikan, the one on the wall steps out of
+    // view, so there is one Kagi on screen (review round 2, fix 3)
+    if (ctx.sitter) ctx.sitter.object3D.visible = id !== 'kagi';
   }
   keyUp(e) { if (this.verdict.isOpen) return this.verdict.key(e.code, e); return false; }
   openVerdict(id) {
@@ -158,7 +161,7 @@ export class M3 {
     // the cat being judged sits low, ears back, its fresh Scar on its model (review round 1, fix 4; mock 07)
     if (this.unstage) this.unstage();
     let scar = false; try { scar = freshScar(town && town.cat(id), town && town.verdictOffer()); } catch (e) { /* no mark */ }
-    this.unstage = this.rival3d ? stageSubject(this.rival3d, { scar, side: -1 }) : null;
+    this.unstage = this.rival3d ? stageSubject(this.rival3d, { scar, camera: this.ctx.cam }) : null;
     if (this.rival3d) this.rival3d.lookAt(this.ctx.mikanPos.clone().lerp(this.rival3d.object3D.position, 0.55));   // head low, eyes on the ground before her
     this.showStreetUI(false); this.twoShot(1); this.ctx.renderStreet();
     this.verdict.open({ cat: c, life: town && town.life ? town.life : this.branch ? 2 : 1, town, raise: this.ctx.opt.test ? new URLSearchParams(location.search).get('card') : null, step: new URLSearchParams(location.search).get('step'),
@@ -167,6 +170,7 @@ export class M3 {
         if (this.unstage) { this.unstage(); this.unstage = null; } this.rivalTurn(null);
         this.lastVerdict = v; const arc = id === 'togemaru' && !this.branch; if (arc) this.branch = { nose: 'A', recruit: 'B', chase: 'C' }[v.kind];
         try { if (town && town.applyVerdict) { const evs = town.applyVerdict(v.kind, v.step && v.step.id !== 'free' ? { bribe: v.step.id } : {}); this.lastApplied = evs; } } catch (e) { console.warn('nemesis verdict not applied', e); }
+        if (this.ctx.sitter) this.ctx.sitter.object3D.visible = true;
         if (!arc) { if (this.rival3d) this.rival3d.object3D.visible = false; this.showStreetUI(true); this.ctx.restoreGlobals(null); return; }
         this.lifeTown();   // the montage jump: Life 2 day 2, played by the rules from this Verdict
         if (this.rival3d) this.rival3d.object3D.visible = false;

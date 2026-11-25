@@ -108,6 +108,7 @@ export function createCatInternal(opts = {}) {
     uEyeC: { value: eyeC0.map((v) => v.clone()) }, uEyeAx: { value: [new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 0, 1)] }, uEyeT: { value: [new THREE.Vector3(1, 0, 0), new THREE.Vector3(1, 0, 0)] },
     uSil: { value: silhouette ? 1 : 0 }, uSilCol: { value: hexV(silColor) }, uInkF: { value: hexV(INK) },
     uPaws: { value: meta.paws ? new THREE.Vector4(meta.paws.xF, meta.paws.xH, meta.paws.zF, meta.paws.zH) : new THREE.Vector4(9, 9, 0, 0) },
+    uNick: { value: new THREE.Vector4(0, 0, 0, 1) }, uNickS: { value: new THREE.Vector4(0.02, 0.012, 0.005, 0) },   // M3 Verdict notch (off)
   };
   for (const n of colorNames) U['c_' + n] = { value: hexV(style.colors[n]) };
   const fill = new THREE.ShaderMaterial({ uniforms: U, vertexShader: fillVert, fragmentShader: fillFrag(style.glsl, colorNames) });

@@ -6,7 +6,7 @@
       "board": {
         "calls": 58,
         "triangles": 139766,
-        "openMs": 174.10000000009313,
+        "openMs": 219,
         "scene": "lane",
         "focus": null,
         "tags": [],
@@ -22,7 +22,7 @@
       "board": {
         "calls": 59,
         "triangles": 146564,
-        "openMs": 192.20000000018626,
+        "openMs": 218.29999999981374,
         "scene": "lane",
         "focus": "togemaru",
         "tags": [
@@ -42,7 +42,7 @@
       "board": {
         "calls": 59,
         "triangles": 146566,
-        "openMs": 194.60000000009313,
+        "openMs": 181.29999999981374,
         "scene": "lane",
         "focus": "daifuku",
         "tags": [],
@@ -58,7 +58,7 @@
       "board": {
         "calls": 58,
         "triangles": 139766,
-        "openMs": 176.20000000018626,
+        "openMs": 202.5,
         "scene": "lane",
         "focus": "sasa",
         "tags": [],
@@ -70,11 +70,11 @@
     },
     "board-lane-full-card": {
       "query": "board=lane&branch=A&focus=togemaru&full=1",
-      "note": "South: the full Rival card, every history entry pinned first (first sniff, notch, fled, routed, nose)",
+      "note": "South: the full Rival card, every history entry, pinned first with a pin glyph (first sniff, notch), then fled, routed, nose",
       "board": {
         "calls": 59,
         "triangles": 146564,
-        "openMs": 183,
+        "openMs": 209.09999999962747,
         "scene": "lane",
         "focus": "togemaru",
         "tags": [
@@ -94,7 +94,7 @@
       "board": {
         "calls": 20,
         "triangles": 17054,
-        "openMs": 104.8000000002794,
+        "openMs": 128.20000000018626,
         "scene": "outsiders",
         "focus": "challenger",
         "tags": [],
@@ -110,7 +110,7 @@
       "board": {
         "calls": 32,
         "triangles": 65146,
-        "openMs": 171.20000000018626,
+        "openMs": 155.1000000005588,
         "scene": "bell",
         "focus": "hige",
         "tags": [],
@@ -126,7 +126,7 @@
       "board": {
         "calls": 32,
         "triangles": 65146,
-        "openMs": 137.89999999990687,
+        "openMs": 156.1000000005588,
         "scene": "bell",
         "focus": "kinako",
         "tags": [],
@@ -142,7 +142,7 @@
       "board": {
         "calls": 54,
         "triangles": 126168,
-        "openMs": 175.8000000002794,
+        "openMs": 168.20000000018626,
         "scene": "lane",
         "focus": null,
         "tags": [],
@@ -158,7 +158,7 @@
       "board": {
         "calls": 36,
         "triangles": 127348,
-        "openMs": 186.20000000018626,
+        "openMs": 194.70000000018626,
         "scene": "bell",
         "focus": "togemaru",
         "tags": [],
@@ -174,7 +174,7 @@
       "board": {
         "calls": 54,
         "triangles": 126168,
-        "openMs": 177.59999999962747,
+        "openMs": 182.40000000037253,
         "scene": "lane",
         "focus": null,
         "tags": [],
@@ -190,7 +190,7 @@
     },
     "verdict-l1-none": {
       "query": "vantage=1&m3=verdict&branch=L1",
-      "note": "L1D2 Verdict on Togemaru: three cards, no focus, first-Verdict hint bubble (5 words); Togemaru low, ears back, fresh notch on his ear"
+      "note": "L1D2 Verdict on Togemaru: three cards, no focus, the first-Verdict hint and the strip as one line; Togemaru low, ears back, a fresh notch cut in his lens-side ear"
     },
     "verdict-l1-up": {
       "query": "vantage=1&m3=verdict&branch=L1&card=up",
@@ -198,7 +198,7 @@
     },
     "verdict-l1-left": {
       "query": "vantage=1&m3=verdict&branch=L1&card=left",
-      "note": "Chase Off raised: ears drop, Mikan turns away"
+      "note": "Chase Off raised: ears drop, Mikan turns away; the tell bubble stays clear of the Recruit card"
     },
     "verdict-l1-right": {
       "query": "vantage=1&m3=verdict&branch=L1&card=right",
@@ -210,7 +210,7 @@
     },
     "verdict-l2-bribe": {
       "query": "vantage=1&m3=verdict&branch=B&nemstart=test_l2_kagi_rout&focus=kagi&card=right&step=fair",
-      "note": "The Bribe row from a real sim offer on Kagi (test start test_l2_kagi_rout): Fair 96 open, Feast 192 short (Stash 150), Crew 4/6, eyes on the fish"
+      "note": "The Bribe row from a real sim offer on Kagi (test start test_l2_kagi_rout): Fair 96 open, Feast 192 short (Stash 150), Crew 4/6, eyes on the fish; the wall sitter (Kagi) is out of view, so one Kagi on screen"
     },
     "verdict-l2-up": {
       "query": "vantage=1&m3=verdict&branch=A&focus=goma&card=up",
@@ -226,7 +226,7 @@
     },
     "closing-C": {
       "query": "m3=declaration&branch=C",
-      "note": "L2D2 Sniff, branch C: \"Run out of town\""
+      "note": "L2D2 Sniff, branch C: \"Run out of town\" (the stamp is the Chase Off glyph, not the headline again)"
     },
     "pause-rivals": {
       "query": "m3=pause&branch=A",
@@ -234,21 +234,21 @@
     }
   },
   "timing": {
-    "firstOpenMs": 210.3,
-    "reopenMs": 9.3,
+    "firstOpenMs": 215.8,
+    "reopenMs": 10.1,
     "scenes": {
       "lane": {
-        "switchMs": 4.9,
+        "switchMs": 4.6,
         "calls": 58,
         "triangles": 139766
       },
       "outsiders": {
-        "switchMs": 6.5,
+        "switchMs": 6.8,
         "calls": 20,
         "triangles": 17054
       },
       "bell": {
-        "switchMs": 40.8,
+        "switchMs": 49.5,
         "calls": 31,
         "triangles": 58346
       }

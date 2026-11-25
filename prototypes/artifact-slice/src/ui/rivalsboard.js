@@ -60,6 +60,8 @@ const stamp = (g, col) => RV.stamp(g, { size: 40, color: col || C.cream });
 const moon = () => RV.stamp(`<path d="M4 -12A12 12 0 1 0 12 4A9 9 0 1 1 4 -12Z" fill="${C.cream}" ${st2}/>`, { size: 40, color: '#4A3F6E' });
 const stormIco = () => svg(30, 26, '-15 -13 30 26', `<path d="${K.blob(K.pomPts(0, -3, 10, 5, 0.16))}" fill="#4A3F55"/><path d="M-1 2L-5 10H0L-2 15L6 5H1L3 2Z" fill="${C.staticYellow}" stroke="${ink}" stroke-width="1.6"/>`);
 const sprigIco = (s = 1) => svg(34 * s, 34 * s, '-6 -30 34 34', RV.leafSprig({ x: 0, y: 0, s: 1, rot: -10 }));
+// a push pin (crimson head, ink needle), tilted: marks a pinned history entry on the full card
+const PIN = svg(26, 26, '-13 -13 26 26', `<g transform="rotate(35)"><path d="M0 4V13" stroke="${ink}" stroke-width="2.6" stroke-linecap="round"/><path d="M-7 4H7L4 -2V-8H6V-12H-6V-8H-4V-2Z" fill="${C.crimson || '#C8455E'}" ${st2}/></g>`);
 const tapeStar = `<svg class="rb-star" width="30" height="22" viewBox="-15 -11 30 22"><path d="M-14 -7H14V7H-14Z" fill="#F6E7B8"/><path d="M0 -6l2 4.4l4.8 .6l-3.5 3.4l.9 4.8l-4.2 -2.3l-4.2 2.3l.9 -4.8l-3.5 -3.4l4.8 -.6z" fill="${C.gold}" stroke="${ink}" stroke-width="1.3"/></svg>`;
 const crownSvg = (lit) => svg(60, 40, '-30 -20 60 40', K.inked('M-26 10L-26 -10L-13 0L0 -18L13 0L26 -10L26 10Z', lit ? C.gold : 'none', 2.6));
 const puffsSvg = (n, furious) => { let s = ''; const P = [[-92, -10, 22, 2], [92, -22, 25, 7], [0, -56, 21, 4]]; for (let i = 0; i < n; i++) { const [x, y, r, sd] = P[i]; s += K.dustCloud({ x, y, r: r * (furious ? 1.22 : 1), puffs: 4, seed: sd }); } return svg(260, 120, '-130 -90 260 120', s); };
@@ -140,6 +142,7 @@ const CSS = `
 .rb-full .pt { display:inline-flex; align-items:center; gap:6px; height:42px; padding:0 14px 0 6px; background:var(--cream); border:3px solid var(--ink); border-radius:8px 12px 10px 12px; font:800 24px/1 var(--font); }
 .rb-full .hist { display:flex; flex-direction:column; gap:10px; font:600 26px/1.2 var(--font); }
 .rb-full .hist b { font:800 22px/1 var(--font); color:var(--cocoa); min-width:70px; margin-right:10px; display:inline-block; white-space:nowrap; }
+.rb-full .hist i.pin { display:inline-block; width:30px; margin-right:6px; vertical-align:-4px; font-style:normal; }
 .rb-full .stage { height:470px; border-radius:30px; background:var(--recessed); display:flex; align-items:center; justify-content:center; overflow:hidden; }
 .rb-full .foot { position:absolute; right:36px; bottom:26px; display:flex; gap:12px; }
 .rb-full .legend { position:absolute; left:40px; bottom:30px; font:800 30px/1 var(--font); color:#8C6E58; transform:rotate(-6deg); border:4px solid #B04A3A; color:#B04A3A; padding:8px 18px; border-radius:10px; }
@@ -400,7 +403,9 @@ export class RivalsBoard {
     const ties = []; if (c.answersTo && m.cats[c.answersTo] && m.cats[c.answersTo].discovered) ties.push(`<span class="pt">${K.ui.portrait({ size: 34, ring: C.cream, bg: '#F7C99A', cat: m.cats[c.answersTo].kit })}${c.answersTo === 'mikan' ? 'Crew of' : 'Boss'}: ${m.cats[c.answersTo].name}</span>`);
     if (c.role === 'boss') for (const o of Object.values(m.cats)) if (o.answersTo === c.id && o.discovered && o.state !== 'gone') ties.push(`<span class="pt">${K.ui.portrait({ size: 34, ring: C.cream, bg: '#F7C99A', cat: o.kit })}Gang: ${o.name}</span>`);
     for (const t of m.tiesOf(c.id)) ties.push(`<span class="pt">${TAGICON[t.kind]}${TAGWORD[t.kind]}: ${m.cats[t.to].name}</span>`);
-    const hist = (c.historyAll || (c.history ? [c.history] : [])).map((h) => `<div><b>${h.day}</b>${h.line}</div>`).join('') || '<div>—</div>';
+    // pinned entries (listed first) carry a small pin, the rest an equal gap, so the order reads as pinned-then-recent (review round 2, fix 4)
+    const hl = c.historyAll || (c.history ? [c.history] : []), anyPin = hl.some((h) => h.pinned);
+    const hist = hl.map((h) => `<div>${anyPin ? `<i class="pin"${h.pinned ? ' title="Pinned"' : ''}>${h.pinned ? PIN : ''}</i>` : ''}<b>${h.day}</b>${h.line}</div>`).join('') || '<div>—</div>';
     const anger = c.role === 'boss' && c.context && c.context.kind === 'anger' ? `<div class="lab">ANGER</div><div class="row">${puffsSvg(c.marks.puffs || 0, c.marks.puffs >= 3).replace('width="160" height="120"', 'width="110" height="82"')}<b>${c.context.stage}</b></div><div class="row" style="font-size:24px;font-weight:600">Rises when you over-mark or counter-spray in the Lane. Cools each night.</div><div class="row" style="font-size:24px;font-weight:600">Next fight with him: ${({ Calm: 'not Fired Up', Riled: 'Fired Up for a while', Seething: 'Fired Up for a long while', Furious: 'Fired Up all fight' })[c.context.stage]}. Spent after his next fight.</div><div class="lab">OBJECTIVE</div><div class="row">Mark the Lane until he comes down.</div>` : '';
     const fears = (c.fears || []).map((x) => stamp(RV.GLYPH[x] || RV.GLYPH.question)).join('') + stamp(RV.GLYPH.question);
     f.innerHTML = `<div class="ban">${K.ui.portrait({ size: 88, ring: C.gold, bg: '#F7C99A', cat: { ...c.kit, outline: 'ink', scars: c.scars } })}${c.name.toUpperCase()} ${c.title ? `<small>${c.title}</small>` : ''}</div>

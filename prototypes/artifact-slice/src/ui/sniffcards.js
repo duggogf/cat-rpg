@@ -25,7 +25,7 @@ const CSS = `
 .sn-main .tag { position:absolute; left:-18px; top:-24px; transform:rotate(-6deg); }
 .sn-main.legend { background:#EFE3C8; border-color:#9C8A72; }
 .sn-main.legend .por { filter:sepia(.6) saturate(.6) opacity(.85); }
-.sn-main .stampx { position:absolute; left:50%; top:200px; transform:translateX(-50%) rotate(-12deg); padding:10px 26px; border:6px solid #B04A3A; border-radius:12px; color:#B04A3A; font:800 54px/1 var(--font); background:rgba(255,246,227,.6); white-space:nowrap; }
+.sn-main .stampx { position:absolute; left:calc(50% + 175px); top:250px; transform:translateX(-50%) rotate(-12deg); padding:8px 18px; border:6px solid #B04A3A; border-radius:12px; color:#B04A3A; background:rgba(255,246,227,.6); line-height:0; }
 .sn-side { position:absolute; width:400px; height:300px; padding:18px 22px; text-align:center; animation:snin .24s steps(4) .1s both; }
 .sn-side .ti { font:800 34px/1.1 var(--font); margin-top:8px; }
 .sn-side .ln { font:600 26px/1.2 var(--font); margin-top:8px; }
@@ -34,6 +34,8 @@ const CSS = `
 .sn-foot { position:absolute; right:40px; bottom:34px; display:flex; gap:14px; }
 .sn-foot .k-prompt { white-space:nowrap; cursor:pointer; }
 `;
+// closing C's stamp: the Chase Off glyph (speed lines and a chevron: gone) in the stamp's red, so the headline is not said twice (review round 2, fix 4)
+const RUNGLYPH = `<svg width="96" height="64" viewBox="-24 -16 48 32">${RV.GLYPH.run.split(C.ink).join('#B04A3A').replace('stroke-width="2.6"', 'stroke-width="3.4"')}</svg>`;
 const tape = `<svg width="60" height="40" viewBox="-30 -20 60 40"><path d="M-28 -14H28V14H-28Z" fill="#F6E7B8" transform="rotate(-8)"/><path d="M0 -12l4 8.8l9.6 1.2l-7 6.8l1.8 9.6l-8.4 -4.6l-8.4 4.6l1.8 -9.6l-7 -6.8l9.6 -1.2z" fill="${C.gold}" stroke="${C.ink}" stroke-width="2"/></svg>`;
 
 export class SniffCards {
@@ -66,7 +68,7 @@ export class SniffCards {
         <div class="ti">${main0.title || 'Sworn Rival'}</div><div class="ln">${main0.line || `${t.name} has chosen you.`}</div>${main0.best_line ? `<div class="ln" style="font-size:28px;font-weight:500;color:var(--cocoa)">${main0.best_line.day} “${main0.best_line.line}”</div>` : ''}</div>`;
     else if (b === 'B') main = `<div class="k-panel sn-main"><div class="por">${por(t, 300, { expr: 'neutral', collar: 'cord' })}</div>
         <div class="ti">${main0.title || 'Wears the bell now'}</div><div class="ln">${main0.line || 'On the Posse bench.'}</div></div>`;   // subtitle: his own record, never the headline again (review round 1, fix 6)
-    else main = `<div class="k-panel sn-main legend"><div class="por">${por(t, 300, { expr: 'angry' })}</div><div class="stampx">Run out of town</div>
+    else main = `<div class="k-panel sn-main legend"><div class="por">${por(t, 300, { expr: 'angry' })}</div><div class="stampx">${RUNGLYPH}</div>
         <div class="ti">${main0.title || 'Run out of town'}</div><div class="ln">${main0.line || 'Gone from the Lane.'}</div></div>`;
     const ch = m.cats.challenger, df = m.cats.daifuku;
     const side = `<div class="k-panel sn-side a">${tape}<div style="height:110px;display:flex;align-items:center;justify-content:center">${'<svg width="110" height="110" viewBox="-55 -55 110 110"><circle r="50" fill="#4A3657"/><text y="18" text-anchor="middle" font-family="M PLUS Rounded 1c" font-weight="800" font-size="56" fill="#FFF6E3">?</text></svg>'}</div><div class="ti">${chI.title || 'A stranger\u2019s scent'}</div><div class="ln">${chI.line || `A stranger is staking ${ch.stake || 'Laundry Pole Yard'}.`}</div></div>

@@ -40,7 +40,7 @@ export const POSTURE = {
   comma: { earX: -0.45, earZ: 0.38, head: 0.16, chest: 0.06, crouch: 0.5 },      // Fraidy: ears flat back, half-crouched
   pom: { earX: 0, earZ: 0, head: 0, chest: 0, crouch: 0 },                        // Mikan: the player's personality
   mikan: { earX: 0, earZ: 0, head: 0, chest: 0, crouch: 0 },
-  routed: { earX: -0.95, earZ: 0.85, head: 0.34, chest: 0.1, crouch: 0.75 },        // a beaten cat at its Verdict: low, ears flat back (mock 07)
+  routed: { earX: -0.8, earZ: 0.72, head: 0.34, chest: 0.1, crouch: 0.5 },          // a beaten cat at its Verdict: low, ears flat back (mock 07); crouch 0.5 keeps the hocks unfolded (review round 2)
 };
 
 function mulberry(seed) {

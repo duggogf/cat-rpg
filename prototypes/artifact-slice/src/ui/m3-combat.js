@@ -28,7 +28,7 @@ export function combatVerdict(ev, log, { patch = 'LPY', delayMs = 2600, test = f
       hud(false);   // key-screens §4.5: the HUD hides under the cards and returns after the payoff
       // review round 1, fix 4: cut to the Verdict vantage on the judged cat (low, ears back, its fresh Scar on its model)
       let tellAt = { x: 1130, y: 520 };
-      try { const scar = freshScar(town.cat(off.cat), off); const t = stage && stage(off.cat, { stageSubject: (c) => stageSubject(c, { scar, side: -1 }) }); if (t) tellAt = t; } catch (e) { console.warn('Verdict vantage unavailable', e); }
+      try { const scar = freshScar(town.cat(off.cat), off); const t = stage && stage(off.cat, { stageSubject: (c, o2 = {}) => stageSubject(c, { scar, camera: o2.camera, squash: false }) }); if (t) tellAt = t; } catch (e) { console.warn('Verdict vantage unavailable', e); }
       verdict.open({ cat, life: town.life || 2, town, tellAt, onChoose: (v) => { hud(true); if (unstage) unstage(); try { town.applyVerdict(v.kind, v.step && v.step.id !== 'free' ? { bribe: v.step.id } : {}); } catch (e) { console.warn('verdict not applied', e); } } });
       const loop = (t0) => (now) => { if (!verdict.isOpen) return; verdict.frame(Math.min(0.05, (now - t0) / 1000)); requestAnimationFrame(loop(now)); };
       requestAnimationFrame(loop(performance.now()));
