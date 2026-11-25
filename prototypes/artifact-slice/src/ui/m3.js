@@ -129,7 +129,7 @@ export class M3 {
   }
   openSniff() {
     this.showStreetUI(false);
-    this.sniff.open(this.model(), { branch: this.branch, onBoard: (scene, focus) => this.openBoard({ scene, focus }), onClose: () => { if (!this.board.isOpen) this.showStreetUI(true); } });
+    this.sniff.open(this.model(), { branch: this.branch, onBoard: (scene, focus) => this.openBoard({ scene, focus }), onClose: () => { if (!this.board.isOpen) { this.showStreetUI(true); this.ctx.restoreGlobals(null); } } });
   }
   frame(dt) {
     if (this.board.isOpen) this.board.frame(dt);
