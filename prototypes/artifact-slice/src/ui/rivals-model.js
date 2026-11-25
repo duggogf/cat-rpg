@@ -150,6 +150,8 @@ export function fromNemesis(nem, o = {}) {
       if (cv.state === 'gone') c.scene = c.homeScene;
       c.marks = { ...(cv.marks || {}) }; if (c.marks.sprig === undefined) delete c.marks.sprig;
       c.history = cv.history || null; if (cv.scars) c.scars = cv.scars;
+      // the full card lists EVERY own-memory entry, pinned first (review round 1, fix 6; rivalCard().history)
+      if (cv.discovered && cv.id !== 'mikan' && typeof nem.rivalCard === 'function') { try { const rc = nem.rivalCard(cv.id); c.historyAll = rc && rc.history && rc.history.length ? rc.history.map((h) => ({ day: h.day, line: h.line, pinned: !!h.pinned })) : null; } catch (e) { c.historyAll = null; } }
       const k = cv.card;
       if (k) {
         c.gWord = k.grudge; c.rWord = k.regard;

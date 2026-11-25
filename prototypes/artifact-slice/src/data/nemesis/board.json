@@ -52,14 +52,16 @@
     "TITLE": "They call me {title} now.",
     "CHALLENGE": "Came to town for {patch}."
   }, "_src": "key-screens §2.8 item 4 / §3.2 History: one line in the cat's own voice from its OWN Memory (G8), <= 60 characters, with the day. Placeholders; Narrative words them"},
+  {"Name": "history_before", "value": "Before you", "_src": "Review round 1 fix 6: an authored pre-game Memory entry (day 0, e.g. Hige's OLD_GANG) is labelled 'Before you', not 'L1 D0'"},
   {"Name": "sniff_cards", "value": {
     "declaration": {"title": "{face_word}", "line": "{name} has chosen you."},
-    "arc_closing_crew": {"title": "Wears the bell now", "line": "{name} wears the bell now."},
-    "arc_closing_gone": {"title": "Run out of town", "line": "{name} ran out of town."},
+    "arc_closing_crew": {"title": "Wears the bell now", "line": "{tier}.{scars} On the Posse bench."},
+    "arc_closing_gone": {"title": "Run out of town", "line": "{scars_lead}Left {patch} behind."},
+    "scar_words": {"notch": "Notched", "kink": "Kinked", "fold": "Ear folded", "cowlick": "Cowlicked"},
     "challenger": {"title": "A stranger's scent", "line": "A stranger is staking {patch}."},
     "boss_window": {"title": "The big wall's come down.", "line": "{name} has come down off the walls."},
     "anger": {"title": "The big wall is seething.", "line": "Angry at your marks in his Lane."},
     "arc_lead": {"title": "A fresh mark", "line": "{name}'s fresh mark over his own post."},
     "faces": {"sworn_enemy": "Sworn Enemy", "sworn_rival": "Sworn Rival"}
-  }, "_src": "Nemesis §3.13 card types (Declaration, arc-closing 'Run out of town' / 'Wears the bell now', 'A stranger's scent', Boss window 'The big wall's come down.', anger 'The big wall is seething.'), §3.8.1 L1D2's single item (his fresh mark over the gatepost); G12 faces"}
+  }, "_src": "Nemesis §3.13 card types (Declaration, arc-closing 'Run out of town' / 'Wears the bell now', 'A stranger's scent', Boss window 'The big wall's come down.', anger 'The big wall is seething.'), §3.8.1 L1D2's single item (his fresh mark over the gatepost); G12 faces. Review round 1 fix 6: the closing card's subtitle is the cat's own record (its Loyalty tier, its Scars, where it is now), never the headline again"}
 ]

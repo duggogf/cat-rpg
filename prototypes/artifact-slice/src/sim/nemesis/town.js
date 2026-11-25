@@ -15,6 +15,10 @@ import { selectLine, standoffTrigger } from './barks.js';
 const HOSTILE = new Set(['Seated', 'Roaming', 'Challenging']);
 const RESIST = new Set(['braggart', 'stalwart', 'brooder']);
 const clone = o => JSON.parse(JSON.stringify(o));
+/** The Recruit card's honest tell (review round 1, ruling 1): a cat outside the slice's recruitables turns its tail to the
+ *  bell; the Grudge/Regard and Boss gates are the cat refusing (bares its teeth); a short Stash is not a refusal, so the
+ *  cat still eyes the fish (eyes_lean), as it does when the card is open. */
+const RECRUIT_TELL = { recruit_not_slice: 'tail_to_bell', recruit_gate: 'bares_teeth', recruit_boss: 'bares_teeth', stash_short: 'eyes_lean' };
 
 export { dayLabel };
 
@@ -469,7 +473,7 @@ export class Town {
         recruit: { dir: 'right', title: 'Recruit', available: !recruitReason, line: V.lines.recruit,
           chip: price.free ? V.chips.recruit_free : V.chips.recruit_from.replace('{fair}', String(price.fair)),
           reason: recruitReason, reason_text: recruitReason ? fill(V.reasons[recruitReason]) : null, make_room: crewN >= V.crew_cap,
-          tell: recruitReason ? (recruitReason === 'recruit_not_slice' ? 'tail_to_bell' : 'bares_teeth') : 'eyes_lean', bribe: price, tiers,
+          tell: RECRUIT_TELL[recruitReason] ?? 'eyes_lean', bribe: price, tiers,
           stash: s.stash, crew: crewN, crew_cap: V.crew_cap },
       },
       chin_up: lick, strip: V.strip, hint: first ? V.first_hint : null,

@@ -84,7 +84,7 @@ test('Three cards: Chase Off always; Recruit free in Life 1 with its tier; greye
   assert.equal(o.cards.chase.available, true); assert.equal(o.cards.chase.line, 'Gone from town for good.');
   assert.equal(o.cards.recruit.available, true); assert.equal(o.cards.recruit.chip, 'Free');
   assert.deepEqual(o.cards.recruit.tiers.map(x => [x.step, x.value, x.tier]), [['free', 44, 'Aloof']]);
-  assert.equal(o.hint, 'Choose what they become. Chasing off is for good.');
+  assert.equal(o.hint, 'Chasing off is for good.'); assert.ok(o.hint.split(/\s+/).length <= 6, 'first-Verdict hint ≤ 6 words');
   const t = createTown({ seed: 1 });
   t.beginEncounter({ patch: 'PA', opponents: ['goma'] }); t.routed('goma', { by: 'mikan' }); t.endEncounter({ outcome: 'win' });
   const g = t.verdictOffer().cards.recruit;
@@ -99,4 +99,46 @@ test('Life 2 Recruit shows Fair and Feast prices with tiers; a short Stash greys
   assert.deepEqual([r.bribe.fair, r.bribe.feast], [96, 192]); assert.equal(r.chip, 'from 96');
   assert.deepEqual(r.tiers.map(x => x.step), ['fair', 'feast']);
   assert.equal(r.available, false); assert.equal(r.reason_text, 'Stash short: 72 of 96.');
+  assert.equal(r.tell, 'eyes_lean', 'a short Stash is not the cat refusing: it still eyes the fish (review round 1)');
+});
+
+/** Rout one cat in a Life 2 town and return its Recruit card. */
+function lifeTwoRecruit(id, { stash = 150, seed = 4, patch = 'LPY' } = {}) {
+  const t = lifeTwo(createTown({ seed }));
+  t.setStash(stash);
+  t.beginEncounter({ patch, posse: ['mikan', 'hige', 'pon', 'kinako'], opponents: [id] }); t.routed(id, { by: 'mikan' }); t.endEncounter({ outcome: 'win' });
+  return t.verdictOffer().cards.recruit;
+}
+
+test('Life 2 Recruit is greyed per cat, not per Life: Goma and the challenger turn their tails; Togemaru is open (OR-15)', () => {
+  const g = lifeTwoRecruit('goma');
+  assert.equal(g.available, false); assert.equal(g.reason, 'recruit_not_slice'); assert.equal(g.tell, 'tail_to_bell');
+  const s = createTown({ seed: 4, start: 'showcase_l2d2', branch: 'B' });
+  s.setStash(150);
+  s.beginEncounter({ patch: 'LPY', posse: ['mikan', 'hige', 'pon', 'kinako'], opponents: ['challenger'] }); s.routed('challenger', { by: 'mikan' }); s.endEncounter({ outcome: 'win' });
+  const c = s.verdictOffer();
+  assert.equal(c.life, 2); assert.equal(c.cards.recruit.reason, 'recruit_not_slice'); assert.equal(c.cards.recruit.tell, 'tail_to_bell');
+  const tg = lifeTwoRecruit('togemaru');
+  assert.equal(tg.available, true); assert.equal(tg.reason, null); assert.equal(tg.tell, 'eyes_lean');
+  assert.deepEqual(tg.tiers.map(x => [x.step, x.price]), [['fair', 16], ['feast', 32]], 'Lv 2 Tough: fair 8 × 2 × 1, feast 2 × fair');
+});
+
+test('A refusing gate bares its teeth: Daifuku in Life 2 below Regard 50 ("doesn\'t rate you yet")', () => {
+  const r = lifeTwoRecruit('daifuku');
+  assert.equal(r.available, false); assert.equal(r.reason, 'recruit_boss'); assert.equal(r.tell, 'bares_teeth');
+  assert.equal(r.reason_text, "Daifuku doesn't rate you yet.");
+});
+
+test('Test start test_l2_kagi_rout: a real Life 2 Bribe offer on Kagi (mock 07: Fair 96 open, Feast 192 short, Crew 4/6)', () => {
+  const t = createTown({ seed: 42, start: 'test_l2_kagi_rout' });
+  assert.equal(t.life, 2);
+  const o = t.verdictOffer();
+  assert.equal(o.cat, 'kagi'); assert.equal(o.life, 2);
+  const r = o.cards.recruit;
+  assert.equal(r.available, true); assert.equal(r.tell, 'eyes_lean'); assert.equal(r.chip, 'from 96');
+  assert.deepEqual(r.tiers.map(x => [x.step, x.price]), [['fair', 96], ['feast', 192]]);
+  assert.equal(r.stash, 150); assert.ok(r.tiers[0].price <= r.stash && r.tiers[1].price > r.stash, 'Fair affordable, Feast short');
+  assert.deepEqual([r.crew, r.crew_cap], [4, 6]);
+  assert.equal(o.cards.nose.available, true, 'a quiet take keeps his gate open');
+  assert.equal(t.cat('togemaru').state, 'Crew', 'played from branch B by the rules');
 });

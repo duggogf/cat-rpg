@@ -40,6 +40,7 @@ export const POSTURE = {
   comma: { earX: -0.45, earZ: 0.38, head: 0.16, chest: 0.06, crouch: 0.5 },      // Fraidy: ears flat back, half-crouched
   pom: { earX: 0, earZ: 0, head: 0, chest: 0, crouch: 0 },                        // Mikan: the player's personality
   mikan: { earX: 0, earZ: 0, head: 0, chest: 0, crouch: 0 },
+  routed: { earX: -0.95, earZ: 0.85, head: 0.34, chest: 0.1, crouch: 0.75 },        // a beaten cat at its Verdict: low, ears flat back (mock 07)
 };
 
 function mulberry(seed) {
@@ -59,7 +60,8 @@ export function createAnimator(B, o) {
   const rest = {}; for (const k in B) rest[k] = B[k].position.clone();
   let t = 0, gait = 'idle', speed = 0, phase = 0, walkW = 0;
   let carry = CARRIAGES[o.carry] || CARRIAGES.pom;
-  const pose = POSTURE[o.posture] || POSTURE[o.carry] || POSTURE.pom;
+  let pose = POSTURE[o.posture] || POSTURE[o.carry] || POSTURE.pom;
+  const pose0 = pose;
   const isPom = carry === CARRIAGES.pom;
   let nextBlink = 1.2 + rnd() * 2.5, blinkT = -1;
   let nextFlick = 1.5 + rnd() * 2.5, flickT = -1, flickSide = 1;
@@ -77,6 +79,8 @@ export function createAnimator(B, o) {
   return {
     state,
     setCarry(name) { carry = CARRIAGES[name] || carry; },
+    /** Override the personality posture (e.g. 'routed' at a Verdict); null restores the cat's own. */
+    setPosture(name) { pose = (name && POSTURE[name]) || pose0; },
     setGait(name, spd) { gait = name; speed = spd || 0; },
     /** p: {x,y,z} in the cat's local, unscaled space (origin at the feet, +Z forward), or null. */
     setLook(p) { lookTarget = p ? { x: p.x, y: p.y, z: p.z } : null; },

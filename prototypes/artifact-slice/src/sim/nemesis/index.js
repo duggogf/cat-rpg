@@ -92,6 +92,21 @@ export const ARC = {
     ev.push(...t.applyVerdict(K.verdict));
     return ev;
   },
+  /**
+   * TEST / SHOWCASE ONLY (review round 1, fix 2): a Life 2 Rout of Kagi so the Bribe row comes from a real offer (mock 07).
+   * A quiet Tofu Shop Step take (his gate stays open), the Posse Routs him, Stash set before the fight ends (F8 reads it at
+   * the offer). The offer is left pending for the Verdict. Kagi is slice-recruitable (Nemesis §3.1 DR-01).
+   */
+  kagiRout(t, { stash = 150 } = {}) {
+    const K = t.D.showcase.l2d1_kagi_truce, ev = [];
+    for (let i = 0; i < K.over_marks; i++) ev.push(...t.onTerritory([mark(K.patch, 'over_mark', 'wall_sitters', `${K.patch}.rub${i + 1}`)]));
+    for (let i = 0; i < K.counter_sprays; i++) ev.push(...t.onTerritory([mark(K.patch, 'counter_spray', 'wall_sitters')]));
+    ev.push(...t.setStash(stash));
+    ev.push(...t.beginEncounter({ patch: K.patch, posse: K.posse, opponents: ['kagi'] }));
+    ev.push(...t.routed('kagi', { by: K.finisher, how: 'by_hit' }));
+    ev.push(...t.endEncounter({ outcome: 'win' }));
+    return ev;
+  },
   /** L2D1 (A): his truce greeting at the gatepost (encounter 3, F11). */
   l2d1(t) { return t.cat('togemaru').state === 'Truce' ? t.greet('togemaru', { patch: 'LPY' }) : []; },
 };
@@ -101,8 +116,8 @@ export const BRANCH_VERDICT = { A: 'nose', B: 'recruit', C: 'chase' };
 
 /**
  * Create the town.
- * @param o {seed, start: 'l1d1' | 'showcase_l2d2', branch: 'A'|'B'|'C' (showcase_l2d2), showcase (seeds; implied by
- *          showcase_l2d2), overrides (constants merged over rivals.json)}
+ * @param o {seed, start: 'l1d1' | 'showcase_l2d2' | 'test_l2_kagi_rout', branch: 'A'|'B'|'C' (showcase_l2d2), showcase
+ *          (seeds; implied by showcase_l2d2), overrides (constants merged over rivals.json)}
  * The showcase_l2d2 start plays L1D1–L2D1 by the rules from the chosen Verdict, then applies the showcase seeds
  * (Daifuku Furious 95, the night-3 challenger with its forced Rival tag, join-in p 1.0). `town.startLog` keeps the events.
  */
@@ -121,7 +136,14 @@ export function createTown({ seed = 1, start = 'l1d1', branch = 'A', showcase = 
     const d = t.cat('daifuku'); if (d && d.anger != null) d.anger = S.daifuku_anger; // seeded snapshot (Nemesis A-9), not the anger rule
     for (const id of S.discovered) L.push(...t.discover(id, 'showcase'));
     t.s.day = S.l2d2_day; // already day 4 after night 3: asserted, not forced
-  }
+  } else if (start === 'test_l2_kagi_rout') {
+    // TEST / SHOWCASE ONLY: branch B's Life 1 (Togemaru recruited free, so the Crew is 4/6 on L2D1), then Kagi Routed on
+    // L2D1 with Stash 150 and his Verdict offer pending: Fair 96 open, Feast 192 short (mock 07). Played by the rules.
+    const L = t.startLog;
+    L.push(...ARC.l1d1(t), ...ARC.night(t, 1), ...ARC.l1d2(t), ...t.applyVerdict('recruit'), ...ARC.sniffDaifuku(t), ...ARC.night(t, 2));
+    t.sniff({ consume: false });
+    L.push(...ARC.kagiRout(t));
+  } else if (start !== 'l1d1') throw new Error(`unknown start ${start}`);
   return t;
 }
 

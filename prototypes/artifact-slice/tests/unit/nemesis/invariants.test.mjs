@@ -32,6 +32,13 @@ test('Verdicts on Daifuku (a Boss) and on the challenger change no cat but their
   }
 });
 
+test('The Kagi Bribe start: a Fair Recruit changes no cat but Kagi', () => {
+  const t = createTown({ seed: 42, start: 'test_l2_kagi_rout' });
+  const before = t.catHashes(); t.applyVerdict('recruit', { bribe: 'fair' });
+  assert.deepEqual(changedIds(before, t.catHashes()), ['kagi']);
+  assert.equal(t.cat('kagi').state, 'Crew'); assert.equal(t.cat('kagi').bribe_paid, 96);
+});
+
 test('Join-in: the opposing Rival and every bystander are identical with or without the joiner (G7)', () => {
   const fight = withJoin => {
     const t = createTown({ seed: 13, start: 'showcase_l2d2', branch: 'A' });

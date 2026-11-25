@@ -224,6 +224,8 @@ export function createCatInternal(opts = {}) {
     },
     setGait(name, speed = 0) { anim.setGait(name, speed); },
     setCarry(name) { anim.setCarry(name); },
+    /** ADDITION (M3 Verdict): a posture override, e.g. 'routed' (low, ears flat back); null restores. */
+    setPosture(name) { anim.setPosture(name); },
     setLighting({ keyDir, keyColor, shadeColor, rimColor } = {}) {
       if (keyDir) U.uKeyDir.value.copy(keyDir).normalize();
       // lit tone: the phase cel tint (≈ half-way to the key colour; Day ≈ white). Shade: kit lavender multiply.

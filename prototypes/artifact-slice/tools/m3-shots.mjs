@@ -42,22 +42,22 @@ const SHOTS = [
   // name, query, note, after(p)
   ['board-lane-rest', 'board=lane&branch=A', 'Lane scene, rest (nothing focused): names only, faint arrows, steam puffs, silhouettes in the shade'],
   ['board-lane-focus-togemaru', 'board=lane&branch=A&focus=togemaru', 'Focus Togemaru (keys): lift + gold rim, his arrow bright, Goma Rival tag, others dim, card'],
-  ['board-lane-focus-daifuku', 'board=lane&branch=A&focus=daifuku', 'Focus the Boss: every member arrow bright, Old Gang chip under the Bell tab, anger card'],
+  ['board-lane-focus-daifuku', 'board=lane&branch=A&focus=daifuku', 'Focus the Boss: every member arrow bright, "Old Gang: Hige · the Bell" line in the card, anger card'],
   ['board-lane-focus-silhouette', 'board=lane&branch=A&focus=sasa', 'Focus a silhouette: "?" pom, "Not met yet" card, no tags'],
-  ['board-lane-full-card', 'board=lane&branch=A&focus=togemaru&full=1', 'South: the full Rival card'],
+  ['board-lane-full-card', 'board=lane&branch=A&focus=togemaru&full=1', 'South: the full Rival card, every history entry pinned first (first sniff, notch, fled, routed, nose)'],
   ['board-outsiders', 'board=outsiders&branch=A&focus=challenger', 'Outsiders: the challenger silhouette beside its stake stamp'],
-  ['board-bell-focus-hige', 'board=bell&branch=A&focus=hige', 'Bell: Crew arrows to Mikan; Hige focused shows the Old Boss chip under the Lane tab'],
+  ['board-bell-focus-hige', 'board=bell&branch=A&focus=hige', 'Bell: Crew arrows to Mikan; Hige focused: "Before you" history, "Old Boss: Daifuku · the Lane" line in the card'],
   ['board-bell-focus-kinako', 'board=bell&branch=A&focus=kinako', 'Bell: Kinako shows no tag while Sasa is unmet'],
-  ['board-lane-B', 'board=lane&branch=B', 'Branch B: Togemaru recruited, a bell-cord knot on his old spot'],
+  ['board-lane-B', 'board=lane&branch=B', 'Branch B: Togemaru recruited, a named bell-cord knot card on his old spot'],
   ['board-bell-B', 'board=bell&branch=B&focus=togemaru', 'Branch B: Togemaru in the Bell scene'],
   ['board-lane-C', 'board=lane&branch=C', 'Branch C: Togemaru Chased Off, a legend card on his spot'],
   ['standoff-memory', 'vantage=1&m3=standoff&branch=L1', 'L1D2 Standoff: the sim’s memory line; the Fight prompt locked 1 s (ring)'],
-  ['verdict-l1-none', 'vantage=1&m3=verdict&branch=L1', 'L1D2 Verdict on Togemaru: three cards, no focus, first-Verdict hint'],
+  ['verdict-l1-none', 'vantage=1&m3=verdict&branch=L1', 'L1D2 Verdict on Togemaru: three cards, no focus, first-Verdict hint bubble (5 words); Togemaru low, ears back, fresh notch on his ear'],
   ['verdict-l1-up', 'vantage=1&m3=verdict&branch=L1&card=up', 'Nose-Touch raised: tell "Tail still." (Grudge 43 < 45)'],
   ['verdict-l1-left', 'vantage=1&m3=verdict&branch=L1&card=left', 'Chase Off raised: ears drop, Mikan turns away'],
   ['verdict-l1-right', 'vantage=1&m3=verdict&branch=L1&card=right', 'Recruit raised: Life 1 "Free" step, starts Aloof'],
-  ['verdict-l2-right', 'vantage=1&m3=verdict&branch=A&focus=goma&card=right', 'Life 2 Verdict on Goma from the sim: Recruit greyed in place ("Turns its tail to the bell.": no Life 2 recruit in the slice)'],
-  ['verdict-l2-bribe', 'vantage=1&m3=verdict&branch=A&focus=goma&card=right&seeds=1&step=fair', 'The Bribe row UI on the slice seeds (Fair 96 / Feast 192, Stash 150 short of Feast, Crew 4/6)'],
+  ['verdict-l2-right', 'vantage=1&m3=verdict&branch=A&focus=goma&card=right', 'Life 2 Verdict on Goma from the sim: Recruit greyed in place; the bubble agrees ("Turns its tail to the bell.") and Goma turns his back. Goma is not slice-recruitable (Nemesis §3.1 DR-01)'],
+  ['verdict-l2-bribe', 'vantage=1&m3=verdict&branch=B&nemstart=test_l2_kagi_rout&focus=kagi&card=right&step=fair', 'The Bribe row from a real sim offer on Kagi (test start test_l2_kagi_rout): Fair 96 open, Feast 192 short (Stash 150), Crew 4/6, eyes on the fish'],
   ['verdict-l2-up', 'vantage=1&m3=verdict&branch=A&focus=goma&card=up', 'Life 2 Verdict on Goma: Nose-Touch tell from the sim'],
   ['declaration-A', 'm3=declaration&branch=A', 'L2D2 Sniff, branch A: the Declaration card (Sworn Rival)'],
   ['closing-B', 'm3=declaration&branch=B', 'L2D2 Sniff, branch B: "Wears the bell now"'],
@@ -119,6 +119,8 @@ if (!only || only === 'checks') {
 await browser.close(); srv.close();
 fs.writeFileSync(path.join(OUT, 'results.json'), JSON.stringify(R, null, 2));
 const lines = Object.entries(R.shots).map(([n, r]) => `| \`${n}.png\` | ${r.note}${r.board ? ` (${r.board.calls} calls, ${(r.board.triangles / 1000).toFixed(0)}k tris, ${r.textItems} text items)` : ''} |`);
+const prevReadme = fs.existsSync(path.join(OUT, 'README.md')) ? fs.readFileSync(path.join(OUT, 'README.md'), 'utf8') : '';
+const kept = prevReadme.includes('\n## Round 1 fixes') ? prevReadme.slice(prevReadme.indexOf('\n## Round 1 fixes')) : '';   // hand-written review sections survive a re-run
 fs.writeFileSync(path.join(OUT, 'README.md'), `<!-- PROTOTYPE - NOT FOR PRODUCTION -->
 # M3 evidence: Rivals, Verdict, the Rivals board
 
@@ -142,5 +144,5 @@ ${lines.join('\n')}
 - No tag on an undiscovered cat: ${R.checks.tagOnUndiscovered && R.checks.tagOnUndiscovered.length === 0 ? 'PASS' : 'FAIL ' + JSON.stringify(R.checks.tagOnUndiscovered)}.
 - Kinako shows no tag while Sasa is unmet: ${R.checks.kinakoTags && R.checks.kinakoTags.length === 0 ? 'PASS' : 'FAIL'}.
 - Console errors and external requests: ${R.errors.length ? R.errors.length + ' (see results.json)' : 'none'}.
-`);
+${kept}`);
 console.log('errors', R.errors.length ? R.errors : 'none');

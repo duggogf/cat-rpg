@@ -112,13 +112,15 @@ const CSS = `
 .rb-q { width:44px; height:44px; border-radius:50%; background:var(--cream); border:3px solid var(--cocoa); font:800 28px/38px var(--font); text-align:center; color:var(--cocoa); animation:rbpop .15s steps(3); }
 .rb-legend { width:150px; padding:10px 12px; background:#EFE3C8; border:3px solid #9C8A72; border-radius:10px 14px 12px 14px; transform-origin:50% 100%; text-align:center; font:800 22px/1.1 var(--font); color:#6E5E4E; box-shadow:2px 3px 0 rgba(110,106,168,.45); }
 .rb-legend small { display:block; font:700 18px/1.2 var(--font); margin-top:4px; }
-.rb-card { position:absolute; left:24px; bottom:24px; width:676px; height:256px; padding:0; overflow:visible; transition:transform .1s steps(3), opacity .1s steps(3); }
+.rb-card { position:absolute; left:24px; bottom:24px; width:676px; min-height:256px; padding:0 0 14px; overflow:visible; transition:transform .1s steps(3), opacity .1s steps(3); }
 .rb-card.off { transform:translateY(60px); opacity:0; pointer-events:none; }
 .rb-card .head { position:relative; display:flex; align-items:center; gap:12px; margin:-26px 0 0 -10px; height:80px; padding:0 56px 0 12px; width:max-content; max-width:700px;
   background:var(--k-clowder, var(--sage)); color:var(--ink); border:4px solid var(--ink); border-right:0; clip-path:polygon(0 0,100% 0,calc(100% - 36px) 100%,0 100%); font:800 36px/1 var(--font); white-space:nowrap; }
 .rb-card .head small { font:700 28px/1 var(--font); }
 .rb-card .r { display:flex; align-items:center; gap:10px; padding:6px 24px 0; font:700 28px/1.1 var(--font); color:var(--ink); white-space:nowrap; }
 .rb-card .r svg { display:block; flex:none; }
+.rb-card .r.rb-cross { white-space:normal; align-items:flex-start; font-size:25px; line-height:1.2; }
+.rb-card .r.rb-cross .q { font-weight:600; }
 .rb-card .sep { width:3px; height:28px; background:#D9C3A0; margin:0 4px; }
 .rb-card .sw { display:inline-flex; align-items:center; height:38px; padding:0 14px; border-radius:20px; background:var(--ink); color:var(--cream); font:800 26px/1 var(--font); }
 .rb-card .sp { display:inline-flex; align-items:center; gap:4px; height:38px; padding:0 14px 0 6px; border-radius:20px; background:#E4F0D2; border:3px solid var(--ink); font:800 24px/1 var(--font); }
@@ -137,7 +139,7 @@ const CSS = `
 .rb-full .row { display:flex; flex-wrap:wrap; align-items:center; gap:10px; font:700 28px/1.2 var(--font); }
 .rb-full .pt { display:inline-flex; align-items:center; gap:6px; height:42px; padding:0 14px 0 6px; background:var(--cream); border:3px solid var(--ink); border-radius:8px 12px 10px 12px; font:800 24px/1 var(--font); }
 .rb-full .hist { display:flex; flex-direction:column; gap:10px; font:600 26px/1.2 var(--font); }
-.rb-full .hist b { font:800 22px/1 var(--font); color:var(--cocoa); width:70px; display:inline-block; }
+.rb-full .hist b { font:800 22px/1 var(--font); color:var(--cocoa); min-width:70px; margin-right:10px; display:inline-block; white-space:nowrap; }
 .rb-full .stage { height:470px; border-radius:30px; background:var(--recessed); display:flex; align-items:center; justify-content:center; overflow:hidden; }
 .rb-full .foot { position:absolute; right:36px; bottom:26px; display:flex; gap:12px; }
 .rb-full .legend { position:absolute; left:40px; bottom:30px; font:800 30px/1 var(--font); color:#8C6E58; transform:rotate(-6deg); border:4px solid #B04A3A; color:#B04A3A; padding:8px 18px; border-radius:10px; }
@@ -288,7 +290,7 @@ export class RivalsBoard {
       const l = { id: c.id, el: document.createElement('div'), mark: null, dirty: true };
       if (c.state === 'gone' || (oldSpot && c.state === 'crew')) {
         l.el.className = 'rb-legend'; l.kind = c.state === 'gone' ? 'legend' : 'knot';
-        l.el.innerHTML = c.state === 'gone' ? `${c.name}<small>Run out of town</small>` : `${svg(44, 30, '-22 -15 44 30', `<path d="M-18 0Q-8 -12 0 0Q8 12 18 0" fill="none" stroke="${C.gold}" stroke-width="5" stroke-linecap="round"/><path d="M-18 0Q-8 -12 0 0Q8 12 18 0" fill="none" stroke="${ink}" stroke-width="1.5"/><circle r="6" fill="${C.gold}" ${st2}/>`)}<small>Wears the bell now</small>`;
+        l.el.innerHTML = c.state === 'gone' ? `${c.name}<small>Run out of town</small>` : `${svg(44, 30, '-22 -15 44 30', `<path d="M-18 0Q-8 -12 0 0Q8 12 18 0" fill="none" stroke="${C.gold}" stroke-width="5" stroke-linecap="round"/><path d="M-18 0Q-8 -12 0 0Q8 12 18 0" fill="none" stroke="${ink}" stroke-width="1.5"/><circle r="6" fill="${C.gold}" ${st2}/>`)}${c.name}<small>Wears the bell now</small>`;   // the name, as on the Run-out card (review round 1, fix 5)
         if (c.state === 'gone') l.el.innerHTML += `<div style="position:absolute;right:-70px;bottom:-6px">${svg(80, 40, '0 -20 80 40', RV.pawPrints({ pts: [[10, 6, 0.8], [30, -2, 0.8], [50, 8, 0.8], [70, 0, 0.8]], s: 1 }))}</div>`;
         world.appendChild(l.el); this.labels.set('legend:' + c.id, l); continue;
       }
@@ -318,7 +320,7 @@ export class RivalsBoard {
     return null;
   }
   drawStrip() {
-    const m = this.m, cross = this.crossTie();
+    const m = this.m;
     const order = [['lane'], ['arcade', 'lantern'], ['shiosai', 'anchor'], ['summit', 'lighthouse'], ['outsiders'], ['bell']];
     let h = `<span class="k-btn k-key rb-sh" data-k="prev">L1</span>`;
     for (const [id, emLock] of order) {
@@ -328,7 +330,7 @@ export class RivalsBoard {
       const dots = !def && simS ? simS.dots.slice(0, 10).map((d) => `<i class="${d.met ? 'm' : 's'}"></i>`).join('') : def ? cats.slice(0, 10).map((c) => `<i class="${c.discovered ? 'm' : 's'}"></i>`).join('') + (cats.length > 10 ? '+' : '') : '<i class="s"></i>'.repeat(id === 'summit' ? 2 : 3);
       const name = def ? def.tab : { arcade: 'Akane Arcade', shiosai: 'Shiosai', summit: 'The Lighthouse Summit' }[id];
       const emH = `<span class="rb-em">${svg(30, 30, '-13 -13 26 26', em)}</span>`;
-      const chip = cross && cross.scene === id ? `<span class="rb-chip">${K.ui.portrait({ size: 32, ring: C.cream, bg: '#F7C99A', cat: m.cats[cross.id].kit })}${TAGWORD[cross.kind]}</span>` : '';
+      const chip = '';   // review round 1, fix 5: cross-scene ties are a line in the focus card, not a chip under a tab
       if (id === this.sceneId) h += `<span class="rb-sc" data-s="${id}"><span class="rb-pill">${emH}${name}</span><span class="rb-dots">${dots}</span>${chip}</span>`;
       else h += `<span class="rb-sc${def ? '' : ' lock'}" data-s="${def ? id : ''}">${emH}<span class="rb-dots">${dots}</span>${chip || `<span class="rb-tip">${def ? name : name + ': further up the hill.'}</span>`}</span>`;
     }
@@ -379,7 +381,17 @@ export class RivalsBoard {
     if (L.ctx.includes('__MOOD__')) { L.ctx = L.ctx.replace('__MOOD__', L.mood); L.mood = ''; }
     card.innerHTML = `<div class="head">${K.ui.portrait({ size: 76, ring: c.clowder === 'bell' ? C.gold : C.gold, bg: '#F7C99A', cat: { ...c.kit, expr: c.kit.expr || 'neutral', outline: 'ink', scars: c.scars } })}${c.name.toUpperCase()} ${c.title && c.role !== 'boss' ? `<small>· ${c.title}</small>` : ''}</div>
       <div class="r">${L.role}${L.pers}${over > 0 ? `<span class="more">+${over} ties</span>` : ''}</div>
-      ${L.mood ? `<div class="r">${L.mood}</div>` : ''}${L.hist}${L.ctx}`;
+      ${L.mood ? `<div class="r">${L.mood}</div>` : ''}${L.hist}${L.ctx}${this.crossLine(c)}`;
+  }
+  /** Ties to cats in another scene, as one card line: "Old Gang: Hige · the Bell" (review round 1, fix 5). */
+  crossLine(c) {
+    const SCN = { lane: 'the Lane', bell: 'the Bell', outsiders: 'the bus stop' };
+    const xs = this.m.tiesOf(c.id).filter((t) => this.m.cats[t.to].scene !== this.sceneId);
+    if (!xs.length) return '';
+    // grouped by scene, then by tie: "Rival: Goma / Old Boss: Daifuku · the Lane"
+    const by = new Map(); for (const t of xs) { const sc = this.m.cats[t.to].scene; if (!by.has(sc)) by.set(sc, new Map()); const g = by.get(sc); if (!g.has(t.kind)) g.set(t.kind, []); g.get(t.kind).push(this.m.cats[t.to].name); }
+    const parts = [...by].map(([sc, g]) => `${[...g].map(([kind, names]) => `${TAGWORD[kind]}: ${names.join(', ')}`).join(' / ')} · ${SCN[sc] || sc}`);
+    return `<div class="r rb-cross">${TAGICON[xs[0].kind] || ''}<span class="q">${parts.join(' / ')}</span></div>`;
   }
   drawFull(c) {
     const f = this.q('.rb-full'); f.classList.add('on'); this.q('.rb-card').classList.add('off'); this.drawButtons();
@@ -452,41 +464,40 @@ export class RivalsBoard {
     const cap = this.q('.rb-caption');
     if (this.sceneId === 'outsiders' && !this.sceneCats().length) { cap.style.display = ''; cap.textContent = 'Nobody at the bus stop yet.'; } else cap.style.display = 'none';
   }
-  /** Dashed answers-to arrows: each member's branch joins its side's trunk, the trunks climb to the perch (§2.3). */
+  /** Dashed answers-to arrows (review round 1, fix 5): ONE smooth curve per cat, from the top of its head to its
+   *  superior's ribbon (no shared trunk or kink), ending in a head that points into the ribbon (§2.3). */
   drawArrows(k, rel) {
     const s3 = this.scene3, def = BOARD.scenes.find((s) => s.id === this.sceneId), out = [];
     const g = this.q('.rb-arrows'); g.setAttribute('width', innerWidth); g.setAttribute('height', innerHeight);
-    if (!def.trunks || !def.perch) { g.innerHTML = ''; return; }
+    if (!def.perch) { g.innerHTML = ''; return; }
     const boss = this.m.cats[def.perch], F = this.focus, fc = F && this.m.cats[F];
-    const P = (a) => s3.project(new THREE.Vector3(def.x + a[0], a[1], a[2]));
-    const path = (pts) => { let d = `M${pts[0].x.toFixed(1)} ${pts[0].y.toFixed(1)}`; for (let i = 1; i < pts.length - 1; i++) { const m = { x: (pts[i].x + pts[i + 1].x) / 2, y: (pts[i].y + pts[i + 1].y) / 2 }; d += `Q${pts[i].x.toFixed(1)} ${pts[i].y.toFixed(1)} ${m.x.toFixed(1)} ${m.y.toFixed(1)}`; } const L = pts[pts.length - 1]; return d + `L${L.x.toFixed(1)} ${L.y.toFixed(1)}`; };
-    const dash = (pts, w, op, dotted) => { const d = path(pts); return `<path d="${d}" fill="none" stroke="${C.cream}" stroke-width="${(w + 4) * k}" stroke-linecap="round" stroke-linejoin="round" opacity="${op}"/><path d="${d}" fill="none" stroke="${ink}" stroke-width="${w * k}" stroke-dasharray="${(dotted ? 3 : 12) * k} ${(dotted ? 9 : 10) * k}" stroke-linecap="round" stroke-linejoin="round" opacity="${op}"/>`; };
-    const head = (a, b, w, op) => { const ang = Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI; return `<g transform="translate(${b.x} ${b.y}) rotate(${ang}) scale(${k})" opacity="${op}"><path d="M-14 -10L4 0L-14 10" fill="none" stroke="${C.cream}" stroke-width="${w + 5}" stroke-linecap="round" stroke-linejoin="round"/><path d="M-14 -10L4 0L-14 10" fill="none" stroke="${ink}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/></g>`; };
+    const dash = (d, w, op, dotted) => `<path d="${d}" fill="none" stroke="${C.cream}" stroke-width="${(w + 4) * k}" stroke-linecap="round" opacity="${op}"/><path d="${d}" fill="none" stroke="${ink}" stroke-width="${w * k}" stroke-dasharray="${(dotted ? 3 : 12) * k} ${(dotted ? 9 : 10) * k}" stroke-linecap="round" opacity="${op}"/>`;
+    const head = (a, b, w, op) => { const ang = Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI; return `<g transform="translate(${b.x.toFixed(1)} ${b.y.toFixed(1)}) rotate(${ang.toFixed(1)}) scale(${k})" opacity="${op}"><path d="M-14 -10L4 0L-14 10" fill="none" stroke="${C.cream}" stroke-width="${w + 5}" stroke-linecap="round" stroke-linejoin="round"/><path d="M-14 -10L4 0L-14 10" fill="none" stroke="${ink}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/></g>`; };
     const emptyPerch = !!boss && !!boss.state && boss.state !== 'present';
     const bossFocus = fc && fc.id === def.perch;
-    for (const side of ['left', 'right']) {
-      const tr = def.trunks[side].map(P); if (tr.some((p) => !p)) continue;
-      const sg = side === 'left' ? -1 : 1;
-      const members = this.sceneCats().filter((c) => c.answersTo === def.perch && c.discovered && c.id !== def.perch && Math.sign(def.anchors[c.id] ? def.anchors[c.id].at[0] : -1) === sg);
-      if (!members.length) continue;
-      // each branch leaves the top of its cat's head on the centre-line side and joins the first trunk point above it
-      const js = [];
-      for (const c of members) {
-        const e = s3.entry(this.sceneId, c.id); if (!e) continue;
-        const ph = s3.project(e.cat.object3D.position.clone().add(new THREE.Vector3(0, s3.heightOf(e) * 1.02, 0))); if (!ph) continue;
-        let i = tr.findIndex((t) => t.y < ph.y - 24 * k); if (i < 0) i = tr.length - 1;
-        js.push({ c, a: { x: ph.x - sg * 14 * k, y: ph.y - 8 * k }, i });
+    // the superior's ribbon (its name label), else its feet on the perch
+    const lab = [...this.labels.values()].find((l) => l.id === def.perch && l.el && l.el.style.display !== 'none' && l.el.isConnected);
+    const r = lab ? lab.el.querySelector('.k-ribbon') || lab.el : null, rc = r ? r.getBoundingClientRect() : null;
+    const be = s3.entry(this.sceneId, def.perch), bp = be ? s3.project(be.cat.object3D.position.clone()) : (def.perchAt ? s3.project(new THREE.Vector3(def.x + def.perchAt[0], def.perchAt[1], def.perchAt[2])) : null);
+    const target = (a) => {
+      if (rc && rc.width > 0) {
+        const mid = (rc.left + rc.right) / 2, cx = mid + Math.max(-rc.width * 0.35, Math.min(rc.width * 0.35, a.x - mid));   // each cat lands on its own side of the ribbon
+        return a.y > rc.bottom ? { x: cx, y: rc.bottom + 3 * k } : { x: a.x < rc.left ? rc.left - 3 * k : rc.right + 3 * k, y: (rc.top + rc.bottom) / 2 };
       }
-      if (!js.length) continue;
-      const lo = Math.min(...js.map((x) => x.i));
-      const trunk = tr.slice(lo), fj = js.find((x) => x.c.id === F), hiFrom = bossFocus ? lo : fj ? fj.i : -1;
-      if (trunk.length >= 2) { const base = F ? 0.18 : 0.35; out.push(dash(trunk, 2, base, emptyPerch)); if (hiFrom < 0) out.push(head(trunk[trunk.length - 2], trunk[trunk.length - 1], 2, base)); }
-      if (hiFrom >= 0) { const hi = tr.slice(hiFrom); if (hi.length >= 2) { out.push(dash(hi, 4, 1, emptyPerch)); out.push(head(hi[hi.length - 2], hi[hi.length - 1], 4, 1)); } }
-      for (const { c, a, i } of js) {
-        const mine = c.id === F || bossFocus, op = F ? (mine ? 1 : 0.18) : 0.35, w = mine ? 4 : 2, b = tr[i];
-        const ctl = { x: a.x + (b.x - a.x) * 0.15, y: Math.min(a.y, b.y) - 20 * k };
-        out.push(dash([a, ctl, b], w, op, emptyPerch));
-      }
+      return bp ? { x: bp.x, y: bp.y + 8 * k } : null;
+    };
+    const members = this.sceneCats().filter((c) => c.answersTo === def.perch && c.discovered && c.id !== def.perch);
+    for (const c of members) {
+      const e = s3.entry(this.sceneId, c.id); if (!e) continue;
+      const a = s3.project(e.cat.object3D.position.clone().add(new THREE.Vector3(0, s3.heightOf(e) * 1.05, 0))); if (!a) continue;
+      const b = target(a); if (!b) continue;
+      const mine = c.id === F || bossFocus, op = F ? (mine ? 1 : 0.18) : 0.35, w = mine ? 4 : 2;
+      // one cubic: leaves the head straight up, arrives straight into the ribbon (vertical tangents at both ends)
+      const dy = Math.max(24 * k, a.y - b.y), side = b.y > (rc ? rc.top : b.y - 1) && rc && a.y <= rc.bottom;
+      const c1 = { x: a.x, y: a.y - dy * 0.55 }, c2 = side ? { x: b.x + (a.x < b.x ? -40 : 40) * k, y: b.y } : { x: b.x, y: b.y + dy * 0.45 };
+      const d = `M${a.x.toFixed(1)} ${a.y.toFixed(1)}C${c1.x.toFixed(1)} ${c1.y.toFixed(1)} ${c2.x.toFixed(1)} ${c2.y.toFixed(1)} ${b.x.toFixed(1)} ${b.y.toFixed(1)}`;
+      out.push(dash(d, w, op, emptyPerch));
+      out.push(head(c2, b, w, op));
     }
     g.innerHTML = out.join('');
   }

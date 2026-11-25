@@ -292,7 +292,7 @@ export class BoardScene {
       const a = r.at || (def.anchors[r.id] && def.anchors[r.id].at) || [0, 0, -5];
       c.base = new THREE.Vector3(def.x + a[0], a[1], a[2]); c.role = r.role;
       // staging scale per spot (near spots read a little small, like a painted set; key-screens §2.6 zones)
-      const an = def.anchors[r.id]; if (!c.s0) c.s0 = c.cat.object3D.scale.x; c.cat.object3D.scale.setScalar(c.s0 * (!r.at && an && an.scale ? an.scale : 1));
+      const an = def.anchors[r.id]; if (!c.s0) c.s0 = c.cat.object3D.scale.x; c.cat.object3D.scale.setScalar(c.s0 * (r.at && r.at[3] ? r.at[3] : !r.at && an && an.scale ? an.scale : 1));   // a shade spot may carry its staging scale as a 4th value
       c.cat.object3D.position.copy(c.base);
       const face = r.face ?? (def.anchors[r.id] ? def.anchors[r.id].face : 0) ?? 0;
       c.cat.object3D.rotation.y = face;

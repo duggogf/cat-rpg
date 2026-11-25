@@ -91,3 +91,16 @@ test('Cards: undiscovered "Not met yet"; an outsider silhouette names its stake;
   assert.equal(t.nameCard('kagi').role_tag, 'Captain · Sneak');
   assert.equal(t.rivalCard('ohagi'), null, 'undiscovered cats have no Rival card');
 });
+
+test('Memory on the cards (review round 1 fix 6): pre-game entries say "Before you"; the full card keeps all five; closings do not repeat', () => {
+  const a = createTown({ seed: 42, start: 'showcase_l2d2', branch: 'A' });
+  assert.equal(a.nameCard('hige').history.day, 'Before you');
+  assert.ok(!JSON.stringify(a.boardView()).includes('L1 D0'));
+  const h = a.rivalCard('togemaru').history;
+  assert.deepEqual(h.map(x => x.kind), ['FIRST_MEETING', 'SCAR', 'FLED', 'ROUTED', 'VERDICT'], 'pinned first, then the rest in order');
+  for (const [b, title, line] of [['B', 'Wears the bell now', 'Aloof. Notched. On the Posse bench.'], ['C', 'Run out of town', 'Notched. Left Laundry Pole Yard behind.']]) {
+    const it = createTown({ seed: 42, start: 'showcase_l2d2', branch: b }).sniff().items.find(x => x.kind === 'arc_closing');
+    assert.equal(it.title, title); assert.equal(it.line, line);
+    assert.ok(!it.line.toLowerCase().includes(title.toLowerCase()), 'the subtitle never repeats the headline');
+  }
+});

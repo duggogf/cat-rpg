@@ -27,6 +27,8 @@
 //                                           A shell named 'keyline-rim' in the cat's subtree is hidden below 5%.
 //   Cat.lookAt(worldPos | null)             (M0 fix pass ADDITION) head turns toward a THREE.Vector3 in world
 //                                           space, clamped ±70°; null = back to idle glances
+//   Cat.setPosture(name | null)             (M3 ADDITION) posture override, e.g. 'routed' at a Verdict (low, ears flat back)
+//   Cat.bones                               (M3 ADDITION) the skeleton by bone name (read-only; for marks on the model)
 //   Cat.dispose()
 //
 // Characters receive NO shadow map; the cat draws its own soft contact blob.
@@ -46,6 +48,8 @@ export function createCat({ cast = 'mikan', scale = 1.25, ...rest } = {}) {
     setLighting: (l) => c.setLighting(l),
     setOutlineScale: (k) => c.setOutlineScale(k),
     lookAt: (p) => c.lookAt(p),
+    setPosture: (n) => c.setPosture(n),
+    bones: c.bones,
     setLod: (m) => c.setLod(m),
     get lod() { return c.lod; },
     get triangles() { return c.triangles; },

@@ -75,6 +75,7 @@ let lastTagWindow = null, routedTrail = new Map(), crackedUntil = new Map(), sta
 let koFly = null, pendingKO = null, camPrev = null, driveInp = null, driveYaw = 0, ko = null, lastEnemyOut = null, lastOutBy = null, sawShockwaveEvent = false; const teleById = new Map();
 let quiet = null, hudBackAt = null, chainMean = 0.4, staggerSeen = false, latencyLog = [], cin = null, chainPending = false, chainFired = false; const banners = new Set(), bonusShown = new Set();
 let pendingCard = null, seedCounter = 1, skipDraw = false; const pendingMenu = [];
+let vstage = null;   // M3: the Verdict vantage after a won rival fight ({id, S, M, d, undo}); see stageVerdict()
 
 function setPhase(name) {
   const p = applyPhase(name), sd = sunDir(p);
@@ -336,7 +337,7 @@ function onEvent(ev) {
     case 'GuestEntered': case 'AllyYowl': { const f = F(ev.cat); if (f) fx.spawn('sparkleCream', f.head.clone(), { size: 0.4, drawings: 6 }); break; }
     case 'EncounterEnded': {
       endShown = true;
-      if (Q.get('verdict') !== '0') combatVerdict(ev, evLog, { test: opt.test });   // M3 hook (src/ui/m3-combat.js)
+      if (Q.get('verdict') !== '0') combatVerdict(ev, evLog, { test: opt.test, stage: stageVerdict, unstage: unstageVerdict });   // M3 hook (src/ui/m3-combat.js)
       const t = { win: ['ROUTED THEM!', ' The lot is ours'], loss: ['WIPED OUT', ' Back home by nightfall'], rival_fled: ['DAIFUKU BOLTS!', ' Phase 1 cleared'], player_fled: ['SCRAM!', ''] }[ev.outcome] || ['FIGHT OVER', ''];
       // the final KO cinematic, unless the sim already sent FinalKO this tick
       if (!ko && (ev.outcome === 'win' || ev.outcome === 'rival_fled')) { const last = ev.outcome === 'rival_fled' ? (ev.rival || (ev.boss_ids || [])[0]) : lastEnemyOut; if (last) startKO(last, lastOutBy); }
@@ -528,6 +529,53 @@ function frame(dt) {
   present(dt, Math.min(1, acc / DT), menu, cut);
 }
 
+/* ---------------------------------------------------------------- M3: the Verdict vantage (review round 1, fix 4) */
+// When a won fight ends in a Verdict, the combat HUD, the lock ring and the chevrons go, the other cats leave the frame,
+// and the camera cuts to a low two-shot: the judged cat in the middle ground (low, ears back, its fresh Scar on its
+// model; src/ui/verdict-stage.js), Mikan nearer the lens on the left, clear of the Chase Off card (mock 07).
+/** @param id the judged cat's combat id; o {stageSubject(cat) -> undo}. Returns the tell anchor in 1920x1080 space. */
+function stageVerdict(id, o = {}) {
+  const C = F(snap.controlled), T = F(id);
+  if (!C || !T) return null;
+  const M = C.pos.clone(); M.y = 0;
+  // the judged cat sits 1.7 m in front of Mikan, toward the middle of the ring (never into a wall)
+  const d = new THREE.Vector3(-M.x, 0, -M.z); if (d.lengthSq() < 1) { const e = ent(snap.controlled); d.set(e.facing[0], 0, e.facing[1]); } d.normalize();
+  const S = M.clone().addScaledVector(d, 1.7); S.y = M.y;
+  vstage = { id, M, S, d, undo: o.stageSubject ? o.stageSubject(T.cat) : null };
+  verdictCam();
+  const p = project(T.head.clone().set(S.x, S.y + 0.6 * T.scaleK, S.z)), w = app.clientWidth, h = app.clientHeight, k = Math.min(w / 1920, h / 1080);
+  return { x: 960 + (p.x - w / 2) / k, y: 540 + (p.y - h / 2) / k };
+}
+function unstageVerdict() { if (vstage && vstage.undo) vstage.undo(); vstage = null; if (hud) { hud.el.style.visibility = ''; hud.showChrome(true); } if (scr) scr.el.style.visibility = ''; }
+/** The low two-shot: Mikan left and near, the judged cat right of centre and farther; the camera stays off the walls. */
+function verdictCam() {
+  const { M, S, d } = vstage, mid = M.clone().lerp(S, 0.45);
+  let side = new THREE.Vector3(d.z, 0, -d.x);
+  const pos = (sd) => mid.clone().addScaledVector(sd, 2.5).addScaledVector(d, -0.9).add(new THREE.Vector3(0, 0.95, 0));
+  // pick the side that puts the judged cat on screen right of Mikan
+  const tryCam = (sd) => { cam.position.copy(pos(sd)); cam.up.set(0, 1, 0); cam.lookAt(mid.x, mid.y + 0.52, mid.z); cam.updateMatrixWorld(); return project(S).x > project(M).x; };
+  if (!tryCam(side)) { side = side.multiplyScalar(-1); tryCam(side); }
+  const pivot = mid.clone().add(new THREE.Vector3(0, 0.4, 0)), dir = cam.position.clone().sub(pivot), want = dir.length();
+  const room = clearance(pivot, dir.normalize(), want);
+  if (room < want) { cam.position.copy(pivot).addScaledVector(dir, Math.max(1.6, room)); cam.lookAt(mid.x, mid.y + 0.52, mid.z); cam.updateMatrixWorld(); }
+}
+/** Per frame while staged: only Mikan and the judged cat on stage, posed; HUD, rings and screen marks hidden. */
+function verdictFrame() {
+  const { id, M, S } = vstage, C = F(snap.controlled), T = F(id);
+  for (const f of fighters.values()) if (f !== C && f !== T) f.root.visible = false;
+  if (T) {
+    T.root.visible = true; T.root.position.copy(S); T.root.rotation.set(0, Math.atan2(M.x - S.x, M.z - S.z), 0);
+    T.pose.position.set(0, 0, 0); T.pose.rotation.set(0, 0, 0); T.pose.scale.set(1, 1, 1);
+    T.fadeTarget = 1; T.fade = 1; T.stepFade(0); T.setLook('normal'); T.cat.setGait('idle', 0);
+    T.cat.lookAt(M.clone().lerp(S, 0.6)); T.head.set(S.x, S.y + 0.6 * T.scaleK, S.z);
+  }
+  if (C) { C.root.visible = true; C.root.position.copy(M); C.root.rotation.y = Math.atan2(S.x - M.x, S.z - M.z); C.pose.rotation.set(0, 0, 0); C.fadeTarget = 1; C.fade = 1; C.stepFade(0); C.cat.lookAt(T ? T.head : null); }
+  verdictCam();
+  if (fx && fx.ring) fx.ring.visible = false;
+  if (hud) { hud.showChrome(false); hud.el.style.visibility = 'hidden'; }
+  if (scr) scr.el.style.visibility = 'hidden';
+}
+
 function present(dt, alpha, menu = [], cut = null) {
   const s = snap, tw = Math.floor(realT * 30 + 1e-6) / 30;
   const globalStop = s.time_scale === 0;
@@ -691,6 +739,7 @@ function present(dt, alpha, menu = [], cut = null) {
     const want = 1.8 * Math.max(0.25, 1 - Math.min(1, speed / 6));
     const u = post.mat.uniforms.wob; u.value += (want - u.value) * Math.min(1, dt * 10);
     q.p.copy(cp); q.yaw = ccam.pose.yaw; }
+  if (vstage) verdictFrame();
   if (!skipDraw) draw(impactMode, s, cut);
 }
 
@@ -743,8 +792,7 @@ function draw(impactMode, s, cut = null) {
     else { renderer.setRenderTarget(null); renderer.clear(); renderer.render(envScene, cam); }
     renderer.autoClear = false;
     renderer.render(lateScene, cam);
-    renderer.render(fxScene, cam);
-    renderer.render(decalScene, cam);
+    if (!vstage) { renderer.render(fxScene, cam); renderer.render(decalScene, cam); }   // the Verdict vantage is calm: no fight marks
     // the controlled cat is never covered by effects: draw it again on top (art bible §10.1 rule 5)
     // (only when an effect is actually near it, and only its fill + ink: the keyline shells stay underneath)
     const cf = F(s.controlled);

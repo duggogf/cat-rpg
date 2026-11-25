@@ -38,9 +38,9 @@
     "lines": {"nose": "Steps down in peace. May side with you against its rival.", "chase": "Gone from town for good.", "recruit": "Joins your Crew with everything it remembers."},
     "chips": {"nose": "10 days", "recruit_free": "Free", "recruit_from": "from {fair}"},
     "strip": "Every choice clears the post. Then spray it.",
-    "first_hint": "Choose what they become. Chasing off is for good.",
+    "first_hint": "Chasing off is for good.",
     "quiet_hint": "Spray quietly to make peace."
-  }, "_src": "Nemesis §3.11 table + F4 (gate 50 + shift; loud = Life >= 2 and (Keeper with >= 2 Counter-Sprays on its own post, or Boss at Seething+ at the Standoff)); OR-12/13; consistency-pass F12; key-screens §4.2 card lines, chips and halftone reasons, §4.5 first-Verdict hint; truce 10 days (owner answer); Friend at Regard >= 75 (OR-13.5); Crew cap 6 (Crew §3.4.4)"},
+  }, "_src": "Nemesis §3.11 table + F4 (gate 50 + shift; loud = Life >= 2 and (Keeper with >= 2 Counter-Sprays on its own post, or Boss at Seething+ at the Standoff)); OR-12/13; consistency-pass F12; key-screens §4.2 card lines, chips and halftone reasons, §4.5 first-Verdict hint (review round 1 fix 4: ≤ 6 words, in a bubble); truce 10 days (owner answer); Friend at Regard >= 75 (OR-13.5); Crew cap 6 (Crew §3.4.4)"},
   {"Name": "bribe", "value": {"per_level": 8, "rank_mult": {"stray": 0.75, "tough": 1, "challenger": 1, "roamer": 1, "captain": 2, "boss": 4}, "feast_mult": 2, "life1_free": true}, "_src": "Crew F8 (canon; Territory's price sheet wins): fair = 8 x level x RANK_MULT, feast = 2 x fair; Life 1 free (PP-07), from Life 2 Fair or Feast only (consistency pass F1). Roamer rank mult not given: ASSUMPTION 1 (Tough)"},
   {"Name": "loyalty_f6", "value": {"base": 50, "g": -0.4, "r": 0.3, "bribe_step": 5, "returned": -20, "min": 5, "max": 80}, "_src": "Crew F6: L0 = clamp(5, 80, 50 - 0.4 G_pre + 0.3 Regard + P_mod + 5 bribe_step - 20 returned), floored (worked: Togemaru 44.7 -> 44)"},
   {"Name": "loyalty_tiers", "value": [{"tier": "Shifty", "min": 0}, {"tier": "Aloof", "min": 30}, {"tier": "Steady", "min": 45}, {"tier": "True", "min": 60}, {"tier": "Sworn", "min": 80}], "_src": "Crew §3.7 tiers (the Recruit card's eyes-and-lean band and 'starts Aloof', key-screens §4.3)"},

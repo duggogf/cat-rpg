@@ -35,14 +35,14 @@
     "pile": false,
     "impact": false,
     "camera": [
-      -1.462,
-      1.249,
-      -1.415
+      -1.475,
+      0.95,
+      -4.993
     ],
     "yaw": -46.43,
     "stats": {
-      "calls": 97,
-      "triangles": 352800
+      "calls": 75,
+      "triangles": 270996
     }
   },
   "verdict": {

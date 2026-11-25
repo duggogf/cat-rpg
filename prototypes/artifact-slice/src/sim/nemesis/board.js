@@ -2,7 +2,7 @@
 // Display queries over the town (key-screens §2-§4; Nemesis §3.6, §3.13, §3.17). READ-ONLY: nothing here writes
 // a cat (AC 25: hovering changes no saved field). Ties are facts fixed at generation, a challenger's arrival draw,
 // or the recruit's own OLD_GANG memory; every history line comes from that cat's own Memory (G8).
-import { angerStage, dayLabel } from './formulas.js';
+import { angerStage, dayLabel, loyaltyTier } from './formulas.js';
 import { lastOf } from './memory.js';
 
 const band = (bands, v) => bands.filter(b => v >= b.min).pop().p;
@@ -71,7 +71,7 @@ export function historyLine(town, c) {
   const address = k.clout.address[town.s.clout] === '{mikan}' ? 'Mikan' : (k.clout.address[town.s.clout] || 'Collar');
   const line = tpl.replace('{patch}', town.D.board.patch_names[e.patch] ?? e.patch ?? 'the Lane')
     .replace('{other}', town.s.cats[e.other_id]?.display ?? '').replace('{title}', c.title ?? '').replace('{address}', address);
-  return { day: dayLabel(k, e.day), kind: e.kind, line };
+  return { day: e.day <= 0 ? (town.D.board.history_before ?? 'Before you') : dayLabel(k, e.day), kind: e.kind, line };
 }
 
 function roleTag(town, c) {
@@ -259,7 +259,7 @@ export function sniff(town, { consume = false } = {}) {
       case 'declaration': return { kind: q.kind, cat: q.cat, title: SC.faces[c.face], face: c.face, line: SC.declaration.line.replace('{name}', c.display),
         storm: true, scars: c.scars.map(x => x.type), cat_title: c.title, best_line: bestLine(town, c), sprig: c.state === 'Truce' };
       case 'arc_closing': return { kind: q.kind, cat: q.cat, how: q.how, title: (q.how === 'crew' ? SC.arc_closing_crew : SC.arc_closing_gone).title,
-        line: (q.how === 'crew' ? SC.arc_closing_crew : SC.arc_closing_gone).line.replace('{name}', c.display), scars: c.scars.map(x => x.type) };
+        line: closingLine(town, c, q.how), scars: c.scars.map(x => x.type) };
       case 'challenger': return { kind: q.kind, cat: q.cat, silhouette: !known, name, title: SC.challenger.title, line: SC.challenger.line.replace('{patch}', patchName), patch: q.patch, tape_star: true };
       case 'boss_window': return { kind: q.kind, cat: q.cat, title: SC.boss_window.title, line: SC.boss_window.line.replace('{name}', name ?? 'The big wall'), silhouette: !known };
       case 'anger': { const st = angerStage(k, c.anger); return { kind: q.kind, cat: q.cat, title: SC.anger.title, line: SC.anger.line, puffs: st.puffs, stage: st.stage, silhouette: !known }; }
@@ -281,4 +281,17 @@ export function sniff(town, { consume = false } = {}) {
 function bestLine(town, c) {
   const scar = [...c.memory].reverse().find(e => e.kind === 'SCAR');
   return historyLine(town, { ...c, memory: [scar ?? c.memory[c.memory.length - 1]] });
+}
+
+/** The closing card's subtitle from the cat's own record (review round 1 fix 6): never the headline again. */
+function closingLine(town, c, how) {
+  const SC = town.D.board.sniff_cards, W = SC.scar_words || {};
+  const scars = [...new Set(c.scars.map(x => W[x.type]).filter(Boolean))];
+  const name = c.display ?? '';
+  if (how === 'crew') {
+    const tier = c.loyalty != null ? loyaltyTier(town.k, c.loyalty) : 'New';
+    return SC.arc_closing_crew.line.replace('{tier}', tier).replace('{scars}', scars.length ? ` ${scars.join('. ')}.` : '').replace('{name}', name);
+  }
+  const patch = town.D.board.patch_names[c.keeper_of ?? c.old_patch] ?? 'the Lane';
+  return SC.arc_closing_gone.line.replace('{scars_lead}', scars.length ? `${scars.join('. ')}. ` : '').replace('{patch}', patch).replace('{name}', name);
 }

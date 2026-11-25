@@ -8,22 +8,22 @@ Facts come from the nemesis simulation (`src/sim/nemesis/`, `createTown({start: 
 |---|---|
 | `board-lane-rest.png` | Lane scene, rest (nothing focused): names only, faint arrows, steam puffs, silhouettes in the shade (58 calls, 140k tris, 7 text items) |
 | `board-lane-focus-togemaru.png` | Focus Togemaru (keys): lift + gold rim, his arrow bright, Goma Rival tag, others dim, card (59 calls, 147k tris, 14 text items) |
-| `board-lane-focus-daifuku.png` | Focus the Boss: every member arrow bright, Old Gang chip under the Bell tab, anger card (59 calls, 147k tris, 13 text items) |
+| `board-lane-focus-daifuku.png` | Focus the Boss: every member arrow bright, "Old Gang: Hige · the Bell" line in the card, anger card (59 calls, 147k tris, 14 text items) |
 | `board-lane-focus-silhouette.png` | Focus a silhouette: "?" pom, "Not met yet" card, no tags (58 calls, 140k tris, 9 text items) |
-| `board-lane-full-card.png` | South: the full Rival card (59 calls, 147k tris, 7 text items) |
+| `board-lane-full-card.png` | South: the full Rival card, every history entry pinned first (first sniff, notch, fled, routed, nose) (59 calls, 147k tris, 7 text items) |
 | `board-outsiders.png` | Outsiders: the challenger silhouette beside its stake stamp (20 calls, 17k tris, 5 text items) |
-| `board-bell-focus-hige.png` | Bell: Crew arrows to Mikan; Hige focused shows the Old Boss chip under the Lane tab (32 calls, 65k tris, 13 text items) |
+| `board-bell-focus-hige.png` | Bell: Crew arrows to Mikan; Hige focused: "Before you" history, "Old Boss: Daifuku · the Lane" line in the card (32 calls, 65k tris, 14 text items) |
 | `board-bell-focus-kinako.png` | Bell: Kinako shows no tag while Sasa is unmet (32 calls, 65k tris, 11 text items) |
-| `board-lane-B.png` | Branch B: Togemaru recruited, a bell-cord knot on his old spot (54 calls, 126k tris, 6 text items) |
-| `board-bell-B.png` | Branch B: Togemaru in the Bell scene (36 calls, 127k tris, 15 text items) |
+| `board-lane-B.png` | Branch B: Togemaru recruited, a named bell-cord knot card on his old spot (54 calls, 126k tris, 6 text items) |
+| `board-bell-B.png` | Branch B: Togemaru in the Bell scene (36 calls, 127k tris, 16 text items) |
 | `board-lane-C.png` | Branch C: Togemaru Chased Off, a legend card on his spot (54 calls, 126k tris, 6 text items) |
 | `standoff-memory.png` | L1D2 Standoff: the sim’s memory line; the Fight prompt locked 1 s (ring) |
-| `verdict-l1-none.png` | L1D2 Verdict on Togemaru: three cards, no focus, first-Verdict hint |
+| `verdict-l1-none.png` | L1D2 Verdict on Togemaru: three cards, no focus, first-Verdict hint bubble (5 words); Togemaru low, ears back, fresh notch on his ear |
 | `verdict-l1-up.png` | Nose-Touch raised: tell "Tail still." (Grudge 43 < 45) |
 | `verdict-l1-left.png` | Chase Off raised: ears drop, Mikan turns away |
 | `verdict-l1-right.png` | Recruit raised: Life 1 "Free" step, starts Aloof |
-| `verdict-l2-right.png` | Life 2 Verdict on Goma from the sim: Recruit greyed in place ("Turns its tail to the bell.": no Life 2 recruit in the slice) |
-| `verdict-l2-bribe.png` | The Bribe row UI on the slice seeds (Fair 96 / Feast 192, Stash 150 short of Feast, Crew 4/6) |
+| `verdict-l2-right.png` | Life 2 Verdict on Goma from the sim: Recruit greyed in place; the bubble agrees ("Turns its tail to the bell.") and Goma turns his back. Goma is not slice-recruitable (Nemesis §3.1 DR-01) |
+| `verdict-l2-bribe.png` | The Bribe row from a real sim offer on Kagi (test start test_l2_kagi_rout): Fair 96 open, Feast 192 short (Stash 150), Crew 4/6, eyes on the fish |
 | `verdict-l2-up.png` | Life 2 Verdict on Goma: Nose-Touch tell from the sim |
 | `declaration-A.png` | L2D2 Sniff, branch A: the Declaration card (Sworn Rival) |
 | `closing-B.png` | L2D2 Sniff, branch B: "Wears the bell now" |
@@ -33,13 +33,29 @@ Facts come from the nemesis simulation (`src/sim/nemesis/`, `createTown({start: 
 
 ## Timing and budget
 
-- First open (builds the three sets and the cats): **214.4 ms** (SwiftShader); re-open: **8.3 ms** (budget 300 ms).
-- Per scene (calls / triangles / switch ms): lane 58 / 139766 / 3.6 · outsiders 20 / 17054 / 6.2 · bell 31 / 58346 / 39.1 (budget 200 calls, 250k tris).
+- First open (builds the three sets and the cats): **210.3 ms** (SwiftShader); re-open: **9.3 ms** (budget 300 ms).
+- Per scene (calls / triangles / switch ms): lane 58 / 139766 / 4.9 · outsiders 20 / 17054 / 6.5 · bell 31 / 58346 / 40.8 (budget 200 calls, 250k tris).
 - Hover: before 120 ms `null`, after `togemaru`, tags ["rival:goma"].
-- Keys from rest (Up x3): {"first":"sasa","second":"azuki","third":"tsubu"}.
+- Keys from rest (Up x3): {"first":"tsubu","second":"kagi","third":"kuri"}.
 
 ## Checks
 
 - No tag on an undiscovered cat: PASS.
 - Kinako shows no tag while Sasa is unmet: PASS.
 - Console errors and external requests: none.
+
+## Round 1 fixes
+
+Fixes from `review-round1.md` (2026-11-25). Sim first, then presentation. Nemesis tests 63/63 (was 58: 5 new tests, 1 test extended);
+`nemesis-run --branch all` OK; both publish checks OK. Patent invariant tests stay green, and a new one checks that a Bribe Recruit on Kagi changes only Kagi.
+
+| # | Fix | Evidence |
+|---|---|---|
+| 1 | The Recruit tell matches the card. The bubble shows the card's own `tell`: `tail_to_bell` gives a turned-tail glyph and "Turns its tail to the bell." and the 3D cat turns its back; `bares_teeth` gives a teeth glyph and the reason; only `eyes_lean` shows "Eyes on the fish/bell". The right-hand bubble no longer runs under the Recruit card | `verdict-l2-right.png`, `verdict-combat.png` |
+| 2 | Sim: `createTown({start: 'test_l2_kagi_rout'})` (test/showcase only) plays branch B's Life 1 and then Routs Kagi on L2D1 with Stash 150 and the Crew at 4/6, so the offer is real: Fair 96 open, Feast 192 short. `stash_short` now maps to `eyes_lean`, and `bares_teeth` is used only by the Grudge/Regard and Boss gates. Tests: Goma and the challenger give `recruit_not_slice` in Life 2; Togemaru is open in Life 2 at Fair 16 / Feast 32 (OR-15); Daifuku below Regard 50 bares his teeth | `tests/unit/nemesis/gate.test.mjs`, `invariants.test.mjs` |
+| 3 | The Life 2 open-Recruit fallback is gone. The fallback now reads the sim's `recruitable_slice` list, and with no sim offer a Life 2 card is greyed. The `seeds=1` hook is removed. The Bribe shot is re-taken from fix 2's fixture on Kagi. Correct reason: Goma is not slice-recruitable (Nemesis §3.1 DR-01). Recruit is greyed per cat (only Togemaru, Kagi, and Daifuku at Regard ≥ 50 can be recruited), not per Life | `verdict-l2-bribe.png`, `verdict-l2-right.png` |
+| 4 | The Verdict is staged on the cat. In combat, the HUD, the lock ring, the chevrons, the fight effects and the other cats leave the frame, and the camera cuts to a low two-shot: the judged cat sits in the middle ground in a new `routed` posture (low, ears flat back) with its fresh Scar drawn on its ear, and Mikan stands clear of the Chase Off card. The street Verdict uses the same pose and Scar mark (Togemaru's fresh notch). The first-Verdict hint is now a bubble above the strip with 5 words: "Chasing off is for good." | `verdict-combat.png`, `verdict-l1-none.png`, `verdict-l1-up/left/right.png`, `verdict-l2-up.png` |
+| 5 | Board legibility. The Lane's shade spots moved so that all six silhouettes stand in clear view with no overlaps (they were checked by projected bounds and by eye). Each answers-to arrow is now one smooth curve from the cat's head to its superior's ribbon, with no shared trunk or kink. Cross-scene ties are a line in the focus card ("Old Gang: Hige · the Bell") and no longer a chip under a tab. The B knot card now shows Togemaru's name | `board-lane-rest.png`, `board-lane-focus-*.png`, `board-lane-hover-togemaru.png`, `board-lane-B.png`, `board-lane-C.png`, `board-bell-*.png` |
+| 6 | Memory is shown. Sim: an authored pre-game entry is labelled "Before you" instead of "L1 D0". The full card lists every `history[]` entry with pinned entries first; for Togemaru that is first sniff, notch, fled, routed, nose. The closing cards' subtitles come from the cat's own record and do not repeat the headline: B "Aloof. Notched. On the Posse bench.", C "Notched. Left Laundry Pole Yard behind." | `board-lane-full-card.png`, `board-bell-focus-hige.png`, `closing-B.png`, `closing-C.png` |
+
+Notes: I looked at every re-shot PNG before keeping it. Some PNGs re-rendered byte-identical (`declaration-A`, `standoff-memory`, `pause-rivals`, `board-outsiders`). The combat sandbox town is in-memory only and writes no discovery to a save. The Scar mark is an inked sprite on the head bone, not a texture edit, and it stays visible when the cat turns its back.

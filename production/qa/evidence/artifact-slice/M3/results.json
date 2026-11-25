@@ -6,7 +6,7 @@
       "board": {
         "calls": 58,
         "triangles": 139766,
-        "openMs": 159.6999999997206,
+        "openMs": 174.10000000009313,
         "scene": "lane",
         "focus": null,
         "tags": [],
@@ -22,7 +22,7 @@
       "board": {
         "calls": 59,
         "triangles": 146564,
-        "openMs": 185.60000000009313,
+        "openMs": 192.20000000018626,
         "scene": "lane",
         "focus": "togemaru",
         "tags": [
@@ -38,11 +38,11 @@
     },
     "board-lane-focus-daifuku": {
       "query": "board=lane&branch=A&focus=daifuku",
-      "note": "Focus the Boss: every member arrow bright, Old Gang chip under the Bell tab, anger card",
+      "note": "Focus the Boss: every member arrow bright, \"Old Gang: Hige · the Bell\" line in the card, anger card",
       "board": {
         "calls": 59,
         "triangles": 146566,
-        "openMs": 201.10000000009313,
+        "openMs": 194.60000000009313,
         "scene": "lane",
         "focus": "daifuku",
         "tags": [],
@@ -50,7 +50,7 @@
         "rest": 4,
         "tagsDom": []
       },
-      "textItems": 13
+      "textItems": 14
     },
     "board-lane-focus-silhouette": {
       "query": "board=lane&branch=A&focus=sasa",
@@ -58,7 +58,7 @@
       "board": {
         "calls": 58,
         "triangles": 139766,
-        "openMs": 194,
+        "openMs": 176.20000000018626,
         "scene": "lane",
         "focus": "sasa",
         "tags": [],
@@ -70,11 +70,11 @@
     },
     "board-lane-full-card": {
       "query": "board=lane&branch=A&focus=togemaru&full=1",
-      "note": "South: the full Rival card",
+      "note": "South: the full Rival card, every history entry pinned first (first sniff, notch, fled, routed, nose)",
       "board": {
         "calls": 59,
         "triangles": 146564,
-        "openMs": 169.89999999990687,
+        "openMs": 183,
         "scene": "lane",
         "focus": "togemaru",
         "tags": [
@@ -94,7 +94,7 @@
       "board": {
         "calls": 20,
         "triangles": 17054,
-        "openMs": 104.79999999981374,
+        "openMs": 104.8000000002794,
         "scene": "outsiders",
         "focus": "challenger",
         "tags": [],
@@ -106,11 +106,11 @@
     },
     "board-bell-focus-hige": {
       "query": "board=bell&branch=A&focus=hige",
-      "note": "Bell: Crew arrows to Mikan; Hige focused shows the Old Boss chip under the Lane tab",
+      "note": "Bell: Crew arrows to Mikan; Hige focused: \"Before you\" history, \"Old Boss: Daifuku · the Lane\" line in the card",
       "board": {
         "calls": 32,
         "triangles": 65146,
-        "openMs": 145.70000000018626,
+        "openMs": 171.20000000018626,
         "scene": "bell",
         "focus": "hige",
         "tags": [],
@@ -118,7 +118,7 @@
         "rest": 4,
         "tagsDom": []
       },
-      "textItems": 13
+      "textItems": 14
     },
     "board-bell-focus-kinako": {
       "query": "board=bell&branch=A&focus=kinako",
@@ -126,7 +126,7 @@
       "board": {
         "calls": 32,
         "triangles": 65146,
-        "openMs": 163.5,
+        "openMs": 137.89999999990687,
         "scene": "bell",
         "focus": "kinako",
         "tags": [],
@@ -138,11 +138,11 @@
     },
     "board-lane-B": {
       "query": "board=lane&branch=B",
-      "note": "Branch B: Togemaru recruited, a bell-cord knot on his old spot",
+      "note": "Branch B: Togemaru recruited, a named bell-cord knot card on his old spot",
       "board": {
         "calls": 54,
         "triangles": 126168,
-        "openMs": 165,
+        "openMs": 175.8000000002794,
         "scene": "lane",
         "focus": null,
         "tags": [],
@@ -158,7 +158,7 @@
       "board": {
         "calls": 36,
         "triangles": 127348,
-        "openMs": 190.5,
+        "openMs": 186.20000000018626,
         "scene": "bell",
         "focus": "togemaru",
         "tags": [],
@@ -166,7 +166,7 @@
         "rest": 5,
         "tagsDom": []
       },
-      "textItems": 15
+      "textItems": 16
     },
     "board-lane-C": {
       "query": "board=lane&branch=C",
@@ -174,7 +174,7 @@
       "board": {
         "calls": 54,
         "triangles": 126168,
-        "openMs": 157.29999999981374,
+        "openMs": 177.59999999962747,
         "scene": "lane",
         "focus": null,
         "tags": [],
@@ -190,7 +190,7 @@
     },
     "verdict-l1-none": {
       "query": "vantage=1&m3=verdict&branch=L1",
-      "note": "L1D2 Verdict on Togemaru: three cards, no focus, first-Verdict hint"
+      "note": "L1D2 Verdict on Togemaru: three cards, no focus, first-Verdict hint bubble (5 words); Togemaru low, ears back, fresh notch on his ear"
     },
     "verdict-l1-up": {
       "query": "vantage=1&m3=verdict&branch=L1&card=up",
@@ -206,11 +206,11 @@
     },
     "verdict-l2-right": {
       "query": "vantage=1&m3=verdict&branch=A&focus=goma&card=right",
-      "note": "Life 2 Verdict on Goma from the sim: Recruit greyed in place (\"Turns its tail to the bell.\": no Life 2 recruit in the slice)"
+      "note": "Life 2 Verdict on Goma from the sim: Recruit greyed in place; the bubble agrees (\"Turns its tail to the bell.\") and Goma turns his back. Goma is not slice-recruitable (Nemesis §3.1 DR-01)"
     },
     "verdict-l2-bribe": {
-      "query": "vantage=1&m3=verdict&branch=A&focus=goma&card=right&seeds=1&step=fair",
-      "note": "The Bribe row UI on the slice seeds (Fair 96 / Feast 192, Stash 150 short of Feast, Crew 4/6)"
+      "query": "vantage=1&m3=verdict&branch=B&nemstart=test_l2_kagi_rout&focus=kagi&card=right&step=fair",
+      "note": "The Bribe row from a real sim offer on Kagi (test start test_l2_kagi_rout): Fair 96 open, Feast 192 short (Stash 150), Crew 4/6, eyes on the fish"
     },
     "verdict-l2-up": {
       "query": "vantage=1&m3=verdict&branch=A&focus=goma&card=up",
@@ -234,21 +234,21 @@
     }
   },
   "timing": {
-    "firstOpenMs": 214.4,
-    "reopenMs": 8.3,
+    "firstOpenMs": 210.3,
+    "reopenMs": 9.3,
     "scenes": {
       "lane": {
-        "switchMs": 3.6,
+        "switchMs": 4.9,
         "calls": 58,
         "triangles": 139766
       },
       "outsiders": {
-        "switchMs": 6.2,
+        "switchMs": 6.5,
         "calls": 20,
         "triangles": 17054
       },
       "bell": {
-        "switchMs": 39.1,
+        "switchMs": 40.8,
         "calls": 31,
         "triangles": 58346
       }
@@ -261,9 +261,9 @@
       ]
     },
     "keys": {
-      "first": "sasa",
-      "second": "azuki",
-      "third": "tsubu"
+      "first": "tsubu",
+      "second": "kagi",
+      "third": "kuri"
     }
   },
   "checks": {

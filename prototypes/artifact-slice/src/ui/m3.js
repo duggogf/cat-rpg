@@ -4,13 +4,14 @@
 // memory-tagged lines unskippable for 1 s), the three-card Verdict over the street (after the Togemaru fight), and the
 // Declaration / closing Sniff cards. Facts come from the nemesis simulation through the adapter in rivals-model.js.
 // Query hooks (evidence): ?board=lane|outsiders|bell&focus=<id>&branch=A|B|C|L1 · ?m3=standoff|verdict|declaration|pause
-//   &rival=<id> &card=up|left|right &step=fair|feast
+//   &rival=<id> &card=up|left|right &step=fair|feast &nemstart=test_l2_kagi_rout (test only: Kagi Routed in Life 2, a real Bribe offer)
 import * as THREE from 'three';
 import { RivalsBoard } from './rivalsboard.js';
 import { boardModel, nemesisTown, setNemesis } from './rivals-model.js';
 import { createTown, ARC } from '../sim/nemesis/index.js';
 import { Standoff } from './standoff.js';
-import { Verdict } from './verdict.js';
+import { Verdict, recruitTell } from './verdict.js';
+import { stageSubject, freshScar } from './verdict-stage.js';
 import { SniffCards } from './sniffcards.js';
 import { KIT_CSS } from './combat/kit-assets.js';
 import { Kit } from '../render/vfx/sprites.js';
@@ -45,8 +46,9 @@ export class M3 {
   /** Life 2 day 2 (the showcase jump), played by the nemesis rules from the chosen branch; Life 1: day 1 fresh. */
   lifeTown() {
     const seed = this.ctx.opt.seed || 42;
-    try { const t = this.branch ? createTown({ seed, start: 'showcase_l2d2', branch: this.branch }) : createTown({ seed });
-      if (this.branch) t.boardOpened();   // the board was seen on L2D1: today's tape stars are only what changed since
+    const ns = new URLSearchParams(location.search).get('nemstart');   // test/showcase only: 'test_l2_kagi_rout' (a real Life 2 Bribe offer)
+    try { const t = ns === 'test_l2_kagi_rout' ? createTown({ seed, start: ns }) : this.branch ? createTown({ seed, start: 'showcase_l2d2', branch: this.branch }) : createTown({ seed });
+      if (this.branch && !ns) t.boardOpened();   // the board was seen on L2D1: today's tape stars are only what changed since
       setNemesis(t); }
     catch (e) { console.warn('nemesis town failed; the board uses the fixed seeds', e); setNemesis(null); }
   }
@@ -153,17 +155,31 @@ export class M3 {
       }
     } catch (e) { console.warn('nemesis rout failed', e); }
     if (!this.rival3d) this.stageRival(id);
+    // the cat being judged sits low, ears back, its fresh Scar on its model (review round 1, fix 4; mock 07)
+    if (this.unstage) this.unstage();
+    let scar = false; try { scar = freshScar(town && town.cat(id), town && town.verdictOffer()); } catch (e) { /* no mark */ }
+    this.unstage = this.rival3d ? stageSubject(this.rival3d, { scar, side: -1 }) : null;
+    if (this.rival3d) this.rival3d.lookAt(this.ctx.mikanPos.clone().lerp(this.rival3d.object3D.position, 0.55));   // head low, eyes on the ground before her
     this.showStreetUI(false); this.twoShot(1); this.ctx.renderStreet();
-    const seeds = new URLSearchParams(location.search).get('seeds') === '1';   // evidence: the Bribe row with the slice seeds (Bribes are OUT of the slice, plan §2.5)
-    this.verdict.open({ cat: c, life: town && town.life ? town.life : this.branch ? 2 : 1, town: seeds ? null : town, raise: this.ctx.opt.test ? new URLSearchParams(location.search).get('card') : null, step: new URLSearchParams(location.search).get('step'),
-      tellAt: this.rivalTell(),
+    this.verdict.open({ cat: c, life: town && town.life ? town.life : this.branch ? 2 : 1, town, raise: this.ctx.opt.test ? new URLSearchParams(location.search).get('card') : null, step: new URLSearchParams(location.search).get('step'),
+      tellAt: this.rivalTell(), onRaise: (d, f) => this.rivalTurn(d, f),
       onChoose: (v) => {
+        if (this.unstage) { this.unstage(); this.unstage = null; } this.rivalTurn(null);
         this.lastVerdict = v; const arc = id === 'togemaru' && !this.branch; if (arc) this.branch = { nose: 'A', recruit: 'B', chase: 'C' }[v.kind];
         try { if (town && town.applyVerdict) { const evs = town.applyVerdict(v.kind, v.step && v.step.id !== 'free' ? { bribe: v.step.id } : {}); this.lastApplied = evs; } } catch (e) { console.warn('nemesis verdict not applied', e); }
         if (!arc) { if (this.rival3d) this.rival3d.object3D.visible = false; this.showStreetUI(true); this.ctx.restoreGlobals(null); return; }
         this.lifeTown();   // the montage jump: Life 2 day 2, played by the rules from this Verdict
         if (this.rival3d) this.rival3d.object3D.visible = false;
         this.openSniff(); } });
+  }
+  /** Recruit raised on a cat that turns its tail to the bell: the 3D subject turns its back (review round 1, fix 1). */
+  rivalTurn(d, f) {
+    const r = this.rival3d; if (!r) return;
+    const m = this.ctx.mikanPos, o = r.object3D, p = o.position;
+    const away = d === 'right' && f && recruitTell(f.recruit).kind === 'tail_to_bell';
+    o.rotation.y = Math.atan2(m.x - p.x, m.z - p.z) + (away ? Math.PI : 0);
+    r.lookAt(away ? null : m.clone().lerp(p, 0.55));
+    if (this.verdict.isOpen) this.ctx.renderStreet();
   }
   openSniff() {
     this.showStreetUI(false);
