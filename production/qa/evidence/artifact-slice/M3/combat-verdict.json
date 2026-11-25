@@ -1,0 +1,58 @@
+{
+  "fight": {
+    "ok": true,
+    "fight": "toughs_2",
+    "seed": 1,
+    "tick": 991,
+    "realT": 16.6333,
+    "mode": "ended",
+    "outcome": "win",
+    "slow_blink": false,
+    "controlled": "mikan",
+    "counts": {
+      "EncounterStarted": 1,
+      "StandoffStart": 1,
+      "StandoffEnd": 1,
+      "FightStarted": 1,
+      "Evade": 5,
+      "AttackStart": 22,
+      "AttackActive": 20,
+      "Hit": 32,
+      "Cornered": 2,
+      "InputBuffered": 81,
+      "TelegraphStart": 5,
+      "PerfectEvade": 4,
+      "TelegraphEnd": 5,
+      "Whiff": 4,
+      "Staggered": 2,
+      "CatRouted": 2,
+      "SpecialReady": 1,
+      "PawFilled": 1,
+      "FinalKO": 1,
+      "EncounterEnded": 1
+    },
+    "ko": 0,
+    "pile": false,
+    "impact": false,
+    "camera": [
+      -1.462,
+      1.249,
+      -1.415
+    ],
+    "yaw": -46.43,
+    "stats": {
+      "calls": 97,
+      "triangles": 352800
+    }
+  },
+  "verdict": {
+    "open": true,
+    "cards": [
+      "Nose-Touch10 days",
+      "Chase Off",
+      "Recruit"
+    ],
+    "strip": "Every choice clears the post. Then spray it."
+  },
+  "errors": []
+}

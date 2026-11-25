@@ -281,8 +281,8 @@ export class BoardScene {
         const cast = r.cast || { cast: 'tough' };
         let cat;
         // a silhouette gives nothing away: one generic body, flat Ink at 70% over the wall shade (no coat, Scars or pose)
-        try { cat = sil ? createCat({ cast: 'tough', build: 'standard', ears: 'standard', tail: 'whip', carry: 'level', scale: 1.25 * CAT_K * (r.role === 'boss' ? 1.6 : 1), silhouette: true, silColor: '#4A3657', seed: 5 })
-          : createCat({ ...(cast.opts || {}), cast: cast.cast, scale: 1.25 * CAT_K * (cast.extra || 1), lod: 'full' }); }
+        try { cat = sil ? createCat({ cast: 'tough', build: 'standard', ears: 'standard', tail: 'whip', carry: 'level', scale: 1.25 * CAT_K * (r.role === 'boss' ? 1.6 : 1), silhouette: true, silColor: '#4A3657', seed: 5, lod: 'low' })
+          : createCat({ ...(cast.opts || {}), cast: cast.cast, scale: 1.25 * CAT_K * (cast.extra || 1), lod: 'auto' }); }
         catch (e) { console.warn('board cat skipped', r.id, e); continue; }
         const sk = cat.object3D.getObjectByProperty('isSkinnedMesh', true), mats = sk ? sk.material : [];
         for (const mm of mats) patchDim(mm, WIST);

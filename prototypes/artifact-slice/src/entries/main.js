@@ -580,7 +580,7 @@ async function boot() {
 }
 function hint() {
   const d = document.createElement('div');
-  d.textContent = 'WASD walk (Shift run) · drag or double-click to look · Space hop onto walls · E spray / rub / nap · Tab Whisker Sense · H Head Home · N nap to Dusk · J Rivals · Esc Pause';
+  d.textContent = 'WASD walk (Shift run) · drag or double-click to look · Space hop onto walls · E spray / rub / nap · Tab Whisker Sense · H Head Home · N nap to Dusk · J Rivals · T Togemaru · Esc Pause';
   d.style.cssText = 'position:fixed;left:16px;bottom:14px;max-width:calc(100% - 32px);padding:8px 14px;border-radius:999px;background:rgba(255,246,227,.88);color:#33273B;font:600 13px/1.3 ui-rounded,system-ui,sans-serif;pointer-events:none;z-index:31';
   document.body.appendChild(d);
 }

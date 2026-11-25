@@ -23,7 +23,7 @@ const CSS = `
   clip-path:polygon(0 0,100% 0,calc(100% - 50px) 100%,0 100%); }
 .so-ban.gold { background:var(--gold); }
 .so-ban .nm { font:800 58px/1 var(--font); letter-spacing:.01em; display:flex; align-items:center; gap:14px; }
-.so-ban .ti { font:700 30px/1.1 var(--font); margin-top:6px; display:flex; align-items:center; gap:10px; }
+.so-ban .ti { font:700 30px/1.1 var(--font); margin-top:6px; display:flex; align-items:center; gap:10px; white-space:nowrap; }
 .so-ban .pips { display:inline-flex; gap:4px; margin-left:6px; }
 .so-sting { position:absolute; right:58px; top:16px; }
 .so-storm { position:absolute; left:86px; top:-6px; z-index:3; }
@@ -72,7 +72,7 @@ export class Standoff {
   }
   /** o: { cat (board model cat), line {text, memory}, onFight, rival3d (optional cat to stage), title } */
   open(o) {
-    this.o = o; this.isOpen = true; this.t = 0; this.done = false;
+    this.o = o; this.isOpen = true; this.t = 0; this.done = false; this.t0 = performance.now(); this.test = this.el.classList.contains('test');
     const c = o.cat, k = Math.min(innerWidth / 1920, innerHeight / 1080);
     const pips = '<span class="pips">' + '/'.repeat(ROLE_PIPS[c.role] || 1).split('').map(() => `<svg width="14" height="30" viewBox="-7 -15 14 30"><path d="M3 -13L-3 13" stroke="${C.ink}" stroke-width="4" stroke-linecap="round"/></svg>`).join('') + '</span>';
     const sting = `<svg width="120" height="44" viewBox="0 -22 120 44"><path d="M2 8L18 8L26 -10L34 12L44 -2L58 -2L66 -16L76 14L86 2L118 2" fill="none" stroke="${C.ink}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
@@ -86,13 +86,14 @@ export class Standoff {
     this.el.classList.add('on'); this.frame(0);
   }
   /** The memory line holds the confirm for 1 s (hud.md §4.5). */
-  get locked() { return this.o && this.o.line.memory && this.t < 1.0; }
+  get locked() { return this.o && this.o.line.memory && this.t < (this.o.line.unskippable || 1.0); }
   confirm() { if (!this.isOpen || this.locked) return false; this.close(); if (this.o.onFight) this.o.onFight(); return true; }
   close() { this.isOpen = false; this.el.classList.remove('on'); this.el.innerHTML = ''; }
   key(code) { if (!this.isOpen) return false; if (code === 'Enter' || code === 'Space') this.confirm(); return true; }
   frame(dt) {
     if (!this.isOpen) return;
-    this.t += dt;
+    // wall-clock, so a slow frame never stretches the 1 s lock (the frame dt is capped at 50 ms)
+    this.t = this.test ? this.t + dt : (performance.now() - this.t0) / 1000;
     const ring = this.el.querySelector('.so-ring'), go = this.el.querySelector('[data-a=fight]');
     if (!ring) return;
     if (this.o.line.memory) {

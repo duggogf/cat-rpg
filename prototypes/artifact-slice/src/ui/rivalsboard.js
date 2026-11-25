@@ -324,7 +324,8 @@ export class RivalsBoard {
     for (const [id, emLock] of order) {
       const def = m.scenes.find((s) => s.id === id), cats = Object.values(m.cats).filter((c) => c.scene === id && c.state !== 'gone');
       const em = def ? EMBLEM[def.emblem] : EMBLEM[emLock];
-      const dots = def ? cats.slice(0, 10).map((c) => `<i class="${c.discovered ? 'm' : 's'}"></i>`).join('') + (cats.length > 10 ? '+' : '') : '<i class="s"></i>'.repeat(id === 'summit' ? 2 : 3);
+      const simS = m.simScenes && m.simScenes.find((x) => x.id === id);
+      const dots = !def && simS ? simS.dots.slice(0, 10).map((d) => `<i class="${d.met ? 'm' : 's'}"></i>`).join('') : def ? cats.slice(0, 10).map((c) => `<i class="${c.discovered ? 'm' : 's'}"></i>`).join('') + (cats.length > 10 ? '+' : '') : '<i class="s"></i>'.repeat(id === 'summit' ? 2 : 3);
       const name = def ? def.tab : { arcade: 'Akane Arcade', shiosai: 'Shiosai', summit: 'The Lighthouse Summit' }[id];
       const emH = `<span class="rb-em">${svg(30, 30, '-13 -13 26 26', em)}</span>`;
       const chip = cross && cross.scene === id ? `<span class="rb-chip">${K.ui.portrait({ size: 32, ring: C.cream, bg: '#F7C99A', cat: m.cats[cross.id].kit })}${TAGWORD[cross.kind]}</span>` : '';
@@ -349,15 +350,15 @@ export class RivalsBoard {
       : c.role === 'mikan' ? `${stamp(RV.GLYPH.bell)}${c.clout || 'Known Face'}`
       : `${svg(28, 28, '-13 -13 26 26', STYLEICON[c.style] || STYLEICON.Scrapper)}${c.role === 'captain' ? 'Captain · ' : ''}${ROLE_WORD[c.personality] || ''}`;
     const pers = c.personality ? `<span class="sep"></span>${stamp(PERSGLYPH[c.personality] || '')}${PERS_NAME[c.personality]}` : '';
-    const g = c.grudge ?? (c.marks && c.marks.storm ? 80 : 30), r = c.regard ?? 20;
-    let mood = c.role === 'mikan' || c.state === 'crew' || c.clowder === 'bell' ? '' : `${stamp(MOOD[gPict(g)])}${stamp(MOOD[rPict(r)])}`;
+    const g = c.gWord || gPict(c.grudge ?? (c.marks && c.marks.storm ? 80 : 30)), r = c.rWord || rPict(c.regard ?? 20);
+    let mood = c.role === 'mikan' || c.state === 'crew' || c.clowder === 'bell' ? '' : `${stamp(MOOD[g] || MOOD.smooth)}${stamp(MOOD[r] || MOOD.back)}`;
     if (c.marks && c.marks.storm) mood += `<span class="sw">${stormIco()}&nbsp;${c.marks.storm}</span>`;
     if (c.marks && c.marks.sprig) mood += `<span class="sp">${sprigIco(0.9)}${c.marks.storm ? '' : 'Truce'}</span>`;
     if (c.state === 'crew' && c.mood) mood += `<span class="sp" style="background:#FFF0C8">${stamp(RV.GLYPH.bell, C.gold)}${c.mood}</span>`;
-    const hist = c.history ? `<div class="r"><span class="day">${c.history.day.replace('L2 ', '').replace('L1 ', '')}</span><span class="q">${c.history.line}</span></div>` : '';
+    const hist = c.history ? `<div class="r"><span class="day">${c.history.day.replace('L2 ', '').replace('L1 ', '')}</span><span class="q">${/^["“]/.test(c.history.line) ? c.history.line : `"${c.history.line}"`}</span></div>` : '';
     let ctx = '';
     const x = c.context;
-    if (x && x.kind === 'anger') ctx = `<div class="r">${svg(70, 40, '-35 -26 70 40', K.dustCloud({ x: -14, y: 0, r: 11, puffs: 4, seed: 2 }) + (c.marks.puffs > 1 ? K.dustCloud({ x: 12, y: -4, r: 12, puffs: 4, seed: 7 }) : ''))}<b>${x.stage}</b><span class="q" style="font-size:24px">${x.line}</span></div>`;
+    if (x && x.kind === 'anger') ctx = `<div class="r">${svg(70, 40, '-35 -26 70 40', K.dustCloud({ x: -14, y: 0, r: 11, puffs: 4, seed: 2 }) + ((c.marks.puffs || 0) > 1 ? K.dustCloud({ x: 12, y: -4, r: 12, puffs: 4, seed: 7 }) : ''))}<b>${x.stage}</b><span class="sep"></span>__MOOD__</div><div class="r" style="white-space:normal;font-size:24px;line-height:1.15;font-weight:600">${x.line}</div>`;
     else if (x && x.kind === 'raid') ctx = `<div class="r">${moon()}<span class="q">${x.line}</span></div>`;
     else if (x && x.kind === 'stake') ctx = `<div class="r">${stamp(`<path d="M-6 13V-12" ${st2}/><path d="M-6 -12H10L6 -6L10 0H-6Z" fill="${C.crimson}" ${st2}/>`)}<span class="q" style="font-size:25px">${x.line.replace(/ · leaves after 2 repels/, '')}</span>${(x.pips || [0, 2]).length ? `<span style="display:flex;gap:4px">${'<i style="width:16px;height:16px;border-radius:50%;border:3px solid var(--ink)"></i>'.repeat(2)}</span>` : ''}</div>`;
     else if (x && x.kind === 'assign') ctx = `<div class="r">${stamp(x.post ? `<path d="M-2 14V-12M-2 -12Q8 -12 10 -4" fill="none" ${st2}/>` : RV.GLYPH.bell, x.post ? C.cream : C.gold)}<span class="q">${x.line}</span></div>`;
@@ -375,14 +376,15 @@ export class RivalsBoard {
       return;
     }
     const L = this.cardLines(c), over = this.m.tiesOf(c.id).length - 3;
+    if (L.ctx.includes('__MOOD__')) { L.ctx = L.ctx.replace('__MOOD__', L.mood); L.mood = ''; }
     card.innerHTML = `<div class="head">${K.ui.portrait({ size: 76, ring: c.clowder === 'bell' ? C.gold : C.gold, bg: '#F7C99A', cat: { ...c.kit, expr: c.kit.expr || 'neutral', outline: 'ink', scars: c.scars } })}${c.name.toUpperCase()} ${c.title && c.role !== 'boss' ? `<small>· ${c.title}</small>` : ''}</div>
-      <div class="r">${L.role}${c.role === 'boss' ? '' : L.pers}${over > 0 ? `<span class="more">+${over} ties</span>` : ''}</div>
+      <div class="r">${L.role}${L.pers}${over > 0 ? `<span class="more">+${over} ties</span>` : ''}</div>
       ${L.mood ? `<div class="r">${L.mood}</div>` : ''}${L.hist}${L.ctx}`;
   }
   drawFull(c) {
     const f = this.q('.rb-full'); f.classList.add('on'); this.q('.rb-card').classList.add('off'); this.drawButtons();
     f.style.setProperty('--k-clowder', `var(--${clowderRibbon(c) === 'stray' ? 'cream' : clowderRibbon(c)})`);
-    const L = this.cardLines(c), m = this.m;
+    const L = this.cardLines(c), m = this.m; L.ctx = L.ctx.replace('__MOOD__', '');
     const ties = []; if (c.answersTo && m.cats[c.answersTo] && m.cats[c.answersTo].discovered) ties.push(`<span class="pt">${K.ui.portrait({ size: 34, ring: C.cream, bg: '#F7C99A', cat: m.cats[c.answersTo].kit })}${c.answersTo === 'mikan' ? 'Crew of' : 'Boss'}: ${m.cats[c.answersTo].name}</span>`);
     if (c.role === 'boss') for (const o of Object.values(m.cats)) if (o.answersTo === c.id && o.discovered && o.state !== 'gone') ties.push(`<span class="pt">${K.ui.portrait({ size: 34, ring: C.cream, bg: '#F7C99A', cat: o.kit })}Gang: ${o.name}</span>`);
     for (const t of m.tiesOf(c.id)) ties.push(`<span class="pt">${TAGICON[t.kind]}${TAGWORD[t.kind]}: ${m.cats[t.to].name}</span>`);

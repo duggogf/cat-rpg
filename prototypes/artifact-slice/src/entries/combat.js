@@ -23,6 +23,7 @@ import { CombatCamera, COMBAT_CAM } from '../camera/combat.js';
 import { CombatInput } from '../input/combat-input.js';
 import { CombatHUD, BARK_ICON } from '../ui/combat/hud.js';
 import { chapterPill } from '../ui/combat/chapters.js';
+import { combatVerdict } from '../ui/m3-combat.js';   // M3: the Verdict after a won rival fight
 import { Cinematics, styleOf, SPECIAL_BY_STYLE } from '../render/vfx/cinematics.js';
 
 const Q = new URLSearchParams(location.search);
@@ -335,6 +336,7 @@ function onEvent(ev) {
     case 'GuestEntered': case 'AllyYowl': { const f = F(ev.cat); if (f) fx.spawn('sparkleCream', f.head.clone(), { size: 0.4, drawings: 6 }); break; }
     case 'EncounterEnded': {
       endShown = true;
+      if (Q.get('verdict') !== '0') combatVerdict(ev, evLog, { test: opt.test });   // M3 hook (src/ui/m3-combat.js)
       const t = { win: ['ROUTED THEM!', ' The lot is ours'], loss: ['WIPED OUT', ' Back home by nightfall'], rival_fled: ['DAIFUKU BOLTS!', ' Phase 1 cleared'], player_fled: ['SCRAM!', ''] }[ev.outcome] || ['FIGHT OVER', ''];
       // the final KO cinematic, unless the sim already sent FinalKO this tick
       if (!ko && (ev.outcome === 'win' || ev.outcome === 'rival_fled')) { const last = ev.outcome === 'rival_fled' ? (ev.rival || (ev.boss_ids || [])[0]) : lastEnemyOut; if (last) startKO(last, lastOutBy); }

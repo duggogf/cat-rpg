@@ -27,11 +27,12 @@ const CSS = `
 .vd-card { position:absolute; background:var(--cream); border:4px solid var(--cocoa); border-radius:var(--bean); box-shadow:var(--drop); padding:22px 30px 22px; transition:transform .1s steps(3), box-shadow .1s; animation:vdfan .3s steps(4) both; cursor:pointer; }
 @keyframes vdfan { 0% { transform:translateY(60px) scale(.6); opacity:0; } 100% { transform:none; opacity:1; } }
 .vd-card .t { display:flex; align-items:center; gap:12px; font:800 46px/1 var(--font); color:var(--cocoa); white-space:nowrap; }
+.vd-card .t svg { flex:none; }
 .vd-card .t .chip { margin-left:auto; padding:6px 14px; border:3px solid var(--cocoa); border-radius:22px; font:800 30px/1 var(--font); background:#FFF0C8; display:inline-flex; align-items:center; gap:6px; }
 .vd-card .l { font:500 32px/1.3 var(--font); margin-top:14px; }
 .vd-card.up { left:650px; top:30px; width:620px; }
-.vd-card.left { left:40px; top:380px; width:430px; }
-.vd-card.right { left:1370px; top:290px; width:520px; }
+.vd-card.left { left:40px; top:380px; width:480px; }
+.vd-card.right { left:1350px; top:290px; width:540px; }
 .vd-card.raised { border-color:var(--gold); box-shadow:0 0 0 6px var(--gold), var(--drop); transform:scale(1.04); z-index:2; }
 .vd-card.off { color:#8C8494; }
 .vd-card.off::after { content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none; background-image:radial-gradient(rgba(110,106,168,.42) 22%, transparent 26%); background-size:9px 9px; }
@@ -64,8 +65,18 @@ const EARS = `<svg width="110" height="50" viewBox="-55 -25 110 50"><path d="M-4
  *  (Grudge 43 < 45, tail still), Recruit "Free", Chase Off always. Life 2: Fair 96 / Feast 192, Stash 150, Crew 4/6. */
 export function verdictFacts(cat, life, town) {
   try {
-    if (town && typeof town.verdictView === 'function') { const v = town.verdictView(cat.id); if (v) return v; }
-  } catch (e) { console.warn('nemesis verdict view unavailable; using the slice seeds', e); }
+    const off = town && typeof town.verdictOffer === 'function' ? town.verdictOffer() : null;
+    if (off && off.cat === cat.id) {
+      const n = off.cards.nose, ch = off.cards.chase, r = off.cards.recruit, LBL = { free: 'Free', fair: 'Fair', feast: 'Feast' };
+      return {
+        nose: { open: !!n.available, days: n.truce_days || 10, why: n.reason_text, tell: n.tell },
+        chase: { open: ch.available !== false, tell: ch.tell },
+        recruit: { open: !!r.available || r.reason === 'stash_short', steps: (r.tiers || []).map((x) => ({ id: x.step, label: LBL[x.step] || x.step, price: x.price, tier: x.tier })), stash: r.stash ?? null,
+          crew: `${r.crew}/${r.crew_cap || 6}`, why: r.reason_text, tell: r.tell },
+        firstEver: !!off.hint, hint: off.hint, strip: off.strip, sim: true,
+      };
+    }
+  } catch (e) { console.warn('nemesis verdict offer unavailable; using the slice seeds', e); }
   const boss = cat.role === 'boss';
   const v = {
     nose: { open: true, days: 10, why: null },
@@ -89,7 +100,7 @@ export class Verdict {
   }
   /** o: { cat, life, town, onChoose({kind, step}), raise (test: 'up'|'left'|'right'), step } */
   open(o) {
-    this.o = o; this.f = verdictFacts(o.cat, o.life, o.town); this.isOpen = true; this.t = 0; this.raised = null; this.hold = 0; this.holding = false; this.armed = false; this.paid = null;
+    this.o = o; this.f = verdictFacts(o.cat, o.life, o.town); this.isOpen = true; this.t = 0; this.t0 = performance.now(); this.test = this.el.classList.contains('test'); this.raised = null; this.hold = 0; this.holding = false; this.armed = false; this.paid = null;
     this.stepI = Math.max(0, this.f.recruit.steps.findIndex((s) => s.id === o.step));
     this.el.classList.add('on'); this.draw();
     if (o.raise) { this.t = 1; this.raise(o.raise); }
@@ -100,8 +111,8 @@ export class Verdict {
   canAfford() { const s = this.f.recruit.steps[this.stepI]; return !s || this.f.recruit.stash == null || s.price <= this.f.recruit.stash; }
   raise(d) { if (this.locked || this.paid) return; if (d === this.raised) return; this.raised = d; this.armed = false; this.hold = 0; this.draw(); }
   stepBribe(n) { if (this.raised !== 'right' || this.paid) return; const L = this.f.recruit.steps.length; this.stepI = Math.max(0, Math.min(L - 1, this.stepI + n)); this.draw(); }
-  press() { if (this.locked || !this.raised || this.paid) return; if (!this.available(this.raised)) { this.bump(); return; } if (this.armed) { this.commit(); return; } this.holding = true; }
-  release() { if (this.holding && this.hold < 0.6 && this.raised && this.available(this.raised)) { this.armed = true; this.draw(); } this.holding = false; this.hold = 0; }
+  press() { if (this.locked || !this.raised || this.paid) return; if (!this.available(this.raised)) { this.bump(); return; } if (this.armed) { this.commit(); return; } this.holding = true; this.holdT0 = performance.now(); this.hold = 0; }
+  release() { if (this.holding && !this.test) this.hold = (performance.now() - this.holdT0) / 1000; if (this.holding && this.hold >= 0.6 && this.raised && this.available(this.raised)) { this.commit(); return; } if (this.holding && this.hold < 0.6 && this.raised && this.available(this.raised)) { this.armed = true; this.draw(); } this.holding = false; this.hold = 0; }
   bump() { const c = this.el.querySelector('.vd-card.raised'); if (c) { c.style.transform = 'translateX(8px)'; setTimeout(() => { c.style.transform = ''; }, 90); } }
   commit() {
     const kind = { up: 'nose', left: 'chase', right: 'recruit' }[this.raised], step = kind === 'recruit' ? this.f.recruit.steps[this.stepI] : null;
@@ -126,21 +137,21 @@ export class Verdict {
       <div class="vd-meta"><span>${r.stash != null ? `${fish} Stash ${r.stash}` : ''}</span><span>Crew ${r.crew}</span></div>${s && r.stash != null && s.price > r.stash ? `<span class="vd-meta"><span class="warn">Stash short: ${r.stash} of ${s.price}</span></span>` : ''}` : `<div class="why">${r.why || ''}</div>`;
     const chipR = r.open ? (r.steps[0].price ? `${fish}from ${r.steps[0].price}` : 'Free') : '';
     let tell = '';
-    if (R === 'up') tell = `<div class="k-bubble k-bubble--notail vd-tell">${TAIL(!f.nose.open)}${f.nose.open ? 'Tail still.' : 'Tail lashing.'}</div>`;
+    if (R === 'up') tell = `<div class="k-bubble k-bubble--notail vd-tell">${TAIL(f.nose.tell ? f.nose.tell === 'tail_lashing' : !f.nose.open)}${(f.nose.tell ? f.nose.tell === 'tail_lashing' : !f.nose.open) ? 'Tail lashing.' : 'Tail still.'}</div>`;
     else if (R === 'right') tell = `<div class="k-bubble k-bubble--notail vd-tell">${EYES}Eyes on the ${s && s.price ? 'fish' : 'bell'}.</div>`;
     else if (R === 'left') tell = `<div class="k-bubble k-bubble--notail vd-tell">${EARS}Ears drop. You turn away.</div>`;
     const ring = (fr) => { const a = fr * Math.PI * 2, Rr = 17, x = Math.sin(a) * Rr, y = -Math.cos(a) * Rr; return `<svg width="44" height="44" viewBox="-22 -22 44 44"><circle r="${Rr}" fill="${C.cream}" stroke="${C.ink}" stroke-width="3"/>${fr > 0 ? (fr >= 1 ? `<circle r="${Rr}" fill="${C.gold}"/>` : `<path d="M0 0L0 ${-Rr}A${Rr} ${Rr} 0 ${fr > 0.5 ? 1 : 0} 1 ${x.toFixed(2)} ${y.toFixed(2)}Z" fill="${C.gold}"/>`) : ''}<circle r="${Rr}" fill="none" stroke="${C.ink}" stroke-width="3"/></svg>`; };
     const pay = this.paid ? ({ nose: `${RV.leafSprig({ x: 0, y: 0, s: 2.2 }).replace(/^/, '<svg width="80" height="70" viewBox="-10 -60 80 70">') + '</svg>'}Noses touched`, chase: `${RV.stamp(RV.GLYPH.run, { size: 70, color: C.cream })}Gone from town`, recruit: `${RV.stamp(RV.GLYPH.bell, { size: 70, color: C.gold })}Wears the bell now` })[this.paid.kind] : '';
-    const ta = this.o.tellAt || { x: 1120, y: 520 }, tx = Math.max(720, Math.min(1260, ta.x)), ty = Math.max(330, Math.min(760, ta.y));
+    const ta = this.o.tellAt || { x: 1120, y: 520 }, tx = Math.max(700, Math.min(1180, ta.x)), ty = Math.max(400, Math.min(760, ta.y));
     this.el.innerHTML = `<div class="vd-st" style="transform:scale(${k});--tx:${tx}px;--ty:${ty}px">
       ${card('up', 'up', 'Nose-Touch', ICON.nose, `${f.nose.days} days`, 'Steps down in peace. May side with you against its rival.', f.nose.open ? '' : `<div class="why">${f.nose.why}</div>`)}
       ${card('left', 'left', 'Chase Off', ICON.chase, '', 'Gone from town for good.')}
       ${card('right', 'right', 'Recruit', ICON.recruit, chipR, 'Joins your Crew with everything it remembers.', steps)}
       ${tell}
-      ${f.firstEver ? '<div class="vd-hint">Choose what they become. Chasing off is for good.</div>' : ''}
-      <div class="k-bubble k-bubble--notail vd-strip">Every choice clears the post. Then spray it.</div>
+      ${f.firstEver ? `<div class="vd-hint">${f.hint || 'Choose what they become. Chasing off is for good.'}</div>` : ''}
+      <div class="k-bubble k-bubble--notail vd-strip">${f.strip || 'Every choice clears the post. Then spray it.'}</div>
       <div class="vd-foot"><span class="k-prompt">${K.ui.faceButtons({ size: 42, lit: 'n' })}Their card</span>
-        ${r.steps.length > 1 && R === 'right' ? `<span class="k-prompt"><span class="k-btn k-key" style="height:44px;min-width:56px;font-size:24px">Q</span><span class="k-btn k-key" style="height:44px;min-width:56px;font-size:24px">E</span>Bribe</span>` : '<span></span>'}
+        ${r.open && r.steps.length > 1 && R === 'right' ? `<span class="k-prompt"><span class="k-btn k-key" style="height:44px;min-width:56px;font-size:24px">Q</span><span class="k-btn k-key" style="height:44px;min-width:56px;font-size:24px">E</span>Bribe</span>` : '<span></span>'}
         <span class="k-prompt vd-hold">${K.ui.faceButtons({ size: 42, lit: 's' })}${this.armed ? 'Press again to decide' : 'Hold to decide'}<span class="ring">${ring(this.holding ? Math.min(1, this.hold / 0.6) : this.armed ? 1 : 0)}</span></span></div>
       ${pay ? `<div class="vd-pay">${pay}</div>` : ''}</div>`;
     this.el.querySelectorAll('.vd-card').forEach((e) => {
@@ -152,8 +163,9 @@ export class Verdict {
   }
   frame(dt) {
     if (!this.isOpen) return;
-    this.t += dt;
-    if (this.holding) { this.hold += dt; if (this.hold >= 0.6) { this.commit(); return; } const r = this.el.querySelector('.vd-hold .ring'); if (r) this.draw(); }
+    const now = performance.now(), rdt = this.test ? dt : Math.min(0.25, (now - (this.tl || now)) / 1000); this.tl = now;
+    this.t += rdt; dt = rdt;
+    if (this.holding) { this.hold = this.test ? this.hold + dt : (now - this.holdT0) / 1000; if (this.hold >= 0.6) { this.commit(); return; } const r = this.el.querySelector('.vd-hold .ring'); if (r) this.draw(); }
     if (this.paid) { this.paid.t += dt; if (this.paid.t > 1.8) { const p = this.paid; this.close(); if (this.o.onChoose) this.o.onChoose(p); } }
   }
 }

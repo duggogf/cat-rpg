@@ -125,25 +125,44 @@ function finish(m) {
 }
 
 /**
- * Adapter for the nemesis simulation's API (src/sim/nemesis/API.md). Accepts its board view (if it exposes one) and
- * maps it onto this model; anything it does not provide falls back to the fixed seeds above.
+ * Adapter for the nemesis simulation's API (src/sim/nemesis/API.md): boardView() for discovery, state, marks, history,
+ * tape stars and ties; nameCard() (through boardView's `card`) for the mood pictograms and the context line; board()
+ * for the strip dots of the uphill silhouette scenes. Names, casts and titles stay this file's (presentation only).
  */
+const CTX_KIND = { anger: 'anger', truce: 'truce', friend: 'truce', stake: 'stake', raid: 'raid', roaming: 'raid' };
 export function fromNemesis(nem, o = {}) {
   try {
     if (!nem) return fallbackModel(o);
-    const view = typeof nem.boardView === 'function' ? nem.boardView() : typeof nem.board === 'function' ? nem.board() : null;
+    const view = typeof nem.boardView === 'function' ? nem.boardView() : null;
     if (!view) return fallbackModel(o);
-    const branch = view.branch ?? o.branch;
-    const m = fallbackModel({ ...o, branch, anger: view.anger ?? view.bossAnger ?? o.anger, discovered: view.discovered || o.discovered });
+    const branch = view.life >= 2 ? (view.branch ?? o.branch) : null;
+    const m = fallbackModel({ ...o, branch: branch || o.branch, anger: view.anger ?? o.anger });
+    m.branch = branch; m.life = view.life; m.day = view.day;
     for (const cv of view.cats || []) {
-      const c = m.cats[cv.id]; if (!c) continue;
-      if (cv.discovered != null) c.discovered = !!cv.discovered;
-      if (cv.state) c.state = cv.state;
-      if (cv.history) c.history = cv.history;
-      if (cv.marks) Object.assign(c.marks, cv.marks);
-      if (cv.tapeStar != null) c.tapeStar = cv.tapeStar;
+      let c = m.cats[cv.id];
+      if (!c) {
+        if (!['lane', 'outsiders', 'bell'].includes(cv.scene)) continue;
+        c = m.cats[cv.id] = { id: cv.id, name: cv.id[0].toUpperCase() + cv.id.slice(1), scene: cv.scene, homeScene: cv.scene, role: cv.anchor === 'wall' ? 'roamer' : 'tough', clowder: cv.scene === 'lane' ? 'wall_sitters' : 'outsiders',
+          answersTo: cv.scene === 'lane' ? 'daifuku' : null, personality: null, style: 'Scrapper', cast: { cast: 'tough' }, kit: kitOf('goma'), marks: {}, scars: [], state: 'present', history: null, context: null };
+      }
+      c.discovered = !!cv.discovered; c.state = cv.state || c.state; c.tapeStar = !!cv.tapeStar;
+      if (cv.state === 'crew' && c.clowder !== 'bell') { c.scene = 'bell'; c.role = 'crew'; c.answersTo = 'mikan'; }
+      if (cv.state === 'gone') c.scene = c.homeScene;
+      c.marks = { ...(cv.marks || {}) }; if (c.marks.sprig === undefined) delete c.marks.sprig;
+      c.history = cv.history || null; if (cv.scars) c.scars = cv.scars;
+      const k = cv.card;
+      if (k) {
+        c.gWord = k.grudge; c.rWord = k.regard;
+        const x = k.context;
+        if (x && CTX_KIND[x.kind]) c.context = { kind: CTX_KIND[x.kind], line: x.line, stage: x.stage, pips: x.pips };
+        else if (x && x.kind === 'crew' && c.context && c.context.kind === 'assign') { /* keep the Posse / Lounging line */ }
+        else if (x && x.kind === 'crew') c.context = { kind: 'assign', line: x.line };
+        else if (!x && c.context && c.context.kind !== 'assign') c.context = null;
+      }
     }
     if (Array.isArray(view.ties)) m.ties = view.ties.map((t) => ({ a: t.a ?? t.from, b: t.b ?? t.to, kind: t.kind }));
+    try { const b = nem.board(); m.simScenes = b.scenes; } catch (e) { /* strip dots fall back to the model */ }
+    m.sim = true;
     return m;
   } catch (e) { console.warn('nemesis board view unreadable; using the fixed seeds', e); return fallbackModel(o); }
 }

@@ -1,0 +1,296 @@
+{
+  "shots": {
+    "board-lane-rest": {
+      "query": "board=lane&branch=A",
+      "note": "Lane scene, rest (nothing focused): names only, faint arrows, steam puffs, silhouettes in the shade",
+      "board": {
+        "calls": 58,
+        "triangles": 139766,
+        "openMs": 159.6999999997206,
+        "scene": "lane",
+        "focus": null,
+        "tags": [],
+        "full": false,
+        "rest": 4,
+        "tagsDom": []
+      },
+      "textItems": 7
+    },
+    "board-lane-focus-togemaru": {
+      "query": "board=lane&branch=A&focus=togemaru",
+      "note": "Focus Togemaru (keys): lift + gold rim, his arrow bright, Goma Rival tag, others dim, card",
+      "board": {
+        "calls": 59,
+        "triangles": 146564,
+        "openMs": 185.60000000009313,
+        "scene": "lane",
+        "focus": "togemaru",
+        "tags": [
+          "rival:goma"
+        ],
+        "full": false,
+        "rest": 4,
+        "tagsDom": [
+          "Rival"
+        ]
+      },
+      "textItems": 14
+    },
+    "board-lane-focus-daifuku": {
+      "query": "board=lane&branch=A&focus=daifuku",
+      "note": "Focus the Boss: every member arrow bright, Old Gang chip under the Bell tab, anger card",
+      "board": {
+        "calls": 59,
+        "triangles": 146566,
+        "openMs": 201.10000000009313,
+        "scene": "lane",
+        "focus": "daifuku",
+        "tags": [],
+        "full": false,
+        "rest": 4,
+        "tagsDom": []
+      },
+      "textItems": 13
+    },
+    "board-lane-focus-silhouette": {
+      "query": "board=lane&branch=A&focus=sasa",
+      "note": "Focus a silhouette: \"?\" pom, \"Not met yet\" card, no tags",
+      "board": {
+        "calls": 58,
+        "triangles": 139766,
+        "openMs": 194,
+        "scene": "lane",
+        "focus": "sasa",
+        "tags": [],
+        "full": false,
+        "rest": 4,
+        "tagsDom": []
+      },
+      "textItems": 9
+    },
+    "board-lane-full-card": {
+      "query": "board=lane&branch=A&focus=togemaru&full=1",
+      "note": "South: the full Rival card",
+      "board": {
+        "calls": 59,
+        "triangles": 146564,
+        "openMs": 169.89999999990687,
+        "scene": "lane",
+        "focus": "togemaru",
+        "tags": [
+          "rival:goma"
+        ],
+        "full": true,
+        "rest": 4,
+        "tagsDom": [
+          "Rival"
+        ]
+      },
+      "textItems": 7
+    },
+    "board-outsiders": {
+      "query": "board=outsiders&branch=A&focus=challenger",
+      "note": "Outsiders: the challenger silhouette beside its stake stamp",
+      "board": {
+        "calls": 20,
+        "triangles": 17054,
+        "openMs": 104.79999999981374,
+        "scene": "outsiders",
+        "focus": "challenger",
+        "tags": [],
+        "full": false,
+        "rest": 0,
+        "tagsDom": []
+      },
+      "textItems": 5
+    },
+    "board-bell-focus-hige": {
+      "query": "board=bell&branch=A&focus=hige",
+      "note": "Bell: Crew arrows to Mikan; Hige focused shows the Old Boss chip under the Lane tab",
+      "board": {
+        "calls": 32,
+        "triangles": 65146,
+        "openMs": 145.70000000018626,
+        "scene": "bell",
+        "focus": "hige",
+        "tags": [],
+        "full": false,
+        "rest": 4,
+        "tagsDom": []
+      },
+      "textItems": 13
+    },
+    "board-bell-focus-kinako": {
+      "query": "board=bell&branch=A&focus=kinako",
+      "note": "Bell: Kinako shows no tag while Sasa is unmet",
+      "board": {
+        "calls": 32,
+        "triangles": 65146,
+        "openMs": 163.5,
+        "scene": "bell",
+        "focus": "kinako",
+        "tags": [],
+        "full": false,
+        "rest": 4,
+        "tagsDom": []
+      },
+      "textItems": 11
+    },
+    "board-lane-B": {
+      "query": "board=lane&branch=B",
+      "note": "Branch B: Togemaru recruited, a bell-cord knot on his old spot",
+      "board": {
+        "calls": 54,
+        "triangles": 126168,
+        "openMs": 165,
+        "scene": "lane",
+        "focus": null,
+        "tags": [],
+        "full": false,
+        "rest": 3,
+        "tagsDom": []
+      },
+      "textItems": 6
+    },
+    "board-bell-B": {
+      "query": "board=bell&branch=B&focus=togemaru",
+      "note": "Branch B: Togemaru in the Bell scene",
+      "board": {
+        "calls": 36,
+        "triangles": 127348,
+        "openMs": 190.5,
+        "scene": "bell",
+        "focus": "togemaru",
+        "tags": [],
+        "full": false,
+        "rest": 5,
+        "tagsDom": []
+      },
+      "textItems": 15
+    },
+    "board-lane-C": {
+      "query": "board=lane&branch=C",
+      "note": "Branch C: Togemaru Chased Off, a legend card on his spot",
+      "board": {
+        "calls": 54,
+        "triangles": 126168,
+        "openMs": 157.29999999981374,
+        "scene": "lane",
+        "focus": null,
+        "tags": [],
+        "full": false,
+        "rest": 3,
+        "tagsDom": []
+      },
+      "textItems": 6
+    },
+    "standoff-memory": {
+      "query": "vantage=1&m3=standoff&branch=L1",
+      "note": "L1D2 Standoff: the sim’s memory line; the Fight prompt locked 1 s (ring)"
+    },
+    "verdict-l1-none": {
+      "query": "vantage=1&m3=verdict&branch=L1",
+      "note": "L1D2 Verdict on Togemaru: three cards, no focus, first-Verdict hint"
+    },
+    "verdict-l1-up": {
+      "query": "vantage=1&m3=verdict&branch=L1&card=up",
+      "note": "Nose-Touch raised: tell \"Tail still.\" (Grudge 43 < 45)"
+    },
+    "verdict-l1-left": {
+      "query": "vantage=1&m3=verdict&branch=L1&card=left",
+      "note": "Chase Off raised: ears drop, Mikan turns away"
+    },
+    "verdict-l1-right": {
+      "query": "vantage=1&m3=verdict&branch=L1&card=right",
+      "note": "Recruit raised: Life 1 \"Free\" step, starts Aloof"
+    },
+    "verdict-l2-right": {
+      "query": "vantage=1&m3=verdict&branch=A&focus=goma&card=right",
+      "note": "Life 2 Verdict on Goma from the sim: Recruit greyed in place (\"Turns its tail to the bell.\": no Life 2 recruit in the slice)"
+    },
+    "verdict-l2-bribe": {
+      "query": "vantage=1&m3=verdict&branch=A&focus=goma&card=right&seeds=1&step=fair",
+      "note": "The Bribe row UI on the slice seeds (Fair 96 / Feast 192, Stash 150 short of Feast, Crew 4/6)"
+    },
+    "verdict-l2-up": {
+      "query": "vantage=1&m3=verdict&branch=A&focus=goma&card=up",
+      "note": "Life 2 Verdict on Goma: Nose-Touch tell from the sim"
+    },
+    "declaration-A": {
+      "query": "m3=declaration&branch=A",
+      "note": "L2D2 Sniff, branch A: the Declaration card (Sworn Rival)"
+    },
+    "closing-B": {
+      "query": "m3=declaration&branch=B",
+      "note": "L2D2 Sniff, branch B: \"Wears the bell now\""
+    },
+    "closing-C": {
+      "query": "m3=declaration&branch=C",
+      "note": "L2D2 Sniff, branch C: \"Run out of town\""
+    },
+    "pause-rivals": {
+      "query": "m3=pause&branch=A",
+      "note": "Pause: Mikan · Rivals · Options, the Rivals tab"
+    }
+  },
+  "timing": {
+    "firstOpenMs": 214.4,
+    "reopenMs": 8.3,
+    "scenes": {
+      "lane": {
+        "switchMs": 3.6,
+        "calls": 58,
+        "triangles": 139766
+      },
+      "outsiders": {
+        "switchMs": 6.2,
+        "calls": 20,
+        "triangles": 17054
+      },
+      "bell": {
+        "switchMs": 39.1,
+        "calls": 31,
+        "triangles": 58346
+      }
+    },
+    "hover": {
+      "before120ms": null,
+      "after": "togemaru",
+      "tags": [
+        "rival:goma"
+      ]
+    },
+    "keys": {
+      "first": "sasa",
+      "second": "azuki",
+      "third": "tsubu"
+    }
+  },
+  "checks": {
+    "tagOnUndiscovered": [],
+    "perCat": {
+      "daifuku": [],
+      "kagi": [],
+      "ohagi": [],
+      "goma": [
+        "rival:togemaru"
+      ],
+      "togemaru": [
+        "rival:goma"
+      ],
+      "sasa": [],
+      "kuri": [],
+      "challenger": [],
+      "mikan": [],
+      "hige": [],
+      "pon": [],
+      "kinako": [],
+      "azuki": [],
+      "nori": [],
+      "tsubu": []
+    },
+    "kinakoTags": [],
+    "ok": true
+  },
+  "errors": []
+}

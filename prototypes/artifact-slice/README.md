@@ -71,6 +71,18 @@ Params: `?start=showcase_l2d2|l1d1`, `?seed=N`, `?vantage=0..5`, `?sense=1`, `?f
 `__frameLog()` for the real-laptop log), `?hud=0|1`. Evidence: `node tools/m2-shots.mjs`
 (writes to `production/qa/evidence/artifact-slice/M2/`).
 
+## Rivals, Verdict and the Rivals board (M3, presentation)
+
+Facts come from the nemesis simulation (`src/sim/nemesis/`, `API.md`) through `src/ui/rivals-model.js` (`fromNemesis`).
+`src/render/boardscene.js` is the board's 3D diorama (three small sets from `src/world/board_lane.json`, the street's
+painted shader and baked paint, live cats on role anchors, ink silhouettes in the shade); `src/ui/rivalsboard.js` is its
+DOM layer (ribbons, tags, arrows, card, scene strip; hover ray, keys); `src/ui/standoff.js`, `verdict.js` and
+`sniffcards.js` are the Standoff, the three-card Verdict and the Declaration / closing cards; `src/ui/m3.js` hooks them
+into the Lane (J or Pause > Rivals opens the board; T stages Togemaru's L1D2 Standoff, then the Verdict and the L2D2
+Sniff); `src/ui/m3-combat.js` shows the Verdict after a won rival fight in the combat chapters (`&verdict=0` turns it off).
+Params: `?board=lane|outsiders|bell&focus=<id>&full=1`, `?branch=A|B|C|L1`, `?m3=standoff|verdict|declaration|pause`
+(`&card=up|left|right`). Evidence: `node tools/m3-shots.mjs` (writes to `production/qa/evidence/artifact-slice/M3/`).
+
 ## Status
 
 - **M0 look-dev:** concluded on the studio side — three review iterations (art + creative director): final
