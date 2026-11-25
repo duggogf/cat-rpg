@@ -1,10 +1,10 @@
 {
  "vantage": {
   "0-day": {
-   "calls": 68,
-   "shadowCalls": 55,
-   "triangles": 219336,
-   "texMB": 124.9,
+   "calls": 114,
+   "shadowCalls": 91,
+   "triangles": 229588,
+   "texMB": 126.2,
    "mikan": [
     0.3,
     0,
@@ -13,10 +13,10 @@
    "mode": "ground"
   },
   "1-day": {
-   "calls": 157,
+   "calls": 215,
    "shadowCalls": 76,
-   "triangles": 229698,
-   "texMB": 124.9,
+   "triangles": 238932,
+   "texMB": 126.2,
    "mikan": [
     0,
     0,
@@ -25,10 +25,10 @@
    "mode": "ground"
   },
   "2-day": {
-   "calls": 73,
+   "calls": 77,
    "shadowCalls": 76,
-   "triangles": 221854,
-   "texMB": 124.9,
+   "triangles": 226594,
+   "texMB": 126.2,
    "mikan": [
     -1.7,
     1.58,
@@ -37,10 +37,10 @@
    "mode": "top"
   },
   "3-day": {
-   "calls": 57,
-   "shadowCalls": 57,
-   "triangles": 218904,
-   "texMB": 124.9,
+   "calls": 120,
+   "shadowCalls": 73,
+   "triangles": 228190,
+   "texMB": 126.2,
    "mikan": [
     0,
     -1.215,
@@ -49,10 +49,10 @@
    "mode": "ground"
   },
   "4-day": {
-   "calls": 201,
-   "shadowCalls": 26,
-   "triangles": 236510,
-   "texMB": 124.9,
+   "calls": 314,
+   "shadowCalls": 55,
+   "triangles": 251468,
+   "texMB": 126.2,
    "mikan": [
     0,
     -5.811,
@@ -61,10 +61,10 @@
    "mode": "ground"
   },
   "5-day": {
-   "calls": 38,
-   "shadowCalls": 41,
-   "triangles": 216662,
-   "texMB": 124.9,
+   "calls": 76,
+   "shadowCalls": 77,
+   "triangles": 224912,
+   "texMB": 126.2,
    "mikan": [
     -1,
     0,
@@ -73,10 +73,10 @@
    "mode": "ground"
   },
   "0-dusk": {
-   "calls": 68,
-   "shadowCalls": 103,
-   "triangles": 219336,
-   "texMB": 124.9,
+   "calls": 114,
+   "shadowCalls": 137,
+   "triangles": 229588,
+   "texMB": 126.2,
    "mikan": [
     0.3,
     0,
@@ -85,10 +85,10 @@
    "mode": "ground"
   },
   "1-dusk": {
-   "calls": 157,
-   "shadowCalls": 109,
-   "triangles": 229698,
-   "texMB": 124.9,
+   "calls": 215,
+   "shadowCalls": 159,
+   "triangles": 238932,
+   "texMB": 126.2,
    "mikan": [
     0,
     0,
@@ -97,10 +97,10 @@
    "mode": "ground"
   },
   "2-dusk": {
-   "calls": 73,
-   "shadowCalls": 109,
-   "triangles": 221854,
-   "texMB": 124.9,
+   "calls": 77,
+   "shadowCalls": 156,
+   "triangles": 226594,
+   "texMB": 126.2,
    "mikan": [
     -1.7,
     1.58,
@@ -109,10 +109,10 @@
    "mode": "top"
   },
   "3-dusk": {
-   "calls": 57,
-   "shadowCalls": 107,
-   "triangles": 218904,
-   "texMB": 124.9,
+   "calls": 120,
+   "shadowCalls": 147,
+   "triangles": 228190,
+   "texMB": 126.2,
    "mikan": [
     0,
     -1.215,
@@ -121,10 +121,10 @@
    "mode": "ground"
   },
   "4-dusk": {
-   "calls": 201,
-   "shadowCalls": 78,
-   "triangles": 236510,
-   "texMB": 124.9,
+   "calls": 314,
+   "shadowCalls": 105,
+   "triangles": 251468,
+   "texMB": 126.2,
    "mikan": [
     0,
     -5.811,
@@ -133,10 +133,10 @@
    "mode": "ground"
   },
   "5-dusk": {
-   "calls": 38,
-   "shadowCalls": 103,
-   "triangles": 216662,
-   "texMB": 124.9,
+   "calls": 76,
+   "shadowCalls": 137,
+   "triangles": 224912,
+   "texMB": 126.2,
    "mikan": [
     -1,
     0,
@@ -510,70 +510,70 @@
     {
      "t": 250,
      "mikan": [
-      -0.75,
+      -0.5,
       0,
-      36.02
+      36.01
      ],
      "cam": [
-      -1.43,
-      2.35,
-      37.37
+      -1.77,
+      2.24,
+      35.91
      ],
      "mode": "ground"
     },
     {
      "t": 260,
      "mikan": [
-      -0.74,
+      -0.59,
       0,
-      24.65
+      24.59
      ],
      "cam": [
-      0.93,
+      1.09,
       2.91,
-      25.33
+      25.24
      ],
      "mode": "ground"
     },
     {
      "t": 270,
      "mikan": [
-      -1.01,
+      -1.06,
       0,
-      13.15
+      13.09
      ],
      "cam": [
-      -1.37,
-      0.65,
-      14.33
+      -1.41,
+      0.92,
+      13.97
      ],
      "mode": "ground"
     },
     {
      "t": 280,
      "mikan": [
-      0.36,
+      0.45,
       0,
-      1.3
+      1.27
      ],
      "cam": [
-      0.77,
+      0.86,
       2.91,
-      3.13
+      3.08
      ],
      "mode": "ground"
     },
     {
      "t": 290,
      "mikan": [
-      -0.82,
+      0.38,
       0,
-      -7.25
+      -1.6
      ],
      "cam": [
-      1.32,
-      1.2,
-      -5.1
+      0.82,
+      0.98,
+      -3.61
      ],
      "mode": "ground"
     }
@@ -1337,10 +1337,10 @@
    "seconds": 300,
    "frames": 9000,
    "camInsideGeometry": 0,
-   "catOutOfFrustum": 57,
-   "catBehindSolid": 28,
-   "catInFramePct": 99.06,
-   "hops": 16,
+   "catOutOfFrustum": 32,
+   "catBehindSolid": 18,
+   "catInFramePct": 99.44,
+   "hops": 12,
    "waypointsReached": 15,
    "samples": [
     {
@@ -1656,12 +1656,12 @@
      "mikan": [
       -1.37,
       0,
-      43.65
+      41.25
      ],
      "cam": [
       -1.35,
       0.56,
-      44.7
+      42.3
      ],
      "mode": "ground"
     },
@@ -1670,12 +1670,12 @@
      "mikan": [
       -1.14,
       0,
-      46.05
+      43.59
      ],
      "cam": [
-      -1.26,
-      1.04,
-      46.98
+      -1.25,
+      1.06,
+      44.56
      ],
      "mode": "ground"
     },
@@ -1684,82 +1684,82 @@
      "mikan": [
       -1.7,
       1.02,
-      57.45
+      53.3
      ],
      "cam": [
       0.08,
       4.11,
-      56.17
+      52.17
      ],
      "mode": "top"
     },
     {
      "t": 250,
      "mikan": [
-      -0.59,
+      -0.08,
       0,
-      60.74
+      59.86
      ],
      "cam": [
-      -2.7,
-      2.56,
-      61.28
+      1.44,
+      0.3,
+      60.16
      ],
      "mode": "ground"
     },
     {
      "t": 260,
      "mikan": [
-      0.82,
+      -0.08,
       0,
-      48.8
+      48.02
      ],
      "cam": [
-      -1.22,
-      1.57,
-      47.1
+      -0.46,
+      2.74,
+      46.62
      ],
      "mode": "ground"
     },
     {
      "t": 270,
      "mikan": [
-      0.92,
+      -0.99,
       0,
-      38.68
+      36.09
      ],
      "cam": [
-      -0.56,
-      1.79,
-      41.09
+      0.76,
+      0.26,
+      33.81
      ],
      "mode": "ground"
     },
     {
      "t": 280,
      "mikan": [
-      0.34,
+      0.16,
       0,
-      28.36
+      26.26
      ],
      "cam": [
-      -1.39,
-      0.75,
-      30.57
+      1.45,
+      0.32,
+      28.96
      ],
      "mode": "ground"
     },
     {
      "t": 290,
      "mikan": [
-      -0.38,
+      -0.44,
       0,
-      16.7
+      14.36
      ],
      "cam": [
-      0.9,
-      0.26,
-      14.48
+      -1.39,
+      0.77,
+      13.71
      ],
      "mode": "ground"
     }
@@ -2039,7 +2039,7 @@
    "catOutOfFrustum": 41,
    "catBehindSolid": 17,
    "catInFramePct": 99.36,
-   "hops": 5,
+   "hops": 6,
    "waypointsReached": 18,
    "samples": [
     {
@@ -2353,112 +2353,112 @@
     {
      "t": 220,
      "mikan": [
-      0.95,
+      1,
       0,
-      47.56
+      51.18
      ],
      "cam": [
-      1.41,
-      0.97,
-      48.35
+      1.45,
+      1.1,
+      51.8
      ],
      "mode": "ground"
     },
     {
      "t": 230,
      "mikan": [
-      0.09,
+      0.46,
       0,
-      35.94
+      39.51
      ],
      "cam": [
-      -1.39,
-      0.52,
-      36.73
+      0.31,
+      0.56,
+      37.21
      ],
      "mode": "ground"
     },
     {
      "t": 240,
      "mikan": [
-      0.12,
+      -0.62,
       0,
-      24.26
+      28.01
      ],
      "cam": [
-      1.14,
+      -2.22,
       2.91,
-      25.79
+      28.9
      ],
      "mode": "ground"
     },
     {
      "t": 250,
      "mikan": [
-      -0.93,
+      -1.2,
       0,
-      12.85
+      16.7
      ],
      "cam": [
-      -1.41,
-      0.3,
-      11.9
+      0.89,
+      0.4,
+      14.71
      ],
      "mode": "ground"
     },
     {
      "t": 260,
      "mikan": [
-      0.38,
-      0,
-      1.14
+      -1.7,
+      1.58,
+      5.76
      ],
      "cam": [
-      1.13,
-      2.83,
-      -0.29
+      1.5,
+      2.91,
+      5.4
      ],
-     "mode": "ground"
+     "mode": "top"
     },
     {
      "t": 270,
      "mikan": [
-      -0.55,
+      0.09,
       0,
-      -9.56
+      -3.72
      ],
      "cam": [
-      1.04,
-      2.91,
-      -8.74
+      -1.39,
+      0.26,
+      -5.03
      ],
      "mode": "ground"
     },
     {
      "t": 280,
      "mikan": [
-      -0.08,
-      -1.57,
-      -21.31
+      -0.22,
+      -0.2,
+      -15.52
      ],
      "cam": [
-      -0.02,
-      1.32,
-      -22.95
+      -1.87,
+      2.74,
+      -14.73
      ],
      "mode": "ground"
     },
     {
      "t": 290,
      "mikan": [
-      0.23,
-      -5.41,
-      -32.92
+      -0.45,
+      -3.31,
+      -26.98
      ],
      "cam": [
-      -1.32,
-      -4.14,
-      -33.34
+      0.12,
+      -2.09,
+      -23.97
      ],
      "mode": "ground"
     }
@@ -2712,7 +2712,7 @@
    "query": "test=1&hud=1&start=showcase_l2d2",
    "steps": [
     {
-     "step": "At Laundry Pole Yard: the post is Mikan’s but fading (48, 2 drooping gold wisps); the challenger stakes it from the fence top",
+     "step": "At Laundry Pole Yard: the post is Mikan’s but fading (48: 2 drooping gold wisps at the cap); the influence bar under the Patch tag shows 95 with the crown unlit; the challenger stakes the post from the fence top",
      "js": "__cat.teleport(0.05, -0.9, 20)",
      "shot": "flow-rescue-00.png",
      "state": {
@@ -2736,7 +2736,7 @@
      }
     },
     {
-     "step": "Holding E: the Rescue Spray hold ring fills (1.2 s)",
+     "step": "Holding E: the Rescue Spray hold ring fills around the key (1.2 s)",
      "js": "__cat.input({ e: true, frames: 18 })",
      "shot": "flow-rescue-01.png",
      "state": {
@@ -2760,8 +2760,8 @@
      }
     },
     {
-     "step": "Rescue Spray lands: sparkle cloud and pop, 4 gold wisps, Patch tag; influence 95 -> 100 opens the Boss window",
-     "js": "__cat.input({ e: true, frames: 22 })",
+     "step": "Rescue Spray lands: sparkle cloud at the cap, \"48 → 90\", wisps sprout to 4, a tilt-up; the bar fills to 100, the crown lights, \"Hidamari 95 → 100\"",
+     "js": "__cat.input({ e: true, frames: 20 })",
      "shot": "flow-rescue-02.png",
      "state": {
       "influence": 100,
@@ -2784,8 +2784,8 @@
      }
     },
     {
-     "step": "Daifuku comes down from the Den toward his Morning stop (authored clip, control kept)",
-     "js": "__cat.input({ frames: 25 })",
+     "step": "The Boss window opens: the camera eases toward the lane wall (control kept); the edge badge points to Daifuku while the garden hides him",
+     "js": "__cat.input({ frames: 40 })",
      "shot": "flow-rescue-03.png",
      "state": {
       "influence": 100,
@@ -2808,9 +2808,57 @@
      }
     },
     {
-     "step": "Whisker Sense: compass ring with the roaming-Boss crown tick and the challenger stake",
-     "js": "__cat.input({ frames: 50, tab: true })",
+     "step": "Daifuku (larger, crown pom, steam puffs) walks the coping, the High Road, in view",
+     "js": "__cat.input({ frames: 40 })",
      "shot": "flow-rescue-04.png",
+     "state": {
+      "influence": 100,
+      "window": true,
+      "boss": "S_M",
+      "mode": "ground",
+      "home": false,
+      "phase": "day",
+      "discovered": {
+       "daifuku": false
+      },
+      "posts": {
+       "LWC": "bell:80:3w",
+       "LPY": "bell:90:4w",
+       "PA": "bell:75:3w",
+       "TSS": "bell:70:3w",
+       "DEN": "wall_sitters:100:4w"
+      },
+      "hash": "6d91846448ef61f2"
+     }
+    },
+    {
+     "step": "He drops to his Morning stop (S_M) at the yard",
+     "js": "__cat.input({ frames: 60 })",
+     "shot": "flow-rescue-05.png",
+     "state": {
+      "influence": 100,
+      "window": true,
+      "boss": "S_M",
+      "mode": "ground",
+      "home": false,
+      "phase": "day",
+      "discovered": {
+       "daifuku": false
+      },
+      "posts": {
+       "LWC": "bell:80:3w",
+       "LPY": "bell:90:4w",
+       "PA": "bell:75:3w",
+       "TSS": "bell:70:3w",
+       "DEN": "wall_sitters:100:4w"
+      },
+      "hash": "6d91846448ef61f2"
+     }
+    },
+    {
+     "step": "Whisker Sense: the compass ring with the roaming-Boss crown tick and the challenger stake",
+     "js": "__cat.input({ frames: 40, tab: true })",
+     "shot": "flow-rescue-06.png",
      "state": {
       "influence": 100,
       "window": true,
@@ -2837,7 +2885,8 @@
     "ScentChanged",
     "InfluenceChanged",
     "BossWindowChanged",
-    "BossMoved:S_M"
+    "BossMoved:S_M",
+    "BossAtStop"
    ]
   },
   "rival": {
@@ -2868,7 +2917,7 @@
      }
     },
     {
-     "step": "Over-mark LPY.rub1 (0.4 s rub, -10): a small puff; the Wall Sitter on the coping sees it (seen = loud)",
+     "step": "Over-mark LPY.rub1 (0.4 s rub): a sage puff and \"−10\"; the Wall Sitter on the coping sees it (seen = loud); anger puff on the tag",
      "js": "__cat.input({ e: true, frames: 16 })",
      "shot": "flow-rival-01.png",
      "state": {
@@ -2892,9 +2941,33 @@
      }
     },
     {
-     "step": "Counter-Spray the post twice (-30 each, always loud): sparkle pops; wisps thin; the Keeper is called at <= 30",
-     "js": "__cat.teleport(0.05, -0.9, 20); __cat.input({ e: true, frames: 40 }); __cat.input({ e: true, frames: 40 })",
+     "step": "Counter-Spray the post (−30, always loud): a sage sparkle cloud at the cap, wisps wither one by one",
+     "js": "__cat.teleport(0.05, -0.9, 20); __cat.input({ e: true, frames: 40 })",
      "shot": "flow-rival-02.png",
+     "state": {
+      "influence": 0,
+      "window": false,
+      "boss": "den_wall",
+      "mode": "ground",
+      "home": false,
+      "phase": "day",
+      "discovered": {
+       "daifuku": false
+      },
+      "posts": {
+       "LWC": "strays:80:3w",
+       "LPY": "wall_sitters:40:2w",
+       "PA": "wall_sitters:80:3w",
+       "TSS": "wall_sitters:80:3w",
+       "DEN": "wall_sitters:100:4w"
+      },
+      "hash": "0f6af3cdbf64840c"
+     }
+    },
+    {
+     "step": "A second Counter-Spray (−30): at <= 30 the Keeper is called (\"Fight to clear, spray to claim.\")",
+     "js": "__cat.input({ e: true, frames: 40 })",
+     "shot": "flow-rival-03.png",
      "state": {
       "influence": 0,
       "window": false,
@@ -2918,7 +2991,7 @@
     {
      "step": "M3 stand-in: a Verdict clears the Keeper (verdict() is M3’s; called here only to show the Claim). Claim Spray offered",
      "js": "__cat.verdict(\"LPY\", \"chase\"); __cat.input({ frames: 4 })",
-     "shot": "flow-rival-03.png",
+     "shot": "flow-rival-04.png",
      "state": {
       "influence": 0,
       "window": false,
@@ -2942,7 +3015,7 @@
     {
      "step": "Claim Spray: the post is Mikan’s at 70, gold wisps",
      "js": "__cat.input({ e: true, frames: 40 })",
-     "shot": "flow-rival-04.png",
+     "shot": "flow-rival-05.png",
      "state": {
       "influence": 25,
       "window": false,
@@ -2965,8 +3038,8 @@
     }
    ],
    "lastEvents": [
-    "MarkApplied:over_mark",
     "AngerRaised:over_mark",
+    "ScentChanged",
     "ContestBristled",
     "MarkApplied:counter_spray",
     "AngerRaised:counter_spray",
@@ -3119,8 +3192,8 @@
      }
     },
     {
-     "step": "The lamp wave runs uphill (lamps light one after another)",
-     "js": "__cat.input({ frames: 50 })",
+     "step": "The lamp wave runs uphill (lamps light one after another; the camera tilts up so the heads are in frame)",
+     "js": "__cat.input({ frames: 40, look: [0, -0.12] }); __cat.input({ frames: 60 })",
      "shot": "flow-dusk-02.png",
      "state": {
       "influence": 95,

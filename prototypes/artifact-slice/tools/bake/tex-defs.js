@@ -270,5 +270,18 @@
     return svg(2048, 512, s);
   } };
 
+  /* The Den's great wall: irregular dressed stone courses with mortar, moss and stains (3 m x 3 m tile). */
+  T.stonewall = { w: 512, h: 512, svg: () => {
+    const R = K.rng(61); let s = rect(0, 0, 512, 512, '#9E9886'), st = '';
+    for (let row = 0, y = 0; y < 512; row++) { const h = 54 + R() * 26; let x = -R() * 60;
+      while (x < 512) { const w = 70 + R() * 70; const c = ['#C9C3AE', '#BDB59D', '#D3CCB6', '#B2AA94'][Math.floor(R() * 4)];
+        st += `<path d="M${(x + 4).toFixed(0)} ${(y + 4).toFixed(0)}h${(w - 8).toFixed(0)}q4 ${(h / 2).toFixed(0)} 0 ${(h - 8).toFixed(0)}h-${(w - 8).toFixed(0)}q-5 -${(h / 2).toFixed(0)} 0 -${(h - 8).toFixed(0)}z" fill="${c}"/><path d="M${(x + 6).toFixed(0)} ${(y + 6).toFixed(0)}h${(w - 14).toFixed(0)}" stroke="#E6E0CC" stroke-width="5" opacity="0.7"/>`; x += w; }
+      y += h; }
+    s += `<g filter="url(#k-rough)">${st}</g>`;
+    let m = ''; for (let i = 0; i < 90; i++) { const x = R() * 512, y = Math.pow(R(), 0.6) * 512, r = 6 + R() * 16; m += `<ellipse cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" rx="${(r * 1.5).toFixed(0)}" ry="${r.toFixed(0)}" fill="${R() < 0.5 ? '#86A866' : '#6F9A5A'}" opacity="${(0.35 + R() * 0.35).toFixed(2)}"/>`; }
+    s += `<g filter="url(#k-leaf-fine)">${m}</g>` + K.texture(0, 0, 512, 512, 'mottle', 0.18) + K.texture(0, 0, 512, 512, 'grain', 0.2);
+    return svg(512, 512, s);
+  } };
+
   window.TEX = T;
 })();

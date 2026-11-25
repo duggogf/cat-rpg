@@ -78,14 +78,24 @@ export class ExploreRig extends OrbitRig {
     super(camera, colliders); this.groundAt = groundAt; this.minHit = 0.12;
     this.state = 'explore'; this.k = { ...STATES.explore }; this.zoom = 1; this.pv = [0, 0, 0]; this.p = null; this.lastLook = -99; this.t = 0; this.inside = false;
   }
+  /** A short tilt-up and settle (a Spray lands). */
+  kick(deg) { this.kickV = deg; }
+  /** Soft look-at bias toward a world point (plan §2.2: the Boss's climb in view; control kept: any look input wins). */
+  biasTo(x, z, secs) { this.bias = { x, z, until: this.t + secs }; }
   look(dYaw, dPitch) { if (!dYaw && !dPitch) return; this.yaw += dYaw; this.pitch = THREE.MathUtils.clamp(this.pitch + dPitch, EXPLORE.pitchMin, EXPLORE.pitchMax); this.lastLook = this.t; }
   setState(s) { if (s !== this.state) { this.state = s; if (this.t - this.lastLook > 1.0) this.pitchTarget = STATES[s].pitch; } }
   update(dt, target, snap = false, ctx = {}) {
     this.t += dt; const S = STATES[this.state], b = snap ? 1 : 1 - Math.pow(2, -dt / 0.13);   // 0.4 s blend ≈ 3 half-lives
     for (const k of ['dist', 'pivotH']) this.k[k] += (S[k] - this.k[k]) * b;
     if (this.pitchTarget != null) { this.pitch += (this.pitchTarget - this.pitch) * b; if (Math.abs(this.pitchTarget - this.pitch) < 0.2) this.pitchTarget = null; }
+    // look-at bias: swing so the point and Mikan share the frame (≤ 70°/s), unless the player is steering
+    if (this.bias && this.t < this.bias.until && this.t - this.lastLook > 0.6 && this.p) {
+      const want = Math.atan2(this.p.x - this.bias.x, this.p.z - this.bias.z) * 180 / Math.PI; let d = ((want - this.yaw + 540) % 360) - 180;
+      this.yaw += Math.sign(d) * Math.min(Math.abs(d), 70 * dt); this.lastBias = this.t;
+      this.pitch += (3 - this.pitch) * Math.min(1, dt * 1.5);   // look up a little: the subject is on the wall tops
+    }
     // auto-recentre
-    if (ctx.moveDir && this.t - this.lastLook > 1.5 && !snap) {
+    if (ctx.moveDir && this.t - this.lastLook > 1.5 && !snap && !(this.bias && this.t < this.bias.until)) {
       const want = Math.atan2(-ctx.moveDir.x, -ctx.moveDir.z) * 180 / Math.PI;   // camera sits behind the movement
       let d = ((want - this.yaw + 540) % 360) - 180;
       if (Math.abs(d) < 135) this.yaw += Math.sign(d) * Math.min(Math.abs(d), 90 * dt * Math.min(1, (this.t - this.lastLook - 1.5) / 0.3));
@@ -99,7 +109,8 @@ export class ExploreRig extends OrbitRig {
     this.pivot.copy(this.p);
     const want = THREE.MathUtils.clamp(this.k.dist * this.zoom, EXPLORE.distMin, EXPLORE.distMax);
     const dirOf = (p) => new THREE.Vector3(Math.sin(this.yaw * D2R) * Math.cos(p * D2R), Math.sin(p * D2R), Math.cos(this.yaw * D2R) * Math.cos(p * D2R));
-    let pitch = this.pitch, dir = dirOf(pitch), free = this.clearance(this.pivot, dir, want);
+    if (this.kickV) { this.kickV *= Math.pow(2, -dt / 0.15); if (Math.abs(this.kickV) < 0.05) this.kickV = 0; }
+    let pitch = this.pitch + (this.kickV || 0), dir = dirOf(pitch), free = this.clearance(this.pivot, dir, want);
     // whisker probe (§3.4 narrow alleys): squeezed and not steering, swing yaw toward the open side (≤ 60°/s)
     if (!snap && free < 1.4 && this.t - this.lastLook > 1.0) {
       const at = (dy) => { const y0 = this.yaw; this.yaw += dy; const f = this.clearance(this.pivot, dirOf(pitch), want); this.yaw = y0; return f; };

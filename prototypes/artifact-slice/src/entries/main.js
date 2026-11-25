@@ -54,7 +54,7 @@ const TEX = {
   skybrush: { wrap: 'repeat' }, foliage: { alpha: true }, flowers: { alpha: true }, grass: { alpha: true }, clouds: { alpha: true },
   hillsNear: { alpha: true, wrapS: 'repeat' }, hillsFar: { alpha: true, wrapS: 'repeat' }, town: { alpha: true }, sea: { wrapS: 'repeat' },
   roof: { wrap: 'mirror' }, house: { wrap: 'mirror' }, window: {}, notice: { alpha: true },
-  stains: { alpha: true }, groundbits: { alpha: true }, poster: { alpha: true }, manhole: { alpha: true }, vending: {}, aircon: {}, legs: { alpha: true }, townFar: { alpha: true },
+  stains: { alpha: true }, groundbits: { alpha: true }, stonewall: { wrap: 'mirror' }, poster: { alpha: true }, manhole: { alpha: true }, vending: {}, aircon: {}, legs: { alpha: true }, townFar: { alpha: true },
 };
 const W = { mirror: THREE.MirroredRepeatWrapping, repeat: THREE.RepeatWrapping };
 const missing = [];
@@ -219,7 +219,7 @@ function step(dt) {
   if (home !== mv.home) { mv.home = home; if (hud) hud.setHome(home); }
   // ---- Patch entry: the tag shows 3 s
   const inP = L.patches.find((p) => p.zone && mikanPos.z > p.zone[0] && mikanPos.z < p.zone[1] && !home);
-  if ((inP && inP.id) !== mv.inPatch) { mv.inPatch = inP ? inP.id : null; if (inP && hud) hud.tag(terr.patch(inP.id), 3); }
+  if ((inP && inP.id) !== mv.inPatch) { mv.inPatch = inP ? inP.id : null; if (inP && hud) { hud.tag(terr.patch(inP.id), 3); hud.influence(terr.sim.influenceBar(), null, 3); } }
   // ---- interactions (E): Spray hold 1.2 s, Rub 0.4 s, Nap, pick up
   interact(dt, eHeld);
   // ---- Whisker Sense and the 1 s sniff (Den perch, within 10 m)
@@ -260,7 +260,7 @@ function candidates() {
   const out = [], m = mikanPos;
   for (const p of L.patches) {
     const offer = terr.offer(p.id), d = Math.hypot(m.x - p.at[0], m.z - p.at[2]);
-    if (offer && d < 1.35 && mv.mode === 'ground') out.push({ id: 'post-' + p.id, kind: 'spray', patch: p.id, offer, at: new THREE.Vector3(p.at[0], p.at[1] + 0.35, p.at[2]), d, dur: 1.2 });
+    if (offer && d < 1.35 && mv.mode === 'ground') out.push({ id: 'post-' + p.id, kind: 'spray', patch: p.id, offer, at: new THREE.Vector3(p.at[0], gAt(p.at[0], p.at[2]) + Math.min(0.95, p.at[1] * 0.75), p.at[2]), cap: p.at[1], d, dur: 1.2 });
     for (const [k, [x, , z]] of Object.entries(p.rub)) { const ro = terr.rubOffer(p.id, k), dd = Math.hypot(m.x - x, m.z - z); if (ro && dd < 0.9 && mv.mode === 'ground') out.push({ id: `rub-${k}`, kind: 'rub', patch: p.id, k, offer: ro, at: new THREE.Vector3(x, gAt(x, z) + 0.55, z), d: dd, dur: 0.4 }); }
   }
   if (ph.name === 'day' && !ph.to) { const [x, z] = L.sunspot.at, d = Math.hypot(m.x - x, m.z - z); if (d < 0.9) out.push({ id: 'nap', kind: 'nap', at: new THREE.Vector3(x, 0.5, z), d, dur: 0.5 }); }
@@ -282,8 +282,10 @@ function complete(c) {
     const seen = [sitter, challenger, daifuku].some((q) => q && q.object3D.visible && q.object3D.position.distanceTo(mikanPos) < 8);
     const ev = c.kind === 'spray' ? terr.spray(c.patch) : terr.rub(c.patch, c.k, { seen });
     if (!ev) return;
-    scent.pop(c.at.clone().add(new THREE.Vector3(0, 0.25, 0)), c.kind === 'spray');
-    hud.tag(terr.patch(c.patch), 2);
+    const lp = L.patches.find((q) => q.id === c.patch), cap = c.kind === 'spray' ? new THREE.Vector3(lp.at[0], lp.at[1] + 0.25, lp.at[2]) : c.at.clone().add(new THREE.Vector3(0, 0.1, 0));
+    scent.pop(cap, c.kind === 'spray', ev.target_clowder && ev.target_clowder !== 'bell' ? '#A8C878' : '#F2B01E');
+    if (c.kind === 'spray') rig.kick && rig.kick(-6);
+    if (hud) { hud.tag(terr.patch(c.patch), 3); hud.influence(terr.sim.influenceBar(), null, 3); }
   } else if (c.kind === 'nap') { mv.napping = 1.2; mikan.setGait('idle', 0); startDusk(opt.test ? 2 : 20); hud.hint('A nap in the sun\u2026', 3); }
   else if (c.kind === 'find') { found = true; hud.pickup('Shiny'); scent.pop(c.at, false); }
 }
@@ -294,6 +296,13 @@ function onTerritory(e) {
   if (e.type === 'BossMoved') moveBoss(e.at);
   if (e.type === 'CatDiscovered' && daifuku && hud) { const scr = project(daifuku.object3D.position.clone().add(new THREE.Vector3(0, 0.6, 0))); if (scr) hud.tapeStar(scr); scent.pop(daifuku.object3D.position.clone().add(new THREE.Vector3(0, 0.6, 0)), false); }
   if (!hud) return;
+  if (e.type === 'ScentChanged') {
+    const p = L.patches.find((q) => q.id === e.patch), post = terr.patch(e.patch);
+    if (p) { const scr = project(new THREE.Vector3(p.at[0], p.at[1] + 0.55, p.at[2])); const d = e.to - e.from;
+      const txt = /rescue|claim/.test(e.cause || '') ? `${e.from} \u2192 ${e.to}` : `${d > 0 ? '+' : '\u2212'}${Math.abs(d)}`;
+      hud.scentPop(scr && { x: scr.x, y: Math.min(innerHeight - 260, Math.max(170, scr.y)) }, txt, post.colour || '#F2B01E'); }
+  }
+  if (e.type === 'InfluenceChanged') { const to = (e.by_clowder || {}).bell ?? terr.influence(); hud.influence(terr.sim.influenceBar(), { from: e.from && typeof e.from === 'object' ? e.from.bell : (e.from ?? lastInfl), to }, 4); lastInfl = to; }
   if (e.type === 'AngerRaised') hud.angerPuff(false);
   if (e.type === 'AngerChanged') hud.angerPuff(true);
   if (e.type === 'KeeperCalled') hud.hint('Fight to clear, spray to claim.', 4);
@@ -327,25 +336,32 @@ function sniff(dt) {
   if (hud) hud.sniffRing(ring && scr ? scr : null, ring ? ring.t / ring.of : 0);
   sense.discovered.daifuku = terr.sim.isDiscovered('daifuku');
 }
+/** Screen position plus whether the point is behind the lens or off-screen (for edge badges). */
+function projectEdge(p) { const v = p.clone().project(cam), behind = v.z > 1; const x = (v.x * 0.5 + 0.5) * innerWidth, y = (-v.y * 0.5 + 0.5) * innerHeight; return { x, y, behind, off: behind || x < 0 || x > innerWidth || y < 0 || y > innerHeight }; }
 function project(p) { const v = p.clone().project(cam); if (v.z > 1) return null; return { x: (v.x * 0.5 + 0.5) * innerWidth, y: (-v.y * 0.5 + 0.5) * innerHeight }; }
 
 /* ---------------------------------------------------------------- the Boss window: yowl, climb down, yard stop */
-let bossAt = 'den_wall';
+let bossAt = 'den_wall', lastInfl = null;
 function moveBoss(at) {
   if (!daifuku || !L.stops[at] || at === bossAt) return;
   const from = bossAt; bossAt = at; const [tx, ty, tz] = L.stops[at], p0 = daifuku.object3D.position.clone();
   // authored clips (plan §2.4: the climb-down is staged, control kept): via the Den wall face, the garden and over the lane wall
-  const viaWall = [[-9.6, 3.25, 3.4], [-9.2, 0, 3.0], [-3.2, 0, 1.4], [-2.0, 0, 0.9], [-1.7, 1.58, 0.6], [-1.1, 0, 0.0]];
-  const pts = [[p0.x, p0.y, p0.z]];
-  if (from === 'den_wall') pts.push(...viaWall); else if (at === 'S_N' || at === 'den_wall') pts.push([-1.1, 0, 0.0], [-1.7, 1.58, 0.6], [-2.0, 0, 0.9], [-3.2, 0, 1.4]);
-  pts.push([tx, ty, tz]);
-  climb = { t: 0, pts, speed: opt.test ? 4 : 1.1 };
-  if (from === 'den_wall' && hud) { hud.hint('The big wall stirs\u2026', 3); hud.edgeCall(project(p0) || { x: innerWidth * 0.2, y: innerHeight * 0.3 }, 3); }
+  // the Boss walks the High Road in view: down off the Den, a quick run across the garden, up onto the lane wall, along its
+  // coping toward the yard, and down to the stop. [x, y, z, speed factor]
+  const viaWall = [[-9.6, 3.25, 3.4, 1], [-9.2, 0, 3.0, 2.5], [-2.3, 0, 1.6, 2.5], [-1.7, 1.58, 1.2, 1], [-1.7, 1.58, -3.6, 0.8], [-1.7, 1.58, -8.4, 0.8], [-1.0, 0, -9.4, 1]];
+  const pts = [[p0.x, p0.y, p0.z, 1]];
+  if (from === 'den_wall') pts.push(...viaWall); else if (at === 'S_N' || at === 'den_wall') pts.push([-1.0, 0, -9.4, 1], [-1.7, 1.58, -8.4, 1], [-1.7, 1.58, 1.2, 1], [-2.3, 0, 1.6, 2.5], [-8.6, 0, 1.0, 2.5]);
+  pts.push([tx, ty, tz, 1]);
+  climb = { t: 0, pts, speed: opt.test ? 2.2 : 1.1 };
+  if (from === 'den_wall' && hud) hud.hint('The big wall stirs\u2026', 3);
+  // soft look-at (control kept) toward where he will be seen: his run along the lane wall's coping
+  if (rig.biasTo && from === 'den_wall') rig.biasTo(-1.7, -4.2, opt.test ? 7 : 14);
 }
 function stepClimb(dt) {
-  const c = climb, P = c.pts; c.t += dt * c.speed; let acc = 0;
+  const c = climb, P = c.pts; let acc = 0;
+  { let a2 = 0; for (let i = 0; i < P.length - 1; i++) { const l = Math.hypot(P[i + 1][0] - P[i][0], P[i + 1][1] - P[i][1], P[i + 1][2] - P[i][2]); if (c.t <= a2 + l) { c.t += dt * c.speed * (P[i + 1][3] || 1); break; } a2 += l; } if (c.t >= a2) c.t += dt * c.speed; }
   for (let i = 0; i < P.length - 1; i++) {
-    const a = new THREE.Vector3(...P[i]), b = new THREE.Vector3(...P[i + 1]), l = a.distanceTo(b);
+    const a = new THREE.Vector3(P[i][0], P[i][1], P[i][2]), b = new THREE.Vector3(P[i + 1][0], P[i + 1][1], P[i + 1][2]), l = a.distanceTo(b);
     if (c.t <= acc + l) { const k = (c.t - acc) / l, p = a.clone().lerp(b, k); if (b.y !== a.y) p.y += Math.sin(Math.PI * k) * 0.4; else p.y = a.y === 0 ? gAt(p.x, p.z) : a.y; if (a.y === 0 && b.y === 0) p.y = gAt(p.x, p.z);
       daifuku.object3D.position.copy(p); daifuku.object3D.rotation.y = Math.atan2(b.x - a.x, b.z - a.z); daifuku.setGait('walk', 1.1); return; }
     acc += l;
@@ -373,12 +389,12 @@ function hudFrame(dt) {
   hud.dial(ph.to ? (ph.k > 0.5 ? 'dusk' : 'day') : ph.name, dialT, !!ph.to || sense.k > 0.5);
   const list = [];
   for (const c of (mv.cands || []).slice(0, 1)) {
-    const s = project(c.at); if (!s) continue;
+    const s = project(c.at); if (!s) continue; s.y = Math.min(innerHeight - 230, Math.max(150, s.y));   // always in frame
     const vb = c.kind === 'spray' || c.kind === 'rub' ? VERB[c.offer] : c.kind === 'nap' ? ['nap', 'Nap'] : ['sniff', 'Pick up'];
     list.push({ id: c.id, x: s.x, y: s.y, verb: vb[0], label: vb[1], hold: mv.hold && mv.hold.id === c.id ? Math.min(1, mv.holdT / c.dur) : 0 });
   }
   hud.prompts_(list);
-  if (windowOpen && hud.t < hud.edgeUntil && daifuku) { const s = project(daifuku.object3D.position); if (s) hud.edge = s; }
+  if (daifuku && (climb || (windowOpen && sense.k > 0.5))) { hud.edgeTrack(projectEdge(daifuku.object3D.position.clone().add(new THREE.Vector3(0, 0.5, 0)))); } else hud.edgeTrack(null);
   hud.update(dt);
 }
 
@@ -421,7 +437,7 @@ const VANTAGE = [
   { at: [0.0, 0, 4.5], yaw: 0, pitch: 9, note: 'Laundry Pole Yard from up-lane: lantern post, wisps, High Perch' },
   { top: [-1.7, 3.2], yaw: 75, pitch: 6, note: 'The High Perch on the wall: the Den wall and Daifuku within 10 m' },
   { at: [0.0, 0, -20.0], yaw: 0, pitch: 8, note: 'Down the slope into the lower town, toward the sea' },
-  { at: [0.0, 0, -34.0], yaw: 180, pitch: 14, note: 'Looking back uphill at the stepped walls and the crest' },
+  { at: [0.0, 0, -34.0], yaw: 180, pitch: 4, note: 'Looking back uphill at the stepped walls and the crest' },
   { at: [-1.0, 0, 52.2], yaw: 140, pitch: 8, note: 'Haru\u2019s garden gate: the wall blend between street and home' },
 ];
 function placeAt(v) {
@@ -480,7 +496,7 @@ async function boot() {
   try { await loadCatAssets(''); } catch (e) { console.warn('cat assets failed to load; casts that need them are skipped', e); }
   const stub = () => ({ object3D: new THREE.Group(), update() {}, setGait() {}, setLighting() {}, setOutlineScale() {}, dispose() {} });
   const cat = (cast) => { try { return createCat({ cast, scale: 1.25 }); } catch (e) { console.warn(`cat "${cast}" could not be built; skipped`, e); missing.push('cat:' + cast); return stub(); } };
-  mikan = cat('mikan'); sitter = cat('wallSitter'); daifuku = opt.m0 ? null : cat('daifuku');
+  mikan = cat('mikan'); sitter = cat('wallSitter'); daifuku = opt.m0 ? null : (() => { try { return createCat({ cast: 'daifuku', scale: 1.25 * 1.35 }); } catch (e) { console.warn('daifuku skipped', e); return null; } })();
   for (const c of [mikan, sitter, daifuku]) if (c) catRoots.add(c.object3D);
   const [mx, my, mz, mr] = L.spawn.mikan; mikanPos.set(mx, my, mz); mikan.object3D.rotation.y = mr;
   const [sx, sy, sz, sr] = L.spawn.wallSitter; sitter.object3D.position.set(sx, sy, sz); sitter.object3D.rotation.y = sr;
@@ -492,6 +508,7 @@ async function boot() {
   terr.setPhase(opt.phase === 'dusk' ? 'dusk' : 'morning');
   keyLight = new THREE.DirectionalLight('#ffffff', 2.5); fillLight = new THREE.AmbientLight('#6E6AA8', 0.8); lateScene.add(keyLight, fillLight);
   scent = new ScentLayer(lateScene, L, terr, sTex, (z) => gAt(0, z));
+  if (daifuku) scent.bossMarker(daifuku.object3D, 0.95);
   hud = opt.hud ? new StreetHUD() : null;
   rig = opt.m0 ? new OrbitRig(cam, world.colliders) : new ExploreRig(cam, world.colliders, gAt);
   if (opt.orbit != null) rig.yaw = opt.orbit * 45;
@@ -510,7 +527,7 @@ async function boot() {
     startDusk: (s) => startDusk(s),
     /** Scripted input for tests: {f, r, look:[dy,dp], e, tab, space, home, frames, dt} then one render. */
     input: (o = {}) => { bot.on = true; Object.assign(bot, { f: 0, r: 0, look: [0, 0], e: false, tab: false, home: false }, o); if (o.space) hop(); for (let i = 0; i < (o.frames || 1); i++) step(o.dt || 1 / 30); bot.on = false; render(); return window.__cat.state(); },
-    teleport: (x, z, yaw) => { mikanPos.set(x, gAt(x, z), z); mv.mode = 'ground'; if (yaw != null) rig.yaw = yaw; rig.update(0, mikanPos, true); step(0); render(); },
+    teleport: (x, z, yaw) => { mikanPos.set(x, gAt(x, z), z); collideCircle(mikanPos, 0.2, world.colliders); mikanPos.y = gAt(mikanPos.x, mikanPos.z); mv.mode = 'ground'; if (yaw != null) rig.yaw = yaw; rig.update(0, mikanPos, true); step(0); render(); },
     botWalk: (s, seed) => botWalk(s, seed),
     verdict: (patch, v = 'chase') => { terr.verdict(patch, v); render(); return window.__cat.state(); },   // M3 owns the Verdict; test scripts only
     hold: (secs = 1.3, o = {}) => window.__cat.input({ e: true, frames: Math.ceil(secs * 30), ...o }),

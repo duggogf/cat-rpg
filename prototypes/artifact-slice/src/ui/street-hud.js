@@ -29,7 +29,7 @@ const CSS = `
 .sh-world > * { position:absolute; transform:translate(-50%,-100%); white-space:nowrap; }
 .sh-prompt { transform-origin:50% 100%; }
 .sh-key { display:inline-flex; align-items:center; justify-content:center; min-width:46px; height:46px; padding:0 8px; border-radius:14px; background:var(--cocoa); color:var(--cream); font:800 26px/1 var(--font); }
-.sh-ring { position:absolute; left:-6px; top:-6px; }
+.sh-ring { position:absolute; left:-17px; top:-17px; z-index:2; pointer-events:none; }
 .sh-hint { position:absolute; left:50%; bottom:150px; transform:translateX(-50%); transition:opacity .4s; white-space:nowrap; }
 .sh-home { position:absolute; left:50%; bottom:236px; transform:translateX(-50%); transition:opacity .4s; white-space:nowrap; }
 .sh-off { opacity:0; }
@@ -39,6 +39,19 @@ const CSS = `
 .sh-tape { position:absolute; transform:translate(-50%,-100%); animation:shtape .9s steps(4) forwards; }
 @keyframes shtape { 0% { transform:translate(-50%,-80%) scale(.4); } 50% { transform:translate(-50%,-110%) scale(1.15); } 100% { transform:translate(-50%,-100%) scale(1); } }
 .sh-tick { position:absolute; right:40px; top:178px; transition:opacity .3s; }
+.sh-infl { position:absolute; left:40px; top:176px; display:flex; align-items:center; gap:10px; transition:opacity .4s, transform .4s; }
+.sh-infl.off { opacity:0; transform:translateY(-8px); }
+.sh-bar { position:relative; width:330px; height:22px; border-radius:12px 14px 12px 14px; background:var(--recessed); border:4px solid var(--cocoa); overflow:hidden; box-shadow:3px 4px 0 rgba(110,106,168,.45); }
+.sh-bar i { position:absolute; top:0; bottom:0; transition:width .9s cubic-bezier(.3,1.4,.5,1), left .9s; }
+.sh-bar .b { left:0; background:var(--gold); border-right:3px solid var(--ink); }
+.sh-bar.pulse { animation:shpulse .5s steps(3) 2; }
+@keyframes shpulse { 50% { transform:scale(1.06); } }
+.sh-crown { filter:grayscale(1) opacity(.45); transition:filter .4s, transform .4s; }
+.sh-crown.lit { filter:none; transform:scale(1.18) rotate(-6deg); }
+.sh-card { font:800 24px/1 var(--font); color:var(--cocoa); background:var(--cream); border:3px solid var(--cocoa); border-radius:16px; padding:6px 12px; white-space:nowrap; }
+.sh-num { position:absolute; transform:translate(-50%,-100%); font:900 44px/1 var(--font); -webkit-text-stroke:7px var(--ink); paint-order:stroke fill; white-space:nowrap; animation:shnum 1.7s steps(10) forwards; }
+@keyframes shnum { 0% { transform:translate(-50%,-60%) scale(.5); opacity:1; } 15% { transform:translate(-50%,-100%) scale(1.15); } 70% { opacity:1; } 100% { transform:translate(-50%,-190%) scale(1); opacity:0; } }
+.sh-edge .arr { position:absolute; left:50%; top:50%; width:0; height:0; border-left:14px solid transparent; border-right:14px solid transparent; border-bottom:22px solid var(--ink); transform-origin:50% 0; }
 `;
 const svgOf = (inner, s = 48) => `<svg viewBox="-24 -24 48 48" width="${s}" height="${s}" overflow="visible">${inner}</svg>`;
 
@@ -48,7 +61,7 @@ export class StreetHUD {
     const st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
     const el = this.el = document.createElement('div'); el.className = 'sh';
     el.innerHTML = `<div class="sh-c sh-tr"><div class="sh-dial"></div><div class="sh-tick k-pill k-pill--cream sh-off"></div></div>
-      <div class="sh-c sh-tl"><div class="sh-tag k-patchtag off"></div><div class="sh-puff"></div></div>
+      <div class="sh-c sh-tl"><div class="sh-tag k-patchtag off"></div><div class="sh-infl off"><div class="sh-bar"><i class="b"></i><i class="r1"></i><i class="r2"></i><i class="r3"></i></div><span class="sh-crown"></span><span class="sh-card" style="display:none"></span></div><div class="sh-puff"></div></div>
       <div class="sh-world"></div>
       <div class="sh-c sh-bc"><div class="sh-hint k-bubble k-bubble--notail sh-off" style="padding:16px 30px;font-size:30px"></div><div class="sh-home k-prompt k-prompt--hold sh-off"></div></div>
       <div class="sh-edges"></div>`;
@@ -78,6 +91,22 @@ export class StreetHUD {
     }
     this.tagUntil = Math.max(this.tagUntil, this.t + secs);
   }
+  /** District influence on the street (owner C-direction, review M2-r1 fix 3): Bell gold from the left, rival Clowders from the
+   *  right, the open gap between, the Boss's crown at the full end (lit at 100). Shown with the Patch tag and 4 s after a change. */
+  influence(bar, change, secs = 4) {
+    const q = (s) => this.q('.sh-infl ' + s), W = 100, rivals = [['wall_sitters', C.sage], ['strays', '#5A4E66'], ['outsiders', '#4E9DA6']];
+    q('.b').style.width = `${bar.bell / W * 100}%`;
+    let right = 0; rivals.forEach(([k, col], i) => { const v = bar[k] || 0; const e = q('.r' + (i + 1)); e.style.background = col; e.style.width = `${v / W * 100}%`; e.style.left = `${100 - (right + v) / W * 100}%`; right += v; });
+    const cr = q('.sh-crown'); if (!cr.innerHTML) cr.innerHTML = svgOf(GLYPH.crown(), 46); cr.classList.toggle('lit', bar.bell >= 100);
+    const card = q('.sh-card');
+    if (change && change.from != null && change.from !== bar.bell) { card.textContent = `Hidamari ${change.from} \u2192 ${bar.bell}`; card.style.display = ''; const b = q('.sh-bar'); b.classList.remove('pulse'); void b.offsetWidth; b.classList.add('pulse'); this.cardUntil = this.t + secs; }
+    this.inflUntil = Math.max(this.inflUntil || 0, this.t + secs);
+  }
+  /** A Scent change pops at the post: "48 \u2192 90" or "\u221230", in the band's Clowder colour. */
+  scentPop(screen, text, color) {
+    if (!screen) return; const e = document.createElement('div'); e.className = 'sh-num'; e.textContent = text; e.style.color = color;
+    e.style.left = screen.x + 'px'; e.style.top = screen.y + 'px'; e.style.fontSize = `${Math.max(34, 64 * this.scaleK)}px`; this.el.appendChild(e); setTimeout(() => e.remove(), 1800);
+  }
   angerPuff(big) {
     const e = this.q('.sh-puff'); e.innerHTML = svgOf(Kit.dustCloud({ x: 0, y: 0, r: big ? 20 : 14, puffs: 5, seed: 3, lw: 3 }), big ? 76 : 58); e.classList.remove('go'); void e.offsetWidth; e.classList.add('go');
   }
@@ -93,16 +122,19 @@ export class StreetHUD {
       if (e.dataset.key !== key) {
         e.dataset.key = key;
         const icon = p.verb === 'rub' ? GLYPH.brick() : Kit.ui.icon({ name: p.verb === 'claim' || p.verb === 'counter' || p.verb === 'rescue' ? 'spray' : p.verb, size: 40, color: C.gold }).replace(/^<svg[^>]*>|<\/svg>$/g, '');
-        e.innerHTML = `<span style="position:relative;display:inline-flex"><svg class="sh-ring" width="58" height="58" viewBox="0 0 58 58"><circle cx="29" cy="29" r="25" fill="none" stroke="${C.gold}" stroke-width="6" stroke-dasharray="157" stroke-dashoffset="157" transform="rotate(-90 29 29)"/></svg><span class="sh-key">E</span></span>${svgOf(icon, 42)}${p.label ? `<span style="font:800 24px/1 var(--font);color:var(--cocoa)">${p.label}</span>` : ''}`;
+        e.innerHTML = `<span style="position:relative;display:inline-flex"><span class="sh-key">E</span><svg class="sh-ring" width="80" height="80" viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="none" stroke="${C.ink}" stroke-width="11" opacity=".25"/><circle class="hr" cx="40" cy="40" r="34" fill="none" stroke="${C.gold}" stroke-width="8" stroke-linecap="round" stroke-dasharray="214" stroke-dashoffset="214" transform="rotate(-90 40 40)"/></svg></span>${svgOf(icon, 42)}${p.label ? `<span style="font:800 24px/1 var(--font);color:var(--cocoa)">${p.label}</span>` : ''}`;
       }
       const k = this.scaleK; e.style.left = p.x + 'px'; e.style.top = p.y + 'px'; e.style.transform = `translate(-50%,-100%) scale(${k})`;
-      e.querySelector('circle').setAttribute('stroke-dashoffset', String(157 * (1 - (p.hold || 0))));
+      e.querySelector('.hr').setAttribute('stroke-dashoffset', String(214 * (1 - (p.hold || 0))));
+      e.querySelector('.sh-ring').style.opacity = p.hold > 0 ? 1 : 0.55;
     }
     for (const [id, e] of this.prompts) if (!seen.has(id)) { e.remove(); this.prompts.delete(id); }
   }
   homePrompt(on) { const h = this.q('.sh-home'); if (on && !h.innerHTML) h.innerHTML = `${Kit.ui.paw({ size: 38, fill: C.gold })}<span class="sh-key">H</span>`; h.classList.toggle('sh-off', !on); }
   /** Edge ring cue toward a world point (screen-projected): the roaming-Boss call (crown pom + yowl contour). */
   edgeCall(screen, secs) { this.edge = screen; this.edgeUntil = this.t + secs; }
+  /** Pinned edge badge toward a world target: {x, y, behind} from the projector; null hides it. */
+  edgeTrack(screen) { this.edgeT = screen; }
   sniffRing(screen, k) {
     let e = this.q('.sh-sniff');
     if (!screen) { if (e) e.remove(); return; }
@@ -118,10 +150,18 @@ export class StreetHUD {
     this.q('.sh-tag').classList.toggle('off', this.t > this.tagUntil);
     this.q('.sh-hint').classList.toggle('sh-off', this.t > this.hintUntil);
     this.q('.sh-tick').classList.toggle('sh-off', this.t > this.tickUntil);
-    const edges = this.q('.sh-edges');
-    if (this.t < this.edgeUntil && this.edge) {
-      if (!edges.innerHTML) edges.innerHTML = `<div class="sh-edge k-prompt" style="padding:6px">${svgOf(GLYPH.crown(), 56)}${svgOf(`<path d="M-18 -6q6 -10 12 0t12 0t12 0" fill="none" stroke="${C.ink}" stroke-width="5" stroke-linecap="round"/><path d="M-18 -6q6 -10 12 0t12 0t12 0" fill="none" stroke="${C.yowl}" stroke-width="2.6" stroke-linecap="round"/>`, 44)}</div>`;
-      const e = edges.firstChild, m = 70, top = 230 * this.scaleK; e.style.left = Math.min(innerWidth - m, Math.max(m, this.edge.x)) + 'px'; e.style.top = Math.min(innerHeight - m, Math.max(top, this.edge.y)) + 'px'; e.style.opacity = 1;   // the edge ring, clear of the TL/TR corner zones
+    this.q('.sh-infl').classList.toggle('off', this.t > Math.max(this.inflUntil || 0, this.tagUntil));
+    if (this.t > (this.cardUntil || 0)) this.q('.sh-card').style.display = 'none';
+    // the roaming-Boss call: pinned on the edge ring toward him, with an arrow (hud.md §3.1), while he is off-screen
+    const edges = this.q('.sh-edges'), tgt = this.edgeT || (this.t < this.edgeUntil ? this.edge : null);
+    if (tgt && (tgt.off || this.t < this.edgeUntil)) {
+      if (!edges.innerHTML) edges.innerHTML = `<div class="sh-edge k-prompt" style="padding:6px"><span class="arr"></span>${svgOf(GLYPH.crown(), 56)}${svgOf(`<path d="M-18 -6q6 -10 12 0t12 0t12 0" fill="none" stroke="${C.ink}" stroke-width="5" stroke-linecap="round"/><path d="M-18 -6q6 -10 12 0t12 0t12 0" fill="none" stroke="${C.yowl}" stroke-width="2.6" stroke-linecap="round"/>`, 44)}</div>`;
+      const e = edges.firstChild, cx = innerWidth / 2, cy = innerHeight / 2;
+      let dx = tgt.x - cx, dy = tgt.y - cy; if (tgt.behind) { dx = -dx; dy = -dy; } if (Math.abs(dx) + Math.abs(dy) < 1) dy = 1;
+      const mx = cx - 90, my = cy - 90 * this.scaleK - 60, k = Math.min(mx / Math.abs(dx || 1e-3), my / Math.abs(dy || 1e-3), tgt.behind || tgt.off ? 1e9 : 1);
+      const px = cx + dx * Math.min(k, 1e6), py = cy + dy * Math.min(k, 1e6);
+      e.style.left = Math.min(innerWidth - 90, Math.max(90, px)) + 'px'; e.style.top = Math.min(innerHeight - 150, Math.max(330 * this.scaleK, py)) + 'px'; e.style.opacity = 1;
+      e.querySelector('.arr').style.transform = `rotate(${Math.atan2(dy, dx) * 180 / Math.PI + 90}deg) translate(-50%, -64px)`;
     } else if (edges.firstChild) edges.firstChild.style.opacity = 0;
   }
 }

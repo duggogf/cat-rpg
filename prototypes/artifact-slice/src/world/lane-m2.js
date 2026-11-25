@@ -34,7 +34,7 @@ export function extendLayout(L) {
     if (z < -18) L.fences.push({ box: [1.6, g(zb) - 0.8, zb, 1.68, top + 1.2, za], step: true });
   }
   // ---- the Den: Daifuku's great wall uphill behind the left gardens, its mossy corner stone, and his seat
-  L.walls.push({ box: [-19.5, 0, -1.6, -9.6, 3.2, 9.5], coping: 0.1, tex: 'wall', tint: '#C9C3AE', den: true });
+  L.walls.push({ box: [-19.5, 0, -1.6, -9.6, 3.2, 9.5], coping: 0.1, tex: 'stone', den: true });
   L.hedges.push([-12.5, 3.55, 6.0, 1.8, 0.5, 2.6], [-15.5, 3.6, 1.5, 1.6, 0.5, 1.6], [-9.9, 2.4, 9.0, 0.6, 0.7, 0.8]);
   L.den = { stone: [-9.75, -1.45], seat: [-10.2, 3.3, 4.6, 1.5], name: 'Den: Daifuku’s Wall' };
   // the M0 garden tree uphill of the corner moves aside so the perch has a clear sightline to the Den
@@ -63,7 +63,7 @@ export function extendLayout(L) {
   L.bricks.push([1.45, 26.5, 0.4], [-1.42, 35.5, -0.2]);
   // ---- utility poles (+ wires) and street lamps; the lamp wave runs uphill from the lowest lamp
   L.farPoles = [[1.42, -34], [1.45, 38.0], [-14, -3]];
-  L.lamps = [[-1.4, -52], [1.4, -40], [-1.4, -28], [1.4, -17], [1.4, 6.5], [-1.4, 14.0], [1.4, 26.0], [-1.4, 35.0], [1.4, 43.5], [-1.4, 57.0]]
+  L.lamps = [[-1.4, -52], [1.4, -40], [-1.4, -28], [1.4, -17], [1.4, 6.5], [-1.4, 14.0], [1.4, 26.0], [-1.4, 35.0], [-1.4, 41.0], [1.4, 43.5], [1.4, 50.5], [-1.4, 57.0]]
     .map(([x, z]) => [x, z, g(z)]);
   // ---- the Patches (territory-management.md §3.1). Ids match the territory sim (src/sim/territory,
   // data/territory/patches.json): one inked landmark per post, two Rub Marks per outer Patch (Whisker Sense only),
@@ -86,6 +86,44 @@ export function extendLayout(L) {
   L.home = { gate: [-1.7, 54.3], zone: [-12.5, -1.8, 48.9, 66], camera: { dist: 1.8, height: 0.45, pitch: -2 } };
   L.find = [-1.25, 19.6];                // a hidden find (sparkle tick)
   L.spawn.mikan = [0, 0, 0, Math.PI];
+  // ---- M2 review fix 5: dress the bare stretches (01 density: something every ≈ 8 m on both sides)
+  // spill clumps sit off the ribbon line so they overhang the coping without hiding a cat walking it
+  for (const h of L.hedges) { if (h[0] > -1.85 && h[0] < -1.45 && h[1] > 1.2) h[0] = -2.0; if (h[0] > 1.55 && h[0] < 1.9 && h[1] > 1.1) h[0] = 1.95; }
+  L.grassLines.push([-1.7, -13, -1.7, 48, 70, 1.58], [1.64, -7.6, 1.64, 7.0, 16, 1.3], [-14.5, -1.4, -10.0, -1.4, 10, 3.3]);
+  // Low Wall Corner (vantage 0) and the top of the lane
+  L.props.push(['pot', 1.3, 40.5, 0, 0.85], ['bucket', 1.28, 53.0, 0, 0.85], ['aloe', -1.36, 41.6, 0.2, 0.8], ['pot', 1.3, 59.5, 0, 0.9]);
+  L.hedges.push([1.3, 0.42, 40.5, 0.2, 0.17, 0.2], [1.3, 0.42, 59.5, 0.2, 0.17, 0.2]);
+  L.decals.push(['poster', 0, 1, 1.6, 0.6, 45.0, 0.42, 0.56, '-x'], ['notice', 0, 1, 1.6, 0.55, 56.0, 0.5, 0.65, '-x'], ['stains', 0, 3, -1.6, 0, 40.0, 0.75, 1.5, '+x'],
+    ['groundbits', 1, 4, 0.6, 30, 53.0, 0.9, 0.9, 'up'], ['groundbits', 0, 4, -0.5, 31, 60.0, 0.8, 0.6, 'up']);
+  L.drainpipes.push([-1.555, 42.5, 1.55]);
+  L.laundries = [
+    { posts: [[2.6, 46.2], [4.8, 46.2]], h: 2.3, sheets: [[0.1, 0.38, 0.7, '#FFFDF4'], [0.45, 0.66, 0.5, '#CFE0F0'], [0.72, 0.95, 0.66, '#FFFDF4']] },
+    { posts: [[-9.0, 52.6], [-6.8, 52.6]], h: 2.2, sheets: [[0.12, 0.45, 0.66, '#FFFDF4'], [0.55, 0.85, 0.5, '#F7D9A8']] },          // Haru's garden
+    { posts: [[2.8, -30.0], [4.9, -30.0]], h: 2.2, y0: g(-30), sheets: [[0.1, 0.4, 0.7, '#FFFDF4'], [0.5, 0.75, 0.55, '#E4D2EE']] },  // a lower yard on the slope
+  ];
+  // Haru's garden behind the gate: pots, hydrangeas, a hedge line, stepping stones
+  L.props.push(['pot', -2.4, 50.6, 0, 0.9], ['aloe', -4.2, 57.2, 0, 0.9], ['bucket', -2.7, 56.2, 0.4, 0.8], ['pot', -8.2, 56.4, 0, 1.0]);
+  L.hedges.push([-2.4, 0.42, 50.6, 0.2, 0.17, 0.2], [-8.2, 0.45, 56.4, 0.22, 0.18, 0.22], [-11.6, 0.8, 52.5, 0.9, 0.8, 2.2], [-3.0, 0.7, 64.0, 1.0, 0.7, 1.4], [-6.0, 0.65, 64.6, 1.0, 0.6, 1.2]);
+  L.hydrangeas.push([-3.1, 51.6, 0.7], [-5.8, 55.0, 0.75], [-10.2, 56.0, 0.7]);
+  [[-2.8, 53.2], [-4.0, 54.4], [-5.2, 55.6], [-6.3, 56.9]].forEach(([x, z], i) => L.decals.push(['groundbits', 3, 4, x, 40 + i, z, 0.7, 0.55, 'up']));
+  // the High Road's far side: sheds and garden fences instead of open lawn
+  L.houses.push(
+    { box: [-6.6, 0, 10.6, -4.4, 2.0, 12.8], roof: 0.7, ridge: 'z', windows: [['+x', 0.5, 1.0, 0.7, 0.5]] },
+    { box: [-5.6, 0, 14.4, -3.6, 1.9, 16.4], roof: 0.6, ridge: 'x', windows: [] },
+    { box: [-5.8, 0, 44.4, -3.6, 1.9, 46.6], roof: 0.7, ridge: 'z', windows: [['+x', 0.5, 1.0, 0.7, 0.5]] },
+  );
+  L.fences.push({ box: [-6.3, 0, 26.2, -6.22, 1.25, 29.8] }, { box: [-7.2, 0, 38.2, -7.12, 1.25, 43.8] }, { box: [-6.9, 0, 17.0, -6.82, 1.25, 18.8] });
+  L.hedges.push([-3.0, 0.6, 7.5, 0.9, 0.6, 1.2], [-6.5, 0.7, 33.0, 1.1, 0.7, 1.6], [-3.4, 0.55, 35.5, 0.8, 0.55, 1.0]);
+  // the slope (vantage 4): pots at the wall feet, posters and stains on the stepped walls, spill over the courses
+  L.props.push(['pot', -1.35, -26.0, 0, 0.85], ['aloe', 1.3, -29.0, 0.3, 0.85], ['bucket', -1.32, -41.0, 0, 0.8], ['pot', 1.28, -47.0, 0, 0.9], ['aloe', -1.34, -53.5, 0, 0.85]);
+  L.hedges.push([-1.35, g(-26) + 0.42, -26.0, 0.2, 0.17, 0.2], [1.28, g(-47) + 0.42, -47.0, 0.2, 0.17, 0.2],
+    [-2.0, g(-34) + 1.5, -34.0, 0.55, 0.5, 1.2], [1.95, g(-39) + 1.3, -39.5, 0.45, 0.4, 1.0], [-2.0, g(-51) + 1.45, -51.0, 0.6, 0.5, 1.3]);
+  [[1, 0.5, -19.5, 1.0, 1.0], [0, -0.6, -23.0, 0.8, 0.6], [3, 0.4, -27.5, 0.9, 0.7], [1, -0.3, -32.0, 1.0, 1.0], [0, 0.7, -36.5, 0.8, 0.6], [2, -0.4, -42.0, 1.0, 0.65], [3, 0.5, -48.0, 0.9, 0.7], [0, -0.5, -54.0, 0.8, 0.6]]
+    .forEach(([c, x, z, w, h], i) => L.decals.push(['groundbits', c, 4, x, 50 + i, z, w, h, 'up']));
+  L.decals.push(['manhole', 0, 1, 0.2, 0, -37.5, 0.55, 0.55, 'up']);
+  L.decals.push(['poster', 0, 1, -1.6, g(-24) + 0.6, -24.0, 0.42, 0.56, '+x'], ['stains', 0, 3, -1.6, g(-30) - 0.2, -30.0, 0.75, 1.5, '+x'], ['notice', 0, 1, -1.6, g(-43) + 0.55, -43.0, 0.5, 0.65, '+x'],
+    ['stains', 2, 3, -1.6, g(-49) + 0.1, -49.0, 0.6, 1.2, '+x']);
+
   // the M0 Wall Sitter keeps her coping seat (now the Laundry Pole Yard's High Perch neighbour)
   return L;
 }

@@ -45,6 +45,7 @@ export async function bakeScent() {
     T.puffs.push(tex(await raster(Kit.dustCloud({ x: 128, y: 140, r: 26 + i * 8, puffs: 5, seed: 11 + i, lw: 4 }), 256, 256)));
   }
   for (const [k, f] of Object.entries(GLYPH)) T.glyph[k] = await raster(`<g transform="translate(32 32)">${f()}</g>`, 64, 64);
+  T.glyph.crownTex = tex(await raster(`<g transform="translate(64 70) scale(2.6)">${GLYPH.crown()}</g>`, 128, 128));
   T.glyph.brickTex = tex(await raster(`<g transform="translate(64 64) scale(2.2)">${GLYPH.brick()}</g>`, 128, 128));
   T.glyph.bellTex = tex(await raster(`<g transform="translate(64 64) scale(2.2)">${GLYPH.bell()}</g>`, 128, 128));
   return T;
@@ -129,6 +130,11 @@ export class ScentLayer {
     const rg = new THREE.PlaneGeometry(2.3, 2.3); rg.rotateX(-Math.PI / 2);
     this.ring = new THREE.Mesh(rg, new THREE.MeshBasicMaterial({ map: this.ringTex, transparent: true, depthWrite: false })); this.ring.renderOrder = 5; this.ring.visible = false; this.ring.name = 'compass'; scene.add(this.ring);
   }
+  /** The Boss reads as the Boss: a crown pom bobbing over him and steam puffs now and then (anger; art bible §10.5). */
+  bossMarker(obj, h) {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), cardMat(this.T.glyph.crownTex, { sway: 0 })); m.scale.setScalar(0.32); m.frustumCulled = false; m.renderOrder = 5; this.scene.add(m);
+    this.boss = { obj, h, m, puffT: 1.5 };
+  }
   setRT(w, h) { for (const m of [this.thread, ...this.ribbons.map((r) => r.mesh)]) if (m.material.uniforms.rtH) { m.material.uniforms.rtH.value = h; m.material.uniforms.rtW.value = w; } }
   /** A Spray (big sparkle cloud + pop) or an Over-mark (small puff) at a point, drawn on twos. */
   pop(at, big, tint) {
@@ -161,6 +167,8 @@ export class ScentLayer {
       q.m.position.y += dt * (q.big ? 0.12 : 0.08); q.m.scale.multiplyScalar(1 + dt * 0.6);
     }
     this.pops = this.pops.filter((q) => !q.dead);
+    if (this.boss) { const b = this.boss, p = b.obj.position; b.m.position.set(p.x, p.y + b.h + 0.18 + Math.abs(Math.sin(this.t * 3)) * 0.04, p.z); b.m.visible = b.obj.visible;
+      b.puffT -= dt; if (b.puffT <= 0) { b.puffT = 2.4; const q = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), cardMat(this.T.puffs[1], { sway: 0 })); q.position.set(p.x + 0.18, p.y + b.h, p.z); q.scale.setScalar(0.32); q.frustumCulled = false; q.renderOrder = 6; this.scene.add(q); this.pops.push({ m: q, t: 0, big: false, frames: this.T.puffs }); } }
     // thread
     if (ctx.thread) { this.thread.visible = true; this.thread.userData.setPts(ctx.thread); this.thread.material.uniforms.gate.value = ctx.threadGate ?? 1; }
     else this.thread.visible = false;

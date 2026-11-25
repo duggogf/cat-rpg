@@ -138,13 +138,13 @@ export function buildWorld(L, tex) {
     const gs = new Map(), c = new Geo(), n = new Geo();
     for (const w of L.walls) {
       const [x0, y0, z0, x1, y1, z1] = [Math.min(w.box[0], w.box[3]), w.box[1], Math.min(w.box[2], w.box[5]), Math.max(w.box[0], w.box[3]), w.box[4], Math.max(w.box[2], w.box[5])];
-      const key = w.tint || '#FFFFFF'; if (!gs.has(key)) gs.set(key, new Geo()); const g = gs.get(key);
+      const key = w.tex === 'stone' ? 'stone' : (w.tint || '#FFFFFF'); if (!gs.has(key)) gs.set(key, new Geo()); const g = gs.get(key);
       g.box([x0, y0, z0, x1, y1, z1], { faces: 'pxnxpznz', tu: 3, tv: Math.min(y1 - y0, 1.7), wobble: 0.012, seg: 0.5 });
       const k = w.coping, o = 0.035;
       c.box([x0 - o, y1, z0 - o, x1 + o, y1 + k, z1 + o], { tu: 1, tv: 1, faceColor: { py: '#F7F3E8', px: '#CBD2D6', nx: '#CBD2D6', pz: '#D9DEE0', nz: '#D9DEE0', ny: '#9AA4B4' }, wobble: 0.006, seg: 0.5 });
       colliders.push(new THREE.Box3(new THREE.Vector3(x0 - o, y0, z0 - o), new THREE.Vector3(x1 + o, y1 + k, z1 + o)));
     }
-    for (const [tint, g] of gs) mesh(g.build(), envMat({ map: tex.wall, grain: 0.05, tint })).name = 'walls';
+    for (const [tint, g] of gs) mesh(g.build(), envMat({ map: tint === 'stone' ? (tex.stonewall || tex.wall) : tex.wall, grain: 0.05 })).name = 'walls';
     mesh(c.build(), envMat({ vertexColors: true, grain: 0.5 })).name = 'coping';
     // a posted notice with Scribble (E-8)
     const nt = L.notice;
@@ -242,19 +242,21 @@ export function buildWorld(L, tex) {
     wires.push(cat(ins0[6], new THREE.Vector3(-5.5, 2.5, -14.8), 0.4));
     mesh(g.build(), envMat({ vertexColors: true, grain: 0.7 })).name = 'poles';
     // laundry: posts, rail, sheets (camera-soft; they catch the sun)
-    const LD = L.laundry, [[ax, az], [bx, bz]] = LD.posts;
-    for (const [x, z] of LD.posts) { const c = new THREE.CylinderGeometry(0.03, 0.035, LD.h, 6); c.translate(x, LD.h / 2, z); lp.add(c, '#A8998A'); }
-    const rail = new THREE.CylinderGeometry(0.022, 0.022, Math.hypot(bx - ax, bz - az) + 0.3, 6); rail.rotateZ(Math.PI / 2); rail.translate((ax + bx) / 2, LD.h - 0.08, (az + bz) / 2); lp.add(rail, '#C2B4A2');
-    mesh(lp.build(), envMat({ vertexColors: true, grain: 0.6 })).name = 'laundryPoles';
-    const sg = new Geo();
-    for (const [u0, u1, len, col] of LD.sheets) {
-      const xa = ax + (bx - ax) * u0, xb = ax + (bx - ax) * u1, y = LD.h - 0.08;
-      sg.quad([xa, y - len, az], [xb, y - len, az], [xb, y, az], [xa, y, az], (P) => [0, 0], { color: col, nu: 4, nv: 3 });
+    for (const LD of [L.laundry, ...(L.laundries || [])]) {
+      const [[ax, az], [bx, bz]] = LD.posts, y0 = LD.y0 || 0;
+      for (const [x, z] of LD.posts) { const c = new THREE.CylinderGeometry(0.03, 0.035, LD.h, 6); c.translate(x, y0 + LD.h / 2, z); lp.add(c, '#A8998A'); }
+      const rail = new THREE.CylinderGeometry(0.022, 0.022, Math.hypot(bx - ax, bz - az) + 0.3, 6); rail.rotateZ(Math.PI / 2); rail.translate((ax + bx) / 2, y0 + LD.h - 0.08, (az + bz) / 2); lp.add(rail, '#C2B4A2');
+      const sg = new Geo();
+      for (const [u0, u1, len, col] of LD.sheets) {
+        const xa = ax + (bx - ax) * u0, xb = ax + (bx - ax) * u1, y = y0 + LD.h - 0.08;
+        sg.quad([xa, y - len, az], [xb, y - len, az], [xb, y, az], [xa, y, az], (P) => [0, 0], { color: col, nu: 4, nv: 3 });
+      }
+      const sgeo = sg.build(); const sp = sgeo.attributes.position;
+      for (let i = 0; i < sp.count; i++) sp.setZ(i, sp.getZ(i) + Math.sin(sp.getX(i) * 7.0) * 0.035 * (1 - (sp.getY(i) - y0 - 1.4) / 1.0));
+      sgeo.computeVertexNormals();
+      mesh(sgeo, envMat({ vertexColors: true, grain: 0.55, side: THREE.DoubleSide, twoSided: true, flutter: 1, hangY: y0 + LD.h - 0.08 })).name = 'laundry';
     }
-    const sgeo = sg.build(); const sp = sgeo.attributes.position;
-    for (let i = 0; i < sp.count; i++) sp.setZ(i, sp.getZ(i) + Math.sin(sp.getX(i) * 7.0) * 0.035 * (1 - (sp.getY(i) - 1.4) / 1.0));
-    sgeo.computeVertexNormals();
-    mesh(sgeo, envMat({ vertexColors: true, grain: 0.55, side: THREE.DoubleSide, twoSided: true, flutter: 1, hangY: LD.h - 0.08 })).name = 'laundry';
+    mesh(lp.build(), envMat({ vertexColors: true, grain: 0.6 })).name = 'laundryPoles';
   }
   {
     const wm = envMat({ tint: '#4A4560', grain: 0 }); wm.uniforms.shadeMul = { value: new THREE.Vector3(1, 1, 1) };
@@ -284,7 +286,7 @@ export function buildWorld(L, tex) {
     const fl = L.hydrangeas.map(([x, z, s], i) => ({ pos: [x - s * 0.15, -s * 0.1, z], size: s, rot: 0, cell: i % 2, bright: 1 }));
     const flw = billboards(fl, tex.flowers, { cols: 2, rows: 1, cylindrical: true, rampLo: -0.6, rampHi: 0.3, keyK: 0.45 }); env.add(flw); casters.add(flw); flw.name = 'hydrangeas';
     const gi = [];
-    for (const [x0, z0, x1, z1, n] of L.grassLines) for (let i = 0; i < n; i++) { const t = R(); gi.push({ pos: [x0 + (x1 - x0) * t + (R() - 0.5) * 0.06, -0.01, z0 + (z1 - z0) * t], size: 0.16 + R() * 0.16, rot: 0, cell: Math.floor(R() * 4), bright: 0.9 + R() * 0.2 }); }
+    for (const [x0, z0, x1, z1, n, gy0] of L.grassLines) for (let i = 0; i < n; i++) { const t = R(), zz = z0 + (z1 - z0) * t; gi.push({ pos: [x0 + (x1 - x0) * t + (R() - 0.5) * 0.06, gy0 != null ? gy0 : groundY(L, zz) - 0.01, zz], size: 0.16 + R() * 0.16, rot: 0, cell: Math.floor(R() * 4), bright: 0.9 + R() * 0.2 }); }
     const gr = billboards(gi, tex.grass, { cols: 4, rows: 1, cylindrical: true, castShadow: false, rampLo: -0.8, rampHi: 0.2 }); env.add(gr); gr.name = 'grass';
   }
 
@@ -418,7 +420,7 @@ export function buildWorld(L, tex) {
   if (L.lamps) {
     const pg = new Geo(), heads = [], pools = [];
     L.lamps.forEach(([x, z, y0], i) => {
-      const side = x < 0 ? 1 : -1, H = 3.3;
+      const side = x < 0 ? 1 : -1, H = 2.8;
       const c = new THREE.CylinderGeometry(0.045, 0.06, H, 8); c.translate(x, y0 + H / 2, z); pg.add(c, '#8E8A86');
       const arm = new THREE.BoxGeometry(0.55, 0.04, 0.04); arm.translate(x + side * 0.26, y0 + H - 0.05, z); pg.add(arm, '#7E7A78');
       const hood = new THREE.CylinderGeometry(0.05, 0.17, 0.1, 10); hood.translate(x + side * 0.52, y0 + H - 0.08, z); pg.add(hood, '#6F7682');
@@ -433,17 +435,25 @@ export function buildWorld(L, tex) {
       const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(ps, 3)); g.setAttribute('lampIdx', new THREE.Float32BufferAttribute(ids, 1)); g.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2)); g.setIndex(ix); return g; };
     const lampOn = /* glsl */`uniform float lampWave; attribute float lampIdx; varying float vOn; varying vec2 vUv;
       void main(){ vOn = clamp((lampWave - lampIdx * 0.32) / 0.22, 0.0, 1.0); vUv = uv; gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0); }`;
-    const lens = new THREE.Mesh(geoOf(heads, () => new THREE.SphereGeometry(0.075, 10, 6)), new THREE.ShaderMaterial({
+    const lens = new THREE.Mesh(geoOf(heads, () => new THREE.SphereGeometry(0.11, 10, 6)), new THREE.ShaderMaterial({
       uniforms: { lampWave: U.lampWave, lamp: U.lamp }, vertexShader: lampOn,
       fragmentShader: /* glsl */`uniform vec3 lamp; varying float vOn; varying vec2 vUv; void main(){ gl_FragColor = vec4(mix(vec3(0.91, 0.89, 0.84), min(lamp * 1.2, vec3(1.0)), vOn), 1.0); }` }));
     lens.name = 'lampLens'; env.add(lens);
+    // a warm painted halo round each lit head so the wave reads at street distance (flat falloff, no bloom)
+    const halo = new THREE.Mesh(geoOf(heads, () => new THREE.SphereGeometry(0.85, 14, 10)), new THREE.ShaderMaterial({
+      uniforms: { lampWave: U.lampWave, lamp: U.lamp }, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+      vertexShader: /* glsl */`uniform float lampWave; attribute float lampIdx; varying float vOn; varying vec3 vN; varying vec3 vV;
+        void main(){ vOn = clamp((lampWave - lampIdx * 0.32) / 0.22, 0.0, 1.0); vec4 wp = modelMatrix * vec4(position, 1.0); vN = normalize(mat3(modelMatrix) * normal); vV = normalize(cameraPosition - wp.xyz); gl_Position = projectionMatrix * viewMatrix * wp; }`,
+      fragmentShader: /* glsl */`uniform vec3 lamp; varying float vOn; varying vec3 vN; varying vec3 vV;
+        void main(){ if (vOn <= 0.0) discard; float r = abs(dot(normalize(vN), normalize(vV))); float a = (r > 0.9 ? 1.0 : r > 0.7 ? 0.6 : r > 0.4 ? 0.3 : 0.0) * vOn; if (a <= 0.0) discard; gl_FragColor = vec4(lamp * a, 1.0); }` }));
+    halo.name = 'lampHalo'; halo.renderOrder = 4; env.add(halo);
     const pool = new THREE.Mesh(geoOf(pools, () => { const q = new THREE.PlaneGeometry(2.6, 2.0); q.rotateX(-Math.PI / 2); return q; }), new THREE.ShaderMaterial({
       uniforms: { lampWave: U.lampWave, lamp: U.lamp }, vertexShader: lampOn, transparent: true, depthWrite: false,
       fragmentShader: /* glsl */`uniform vec3 lamp; varying float vOn; varying vec2 vUv;
         void main(){ vec2 d = vUv * 2.0 - 1.0; float r = length(d); if (vOn <= 0.0 || r > 1.0) discard;
           // a warm painted pool with a halftone rim (art bible §6.2 Sunspot / lamp pool language)
           float core = 1.0 - smoothstep(0.35, 0.7, r); vec2 cell = fract(gl_FragCoord.xy / 7.0) - 0.5; float dotv = step(length(cell), 0.32 * (1.0 - smoothstep(0.55, 1.0, r)));
-          float a = max(core * 0.45, (r > 0.55 ? dotv * 0.4 : 0.0)) * vOn; gl_FragColor = vec4(lamp, a); }` }));
+          float a = max(core * 0.6, (r > 0.55 ? dotv * 0.5 : 0.0)) * vOn; gl_FragColor = vec4(lamp, a); }` }));
     pool.name = 'lampPools'; pool.renderOrder = 3; env.add(pool);
   }
   /* ---- the Sunspot (canon nap point): a warm painted light patch with a halftone rim */
@@ -465,7 +475,7 @@ export function buildWorld(L, tex) {
       let q;
       if (face === '+x') q = [[x + e, y, z + w / 2], [x + e, y, z - w / 2], [x + e, y + h, z - w / 2], [x + e, y + h, z + w / 2]];
       if (face === '-x') q = [[x - e, y, z - w / 2], [x - e, y, z + w / 2], [x - e, y + h, z + w / 2], [x - e, y + h, z - w / 2]];
-      if (face === 'up') { const yy = 0.004 + (y || 0) * 0.001; q = [[x - w / 2, yy, z + h / 2], [x + w / 2, yy, z + h / 2], [x + w / 2, yy, z - h / 2], [x - w / 2, yy, z - h / 2]]; }
+      if (face === 'up') { const yy = groundY(L, z) + 0.004 + (y || 0) * 0.001; q = [[x - w / 2, yy, z + h / 2], [x + w / 2, yy, z + h / 2], [x + w / 2, yy, z - h / 2], [x - w / 2, yy, z - h / 2]]; }
       g.quad(...q, () => [0, 0]); g.uv.splice(0, 8, u0, 0, u1, 0, u0, 1, u1, 1);
       if (!dec.has(texName)) dec.set(texName, []); dec.get(texName).push(g);
     };

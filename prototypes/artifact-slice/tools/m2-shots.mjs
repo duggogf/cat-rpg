@@ -75,16 +75,19 @@ async function flow(name, query, steps) {
   R.errors.push(...errors.map((e) => `${name}: ${e}`)); await ctx.close(); console.log('flow', name);
 }
 await flow('rescue', 'test=1&hud=1&start=showcase_l2d2', [
-  { note: 'At Laundry Pole Yard: the post is Mikan’s but fading (48, 2 drooping gold wisps); the challenger stakes it from the fence top', js: '__cat.teleport(0.05, -0.9, 20)' },
-  { note: 'Holding E: the Rescue Spray hold ring fills (1.2 s)', js: '__cat.input({ e: true, frames: 18 })' },
-  { note: 'Rescue Spray lands: sparkle cloud and pop, 4 gold wisps, Patch tag; influence 95 -> 100 opens the Boss window', js: '__cat.input({ e: true, frames: 22 })' },
-  { note: 'Daifuku comes down from the Den toward his Morning stop (authored clip, control kept)', js: '__cat.input({ frames: 25 })' },
-  { note: 'Whisker Sense: compass ring with the roaming-Boss crown tick and the challenger stake', js: '__cat.input({ frames: 50, tab: true })' },
+  { note: 'At Laundry Pole Yard: the post is Mikan\u2019s but fading (48: 2 drooping gold wisps at the cap); the influence bar under the Patch tag shows 95 with the crown unlit; the challenger stakes the post from the fence top', js: '__cat.teleport(0.05, -0.9, 20)' },
+  { note: 'Holding E: the Rescue Spray hold ring fills around the key (1.2 s)', js: '__cat.input({ e: true, frames: 18 })' },
+  { note: 'Rescue Spray lands: sparkle cloud at the cap, "48 \u2192 90", wisps sprout to 4, a tilt-up; the bar fills to 100, the crown lights, "Hidamari 95 \u2192 100"', js: '__cat.input({ e: true, frames: 20 })' },
+  { note: 'The Boss window opens: the camera eases toward the lane wall (control kept); the edge badge points to Daifuku while the garden hides him', js: '__cat.input({ frames: 40 })' },
+  { note: 'Daifuku (larger, crown pom, steam puffs) walks the coping, the High Road, in view', js: '__cat.input({ frames: 40 })' },
+  { note: 'He drops to his Morning stop (S_M) at the yard', js: '__cat.input({ frames: 60 })' },
+  { note: 'Whisker Sense: the compass ring with the roaming-Boss crown tick and the challenger stake', js: '__cat.input({ frames: 40, tab: true })' },
 ]);
 await flow('rival', 'test=1&hud=1&start=l1d1', [
   { note: 'Life 1: Laundry Pole Yard is the Wall Sitters’ (80, 3 sage wisps). Whisker Sense shows the Rub Marks and the Keeper’s trail', js: '__cat.teleport(-1.25, -1.3, 300); __cat.input({ frames: 10, tab: true })' },
-  { note: 'Over-mark LPY.rub1 (0.4 s rub, -10): a small puff; the Wall Sitter on the coping sees it (seen = loud)', js: '__cat.input({ e: true, frames: 16 })' },
-  { note: 'Counter-Spray the post twice (-30 each, always loud): sparkle pops; wisps thin; the Keeper is called at <= 30', js: '__cat.teleport(0.05, -0.9, 20); __cat.input({ e: true, frames: 40 }); __cat.input({ e: true, frames: 40 })' },
+  { note: 'Over-mark LPY.rub1 (0.4 s rub): a sage puff and "\u221210"; the Wall Sitter on the coping sees it (seen = loud); anger puff on the tag', js: '__cat.input({ e: true, frames: 16 })' },
+  { note: 'Counter-Spray the post (\u221230, always loud): a sage sparkle cloud at the cap, wisps wither one by one', js: '__cat.teleport(0.05, -0.9, 20); __cat.input({ e: true, frames: 40 })' },
+  { note: 'A second Counter-Spray (\u221230): at <= 30 the Keeper is called ("Fight to clear, spray to claim.")', js: '__cat.input({ e: true, frames: 40 })' },
   { note: 'M3 stand-in: a Verdict clears the Keeper (verdict() is M3’s; called here only to show the Claim). Claim Spray offered', js: '__cat.verdict("LPY", "chase"); __cat.input({ frames: 4 })' },
   { note: 'Claim Spray: the post is Mikan’s at 70, gold wisps', js: '__cat.input({ e: true, frames: 40 })' },
 ]);
@@ -96,7 +99,7 @@ await flow('sniff', 'test=1&hud=1&start=l1d1&vantage=2', [
 await flow('dusk', 'test=1&hud=1&vantage=0', [
   { note: 'Low Wall Corner, Day', js: '__cat.input({ frames: 2 })' },
   { note: 'Nap on the Sunspot (E): the phase blends Day -> Dusk', js: '__cat.teleport(0.45, 44.2, 200); __cat.input({ e: true, frames: 18 }); __cat.input({ frames: 40 })' },
-  { note: 'The lamp wave runs uphill (lamps light one after another)', js: '__cat.input({ frames: 50 })' },
+  { note: 'The lamp wave runs uphill (lamps light one after another; the camera tilts up so the heads are in frame)', js: '__cat.input({ frames: 40, look: [0, -0.12] }); __cat.input({ frames: 60 })' },
   { note: 'Dusk; the Call; the Head Home thread runs from Mikan up the lane to Haru’s gate (H also shows it)', js: '__cat.input({ frames: 70, home: true })' },
   { note: 'Following the thread into Haru’s garden: the wall blend lowers and tightens the camera and fades the street HUD', js: '__cat.teleport(-0.2, 54.3, 90); __cat.input({ f: 1, frames: 45 })' },
 ]);
