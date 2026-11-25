@@ -1,0 +1,297 @@
+{
+  "_note": "PROTOTYPE - NOT FOR PRODUCTION. The Rivals board diorama (plan \u00a73.4; design/ux/key-screens.md \u00a72.3, \u00a72.6): one small set per scene, side by side along +X, seen from one fixed camera per set. Metres, y up, the camera looks down -Z. Anchors are feet positions in set-local coordinates; spots are by FIXED role (OR-19), never reordered by play. 'shade' spots hold undiscovered cats along the walls, so a silhouette's place gives nothing away.",
+  "camera": {
+    "pos": [
+      0,
+      1.1,
+      0
+    ],
+    "fov": 35,
+    "principalY": 420,
+    "driftPx": 3,
+    "_src": "plan \u00a73.4: vFOV \u2248 35\u00b0, low eye height; the vanishing point at y 420 of 1080 puts the perch in the PERCH ZONE (key-screens \u00a72.6)"
+  },
+  "phase": "dusk",
+  "scenes": [
+    {
+      "id": "lane",
+      "name": "Hidamari Lane",
+      "emblem": "stone",
+      "x": 0,
+      "clowder": "wall_sitters",
+      "perch": "daifuku",
+      "anchors": {
+        "daifuku": {
+          "at": [
+            0,
+            1.3,
+            -9.85
+          ],
+          "role": "boss",
+          "face": 0
+        },
+        "kagi": {
+          "at": [
+            -0.52,
+            0.433,
+            -7.3
+          ],
+          "role": "captain",
+          "face": 0.35
+        },
+        "ohagi": {
+          "at": [
+            0.52,
+            0.433,
+            -7.3
+          ],
+          "role": "captain",
+          "face": -0.35
+        },
+        "goma": {
+          "at": [
+            -0.95,
+            0,
+            -6.0
+          ],
+          "role": "tough",
+          "face": 0.55
+        },
+        "togemaru": {
+          "at": [
+            0.84,
+            0,
+            -5.2
+          ],
+          "role": "tough",
+          "face": -0.5
+        },
+        "sasa": {
+          "at": [
+            -0.32,
+            0,
+            -3.45
+          ],
+          "role": "tough",
+          "face": 0.25
+        },
+        "kuri": {
+          "at": [
+            0.48,
+            0,
+            -3.5
+          ],
+          "role": "tough",
+          "face": -0.3
+        }
+      },
+      "shade": [
+        [
+          -1.5,
+          0,
+          -5.7
+        ],
+        [
+          1.52,
+          0,
+          -4.95
+        ],
+        [
+          -1.48,
+          0,
+          -7.0
+        ]
+      ],
+      "trunks": {
+        "left": [
+          [
+            -0.46,
+            0,
+            -4.2
+          ],
+          [
+            -0.42,
+            0,
+            -6.4
+          ],
+          [
+            -0.34,
+            0.65,
+            -7.9
+          ],
+          [
+            -0.3,
+            1.3,
+            -9.45
+          ]
+        ],
+        "right": [
+          [
+            0.46,
+            0,
+            -4.2
+          ],
+          [
+            0.42,
+            0,
+            -6.4
+          ],
+          [
+            0.34,
+            0.65,
+            -7.9
+          ],
+          [
+            0.3,
+            1.3,
+            -9.45
+          ]
+        ]
+      },
+      "perchAt": [
+        0,
+        1.3,
+        -9.85
+      ]
+    },
+    {
+      "id": "outsiders",
+      "name": "Outsiders",
+      "emblem": "bus",
+      "x": 70,
+      "clowder": "outsiders",
+      "perch": null,
+      "anchors": {
+        "challenger": {
+          "at": [
+            0.55,
+            0,
+            -5.6
+          ],
+          "role": "outsider",
+          "face": -0.3,
+          "stake": "LPY"
+        }
+      },
+      "shade": [
+        [
+          0.55,
+          0,
+          -5.6
+        ],
+        [
+          -1.2,
+          0,
+          -6.4
+        ]
+      ]
+    },
+    {
+      "id": "bell",
+      "name": "The Bell",
+      "emblem": "bell",
+      "x": 140,
+      "clowder": "bell",
+      "perch": "mikan",
+      "anchors": {
+        "mikan": {
+          "at": [
+            0.85,
+            1.46,
+            -8.2
+          ],
+          "role": "mikan",
+          "face": -0.2
+        },
+        "hige": {
+          "at": [
+            -0.55,
+            0.62,
+            -7.75
+          ],
+          "role": "crew",
+          "face": 0.3
+        },
+        "pon": {
+          "at": [
+            -1.05,
+            0.5,
+            -5.6
+          ],
+          "role": "crew",
+          "face": 0.5
+        },
+        "kinako": {
+          "at": [
+            0.95,
+            0,
+            -4.4
+          ],
+          "role": "crew",
+          "face": -0.4
+        },
+        "togemaru": {
+          "at": [
+            -0.3,
+            0,
+            -3.6
+          ],
+          "role": "crew",
+          "face": 0.2
+        }
+      },
+      "shade": [],
+      "perchAt": [
+        0.85,
+        1.46,
+        -8.2
+      ],
+      "trunks": {
+        "left": [
+          [
+            -0.2,
+            0,
+            -3.2
+          ],
+          [
+            -0.05,
+            0,
+            -5.4
+          ],
+          [
+            0.3,
+            0.9,
+            -7.5
+          ],
+          [
+            0.6,
+            1.46,
+            -7.95
+          ]
+        ],
+        "right": [
+          [
+            1.45,
+            0,
+            -3.6
+          ],
+          [
+            1.4,
+            0,
+            -5.6
+          ],
+          [
+            1.25,
+            0.9,
+            -7.5
+          ],
+          [
+            1.1,
+            1.46,
+            -7.95
+          ]
+        ]
+      }
+    }
+  ]
+}

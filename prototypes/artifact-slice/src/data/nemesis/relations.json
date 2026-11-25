@@ -1,0 +1,6 @@
+[
+  {"Name": "_comment", "_src": "PROTOTYPE - NOT FOR PRODUCTION. The slice's fixed NPC-NPC ties (Nemesis §3.3 'Slice seeds', §3.17; OR-04). Both cats hold a rival or kin tie. Gang membership is each cat's clowder (Boss = the clowder's boss row); Old Gang lives only in a recruit's own Memory (cats.json memory_authored, or written at Recruit). Written at generation, never changed by an outcome. A calendar challenger's rival tie is drawn at arrival (rivals.json challenger.rival_tag_p), or forced by showcase_overrides.json."},
+  {"Name": "togemaru~goma", "kind": "rival", "a": "togemaru", "b": "goma", "source": "authored", "_src": "Nemesis §3.3 / OR-04: Rival Togemaru <-> Goma (the gatepost)"},
+  {"Name": "kagi~ohagi", "kind": "rival", "a": "kagi", "b": "ohagi", "source": "authored", "_src": "Nemesis §3.3 / OR-04: Rival Kagi <-> the second Captain (Ohagi, key-screens §2.6)"},
+  {"Name": "kinako~sasa", "kind": "kin", "a": "kinako", "b": "sasa", "source": "authored", "_src": "Nemesis §3.3 / OR-04: Kin Kinako <-> Sasa (cousins, across the Bell and Lane scenes)"}
+]
