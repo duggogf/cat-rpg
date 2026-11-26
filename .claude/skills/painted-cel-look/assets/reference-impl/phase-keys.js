@@ -1,0 +1,52 @@
+// PROTOTYPE - NOT FOR PRODUCTION
+// Phase keys: art bible §4.4 (sky zenith/horizon, key light, shadow, cel tint), plus the
+// painter's extras the 2D target uses (warm bounce, haze, cloud tones). Colours are sRGB
+// hex and are used AS sRGB numbers: the environment shades in display space, like the
+// kit's multiply layers, so swatches arrive on screen unshifted (AB-15).
+import * as THREE from 'three';
+
+export const PHASES = {
+  day: {
+    zenith: '#3F9BE6', horizon: '#A9DBF5', key: '#FFFBEF', shadow: '#6E6AA8', cel: '#FFFFFF',
+    sunEl: 58, sunAz: -62,         // degrees; azimuth 0 = toward the sea (-Z), +90 = +X
+    shadeK: 0.6,                    // shade = albedo x mix(1, shadow, shadeK)
+    shadowTint: '#6F6CC4',          // the 01 frame's lane-shadow wisteria
+    bounce: '#FFD9A0', bounceK: 0.22, // warm light kicked up off the lit lane into shaded walls
+    haze: '#D6ECF6', hazeMax: 0.62, hazeNear: 22, hazeFar: 260,
+    cloudLight: '#FFFFFF', cloudShade: '#C9D8F0', backdropKey: '#FFFFFF',
+    sunGlow: '#FFF6D8', sunGlowK: 0.55,
+    catKey: '#FFFBEF', catShade: '#6E6AA8', catRim: '#FFF6E3', windowGlow: 0, seaGlow: '#FFF6DE', seaGlowK: 0.55, catDir: [-0.35, 0.906, 0.24], vertLift: 0.5,
+  },
+  dusk: {
+    zenith: '#8E6FB0', horizon: '#F7A45A', key: '#FFC27A', shadow: '#7A4E8C', cel: '#FFDDB5',
+    sunEl: 16, sunAz: 3,
+    shadeK: 0.62,
+    shadowTint: '#7A4E8C',
+    bounce: '#FFB070', bounceK: 0.2,
+    haze: '#F4B98C', hazeMax: 0.7, hazeNear: 18, hazeFar: 220,
+    cloudLight: '#FFD9A6', cloudShade: '#B88FBE', backdropKey: '#FFD2A0',
+    sunGlow: '#FFE0A0', sunGlowK: 0.9,
+    catKey: '#FFC27A', catShade: '#7A4E8C', catRim: '#FFD9A0', windowGlow: 0.9, seaGlow: '#FFD79A', seaGlowK: 0.7, catDir: [0.45, 0.8, 0.3], vertLift: 0.35,
+  },
+};
+
+/** A phase key between two keys (the ≈ 20 s Day -> Dusk blend): colours lerp in sRGB, numbers and directions lerp. */
+export function mixPhase(a, b, k) {
+  const A = PHASES[a] || a, B = PHASES[b] || b, o = {};
+  for (const key of Object.keys(A)) {
+    const x = A[key], y = B[key] ?? x;
+    if (typeof x === 'string' && x[0] === '#') { const p = rgb(x), q = rgb(y); p.lerp(q, k); o[key] = '#' + [p.x, p.y, p.z].map((v) => Math.round(v * 255).toString(16).padStart(2, '0')).join(''); }
+    else if (typeof x === 'number') o[key] = x + (y - x) * k;
+    else if (Array.isArray(x)) o[key] = x.map((v, i) => v + (y[i] - v) * k);
+    else o[key] = k < 0.5 ? x : y;
+  }
+  return o;
+}
+
+/** Raw sRGB triple (no colour management) for shader uniforms. */
+export function rgb(hex) { const n = parseInt(hex.slice(1), 16); return new THREE.Vector3(((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255); }
+/** Direction toward the sun (world). */
+export function sunDir(ph) {
+  const el = THREE.MathUtils.degToRad(ph.sunEl), az = THREE.MathUtils.degToRad(ph.sunAz);
+  return new THREE.Vector3(Math.sin(az) * Math.cos(el), Math.sin(el), -Math.cos(az) * Math.cos(el)).normalize();
+}
