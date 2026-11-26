@@ -57,6 +57,13 @@ them onto the head:
   without a side-profile swap.
 - Eye = coat-colour lid area, coloured iris disc, tall ink pupil, one hard white highlight upper-left, ink
   rim. Expressions (smug, sleepy, happy ^ ^, shock with small pupils, angry) and blink are atlas frames.
+- **Eye turning (per frame):** take the camera position in the head's rest space, `psi = atan2(x, z)`
+  relative to the head centre. For the eye on the camera's side, `w = smoothstep(0, 1, |psi| / 90°)`; rotate
+  that eye's projection axis by up to **68°·w** toward the camera, slide its anchor round the skull by up to
+  **40°·w**, and grow it by up to **12%** (tangent length 1/(1+0.12w)). Rotating the axis alone gives a
+  sliver eye in profile — the anchor slide is what keeps it round. The far eye stays on +Z and is hidden by
+  the head. Code: `assets/reference-impl/cel-character-runtime.js`, `update()`.
+- Faces switch off (decals hidden) when the character is < 4% of screen height.
 - Line weight on the decal matches the hull width at gameplay distance.
 
 ## 5. Identity from behind

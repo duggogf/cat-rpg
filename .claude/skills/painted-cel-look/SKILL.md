@@ -20,7 +20,7 @@ technique*, not any reference game's characters, places or compositions — thos
 ## The one rule: ink what acts, paint what stays
 
 Everything that moves, fights, can be knocked over, or can be interacted with is a **flat two-tone cel
-with an ink line**. Everything that stays put is a **soft, unlined painting**. When unsure about any
+with an ink line**. Static signage and set dressing a character can't affect is paint. Everything that stays put is a **soft, unlined painting**. When unsure about any
 object, ask which of the two it is. This is the oldest tell of hand-made TV anime (the thing about to move
 is visibly a cel over a painted background), and it doubles as affordance: an inked bucket on a painted
 wall is obviously the bucket you can knock off.
@@ -49,20 +49,33 @@ This matters more than it sounds: tone mapping silently desaturates the whole pa
 ## Characters (cels)
 
 - **Two tones only, hard terminator.** `ndl = dot(N_smooth, keyDir)`; shade = `1 - smoothstep(t-aa, t+aa, ndl)`
-  with `aa = fwidth(ndl)*0.75` (one-pixel antialias, still hard). Shade covers **15–25%** of the visible
-  character under the day key — the reference is *nearly* flat. More shade looks 3D/CG.
-- **Shade is authored, never grey:** hue rotated 8–15° toward violet, saturation +5–10, value −18–24.
-  Whites shade to lavender (`#D8D2EA`), never grey. The runtime shade multiply is a lavender
-  (`#6E6AA8`-family) tint mixed ~26% toward white.
-- **Characters have their own key light**, decoupled from the sun. Environment shadow on a character is a
-  *zone tint* sampled at its root (the whole cel steps into shade together) — never shadow-map stripes.
+  with `t = -0.06` and `aa = fwidth(ndl)*0.75` (one-pixel antialias, still hard). Shade covers **15–25%**
+  of the visible character, measured from the gameplay camera (behind, slightly above) in the day key —
+  the reference is *nearly* flat. More shade looks 3D/CG. Expect ±5 points across orbit angles; tune `t`
+  per phase rather than chasing every angle.
+- **The character key is world-fixed and mostly overhead** (day ≈ (−0.35, 0.91, 0.24), dusk ≈ (0.45, 0.80,
+  0.30)). Because it is high, the terminator falls under the belly, chin and tail, so the shade share stays
+  stable from every orbit angle and the face is lit front-on. Don't make it camera-relative — cels would
+  "swim" as the camera turns.
+- **Shade is lavender, never grey.** At runtime the shade is a multiply: `lit = mix(1, keyColor, 0.5)`,
+  `shade = mix(1, phaseShadeColor, 0.26) * 0.96 * lit` — one tint for the whole character, which keeps
+  every coat colour in the same family. For hand-authored assets (2D mocks, painted UI portraits) author
+  the shade per colour instead: hue +8–15° toward violet, saturation +5–10, value −18–24, whites →
+  `#D8D2EA`. Both give the same read; use the multiply in 3D.
+- **Characters have their own key light**, decoupled from the sun, and never receive the shadow map
+  (no shadow-map stripes on a cel). The design calls for a *zone tint* — the whole cel steps into shade
+  together when its root is in environment shadow (e.g. a CPU ray toward the sun, then lerp the lit tone
+  ~45% toward the phase shadow tint over ~0.2 s). The Cat RPG prototype did not implement it yet; treat
+  values as a starting point.
 - **Ink line:** inverted hull, back faces pushed out along *smoothed* normals **in clip space**, so the width
   is a constant number of render-target pixels at any distance: silhouette ≈ 2.0–2.5 px at 1080p, interior
-  ≈ 1.25 px, scaled by `rtHeight/1080`. Single flat colour **Aubergine Ink `#33273B`** (a warm near-black;
+  ≈ 1.25 px, scaled by `rtHeight/1080` (so 720p expects ≈ 1.3–1.7 px). Single flat colour **Aubergine Ink `#33273B`** (a warm near-black;
   never pure black, never lit). Below ~4% of screen height drop to 1 px and kill interior lines.
 - **Interior overlap lines** (a leg crossing the body) come for free if the legs are a *separate shell*
   with their own hull; pull the hull a little toward the eye by local thickness so it shows on overlaps.
-- **Contact blob** under every cel: feathered ellipse, Shadow Wisteria at ~45%.
+- **Contact blob** under every cel *and* every inked prop: feathered ellipse, Shadow Wisteria at ~45%.
+- **Inked props** (hard-edged boxes, buckets) need hull normals that don't split at corners: use the
+  direction from the prop's centre (y scaled ×1.4) as the "smooth normal" for the hull.
 - **Faces are flat decals**, not geometry: nose/mouth card projected along the head's +Z; each eye its own
   planar decal on its own axis (so eyes turn to camera on a 3/4 view). Eye = coloured disc, ink pupil, one
   hard white highlight, ink rim. Expressions/blinks are atlas frames. No side-profile face swap — the decal
@@ -94,7 +107,11 @@ owner taught us the hard way — read it before shaping any character.
   uses a drifting noise mask for animated **leaf-light** under a high sun only.
 - **Sky = painted dome + 2–3 parallax backdrop rings** (hills, sea, far town) + drifting cloud cards. The
   gradient: horizon → mid (72% toward horizon) → zenith → a slightly deeper top, over 0–22° elevation, with
-  a subtle brush texture and a sun glow. Sky should be visible in ≥ 30% of level exploration frames.
+  a subtle brush texture and a sun glow. Sky should be visible in ≥ 30% of level exploration frames (a low camera looking down at
+  the character shows only a strip; that's fine — check it with a level camera). Any texture wrapped around
+  360° must repeat a **whole number** of times or it seams at the back (the prototype's `az * 0.6` brush
+  lookup has this seam — use e.g. `az / (2π) * 3`), and painted 360° strips must wrap their content past
+  both edges before the displacement filters run.
 - **Paint post** on the environment only: noise wobble (~1.8 px), Kuwahara 4-sector r=2 (turns texture
   into flat daubs and softens 3D edges into paint edges), paper grain ~10%. Planes flagged "upright"
   (via alpha) skip Kuwahara to keep crisp plaster/board accents.
@@ -119,13 +136,15 @@ frame's mean luminance (flash safety), not raw negatives. Details: `references/v
 
 ## How to work in this look (process)
 
-1. **Start from the reference implementation**, don't re-derive. `assets/reference-impl/` holds the exact
-   shaders that were approved (three.js/GLSL; prototype code, rewrite for production). Read
-   `references/threejs-recipe.md` for how they fit together.
+1. **Start from working code**, don't re-derive. For a new web scene, copy `assets/starter-scene/` (a small
+   self-contained scene in the look: fox, bench, bus stop, dusk — runs from a CDN, screenshots itself).
+   `assets/reference-impl/` holds the exact approved Cat RPG shaders (three.js/GLSL; prototype code,
+   rewrite for production). Read `references/threejs-recipe.md` for how they fit together.
 2. **Pin the palette first** (`references/palette-and-values.md`); keep colours raw sRGB.
 3. **Build a look-dev scene** before content: one short street with sky, wall, fence, foliage, one cel
    character and one inked prop, in two phase keys.
-4. **Capture an orbit** (8 yaw angles at character distance, plus low and high pitch) — the look must hold
+4. **Capture an orbit** (8 yaw angles at the gameplay camera distance ≈ 3–4 m, pitch −10°, +10° and
+   +55°, FOV ≈ 50–60°; plus a level shot with the camera raised to look over the scene) — the look must hold
    from every angle. Use headless Chromium + SwiftShader for WebGL screenshots.
 5. **Review with an art director pass** on each capture: line width (measure px), shade share, any grey
    shadow, any ink on the environment, any soft glow on a cel, character/ground separation, sky visible.
@@ -158,3 +177,4 @@ rendered has not been checked.
 - `references/vfx-and-ui.md` — the drawn VFX language, impact frames, flash safety, warm UI.
 - `references/unreal-port.md` — mapping each piece to Unreal Engine 5.x (candidates to verify, not facts).
 - `assets/reference-impl/` — the approved shader and helper source files, copied verbatim from the prototype.
+- `assets/starter-scene/` — a runnable, project-neutral starter scene built from this skill (see its README).

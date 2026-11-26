@@ -50,7 +50,8 @@ The post writes `gl_FragDepth` from the env depth texture (looked up at the *dis
   tail, collar, bell, legs) — borderless flat shapes.
 - An authored contact shade: the head's shadow on the chest as a fixed ellipse (kit drawings do this).
 - Toe splits: two short ink lines on the front of each paw, drawn in the fill shader.
-- Face decals: see `characters.md`.
+- Face decals: see `characters.md`; the per-frame eye-turn maths is in `cel-character-runtime.js`
+  (`update`, the block after `// eyes:`).
 - Silhouette mode (`uSil`): solid colour, used for undiscovered characters on menus.
 
 ## 4. Ink hull
@@ -60,9 +61,18 @@ The post writes `gl_FragDepth` from the env depth texture (looked up at the *dis
 vec2 sd = normalize((projectionMatrix * vec4(viewNormal, 0.0)).xy * uRes);
 clip.xy += sd * (widthPx * 2.0 / uRes) * clip.w;
 ```
-`widthPx = uLinePx * uPartLine[part]` (per-part multipliers), `uLinePx` scaled by `rtHeight/1080`.
-Interior lines: pull the hull toward the eye by `min((thick - 0.03) * uPull, max)` so a thick part's hull
-shows where it overlaps another. Fragment: flat `uInk`. For static props use `hullMat()` in
+`widthPx = uLinePx * uPartLine[part]`. Prototype constants (`cel-character-runtime.js`):
+- `uLinePx = 2.5 * outH/1080` (1 px when the character is < 4% of screen height), × `min(1, rtH/outH)`
+  plus up to +1 px when rendering below output resolution.
+- `uPartLine = [body 1, head 1, tail 1, collar 0.8, bell 0.7, legs 1, regalia 0.7]`.
+- `uPull = 0.6`, `uPullMax = 0.016` (model metres), legs capped at 0.008; parts thinner than 3 cm never pull.
+
+**Where the "interior" lines come from:** there is no second line pass. One hull per *shell*; where a
+separate shell (a leg, the tail, an ear) overlaps another, its hull silhouette lands *on top of* the body
+and reads as an interior line. The pull toward the eye makes it show over the overlap. Fine interior marks
+(toe splits, mouth, eye rims) are drawn in the fill shader or the face decal at ~1.25 px. Concave creases
+inside one shell (an ear base merged into the skull) can show small ink ticks; smooth the union radius
+there or make the part its own shell. Fragment: flat `uInk`. For static props use `hullMat()` in
 `painted-environment.js` (same idea, plus a tiny `+0.0004*w` depth push).
 
 Team/side colour (gameplay): swap the hull colour (allies Bell-Gold, enemies red) — the line is the cheapest
@@ -100,8 +110,10 @@ col = hazeIt(alb * light, p);
 ## 7. Sky dome and backdrop rings
 
 `skyDome(brushTex)`: BackSide sphere r=1000, `renderOrder -10`, no depth write. Gradient by elevation
-(see SKILL.md), brush texture ×(1±18%), sun glow `pow(g,6)*0.6 + pow(g,40)*0.4`, an optional bright
-"sea gap" glow in one azimuth.
+(see SKILL.md), brush texture ×(1±18%), sun glow `pow(g,6)*0.6 + pow(g,40)*0.4`.
+Level-specific bits to change when reusing: the "sea gap" glow (`seaGap()`, `seaGlowK`) is hard-wired to
+the −Z azimuth of the Cat RPG lane — set `seaGlowK = 0` or re-aim it. The brush lookup `az * 0.6` seams at
+±π; use a whole number of repeats (`az / 6.2832 * 3.0`).
 `ringGeometry(r, a0, a1, y0, y1)` + `backdropMat(map, {haze, cloud})`: cylindrical painted strips for hills,
 far town, sea; the cloud mode remaps a painted day cloud's values onto the phase's cloud light/shade
 colours. Add 2–3 rings at different radii for parallax.
@@ -116,6 +128,16 @@ colours. Add 2–3 rings at different radii for parallax.
 5. `gl_FragDepth = depth(uv)`.
 Scale the kernel with `max(1, h/1080)`. On fast camera motion, ease the wobble down — wobble + motion
 reads as ghosting.
+
+## 8b. The two utility textures the shaders expect
+
+Both shaders divide by a mean, so the textures must have that mean in the **G channel**:
+- **Grain** (512², tiling; mean G ≈ 0.83 → shaders use `g / 0.83`): flat `#E0E0E0`, overlaid with
+  `brush-v` 35%, `mottle` 25%, `mottle-light` 50%, `grain` 30% (the SVG filters in `painted-textures.md`).
+  Used by the env shader (triplanar-ish, ×0.31 per metre), the macro variation, and the post (screen-space).
+- **Sky brush** (512², tiling; mean G ≈ 0.9 → `b / 0.9`): flat `#E8E8E8` + `brush` 50% + `mottle-light` 50%.
+If you generate them another way, measure the mean and change the divisor; otherwise everything darkens or
+brightens uniformly.
 
 ## 9. Dither fade
 

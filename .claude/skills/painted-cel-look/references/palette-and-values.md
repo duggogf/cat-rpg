@@ -27,11 +27,17 @@ Rule of thumb when adding colours: each human, each faction, each time-of-day *o
 semantic colours ≥ ΔE2000 15 from environment swatches and each other, including under protan/deutan/tritan
 simulation. If a clash appears, move the environment swatch, not the identity colour.
 
+**Reusing the palette for a new project or character:** keep the *structural* colours (ink, paper cream,
+cocoa, shadow wisteria, the sky keys) — they are the look. The identity colours (hero accent, faction and
+household colours) belong to Cat RPG's cast: give a new character its own hero colour and apply the same
+rules (one owner per colour, ≥ ΔE 15 from the environment).
+
 ## Tone rules
 
 - Every cel colour has exactly **two tones** (lit, shade). Author the shade: hue +8–15° toward violet,
   saturation +5–10, value −18–24 (HSV). Whites → lavender `#D8D2EA`.
-- Shade share on a character in the day key: **15–25%**, hard terminator.
+- Shade share on a character in the day key: **15–25%**, hard terminator, measured from the gameplay
+  camera. Dusk's lower, side-on key may run higher (≈ 20–35%); that warmth is wanted at dusk.
 - Walkable painted ground: L* 35–80, local contrast ≤ 15 L*. Cels own the value extremes.
 - Saturation: painted backgrounds ≤ 70% HSV, sky ≤ 75%, cels/VFX/hero objects ≤ 90%.
 - Contact blob: Shadow Wisteria at 45%, feathered.

@@ -47,7 +47,10 @@ displacement filter, top-lit. Clouds: tall cumulus of flat blobs, white light / 
   avoids localisation).
 - Alpha textures are uploaded premultiplied; colour under alpha 0 doesn't matter.
 - Break repetition in-shader (world-scale macro variation), not by painting bigger textures.
-- Backdrop strips (hills, far town, sea) are wide alpha strips (4096×128–1024) on cylindrical rings.
+- Backdrop strips (hills, far town, sea) are wide alpha strips (4096×128–1024) on cylindrical rings. A
+  strip that wraps a full 360° must **paint its content past both edges** (draw the last hill again
+  before x = 0 and after x = W) — displacement filters pull transparent pixels in at the edges and leave a
+  visible seam otherwise. Or keep strips to < 360° arcs and hide the ends behind nearer scenery.
 
 ## Baking
 
